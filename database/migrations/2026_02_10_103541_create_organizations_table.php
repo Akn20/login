@@ -13,7 +13,7 @@ return new class extends Migration
     {
         
         Schema::create('organizations', function (Blueprint $table) {
-    $table->id();
+    $table->uuid('id')->primary();
 
     // Organization Master
     $table->string('name');
