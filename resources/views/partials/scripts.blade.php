@@ -6,27 +6,7 @@
 <!--! END: Vendors JS !-->
 <!--! BEGIN: Apps Init  !-->
 <script src="assets/js/common-init.min.js"></script>
-
-<script>
-    var hospitalMonths = @json($hospitalMonths ?? []);
-    var hospitalCounts = @json($hospitalCounts ?? []);
-</script>
-
 <script src="assets/js/dashboard-init.min.js"></script>
 <!--! END: Apps Init !-->
 <!--! BEGIN: Theme Customizer  !-->
 <script src="assets/js/theme-customizer-init.min.js"></script>
-<!-- Select2 CSS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('.select2').select2({
-            placeholder: "Choose modules",
-            allowClear: true,
-            width: '100%'
-        });
-    });
-</script>
-
-

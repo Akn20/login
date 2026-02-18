@@ -14,12 +14,12 @@ class ReligionController extends Controller
     public function index()
     {
         $religions = Religion::latest()->get();
-        return view('masters.religion.index', compact('religions'));
+        return view('admin.masters.religion.index', compact('religions'));
     }
 
     public function create()
     {
-        return view('masters.religion.create');
+        return view('admin.masters.religion.create');
     }
 
     public function store(Request $request)
@@ -35,7 +35,7 @@ class ReligionController extends Controller
             'created_by' => 1
         ]);
 
-        return redirect()->route('religion.index')
+        return redirect()->route('admin.religion.index')
             ->with('success', 'Religion added successfully');
     }
 
@@ -60,7 +60,7 @@ class ReligionController extends Controller
             'updated_by' => 1
         ]);
 
-        return redirect()->route('religion.index')
+        return redirect()->route('admin.religion.index')
             ->with('success', 'Religion updated successfully');
     }
 
@@ -69,7 +69,7 @@ class ReligionController extends Controller
         $religion = Religion::findOrFail($id);
         $religion->delete();
 
-        return redirect()->route('religion.index')
+        return redirect()->route('admin.religion.index')
             ->with('success', 'Religion deleted successfully');
     }
 
@@ -83,13 +83,13 @@ class ReligionController extends Controller
     public function restore($id)
     {
         Religion::withTrashed()->findOrFail($id)->restore();
-        return redirect()->route('religion.trash')->with('success', 'Religion restored');
+        return redirect()->route('admin.religion.trash')->with('success', 'Religion restored');
     }
 
     public function forceDelete($id)
     {
         Religion::withTrashed()->findOrFail($id)->forceDelete();
-        return redirect()->route('religion.trash')->with('success', 'Religion removed permanently');
+        return redirect()->route('admin.religion.trash')->with('success', 'Religion removed permanently');
     }
 
     //API

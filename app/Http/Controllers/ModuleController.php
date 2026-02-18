@@ -25,7 +25,7 @@ class ModuleController extends Controller
 
         $modules = $query->get();
 
-        return view('modules.index', compact('modules'));
+        return view('admin.modules.index', compact('modules'));
     }
     // Show Create Module Form
     public function create()
@@ -51,7 +51,7 @@ class ModuleController extends Controller
 
         Module::create($request->all());
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module created successfully!');
     }
 
@@ -60,7 +60,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id);
         $module->delete();
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module moved to trash.');
     }
 
@@ -75,7 +75,7 @@ class ModuleController extends Controller
     {
         Module::withTrashed()->find($id)->restore();
 
-        return redirect()->route('modules.deleted')
+        return redirect()->route('admin.modules.deleted')
             ->with('success', 'Module restored successfully.');
     }
 
@@ -83,7 +83,7 @@ class ModuleController extends Controller
     {
         Module::withTrashed()->find($id)->forceDelete();
 
-        return redirect()->route('modules.deleted')
+        return redirect()->route('admin.modules.deleted')
             ->with('success', 'Module permanently deleted.');
     }
 
@@ -135,7 +135,7 @@ class ModuleController extends Controller
             'access_for'
         ]));
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module updated successfully!');
     }
 

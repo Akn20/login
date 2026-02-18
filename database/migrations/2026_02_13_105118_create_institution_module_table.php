@@ -11,9 +11,13 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('institution_module', function (Blueprint $table) {
+            // institutions.id = BIGINT(20) UNSIGNED
+            $table->unsignedBigInteger('institution_id');
 
-            $table->uuid('institution_id');
-            $table->uuid('module_id');
+            // modules.id = CHAR(36)
+            $table->char('module_id', 36);
+
+            $table->primary(['institution_id', 'module_id']);
 
             $table->foreign('institution_id')
                 ->references('id')
@@ -27,6 +31,7 @@ return new class extends Migration {
 
             $table->timestamps();
         });
+
     }
 
 

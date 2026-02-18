@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Organization;
+use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
@@ -14,15 +14,17 @@ class OrganizationController extends Controller
     {
         $query = Organization::query();
 
-        // Search
-        if ($request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
         }
 
         $organizations = $query->latest()->paginate(10);
 
-        return view('organization.index', compact('organizations'));
+        return view('admin.organization.index', compact('organizations'));
     }
 
     /**
@@ -30,7 +32,7 @@ class OrganizationController extends Controller
      */
     public function create()
     {
-        return view('organization.create');
+        return view('admin.organization.create');
     }
 
     /**
@@ -38,7 +40,7 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
             'type' => 'required|in:Private,Trust,Government',
             'registration_number' => 'nullable|string|max:100',
@@ -60,9 +62,10 @@ class OrganizationController extends Controller
             'pincode' => 'required|digits:6',
         ]);
 
-        Organization::create($request->all());
+        Organization::create($validated);
 
-        return redirect()->route('organization.index')
+        // IMPORTANT: use the admin.* route name here
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Created Successfully');
     }
 
@@ -73,7 +76,7 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        return view('organization.edit', compact('organization'));
+        return view('admin.organization.edit', compact('organization'));
     }
 
     /**
@@ -83,14 +86,17 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'nullable|email',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
+            'email' => 'nullable|email|max:255',
+            'type' => 'nullable|in:Private,Trust,Government',
+            'status' => 'nullable|boolean',
+            // add more fields to validate/update if needed
         ]);
 
-        $organization->update($request->all());
+        $organization->update($validated);
 
-        return redirect()->route('organization.index')
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Updated Successfully');
     }
 
@@ -102,7 +108,7 @@ class OrganizationController extends Controller
         $organization = Organization::findOrFail($id);
         $organization->delete(); // soft delete
 
-        return redirect()->route('organization.index')
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Deleted Successfully');
     }
 
@@ -111,9 +117,9 @@ class OrganizationController extends Controller
      */
     public function deleted()
     {
-        $organizations = Organization::onlyTrashed()->paginate(10);
+        $organizations = Organization::onlyTrashed()->latest()->paginate(10);
 
-        return view('organization.deleted', compact('organizations'));
+        return view('admin.organization.deleted', compact('organizations'));
     }
 
     /**
@@ -124,7 +130,7 @@ class OrganizationController extends Controller
         $organization = Organization::withTrashed()->findOrFail($id);
         $organization->restore();
 
-        return redirect()->route('organization.deleted')
+        return redirect()->route('admin.organization.deleted')
             ->with('success', 'Organization Restored Successfully');
     }
 
@@ -136,7 +142,7 @@ class OrganizationController extends Controller
         $organization = Organization::withTrashed()->findOrFail($id);
         $organization->forceDelete();
 
-        return redirect()->route('organization.deleted')
+        return redirect()->route('admin.organization.deleted')
             ->with('success', 'Organization Permanently Deleted');
     }
 
@@ -147,29 +153,33 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        return view('organization.show', compact('organization'));
+        return view('admin.organization.show', compact('organization'));
     }
 
     public function toggleStatus($id)
     {
-        $Organization = Organization::findOrFail($id);
-        $Organization->status = !$Organization->status;
-        $Organization->save();
+        $organization = Organization::findOrFail($id);
+        $organization->status = !$organization->status;
+        $organization->save();
 
-        return back();
+        return back()->with('success', 'Status updated');
     }
+
+    /* ===================== API ===================== */
 
     public function apiIndex()
     {
+        $data = Organization::latest()->get();
+
         return response()->json([
             'status' => true,
-            'data' => \App\Models\Organization::latest()->get()
+            'data' => $data,
         ]);
     }
 
     public function apiStore(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
             'type' => 'required|in:Private,Trust,Government',
             'registration_number' => 'nullable|string|max:100',
@@ -189,28 +199,25 @@ class OrganizationController extends Controller
             'state' => 'required|string|max:100|regex:/^[A-Za-z\s]+$/',
             'country' => 'required|string|max:100|regex:/^[A-Za-z\s]+$/',
             'pincode' => 'required|digits:6',
-
-
-
         ]);
 
-        $org = \App\Models\Organization::create($request->all());
+        $org = Organization::create($validated);
 
         return response()->json([
             'status' => true,
             'message' => 'Organization created',
-            'data' => $org
+            'data' => $org,
         ]);
     }
 
     public function apiUpdate(Request $request, $id)
     {
-        $organization = \App\Models\Organization::find($id);
+        $organization = Organization::find($id);
 
         if (!$organization) {
             return response()->json([
                 'status' => false,
-                'message' => 'Organization not found'
+                'message' => 'Organization not found',
             ], 404);
         }
 
@@ -234,8 +241,6 @@ class OrganizationController extends Controller
             'state' => 'required|string|max:100|regex:/^[A-Za-z\s]+$/',
             'country' => 'required|string|max:100|regex:/^[A-Za-z\s]+$/',
             'pincode' => 'required|digits:6',
-
-
         ]);
 
         $organization->update($validated);
@@ -243,21 +248,21 @@ class OrganizationController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Organization updated successfully',
-            'data' => $organization
+            'data' => $organization,
         ]);
     }
 
-
     public function apiDelete($id)
     {
-        $org = \App\Models\Organization::findOrFail($id);
+        $org = Organization::findOrFail($id);
         $org->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Organization deleted'
+            'message' => 'Organization deleted',
         ]);
     }
+
     public function apiShow($id)
     {
         $organization = Organization::find($id);
@@ -265,13 +270,13 @@ class OrganizationController extends Controller
         if (!$organization) {
             return response()->json([
                 'status' => false,
-                'message' => 'Organization not found'
+                'message' => 'Organization not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
-            'data' => $organization
+            'data' => $organization,
         ]);
     }
 }
