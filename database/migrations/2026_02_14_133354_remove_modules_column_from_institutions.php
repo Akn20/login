@@ -9,11 +9,14 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up()
-    {
-        Schema::table('institutions', function (Blueprint $table) {
+{
+    Schema::table('institutions', function (Blueprint $table) {
+        if (Schema::hasColumn('institutions', 'modules')) {
             $table->dropColumn('modules');
-        });
-    }
+        }
+    });
+}
+
 
 
     /**

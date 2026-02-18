@@ -9,6 +9,8 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\Api\DashboardController;
+
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
 Route::post('/religions', [ReligionController::class, 'apiStore']);
@@ -54,3 +56,6 @@ Route::post('/modules', [ModuleController::class, 'apiStore']);
 Route::get('/modules/{id}', [ModuleController::class, 'apiShow']);
 Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
 Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
+
+
+Route::get('/dashboard', [DashboardController::class, 'index']);

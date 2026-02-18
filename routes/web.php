@@ -20,6 +20,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 */
 Route::get('/', [OrganizationController::class, 'index']);
 
+Route::get('/organization/create', [OrganizationController::class, 'create'])
+    ->name('organization.create');
 
 // Deleted list
 Route::get('/organization/deleted', [OrganizationController::class, 'deleted'])
