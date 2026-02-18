@@ -11,12 +11,12 @@ class InstitutionController extends Controller
     public function index(Request $request)
     {
         $institutions = Institution::latest()->paginate(10);
-        return view('institution.index', compact('institutions'));
+        return view('admin.institution.index', compact('institutions'));
     }
 
     public function create()
     {
-        return view('institution.create');
+        return view('admin.institution.create');
     }
 
     public function store(Request $request)
@@ -29,6 +29,6 @@ class InstitutionController extends Controller
         Institution::create($request->all());
 
         return redirect()->route('admin.institutions.index')
-                 ->with('success', 'Institution Created Successfully');
+            ->with('success', 'Institution Created Successfully');
     }
 }

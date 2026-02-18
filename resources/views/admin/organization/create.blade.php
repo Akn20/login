@@ -1,4 +1,4 @@
-@extends('dashboard')
+@extends('layouts.admin')
 
 @section('page-title', 'Add Organization | ' . config('app.name'))
 

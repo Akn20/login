@@ -1,4 +1,4 @@
-@extends('dashboard')
+@extends('layouts.admin')
 
 @section('page-title', 'Organizations | ' . config('app.name'))
 
@@ -160,8 +160,4 @@
             </div>
         </div>
     </div>
-
-
-
-
 @endsection
