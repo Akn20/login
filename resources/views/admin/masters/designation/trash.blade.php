@@ -41,7 +41,13 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
 
+                                        <td>{{ $designation->designation_code }}</td>
+
                                         <td>{{ $designation->designation_name }}</td>
+
+                                        <td>{{ $designation->department->department_name ?? '-' }}</td>
+
+                                        <td>{{ $designation->description ?? '-' }}</td>
 
                                         <td>
                                             @if($designation->status == 'Active')
