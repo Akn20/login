@@ -19,7 +19,7 @@ class WorkStatusController extends Controller
 
     public function create()
     {
-        return view('masters.work_status.create');
+        return view('admin.masters.work_status.create');
     }
 
     public function store(Request $request)
@@ -56,7 +56,7 @@ class WorkStatusController extends Controller
     public function edit($id)
     {
         $workStatus = WorkStatus::findOrFail($id);
-        return view('masters.work_status.edit', compact('workStatus'));
+        return view('admin.masters.work_status.edit', compact('workStatus'));
     }
 
     public function update(Request $request, $id)
@@ -105,7 +105,7 @@ class WorkStatusController extends Controller
     public function trash()
     {
         $workStatuses = WorkStatus::onlyTrashed()->get();
-        return view('masters.work_status.trash', compact('workStatuses'));
+        return view('admin.masters.work_status.trash', compact('workStatuses'));
     }
 
     public function restore($id)
@@ -118,7 +118,7 @@ class WorkStatusController extends Controller
     public function forceDelete($id)
     {
         WorkStatus::withTrashed()->findOrFail($id)->forceDelete();
-        return redirect()->route('work-status.trash')
+        return redirect()->route('admin.work-status.trash')
             ->with('success', 'Work Status removed permanently');
     }
 

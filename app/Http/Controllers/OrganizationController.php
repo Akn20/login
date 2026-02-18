@@ -12,12 +12,12 @@ class OrganizationController extends Controller
     public function index()
     {
         $organizations = Organization::all();
-        return view('organization.index', compact('organizations'));
+        return view('admin.organization.index', compact('organizations'));
     }
 
     public function create()
     {
-        return view('organization.create');
+        return view('admin.organization.create');
     }
 
     public function store(Request $request)
@@ -29,7 +29,7 @@ class OrganizationController extends Controller
     public function edit($id)
     {
         $organization = Organization::findOrFail($id);
-        return view('organization.edit', compact('organization'));
+        return view('admin.organization.edit', compact('organization'));
     }
 
     public function update(Request $request, $id)
