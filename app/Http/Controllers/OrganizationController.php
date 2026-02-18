@@ -53,7 +53,7 @@ class OrganizationController extends Controller
 
         Organization::create($request->all());
 
-        return redirect()->route('organization.index')
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Created Successfully');
     }
 
@@ -80,7 +80,7 @@ class OrganizationController extends Controller
 
         $organization->update($request->all());
 
-        return redirect()->route('organization.index')
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Updated Successfully');
     }
 
@@ -92,7 +92,7 @@ class OrganizationController extends Controller
         $organization = Organization::findOrFail($id);
         $organization->delete(); // soft delete
 
-        return redirect()->route('organization.index')
+        return redirect()->route('admin.organization.index')
             ->with('success', 'Organization Deleted Successfully');
     }
 
@@ -103,7 +103,7 @@ class OrganizationController extends Controller
     {
         $organizations = Organization::onlyTrashed()->paginate(10);
 
-        return view('organization.deleted', compact('organizations'));
+        return view('admin.organization.deleted', compact('organizations'));
     }
 
     /**
@@ -114,7 +114,7 @@ class OrganizationController extends Controller
         $organization = Organization::withTrashed()->findOrFail($id);
         $organization->restore();
 
-        return redirect()->route('organization.deleted')
+        return redirect()->route('admin.organization.deleted')
             ->with('success', 'Organization Restored Successfully');
     }
 
@@ -126,7 +126,7 @@ class OrganizationController extends Controller
         $organization = Organization::withTrashed()->findOrFail($id);
         $organization->forceDelete();
 
-        return redirect()->route('organization.deleted')
+        return redirect()->route('admin.organization.deleted')
             ->with('success', 'Organization Permanently Deleted');
     }
 
@@ -137,7 +137,7 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        return view('organization.show', compact('organization'));
+        return view('admin.organization.show', compact('organization'));
     }
 
     public function toggleStatus($id)

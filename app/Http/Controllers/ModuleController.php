@@ -25,7 +25,7 @@ class ModuleController extends Controller
 
         $modules = $query->get();
 
-        return view('modules.index', compact('modules'));
+        return view('admin.modules.index', compact('modules'));
     }
     // Show Create Module Form
     public function create()

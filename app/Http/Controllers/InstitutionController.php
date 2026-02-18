@@ -28,7 +28,7 @@ class InstitutionController extends Controller
 
         $institutions = $query->latest()->paginate(10);
 
-        return view('institutions.index', compact('institutions'));
+        return view('admin.institutions.index', compact('institutions'));
     }
 
     /**
