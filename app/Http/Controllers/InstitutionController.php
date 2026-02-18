@@ -28,7 +28,7 @@ class InstitutionController extends Controller
 
         $institutions = $query->latest()->paginate(10);
 
-        return view('institutions.index', compact('institutions'));
+        return view('admin.institutions.index', compact('institutions'));
     }
 
     /**
@@ -47,7 +47,7 @@ class InstitutionController extends Controller
 
         $nextCode = 'INST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return view('institutions.create', compact(
+        return view('admin.institutions.create', compact(
             'nextCode',
             'organizations',
             'modules'
