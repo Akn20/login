@@ -25,13 +25,13 @@ class ModuleController extends Controller
 
         $modules = $query->get();
 
-        return view('modules.index', compact('modules'));
+        return view('admin.modules.index', compact('modules'));
     }
     // Show Create Module Form
     public function create()
     {
         $modules = Module::all(); // get existing modules
-        return view('modules.create', compact('modules'));
+        return view('admin.modules.create', compact('modules'));
     }
 
     //Store Module
