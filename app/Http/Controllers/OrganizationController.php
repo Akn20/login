@@ -12,7 +12,16 @@ class OrganizationController extends Controller
      */
     public function index(Request $request)
     {
-        $organizations = Organization::all();
+        $query = Organization::query();
+
+        // Search
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
+        }
+
+        $organizations = $query->latest()->paginate(10);
+
         return view('admin.organization.index', compact('organizations'));
     }
 
@@ -63,6 +72,7 @@ class OrganizationController extends Controller
     public function edit($id)
     {
         $organization = Organization::findOrFail($id);
+
         return view('admin.organization.edit', compact('organization'));
     }
 

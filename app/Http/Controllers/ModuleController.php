@@ -31,7 +31,7 @@ class ModuleController extends Controller
     public function create()
     {
         $modules = Module::all(); // get existing modules
-        return view('modules.create', compact('modules'));
+        return view('admin.modules.create', compact('modules'));
     }
 
     //Store Module
@@ -51,7 +51,7 @@ class ModuleController extends Controller
 
         Module::create($request->all());
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module created successfully!');
     }
 
@@ -60,7 +60,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id);
         $module->delete();
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module moved to trash.');
     }
 
@@ -68,14 +68,14 @@ class ModuleController extends Controller
     public function deleted()
     {
         $modules = Module::onlyTrashed()->get();
-        return view('modules.deleted', compact('modules'));
+        return view('admin.modules.deleted', compact('modules'));
     }
 
     public function restore($id)
     {
         Module::withTrashed()->find($id)->restore();
 
-        return redirect()->route('modules.deleted')
+        return redirect()->route('admin.modules.deleted')
             ->with('success', 'Module restored successfully.');
     }
 
@@ -83,14 +83,14 @@ class ModuleController extends Controller
     {
         Module::withTrashed()->find($id)->forceDelete();
 
-        return redirect()->route('modules.deleted')
+        return redirect()->route('admin.modules.deleted')
             ->with('success', 'Module permanently deleted.');
     }
 
     public function show($id)
     {
         $module = Module::findOrFail($id);
-        return view('modules.show', compact('module'));
+        return view('admin.modules.show', compact('module'));
     }
 
     public function edit($id)
@@ -98,7 +98,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id);
         $modules = Module::all(); // for parent dropdown
 
-        return view('modules.edit', compact('module', 'modules'));
+        return view('admin.modules.edit', compact('module', 'modules'));
     }
 
 
@@ -135,7 +135,7 @@ class ModuleController extends Controller
             'access_for'
         ]));
 
-        return redirect()->route('modules.index')
+        return redirect()->route('admin.modules.index')
             ->with('success', 'Module updated successfully!');
     }
 
@@ -225,4 +225,23 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
+
+
+    //Module Api to get types
+    public function getModuleTypes()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                ['value' => 'web', 'label' => 'Web'],
+                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'both', 'label' => 'Both'],
+            ]
+        ]);
+    }
+
+
+
 }
+
+

@@ -12,7 +12,7 @@ class InstitutionController extends Controller
 
 
     /**
-     * Institution List Pag
+     * Institution List Page
      */
     public function index(Request $request)
     {
@@ -47,7 +47,7 @@ class InstitutionController extends Controller
 
         $nextCode = 'INST' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
-        return view('institutions.create', compact(
+        return view('admin.institutions.create', compact(
             'nextCode',
             'organizations',
             'modules'
@@ -154,7 +154,7 @@ class InstitutionController extends Controller
             $institution->modules()->sync($request->modules);
         }
 
-        return redirect()->route('institutions.index')
+        return redirect()->route('admin.institutions.index')
             ->with('success', 'Institution Created Successfully');
     }
 
@@ -165,7 +165,7 @@ class InstitutionController extends Controller
         $institution = Institution::findOrFail($id);
         $institution->delete(); // soft delete
 
-        return redirect()->route('institutions.index')
+        return redirect()->route('admin.institutions.index')
             ->with('success', 'Institution Deleted Successfully');
     }
 
@@ -180,7 +180,7 @@ class InstitutionController extends Controller
         $organizations = Organization::where('status', 1)->get();
         $modules = Module::orderBy('priority')->get();
 
-        return view('institutions.edit', compact(
+        return view('admin.institutions.edit', compact(
             'institution',
             'organizations',
             'modules'
@@ -263,7 +263,7 @@ class InstitutionController extends Controller
 
         $institution->modules()->sync($request->modules ?? []);
 
-        return redirect()->route('institutions.index')
+        return redirect()->route('admin.institutions.index')
             ->with('success', 'Institution Updated Successfully');
     }
 
@@ -276,7 +276,7 @@ class InstitutionController extends Controller
         $institution = Institution::with(['organization', 'modules'])
             ->findOrFail($id);
 
-        return view('institutions.show', compact('institution'));
+        return view('admin.institutions.show', compact('institution'));
     }
     /**
      * Show Deleted Institutions
@@ -288,7 +288,7 @@ class InstitutionController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('institutions.deleted', compact('institutions'));
+        return view('admin.institutions.deleted', compact('institutions'));
     }
 
     /**
@@ -299,7 +299,7 @@ class InstitutionController extends Controller
         $institution = Institution::onlyTrashed()->findOrFail($id);
         $institution->restore();
 
-        return redirect()->route('institutions.deleted')
+        return redirect()->route('admin.institutions.deleted')
             ->with('success', 'Institution restored successfully');
     }
 
@@ -311,7 +311,7 @@ class InstitutionController extends Controller
         $institution = Institution::onlyTrashed()->findOrFail($id);
         $institution->forceDelete();
 
-        return redirect()->route('institutions.deleted')
+        return redirect()->route('admin.institutions.deleted')
             ->with('success', 'Institution permanently deleted');
     }
 
