@@ -225,4 +225,20 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
+
+    //Module Api to get types
+    public function getModuleTypes()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                ['value' => 'web', 'label' => 'Web'],
+                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'both', 'label' => 'Both'],
+            ]
+        ]);
+    }
+
+
+
 }
