@@ -6,6 +6,7 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\ModuleController;
 
 /* Religion */
 
@@ -47,6 +48,8 @@ Route::post('/designations', [DesignationController::class, 'apiStore']);
 Route::put('/designations/{id}', [DesignationController::class, 'apiUpdate']);
 Route::delete('/designations/{id}', [DesignationController::class, 'apiDelete']);
 
+//For After  deleted records
+
 // Religion
 Route::get('religions/deleted', [ReligionController::class, 'apiDeleted']);
 Route::put('religions/{id}/restore', [ReligionController::class, 'apiRestore']);
@@ -76,3 +79,13 @@ Route::delete('blood-groups/{id}/force-delete', [BloodGroupController::class, 'a
 Route::get('departments/deleted', [DepartmentController::class, 'apiDeleted']);
 Route::put('departments/{id}/restore', [DepartmentController::class, 'apiRestore']);
 Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'apiForceDelete']);
+
+
+
+//Module Management Type Api
+
+Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
+
+Route::get('/test-api', function () {
+    return 'API working';
+});

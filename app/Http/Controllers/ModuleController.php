@@ -25,13 +25,13 @@ class ModuleController extends Controller
 
         $modules = $query->get();
 
-        return view('modules.index', compact('modules'));
+        return view('admin.modules.index', compact('modules'));
     }
     // Show Create Module Form
     public function create()
     {
         $modules = Module::all(); // get existing modules
-        return view('modules.create', compact('modules'));
+        return view('admin.modules.create', compact('modules'));
     }
 
     //Store Module
@@ -225,4 +225,23 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
+
+
+    //Module Api to get types
+    public function getModuleTypes()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                ['value' => 'web', 'label' => 'Web'],
+                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'both', 'label' => 'Both'],
+            ]
+        ]);
+    }
+
+
+
 }
+
+
