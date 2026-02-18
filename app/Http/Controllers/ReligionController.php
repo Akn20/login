@@ -50,7 +50,7 @@ class ReligionController extends Controller
     public function edit($id)
     {
         $religion = Religion::findOrFail($id);
-        return view('masters.religion.edit', compact('religion'));
+        return view('admin.masters.religion.edit', compact('religion'));
     }
 
     public function update(Request $request, $id)
