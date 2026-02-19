@@ -26,7 +26,7 @@
     <form id="orgForm" method="POST" action="{{ route('admin.organization.store') }}">
         @csrf
 
-        @include('organization.form')
+        @include('admin.organization.form')
 
     </form>
 </div>
