@@ -239,6 +239,9 @@ Route::delete('institutions/{id}/force-delete',
 
         Route::resource('modules', ModuleController::class);
 
+        Route::prefix('modules')->name('modules.')->group(function () {
+            Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+        });
         /*
         |----------------------------------------------------------------------
         | Toggle Status Routes
