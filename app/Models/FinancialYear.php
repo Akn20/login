@@ -3,13 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class FinancialYear extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id',
         'code',
         'start_date',
         'end_date',
@@ -22,10 +27,15 @@ class FinancialYear extends Model
         'is_active' => 'boolean',
     ];
 
-    public function scopeForDate($query, $date)
+    protected static function boot()
     {
-        return $query->where('start_date', '<=', $date)
-            ->where('end_date', '>=', $date);
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->getKey()) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
+        });
     }
 
     public function hospitals()
@@ -34,5 +44,4 @@ class FinancialYear extends Model
             ->withPivot(['is_current', 'locked'])
             ->withTimestamps();
     }
-
 }
