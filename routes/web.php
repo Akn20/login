@@ -260,6 +260,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
         */
 
         Route::patch(
+            'modules/{id}/toggle-status',
+            [ModuleController::class, 'toggleStatus']
+        )
+            ->name('modules.toggleStatus');
+
+        Route::patch(
             'financial-years/{financial_year}/toggle-status',
             [FinancialYearController::class, 'toggleStatus']
         )->name('financial-years.toggle-status');
