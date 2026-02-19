@@ -255,4 +255,38 @@ class SignInController extends Controller
         // ]);
         return redirect()->route('login')->with('success', 'Logged out successfully');
     }
+
+    public function createDefaultAdmin()
+    {
+        if (User::count() > 0) {
+            return redirect()->route('login')
+                ->with('error', 'Admin already exists.');
+        }
+
+        // First create the admin role if it doesn't exist
+        $adminRole = \App\Models\Roles::firstOrCreate(
+            ['name' => 'admin'],
+            [
+                'status' => 'active',
+                'description' => 'Super Administrator'
+            ]
+        );
+
+        // Now create the admin user with the correct role_id
+        User::create([
+            'name' => 'Super Admin',
+            'mobile' => '9999999999',
+            'mpin' => Hash::make('1234'),
+            'role_id' => $adminRole->id,  // ✅ Uses the actual role ID
+            'status' => 'active',
+        ]);
+
+        return redirect()->route('login')->with(
+            'success',
+            'Default admin created! Mobile: 9999999999 | MPIN: 1234'
+        );
+    }
+
+
+
 }
