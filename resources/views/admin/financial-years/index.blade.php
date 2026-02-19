@@ -234,10 +234,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         return;
                     }
 
-                    // Simple UI update: only update this toggle's text
-                    const txt = current.nextElementSibling?.querySelector('.status-toggle-text');
-                    if (txt) {
-                        txt.textContent = current.checked ? 'Active' : 'Inactive';
+                    const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
+                    if (textEl) {
+                        textEl.textContent = data.is_active ? 'Active' : 'Inactive';
                     }
                 })
                 .catch(() => {

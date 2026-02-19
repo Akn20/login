@@ -69,7 +69,11 @@ class FinancialYearController extends Controller
                 ->withInput();
         }
 
-        // No more global deactivation of other FYs
+        // If this FY is active, deactivate others (TC_FY_005, TC_FY_013)
+        if ($data['is_active']) {
+            FinancialYear::where('is_active', true)->update(['is_active' => false]);
+        }
+
         FinancialYear::create($data);
 
         return redirect()
@@ -177,7 +181,7 @@ class FinancialYearController extends Controller
     }
 
     /**
-     * Toggle active/inactive status via AJAX (independent flag).
+     * Toggle active/inactive status via AJAX
      */
     public function toggleStatus(FinancialYear $financial_year)
     {
@@ -186,7 +190,7 @@ class FinancialYearController extends Controller
 
         return response()->json([
             'success' => true,
-            'is_active' => $financial_year->is_active,
+            'is_active' => (bool) $financial_year->is_active,
         ]);
     }
 }
