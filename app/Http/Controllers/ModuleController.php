@@ -225,4 +225,23 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
+    public function apiRestore($id)
+    {
+        $module = \App\Models\Module::onlyTrashed()->find($id);
+    
+        if (!$module) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Module not found'
+            ], 404);
+        }
+    
+        $module->restore();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Module restored successfully',
+            'data' => $module
+        ]);
+    }
 }
