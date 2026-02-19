@@ -69,15 +69,7 @@ class FinancialYearController extends Controller
                 ->withInput();
         }
 
-<<<<<<< HEAD
         // No more global deactivation of other FYs
-=======
-        // If this FY is active, deactivate others (TC_FY_005, TC_FY_013)
-        if ($data['is_active']) {
-            FinancialYear::where('is_active', true)->update(['is_active' => false]);
-        }
-
->>>>>>> origin/TeamB
         FinancialYear::create($data);
 
         return redirect()

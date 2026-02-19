@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -12,7 +13,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Organizations - SAFE
+        // Organizations
         $organizationCount = 0;
         $activeOrganizations = 0;
         $inactiveOrganizations = 0;
@@ -22,37 +23,46 @@ class DashboardController extends Controller
             $organizationCount = Organization::count();
             $activeOrganizations = Organization::where('status', 1)->count();
             $inactiveOrganizations = $organizationCount - $activeOrganizations;
-            $activeOrganizationPercentage = $organizationCount > 0 ? round(($activeOrganizations / $organizationCount) * 100, 2) : 0;
+            $activeOrganizationPercentage = $organizationCount > 0
+                ? round(($activeOrganizations / $organizationCount) * 100, 2)
+                : 0;
         } catch (\Exception $e) {
         }
 
-        // Hospitals - SAFE (handles missing table)
+        // Hospitals – totals for cards
         $hospitalTotal = 0;
         $activeHospitals = 0;
         $inactiveHospitals = 0;
         $activeHospitalPercentage = 0;
-        $hospitalMonths = [];
-        $hospitalCounts = [];
 
         try {
             $hospitalTotal = Hospital::count();
             $activeHospitals = Hospital::where('status', 1)->count();
             $inactiveHospitals = $hospitalTotal - $activeHospitals;
-            $activeHospitalPercentage = $hospitalTotal > 0 ? round(($activeHospitals / $hospitalTotal) * 100, 2) : 0;
+            $activeHospitalPercentage = $hospitalTotal > 0
+                ? round(($activeHospitals / $hospitalTotal) * 100, 2)
+                : 0;
+        } catch (\Exception $e) {
+        }
 
+        // Hospitals 
+        $hospitalMonths = [];
+        $hospitalCounts = [];
+        $hospitalData = collect();
+
+        try {
             $hospitalData = Hospital::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count")
                 ->where('created_at', '>=', now()->subMonths(12))
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
 
-            $hospitalMonths = $hospitalData->pluck('month');
-            $hospitalCounts = $hospitalData->pluck('count');
+            $hospitalMonths = $hospitalData->pluck('month')->values()->all();
+            $hospitalCounts = $hospitalData->pluck('count')->values()->all();
         } catch (\Exception $e) {
-            // Table doesn't exist yet - use zeros
         }
 
-        // Users - SAFE
+        // Users
         $userCount = 0;
         $activeUsers = 0;
         $inactiveUsers = 0;
@@ -62,11 +72,13 @@ class DashboardController extends Controller
             $userCount = User::count();
             $activeUsers = User::where('status', 'active')->count();
             $inactiveUsers = $userCount - $activeUsers;
-            $activePercentage = $userCount > 0 ? round(($activeUsers / $userCount) * 100, 2) : 0;
+            $activePercentage = $userCount > 0
+                ? round(($activeUsers / $userCount) * 100, 2)
+                : 0;
         } catch (\Exception $e) {
         }
 
-        // Modules - SAFE
+        // Modules
         $moduleCount = 0;
         $activeModules = 0;
         $inactiveModules = 0;
@@ -76,11 +88,13 @@ class DashboardController extends Controller
             $moduleCount = Module::count();
             $activeModules = Module::where('status', 1)->count();
             $inactiveModules = $moduleCount - $activeModules;
-            $activeModulePercent = $moduleCount > 0 ? round(($activeModules / $moduleCount) * 100, 2) : 0;
+            $activeModulePercent = $moduleCount > 0
+                ? round(($activeModules / $moduleCount) * 100, 2)
+                : 0;
         } catch (\Exception $e) {
         }
 
-        // Role-wise users - SAFE
+        // Role-wise users (donut)
         $roleWiseUsers = collect();
 
         try {
@@ -92,7 +106,7 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
         }
 
-        // Organizations growth per month - SAFE
+        // Organizations growth 
         $orgData = collect();
 
         try {
@@ -103,6 +117,8 @@ class DashboardController extends Controller
                 ->get();
         } catch (\Exception $e) {
         }
+
+        $pendingApprovals = 0;
 
         return view('admin.dashboard.index', compact(
             'organizationCount',
@@ -116,6 +132,7 @@ class DashboardController extends Controller
             'activeHospitalPercentage',
             'hospitalMonths',
             'hospitalCounts',
+            'hospitalData',
 
             'userCount',
             'activeUsers',
@@ -128,7 +145,8 @@ class DashboardController extends Controller
             'activeModulePercent',
 
             'roleWiseUsers',
-            'orgData'
+            'orgData',
+            'pendingApprovals'
         ));
     }
 }

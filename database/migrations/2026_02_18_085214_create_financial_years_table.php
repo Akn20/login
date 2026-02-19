@@ -8,16 +8,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('financial_years', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-
-            $table->string('code')->unique();  // e.g. "FY 2024-25"
+            $table->char('id', 36)->primary();   
+            $table->string('code')->unique();
             $table->date('start_date');
             $table->date('end_date');
-
-            $table->boolean('is_active')->default(false);
-            $table->softDeletes();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
+
     }
 
     public function down(): void

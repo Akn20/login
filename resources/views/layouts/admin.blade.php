@@ -22,7 +22,7 @@
 
     @stack('styles')
     @include('partials.head')
-      <style>
+    <style>
         .status-toggle {
             width: 100px;
             height: 30px;
@@ -109,6 +109,7 @@
     </div>
 
     @include('partials.scripts')
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @stack('scripts')
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
@@ -116,7 +117,8 @@
     <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
-    <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>
+    <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script> 
+
 
 </body>
 

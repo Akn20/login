@@ -7,13 +7,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
+            $table->char('id', 36)->primary();
 
-            // Match types of hospitals.id and financial_years.id
-            $table->char('hospital_id', 36);
-            $table->unsignedBigInteger('financial_year_id');
+            $table->char('hospital_id', 36);        // matches hospitals.id
+            $table->char('financial_year_id', 36);  // must match financial_years.id
 
-            // Example business fields (minimal for now)
             $table->string('reference')->nullable();
             $table->decimal('amount', 12, 2)->nullable();
 
@@ -27,9 +25,10 @@ return new class extends Migration {
                 ->references('id')->on('financial_years')
                 ->onDelete('cascade');
 
-            // Optional index for performance
             $table->index(['hospital_id', 'financial_year_id']);
         });
+
+
     }
 
     public function down(): void

@@ -9,9 +9,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('hospital_financial_years', function (Blueprint $table) {
-            // no id column for standard pivot
-            $table->uuid('hospital_id');
-            $table->uuid('financial_year_id');
+            $table->char('hospital_id', 36);
+            $table->char('financial_year_id', 36);
 
             $table->boolean('is_current')->default(false);
             $table->boolean('locked')->default(false);
@@ -28,6 +27,7 @@ return new class extends Migration {
 
             $table->unique(['hospital_id', 'financial_year_id']);
         });
+
     }
 
     public function down(): void

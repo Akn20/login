@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\HospitalController;
 
 // Masters controllers
 use App\Http\Controllers\ReligionController;
@@ -69,7 +71,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::view('dashboard', 'admin.dashboard.index')->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         /*
         |----------------------------------------------------------------------
@@ -217,25 +220,29 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         /*
         |----------------------------------------------------------------------
-        | Organization, Institutions, Modules
+        | Hospitals, Organization, Institutions, Modules
         |----------------------------------------------------------------------
         */
 
         Route::resource('organization', OrganizationController::class);
         Route::resource('institutions', InstitutionController::class);
+        Route::resource('hospitals', HospitalController::class)->except(['show']);
 
-// Deleted Institutions
-Route::get('institutions/deleted', 
-    [InstitutionController::class, 'deleted']
-)->name('institutions.deleted');
+        // Deleted Institutions
+        Route::get(
+            'institutions/deleted',
+            [InstitutionController::class, 'deleted']
+        )->name('institutions.deleted');
 
-Route::put('institutions/{id}/restore', 
-    [InstitutionController::class, 'restore']
-)->name('institutions.restore');
+        Route::put(
+            'institutions/{id}/restore',
+            [InstitutionController::class, 'restore']
+        )->name('institutions.restore');
 
-Route::delete('institutions/{id}/force-delete', 
-    [InstitutionController::class, 'forceDelete']
-)->name('institutions.forceDelete');
+        Route::delete(
+            'institutions/{id}/force-delete',
+            [InstitutionController::class, 'forceDelete']
+        )->name('institutions.forceDelete');
 
         Route::resource('modules', ModuleController::class);
 
@@ -270,9 +277,14 @@ Route::delete('institutions/{id}/force-delete',
         )->name('users.toggle-status');
 
         Route::patch(
-    'institutions/{id}/toggle-status',
-    [InstitutionController::class, 'toggleStatus']
-)->name('institutions.toggleStatus');
+            'institutions/{id}/toggle-status',
+            [InstitutionController::class, 'toggleStatus']
+        )->name('institutions.toggleStatus');
+
+        Route::patch(
+            'hospitals/{id}/toggle-status',
+            [HospitalController::class, 'toggleStatus']
+        )->name('hospitals.toggle-status');
 
     });
 });
