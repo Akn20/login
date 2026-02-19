@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.text())
         .then(html => {
-            const parser     = new DOMParser();
-            const doc        = parser.parseFromString(html, 'text/html');
+            const parser    = new DOMParser();
+            const doc       = parser.parseFromString(html, 'text/html');
             const newWrapper = doc.querySelector('#fy-table-wrapper');
 
             if (newWrapper) {
@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.addEventListener('change', function () {
                 const url     = this.getAttribute('data-url');
                 const checked = this.checked;
-                const current = this;
 
                 fetch(url, {
                     method: 'PATCH',
@@ -231,19 +230,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (!data.success) {
                         alert('Failed to update status.');
-                        current.checked = !checked;
+                        this.checked = !checked;
                         return;
                     }
 
-                    // Simple UI update: only update this toggle's text
-                    const txt = current.nextElementSibling?.querySelector('.status-toggle-text');
-                    if (txt) {
-                        txt.textContent = current.checked ? 'Active' : 'Inactive';
+                    const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
+                    if (textEl) {
+                        textEl.textContent = data.is_active ? 'Active' : 'Inactive';
                     }
                 })
                 .catch(() => {
                     alert('Failed to update status.');
-                    current.checked = !checked;
+                    this.checked = !checked;
                 });
             });
         });

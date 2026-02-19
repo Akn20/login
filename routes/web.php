@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Auth & Admin controllers
@@ -20,6 +19,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -64,17 +64,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Dashboard
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::view('dashboard', 'admin.dashboard.index')->name('dashboard');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Roles & Users
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         // Roles CRUD (resource, except show)
@@ -94,9 +94,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])->name('users.forceDelete');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Financial Years & Mapping
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         // Financial Years CRUD (resource, except show)
@@ -109,9 +109,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('financial-years.mapping.store');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Religion
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('religion')->name('religion.')->group(function () {
@@ -128,9 +128,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Job Type
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('job-type')->name('job-type.')->group(function () {
@@ -147,9 +147,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Work Status
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('work-status')->name('work-status.')->group(function () {
@@ -166,9 +166,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Blood Group (resource-style)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('masters')->group(function () {
@@ -183,9 +183,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('blood-groups.forceDelete');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Designation
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('designation')->name('designation.')->group(function () {
@@ -202,9 +202,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Department
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::resource('departments', DepartmentController::class);
@@ -216,48 +216,43 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('departments.forceDelete');
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Organization, Institutions, Modules
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
-        // Organizations (matches admin.organization.* in Blade)
         Route::resource('organization', OrganizationController::class);
-
-        Route::get('organization/deleted', [OrganizationController::class, 'deleted'])
-            ->name('organization.deleted');
-        Route::post('organization/{id}/restore', [OrganizationController::class, 'restore'])
-            ->name('organization.restore');
-        Route::delete('organization/{id}/force-delete', [OrganizationController::class, 'forceDelete'])
-            ->name('organization.forceDelete');
-        Route::patch('organization/{id}/toggle-status', [OrganizationController::class, 'toggleStatus'])
-            ->name('organization.toggleStatus');
-
-        // Institutions
         Route::resource('institutions', InstitutionController::class);
 
-        Route::get('institutions/deleted', [InstitutionController::class, 'deleted'])
-            ->name('institutions.deleted');
-        Route::post('institutions/{id}/restore', [InstitutionController::class, 'restore'])
-            ->name('institutions.restore');
-        Route::delete('institutions/{id}/force-delete', [InstitutionController::class, 'forceDelete'])
-            ->name('institutions.forceDelete');
+// Deleted Institutions
+Route::get('institutions/deleted', 
+    [InstitutionController::class, 'deleted']
+)->name('institutions.deleted');
 
-        // Modules
+Route::put('institutions/{id}/restore', 
+    [InstitutionController::class, 'restore']
+)->name('institutions.restore');
+
+Route::delete('institutions/{id}/force-delete', 
+    [InstitutionController::class, 'forceDelete']
+)->name('institutions.forceDelete');
+
         Route::resource('modules', ModuleController::class);
 
-        Route::get('modules/deleted', [ModuleController::class, 'deleted'])
-            ->name('modules.deleted');
-        Route::post('modules/{id}/restore', [ModuleController::class, 'restore'])
-            ->name('modules.restore');
-        Route::delete('modules/{id}/force-delete', [ModuleController::class, 'forceDelete'])
-            ->name('modules.forceDelete');
-
+        Route::prefix('modules')->name('modules.')->group(function () {
+            Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+        });
         /*
-        |--------------------------------------------------------------------------
-        | Toggle Status Routes (others)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Toggle Status Routes
+        |----------------------------------------------------------------------
         */
+
+        Route::patch(
+            'modules/{id}/toggle-status',
+            [ModuleController::class, 'toggleStatus']
+        )
+            ->name('modules.toggleStatus');
 
         Route::patch(
             'financial-years/{financial_year}/toggle-status',
@@ -274,8 +269,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             [UserController::class, 'toggleStatus']
         )->name('users.toggle-status');
 
-        Route::patch('institutions/{id}/toggle-status', [InstitutionController::class, 'toggleStatus'])
-            ->name('institutions.toggleStatus');
+        Route::patch(
+    'institutions/{id}/toggle-status',
+    [InstitutionController::class, 'toggleStatus']
+)->name('institutions.toggleStatus');
 
     });
 });

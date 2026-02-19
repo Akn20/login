@@ -22,6 +22,64 @@
 
     @stack('styles')
     @include('partials.head')
+      <style>
+        .status-toggle {
+            width: 100px;
+            height: 30px;
+            border-radius: 50px;
+            border: none;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Active */
+        .status-toggle.active {
+            background: #28a745;
+            justify-content: flex-end;
+            /* text on right */
+        }
+
+        /* Inactive */
+        .status-toggle.inactive {
+            background: #dc3545;
+            justify-content: flex-start;
+            /* text on left */
+        }
+
+        /* White circle */
+        .status-toggle::before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            top: 4px;
+            transition: 0.3s;
+        }
+
+        /* Circle position */
+        .status-toggle.active::before {
+            left: 4px;
+        }
+
+        .status-toggle.inactive::before {
+            right: 4px;
+        }
+
+        /* Keep text above */
+        .status-toggle span {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
 </head>
 
 <body class="app-skin-light app-header-light app-navigation-light">
@@ -51,23 +109,15 @@
     </div>
 
     @include('partials.scripts')
-
-    {{-- Core vendor JS (must be before page-specific scripts) --}}
+    @stack('scripts')
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
-    {{-- Disable theme demo dashboard charts to avoid conflicts --}}
-    {{--
-    <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>
 
-    {{-- Page-specific scripts defined with @section('scripts') --}}
-    @yield('scripts')
-
-    {{-- Page-specific scripts defined with @push('scripts') --}}
-    @stack('scripts')
 </body>
 
 </html>

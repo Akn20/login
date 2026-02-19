@@ -464,4 +464,35 @@ class InstitutionController extends Controller
             'message' => 'Institution deleted successfully'
         ]);
     }
+    public function apiRestore($id)
+    {
+        $institution = Institution::onlyTrashed()->findOrFail($id);
+        $institution->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Institution restored successfully'
+        ]);
+            
+    }
+    public function apiToggleStatus($id)
+    {
+        $institution = Institution::find($id);
+    
+        if (!$institution) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Institution not found'
+            ], 404);
+        }
+    
+        $institution->status = !$institution->status;
+        $institution->save();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Status updated successfully',
+            'data' => $institution
+        ]);
+    }
 }

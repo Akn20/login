@@ -24,10 +24,18 @@ class ReligionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'religion_name' => 'required|max:100|unique:religion_master',
-            'status' => 'required'
-        ]);
+        $request->validate(
+            [
+                'religion_name' => 'required|max:100|unique:religion_master,religion_name',
+                'status' => 'required'
+            ],
+            [
+                'religion_name.required' => 'Religion name is required.',
+                'religion_name.unique' => 'This religion already exists.',
+                'status.required' => 'Please select status.'
+            ]
+        );
+
 
         Religion::create([
             'religion_name' => $request->religion_name,
@@ -42,15 +50,23 @@ class ReligionController extends Controller
     public function edit($id)
     {
         $religion = Religion::findOrFail($id);
-        return view('masters.religion.edit', compact('religion'));
+        return view('admin.masters.religion.edit', compact('religion'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'religion_name' => "required|max:100|unique:religion_master,religion_name,$id",
-            'status' => 'required'
-        ]);
+        $request->validate(
+            [
+                'religion_name' => "required|max:100|unique:religion_master,religion_name,$id",
+                'status' => 'required'
+            ],
+            [
+                'religion_name.required' => 'Religion name is required.',
+                'religion_name.unique' => 'This religion already exists.',
+                'status.required' => 'Please select status.'
+            ]
+        );
+
 
         $religion = Religion::findOrFail($id);
 
@@ -77,7 +93,7 @@ class ReligionController extends Controller
     public function trash()
     {
         $religions = Religion::onlyTrashed()->get();
-        return view('masters.religion.trash', compact('religions'));
+        return view('admin.masters.religion.trash', compact('religions'));
     }
 
     public function restore($id)
@@ -94,11 +110,19 @@ class ReligionController extends Controller
 
     //API
 
-    public function apiIndex()
+    public function apiIndex(Request $request)
     {
-        $data = Religion::where('status', 'Active')->get();
+        $query = Religion::query();
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $data = $query->orderBy('religion_name')->get();
+
         return ApiResponse::success($data, 'Religion list fetched');
     }
+
 
     public function apiStore(Request $request)
     {
@@ -136,6 +160,27 @@ class ReligionController extends Controller
         $data->delete();
 
         return ApiResponse::success(null, 'Religion deleted');
+    }
+    public function apiDeleted()
+    {
+        $data = Religion::onlyTrashed()->get();
+        return ApiResponse::success($data, 'Deleted religions fetched');
+    }
+
+    public function apiRestore($id)
+    {
+        $data = Religion::withTrashed()->findOrFail($id);
+        $data->restore();
+
+        return ApiResponse::success($data, 'Religion restored');
+    }
+
+    public function apiForceDelete($id)
+    {
+        $data = Religion::withTrashed()->findOrFail($id);
+        $data->forceDelete();
+
+        return ApiResponse::success(null, 'Religion permanently deleted');
     }
 
 

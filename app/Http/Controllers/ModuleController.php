@@ -31,7 +31,7 @@ class ModuleController extends Controller
     public function create()
     {
         $modules = Module::all(); // get existing modules
-        return view('modules.create', compact('modules'));
+        return view('admin.modules.create', compact('modules'));
     }
 
     //Store Module
@@ -68,7 +68,7 @@ class ModuleController extends Controller
     public function deleted()
     {
         $modules = Module::onlyTrashed()->get();
-        return view('modules.deleted', compact('modules'));
+        return view('admin.modules.deleted', compact('modules'));
     }
 
     public function restore($id)
@@ -90,7 +90,7 @@ class ModuleController extends Controller
     public function show($id)
     {
         $module = Module::findOrFail($id);
-        return view('modules.show', compact('module'));
+        return view('admin.modules.show', compact('module'));
     }
 
     public function edit($id)
@@ -98,7 +98,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id);
         $modules = Module::all(); // for parent dropdown
 
-        return view('modules.edit', compact('module', 'modules'));
+        return view('admin.modules.edit', compact('module', 'modules'));
     }
 
 
@@ -225,4 +225,23 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
+
+
+    //Module Api to get types
+    public function getModuleTypes()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                ['value' => 'web', 'label' => 'Web'],
+                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'both', 'label' => 'Both'],
+            ]
+        ]);
+    }
+
+
+
 }
+
+

@@ -1,0 +1,6 @@
+/* Scroll bar*/
+.nxl-navigation .navbar-content {
+    height: calc(100vh - 80px);  
+    overflow-y: auto;            
+    overflow-x: hidden;          
+}

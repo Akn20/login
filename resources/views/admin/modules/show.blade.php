@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Module Details</h4>
 
-    <a href="{{ route('admin.modules.index') }}" 
+    <a href="{{ route('modules.index') }}" 
        class="btn btn-sm btn-outline-primary">
         <i class="feather feather-arrow-left"></i> Back
     </a>
