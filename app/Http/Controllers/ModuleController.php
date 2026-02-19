@@ -150,14 +150,29 @@ class ModuleController extends Controller
         return back();
     }
 
-
-
-
-    public function apiIndex()
+  public function apiIndex(Request $request)
     {
+        $platform = $request->platform;
+        $access = $request->access_for;
+
+        if (!$platform || !$access) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Platform and access_for are required'
+            ], 400);
+        }
+
+        $modules = Module::where(function ($query) use ($platform) {
+            $query->where('type', $platform)
+                ->orWhere('type', 'Both');
+        })
+            ->where('access_for', $access)
+            ->orderBy('priority')
+            ->get();
+
         return response()->json([
             'status' => true,
-            'data' => \App\Models\Module::latest()->get()
+            'data' => $modules
         ]);
     }
 
