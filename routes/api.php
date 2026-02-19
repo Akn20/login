@@ -36,6 +36,7 @@ Route::post('/organizations', [OrganizationController::class, 'apiStore']);
 Route::get('/organizations/{id}', [OrganizationController::class, 'apiShow']);
 Route::put('/organizations/{id}', [OrganizationController::class, 'apiUpdate']);
 Route::delete('/organizations/{id}', [OrganizationController::class, 'apiDelete']);
+Route::post('/organizations/{id}/toggle-status',[OrganizationController::class, 'apiToggleStatus']);
 
 /* ================================
    INSTITUTION API
@@ -46,6 +47,8 @@ Route::post('/institutions', [InstitutionController::class, 'apiStore']);
 Route::get('/institutions/{id}', [InstitutionController::class, 'apiShow']);
 Route::put('/institutions/{id}', [InstitutionController::class, 'apiUpdate']);
 Route::delete('/institutions/{id}', [InstitutionController::class, 'apiDelete']);
+Route::post('/institutions/{id}/restore', [InstitutionController::class, 'apiRestore']);
+Route::post('/institutions/{id}/toggle-status',[InstitutionController::class, 'apiToggleStatus']);
 
 /* ================================
    MODULE API
@@ -56,6 +59,6 @@ Route::post('/modules', [ModuleController::class, 'apiStore']);
 Route::get('/modules/{id}', [ModuleController::class, 'apiShow']);
 Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
 Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
-
+Route::post('/modules/{id}/restore', [ModuleController::class, 'apiRestore']);
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
