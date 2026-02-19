@@ -20,6 +20,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -221,6 +222,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::resource('organization', OrganizationController::class);
         Route::resource('institutions', InstitutionController::class);
+
+// Deleted Institutions
+Route::get('institutions/deleted', 
+    [InstitutionController::class, 'deleted']
+)->name('institutions.deleted');
+
+Route::put('institutions/{id}/restore', 
+    [InstitutionController::class, 'restore']
+)->name('institutions.restore');
+
+Route::delete('institutions/{id}/force-delete', 
+    [InstitutionController::class, 'forceDelete']
+)->name('institutions.forceDelete');
+
         Route::resource('modules', ModuleController::class);
 
         /*
@@ -243,5 +258,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'users/{user}/toggle-status',
             [UserController::class, 'toggleStatus']
         )->name('users.toggle-status');
+
+        Route::patch(
+    'institutions/{id}/toggle-status',
+    [InstitutionController::class, 'toggleStatus']
+)->name('institutions.toggleStatus');
+
     });
 });

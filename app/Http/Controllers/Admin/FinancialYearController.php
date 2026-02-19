@@ -93,10 +93,7 @@ class FinancialYearController extends Controller
 
     /**
      * Update the specified financial year in storage.
-<<<<<<< HEAD
      * Covers edit + overlap + unique + status (TC_FY_006, 007, 013, AUD_002).
-=======
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
      */
     public function update(Request $request, FinancialYear $financial_year)
     {
@@ -109,11 +106,7 @@ class FinancialYearController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
 
-<<<<<<< HEAD
         // Prevent overlapping financial years (excluding current) (TC_FY_007)
-=======
-        // Prevent overlapping financial years (excluding current)
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         $overlapExists = FinancialYear::where('id', '!=', $financial_year->id)
             ->where(function ($q) use ($data) {
                 $q->where('start_date', '<', $data['end_date'])
@@ -142,11 +135,7 @@ class FinancialYearController extends Controller
     }
 
     /**
-<<<<<<< HEAD
      * Soft delete the specified financial year. (TC_FY_010)
-=======
-     * Soft delete the specified financial year.
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
      */
     public function destroy(FinancialYear $financial_year)
     {
@@ -198,44 +187,16 @@ class FinancialYearController extends Controller
     }
 
     /**
-<<<<<<< HEAD
      * Toggle active/inactive status via AJAX. (TC_FY_013)
      */
     public function toggleStatus(FinancialYear $financial_year)
     {
         $financial_year->is_active = !$financial_year->is_active;
-=======
-     * Toggle active/inactive status via AJAX, keeping only one active FY.
-     */
-    public function toggleStatus(FinancialYear $financial_year)
-    {
-        // If this FY is already active, do nothing
-        if ($financial_year->is_active) {
-            return response()->json([
-                'success' => true,
-                'is_active' => true,
-            ]);
-        }
-
-        // Deactivate all other financial years
-        FinancialYear::where('id', '!=', $financial_year->id)
-            ->update(['is_active' => false]);
-
-        // Activate the selected financial year
-        $financial_year->is_active = true;
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         $financial_year->save();
 
         return response()->json([
             'success' => true,
-<<<<<<< HEAD
             'is_active' => (bool) $financial_year->is_active,
         ]);
     }
-=======
-            'is_active' => true,
-        ]);
-    }
-
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
 }
