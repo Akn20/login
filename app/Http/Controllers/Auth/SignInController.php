@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Otp;
 use App\Models\User;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -259,33 +260,36 @@ class SignInController extends Controller
     public function createDefaultAdmin()
     {
         if (User::count() > 0) {
-            return redirect()->route('login')
-                ->with('error', 'Admin already exists.');
+            return redirect()->route('login')->with('error', 'Admin already exists.');
         }
 
-        // First create the admin role if it doesn't exist
-        $adminRole = \App\Models\Roles::firstOrCreate(
-            ['name' => 'admin'],
-            [
+        try {
+            // ✅ FIXED: Role (singular), not Roles
+            $adminRole = Roles::firstOrCreate(
+                ['name' => 'admin'],
+                ['status' => 'active', 'description' => 'Super Administrator']
+            );
+
+            User::create([
+                'name' => 'Super Admin',
+                'mobile' => '9999999999',
+                'mpin' => Hash::make('1234'),
+                'role_id' => $adminRole->id,
                 'status' => 'active',
-                'description' => 'Super Administrator'
-            ]
-        );
+            ]);
 
-        // Now create the admin user with the correct role_id
-        User::create([
-            'name' => 'Super Admin',
-            'mobile' => '9999999999',
-            'mpin' => Hash::make('1234'),
-            'role_id' => $adminRole->id,  // ✅ Uses the actual role ID
-            'status' => 'active',
-        ]);
-
-        return redirect()->route('login')->with(
-            'success',
-            'Default admin created! Mobile: 9999999999 | MPIN: 1234'
-        );
+            return redirect()->route('login')->with(
+                'success',
+                'Default admin created! Mobile: 9999999999 | MPIN: 1234'
+            );
+        } catch (\Exception $e) {
+            return redirect()->route('login')->with(
+                'error',
+                'Failed to create admin. Please check database.'
+            );
+        }
     }
+
 
 
 

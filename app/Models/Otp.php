@@ -10,7 +10,7 @@ use Str;
 class Otp extends Model
 {
     use SoftDeletes;
-     protected $keyType = 'string';
+    protected $keyType = 'string';
     public $incrementing = false;
 
     protected static function boot()
@@ -23,7 +23,7 @@ class Otp extends Model
             }
         });
     }
-   protected $fillable = [
+    protected $fillable = [
         'mobile',
         'otp',
         'expires_at',

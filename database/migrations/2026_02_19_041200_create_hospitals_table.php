@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,13 +10,15 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('code')->unique();
-            $table->uuid('institution_id'); 
+            $table->uuid('institution_id');
             $table->string('address')->nullable();
             $table->string('contact_number')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
             $table->softDeletes();
-
+            $table->index('institution_id');
+            $table->index('status');
+            $table->index('code');
 
             $table->foreign('institution_id')
                 ->references('id')
