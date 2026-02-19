@@ -5,7 +5,7 @@
 @section('content')
     <div class="main-content">
         <div class="row">
-            <!-- [Organization] start -->
+            <!-- [Organization Count] start -->
             <div class="col-xxl-3 col-md-6">
                 <div class="card stretch stretch-full">
                     <div class="card-body">
