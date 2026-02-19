@@ -7,6 +7,8 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\Api\DashboardController;
+
 
 /* Religion */
 
@@ -89,3 +91,6 @@ Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 Route::get('/test-api', function () {
     return 'API working';
 });
+
+
+Route::get('/dashboard', [DashboardController::class, 'index']);
