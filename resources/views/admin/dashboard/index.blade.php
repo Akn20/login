@@ -44,7 +44,7 @@
             </div>
             <!-- [Organization] end -->
 
-            <!-- [Hospitals] start -->
+            <!-- [Total Hospitals] start -->
             <div class="col-xxl-3 col-md-6">
                 <div class="card stretch stretch-full">
                     <div class="card-body">
