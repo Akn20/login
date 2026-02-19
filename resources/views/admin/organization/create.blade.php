@@ -165,5 +165,12 @@
     </div>
 
 
+<<<<<<< HEAD
+=======
+        @include('admin.organization.form')
+
+    </form>
+</div>
+>>>>>>> ff197a201622e4fea1f6253f70baf39f2297ba38
 
 @endsection
