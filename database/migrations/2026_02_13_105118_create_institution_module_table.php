@@ -11,11 +11,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('institution_module', function (Blueprint $table) {
-            // institutions.id = BIGINT(20) UNSIGNED
-            $table->unsignedBigInteger('institution_id');
-
-            // modules.id = CHAR(36)
-            $table->char('module_id', 36);
+            $table->uuid('institution_id');   
+            $table->uuid('module_id');       
 
             $table->primary(['institution_id', 'module_id']);
 
@@ -31,6 +28,7 @@ return new class extends Migration {
 
             $table->timestamps();
         });
+
 
     }
 

@@ -31,7 +31,8 @@ Route::view('/', 'auth.login')->name('login');
 Route::view('/forgot-mpin', 'auth.forgot-mpin')->name('forgot.mpin');
 Route::view('/set-mpin', 'auth.set-mpin')->name('set.mpin');
 Route::view('/otp', 'auth.otp')->name('otp');
-
+Route::get('/create-default-admin', [SignInController::class, 'createDefaultAdmin'])
+    ->name('admin.create.default');
 /*
 |--------------------------------------------------------------------------
 | Auth-related POST actions

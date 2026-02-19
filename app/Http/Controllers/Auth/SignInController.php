@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Otp;
 use App\Models\User;
+use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -250,4 +251,41 @@ $request->session()->regenerateToken();
         // ]);
         return redirect()->route('login')->with('success', 'Logged out successfully');
     }
+
+    public function createDefaultAdmin()
+    {
+        if (User::count() > 0) {
+            return redirect()->route('login')->with('error', 'Admin already exists.');
+        }
+
+        try {
+            // ✅ FIXED: Role (singular), not Roles
+            $adminRole = Roles::firstOrCreate(
+                ['name' => 'admin'],
+                ['status' => 'active', 'description' => 'Super Administrator']
+            );
+
+            User::create([
+                'name' => 'Super Admin',
+                'mobile' => '9999999999',
+                'mpin' => Hash::make('1234'),
+                'role_id' => $adminRole->id,
+                'status' => 'active',
+            ]);
+
+            return redirect()->route('login')->with(
+                'success',
+                'Default admin created! Mobile: 9999999999 | MPIN: 1234'
+            );
+        } catch (\Exception $e) {
+            return redirect()->route('login')->with(
+                'error',
+                'Failed to create admin. Please check database.'
+            );
+        }
+    }
+
+
+
+
 }
