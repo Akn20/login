@@ -57,7 +57,6 @@ class InstitutionController extends Controller
     public function toggleStatus($id)
     {
         $institution = Institution::findOrFail($id);
-
         $institution->status = !$institution->status;
         $institution->save();
 
@@ -143,23 +142,26 @@ class InstitutionController extends Controller
             $file = $request->file('mou_copy');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/mou'), $filename);
+<<<<<<< HEAD
 
             $validated['mou_copy'] = 'uploads/mou/' . $filename;
         }
 
-
         $institution = Institution::create($validated);
 
         if ($request->modules) {
-            $institution->modules()->sync($request->modules);
+=======
+            $validated['mou_copy'] = 'uploads/mou/' . $filename;
         }
 
-        return redirect()->route('admin.institutions.index')
             ->with('success', 'Institution Created Successfully');
     }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
     public function destroy($id)
     {
         $institution = Institution::findOrFail($id);
@@ -169,8 +171,11 @@ class InstitutionController extends Controller
             ->with('success', 'Institution Deleted Successfully');
     }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
     /**
      * Edit Form
      */
@@ -180,7 +185,11 @@ class InstitutionController extends Controller
         $organizations = Organization::where('status', 1)->get();
         $modules = Module::orderBy('priority')->get();
 
+<<<<<<< HEAD
         return view('admin.institutions.edit', compact(
+=======
+        return view('institutions.edit', compact(
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
             'institution',
             'organizations',
             'modules'
@@ -195,7 +204,10 @@ class InstitutionController extends Controller
         $institution = Institution::findOrFail($id);
 
         $validated = $request->validate([
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
             'organization_id' => 'required|exists:organizations,id',
             'name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
             'code' => 'required|unique:institutions,code,' . $id,
@@ -250,10 +262,15 @@ class InstitutionController extends Controller
             $file->move(public_path('uploads'), $filename);
             $validated['logo'] = $filename;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         if ($request->hasFile('mou_copy')) {
             $file = $request->file('mou_copy');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/mou'), $filename);
+<<<<<<< HEAD
 
             $validated['mou_copy'] = 'uploads/mou/' . $filename;
         }
@@ -261,23 +278,40 @@ class InstitutionController extends Controller
 
         $institution->update($validated);
 
+=======
+            $validated['mou_copy'] = 'uploads/mou/' . $filename;
+        }
+
+        $institution->update($validated);
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         $institution->modules()->sync($request->modules ?? []);
 
         return redirect()->route('admin.institutions.index')
             ->with('success', 'Institution Updated Successfully');
     }
 
+<<<<<<< HEAD
 
     /**
      * Show
+=======
+    /**
+     * Show single institution
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
      */
     public function show($id)
     {
         $institution = Institution::with(['organization', 'modules'])
             ->findOrFail($id);
 
+<<<<<<< HEAD
         return view('admin.institutions.show', compact('institution'));
     }
+=======
+        return view('institutions.show', compact('institution'));
+    }
+
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
     /**
      * Show Deleted Institutions
      */
@@ -288,7 +322,11 @@ class InstitutionController extends Controller
             ->latest()
             ->paginate(10);
 
+<<<<<<< HEAD
         return view('admin.institutions.deleted', compact('institutions'));
+=======
+        return view('institutions.deleted', compact('institutions'));
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
     }
 
     /**
@@ -315,9 +353,12 @@ class InstitutionController extends Controller
             ->with('success', 'Institution permanently deleted');
     }
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
     /* ============================================================
        API SECTION
     ============================================================ */
@@ -384,18 +425,32 @@ class InstitutionController extends Controller
             'poc_email' => 'nullable|email',
             'poc_contact' => 'nullable|string',
             'support_sla' => 'nullable|string',
+<<<<<<< HEAD
+=======
+
+            'modules' => 'nullable|array',
+            'modules.*' => 'exists:modules,id',
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         ]);
 
         $institution = Institution::create($validated);
 
+<<<<<<< HEAD
         if ($request->modules) {
+=======
+        if ($request->filled('modules')) {
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
             $institution->modules()->sync($request->modules);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Institution created successfully',
+<<<<<<< HEAD
             'data' => $institution
+=======
+            'data' => $institution->load(['organization', 'modules'])
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         ], 201);
     }
 
@@ -410,6 +465,7 @@ class InstitutionController extends Controller
             ], 404);
         }
 
+<<<<<<< HEAD
         $institution->update($request->only([
             'organization_id' => 'required|exists:organizations,id',
             'name' => 'required|string|max:255',
@@ -449,12 +505,61 @@ class InstitutionController extends Controller
 
         if ($request->modules) {
             $institution->modules()->sync($request->modules);
+=======
+        $validated = $request->validate([
+            'organization_id' => 'sometimes|exists:organizations,id',
+            'name' => 'sometimes|string|max:255',
+            'code' => 'sometimes|unique:institutions,code,' . $id,
+            'gst_number' => 'sometimes|nullable|string',
+            'address' => 'sometimes|nullable|string',
+            'city' => 'sometimes|nullable|string',
+            'state' => 'sometimes|nullable|string',
+            'country' => 'sometimes|nullable|string',
+            'pincode' => 'sometimes|nullable|string',
+            'contact_number' => 'sometimes|nullable|string',
+            'email' => 'sometimes|nullable|email',
+            'timezone' => 'sometimes|nullable|string',
+            'institution_url' => 'sometimes|nullable|string',
+            'login_template' => 'sometimes|nullable|string',
+            'default_language' => 'sometimes|nullable|string',
+            'admin_name' => 'sometimes|nullable|string',
+            'admin_email' => 'sometimes|nullable|email',
+            'admin_mobile' => 'sometimes|nullable|string',
+            'role' => 'sometimes|nullable|string',
+            'status' => 'sometimes|boolean',
+            'subscription_plan' => 'sometimes|nullable|string',
+            'invoice_type' => 'sometimes|nullable|string',
+            'invoice_frequency' => 'sometimes|nullable|string',
+            'payment_mode' => 'sometimes|nullable|string',
+            'invoice_amount' => 'sometimes|nullable|numeric',
+            'payment_status' => 'sometimes|nullable|string',
+            'payment_received' => 'sometimes|nullable|boolean',
+            'payment_date' => 'sometimes|nullable|date',
+            'transaction_reference' => 'sometimes|nullable|string',
+            'poc_name' => 'sometimes|nullable|string',
+            'poc_email' => 'sometimes|nullable|email',
+            'poc_contact' => 'sometimes|nullable|string',
+            'support_sla' => 'sometimes|nullable|string',
+
+            'modules' => 'sometimes|array',
+            'modules.*' => 'exists:modules,id',
+        ]);
+
+        $institution->update($validated);
+
+        if ($request->has('modules')) {
+            $institution->modules()->sync($request->modules ?? []);
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Institution updated successfully',
+<<<<<<< HEAD
             'data' => $institution
+=======
+            'data' => $institution->load(['organization', 'modules'])
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         ]);
     }
 
@@ -476,4 +581,39 @@ class InstitutionController extends Controller
             'message' => 'Institution deleted successfully'
         ]);
     }
+<<<<<<< HEAD
 }
+=======
+    public function apiRestore($id)
+    {
+        $institution = Institution::onlyTrashed()->findOrFail($id);
+        $institution->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Institution restored successfully'
+        ]);
+            
+    }
+    public function apiToggleStatus($id)
+    {
+        $institution = Institution::find($id);
+    
+        if (!$institution) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Institution not found'
+            ], 404);
+        }
+    
+        $institution->status = !$institution->status;
+        $institution->save();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Status updated successfully',
+            'data' => $institution
+        ]);
+    }
+}
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388

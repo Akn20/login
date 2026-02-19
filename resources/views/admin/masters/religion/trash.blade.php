@@ -54,6 +54,10 @@
                                                     class="avatar-text avatar-md action-icon action-restore">
                                                     <i class="feather-refresh-ccw"></i>
                                                 </a>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
                                                 <a href="{{ route('admin.religion.forceDelete', $religion->id) }}"
                                                     class="avatar-text avatar-md action-icon action-delete"
                                                     onclick="return confirm('This will permanently delete the record. Continue?')">

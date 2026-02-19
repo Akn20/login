@@ -17,6 +17,7 @@ class SignInController extends Controller
     public function login(Request $request)
     {
 
+<<<<<<< HEAD
         $request->validate([
         'mobile' => 'required|digits:10',
         'mpin' => 'required|digits_between:4,6',
@@ -27,6 +28,20 @@ class SignInController extends Controller
         'mpin.required' => 'MPIN is required.',
         'mpin.digits_between' => 'MPIN must be 4 to 6 digits.',
     ]);
+=======
+        $request->validate(
+            [
+                'mobile' => 'required|digits:10',
+                'mpin' => 'required|digits_between:4,6',
+            ],
+            [
+                'mobile.required' => 'Mobile number is required.',
+                'mobile.digits' => 'Mobile number must be exactly 10 digits.',
+                'mpin.required' => 'MPIN is required.',
+                'mpin.digits_between' => 'MPIN must be 4 to 6 digits.',
+            ]
+        );
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
 
         $user = User::where('mobile', $request->mobile)->first();
 
@@ -82,11 +97,19 @@ class SignInController extends Controller
 
         $mobile = $request->mobile;
         Otp::where('mobile', $mobile)
+<<<<<<< HEAD
         ->where(function ($query) {
             $query->where('used', 1)
                   ->orWhere('expires_at', '<', now());
         })
         ->forceDelete();
+=======
+            ->where(function ($query) {
+                $query->where('used', 1)
+                    ->orWhere('expires_at', '<', now());
+            })
+            ->forceDelete();
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         $key = 'otp-send:' . $mobile;
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
@@ -99,6 +122,7 @@ class SignInController extends Controller
         $otpCode = rand(100000, 999999);
         $hashedOtp = Hash::make($otpCode);
 
+<<<<<<< HEAD
             Otp::create([
                 'mobile' => $mobile,
                 'otp' => $hashedOtp,
@@ -108,6 +132,17 @@ class SignInController extends Controller
                 'used' => 0,
                 'last_sent_at' => now()
             ]);
+=======
+        Otp::create([
+            'mobile' => $mobile,
+            'otp' => $hashedOtp,
+            'expires_at' => now()->addMinutes(5),
+            'attempts' => 0,
+            'resends' => 0,
+            'used' => 0,
+            'last_sent_at' => now()
+        ]);
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
 
         session(['otp_mobile' => $mobile]);
 
@@ -160,6 +195,7 @@ class SignInController extends Controller
     }
 
     // Verify OTP (from OTP page)
+<<<<<<< HEAD
 public function verifyOtp(Request $request)
 {
     $mobile = session('otp_mobile');
@@ -208,6 +244,59 @@ public function verifyOtp(Request $request)
         ->with('success', 'OTP verified successfully');
 }
 
+=======
+    public function verifyOtp(Request $request)
+    {
+        $mobile = session('otp_mobile');
+
+        if (!$mobile) {
+            return redirect()->route('login')
+                ->with('error', 'Session expired.');
+        }
+
+
+        $verifyKey = 'otp-verify:' . $mobile;
+
+        // 🔒 Check if already locked
+        if (RateLimiter::tooManyAttempts($verifyKey, 3)) {
+            $seconds = RateLimiter::availableIn($verifyKey);
+
+            return back()->with(
+                'error',
+                "Too many invalid attempts. Try again in {$seconds} seconds."
+            );
+        }
+
+        $request->validate([
+            'otp' => 'required|digits:6'
+        ]);
+
+        $otp = Otp::where('mobile', $mobile)
+            ->where('used', 0)
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$otp || !Hash::check($request->otp, $otp->otp)) {
+
+            // ❗ Count failed attempt
+            RateLimiter::hit($verifyKey, 60);
+
+            return back()->with(
+                'error',
+                'Invalid OTP. Please try again.'
+            );
+        }
+
+        $otp->update(['used' => 1]);
+
+        RateLimiter::clear($verifyKey);
+
+        return redirect()->route('set.mpin')
+            ->with('success', 'OTP verified successfully');
+    }
+
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
 
     // Set MPIN (from Set MPIN page)
     public function setMpin(Request $request)
@@ -242,9 +331,15 @@ public function verifyOtp(Request $request)
     // Logout (from any page, requires auth)
     public function logout(Request $request)
     {
+<<<<<<< HEAD
        Auth::logout();
 $request->session()->invalidate();
 $request->session()->regenerateToken();
+=======
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+>>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
         // return response()->json([
         //     'message' => 'Logged out successfully'
         // ]);
