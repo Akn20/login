@@ -1,4 +1,5 @@
 <?php
+// app/Models/Hospital.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -15,14 +16,14 @@ class Hospital extends Model
         'id',
         'name',
         'code',
-        'institution_id',  
+        'institution_id',
         'address',
         'contact_number',
-        'status'
+        'status',
     ];
 
     protected $casts = [
-        'status' => 'boolean'
+        'status' => 'boolean',
     ];
 
     public function institution()

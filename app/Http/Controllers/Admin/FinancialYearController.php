@@ -68,11 +68,7 @@ class FinancialYearController extends Controller
                 ->withInput();
         }
 
-        // If this FY is active, deactivate others
-        if ($data['is_active']) {
-            FinancialYear::where('is_active', true)->update(['is_active' => false]);
-        }
-
+        // No more global deactivation of other FYs
         FinancialYear::create($data);
 
         return redirect()
@@ -118,13 +114,7 @@ class FinancialYearController extends Controller
                 ->withInput();
         }
 
-        // Maintain single active FY rule if needed
-        if ($data['is_active']) {
-            FinancialYear::where('id', '!=', $financial_year->id)
-                ->where('is_active', true)
-                ->update(['is_active' => false]);
-        }
-
+        // No more global "only one active FY" change here
         $financial_year->update($data);
 
         return redirect()
@@ -185,30 +175,16 @@ class FinancialYearController extends Controller
     }
 
     /**
-     * Toggle active/inactive status via AJAX, keeping only one active FY.
+     * Toggle active/inactive status via AJAX (independent flag).
      */
     public function toggleStatus(FinancialYear $financial_year)
     {
-        // If this FY is already active, do nothing
-        if ($financial_year->is_active) {
-            return response()->json([
-                'success' => true,
-                'is_active' => true,
-            ]);
-        }
-
-        // Deactivate all other financial years
-        FinancialYear::where('id', '!=', $financial_year->id)
-            ->update(['is_active' => false]);
-
-        // Activate the selected financial year
-        $financial_year->is_active = true;
+        $financial_year->is_active = !$financial_year->is_active;
         $financial_year->save();
 
         return response()->json([
             'success' => true,
-            'is_active' => true,
+            'is_active' => $financial_year->is_active,
         ]);
     }
-
 }

@@ -235,18 +235,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         return;
                     }
 
-                    // Optimistic UI: make this the only active toggle
-                    tableWrapper.querySelectorAll('.status-toggle-input').forEach(t => {
-                        const txt = t.nextElementSibling?.querySelector('.status-toggle-text');
-
-                        if (t === current) {
-                            t.checked = true;
-                            if (txt) txt.textContent = 'Active';
-                        } else {
-                            t.checked = false;
-                            if (txt) txt.textContent = 'Inactive';
-                        }
-                    });
+                    // Simple UI update: only update this toggle's text
+                    const txt = current.nextElementSibling?.querySelector('.status-toggle-text');
+                    if (txt) {
+                        txt.textContent = current.checked ? 'Active' : 'Inactive';
+                    }
                 })
                 .catch(() => {
                     alert('Failed to update status.');
@@ -255,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
 
     // initial bindings
     bindPaginationLinks();
