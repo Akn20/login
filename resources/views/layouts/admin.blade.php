@@ -109,23 +109,15 @@
     </div>
 
     @include('partials.scripts')
-
-    {{-- Core vendor JS (must be before page-specific scripts) --}}
+    @stack('scripts')
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
-    {{-- Disable theme demo dashboard charts to avoid conflicts --}}
-    {{--
-    <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>
 
-    {{-- Page-specific scripts defined with @section('scripts') --}}
-    @yield('scripts')
-
-    {{-- Page-specific scripts defined with @push('scripts') --}}
-    @stack('scripts')
 </body>
 
 </html>

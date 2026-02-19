@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.text())
         .then(html => {
-            const parser     = new DOMParser();
-            const doc        = parser.parseFromString(html, 'text/html');
+            const parser    = new DOMParser();
+            const doc       = parser.parseFromString(html, 'text/html');
             const newWrapper = doc.querySelector('#fy-table-wrapper');
 
             if (newWrapper) {
@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
             toggle.addEventListener('change', function () {
                 const url     = this.getAttribute('data-url');
                 const checked = this.checked;
-                const current = this;
 
                 fetch(url, {
                     method: 'PATCH',
@@ -231,31 +230,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (!data.success) {
                         alert('Failed to update status.');
-                        current.checked = !checked;
+                        this.checked = !checked;
                         return;
                     }
 
-                    // Optimistic UI: make this the only active toggle
-                    tableWrapper.querySelectorAll('.status-toggle-input').forEach(t => {
-                        const txt = t.nextElementSibling?.querySelector('.status-toggle-text');
-
-                        if (t === current) {
-                            t.checked = true;
-                            if (txt) txt.textContent = 'Active';
-                        } else {
-                            t.checked = false;
-                            if (txt) txt.textContent = 'Inactive';
-                        }
-                    });
+                    const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
+                    if (textEl) {
+                        textEl.textContent = data.is_active ? 'Active' : 'Inactive';
+                    }
                 })
                 .catch(() => {
                     alert('Failed to update status.');
-                    current.checked = !checked;
+                    this.checked = !checked;
                 });
             });
         });
     }
-
 
     // initial bindings
     bindPaginationLinks();

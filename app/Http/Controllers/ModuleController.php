@@ -98,7 +98,7 @@ class ModuleController extends Controller
         $module = Module::findOrFail($id);
         $modules = Module::all(); // for parent dropdown
 
-        return view('adminmodules.edit', compact('module', 'modules'));
+        return view('admin.modules.edit', compact('module', 'modules'));
     }
 
 
@@ -225,23 +225,23 @@ class ModuleController extends Controller
             'data' => $module
         ]);
     }
-    public function apiRestore($id)
+
+
+    //Module Api to get types
+    public function getModuleTypes()
     {
-        $module = \App\Models\Module::onlyTrashed()->find($id);
-    
-        if (!$module) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Module not found'
-            ], 404);
-        }
-    
-        $module->restore();
-    
         return response()->json([
-            'status' => true,
-            'message' => 'Module restored successfully',
-            'data' => $module
+            'success' => true,
+            'data' => [
+                ['value' => 'web', 'label' => 'Web'],
+                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'both', 'label' => 'Both'],
+            ]
         ]);
     }
+
+
+
 }
+
+
