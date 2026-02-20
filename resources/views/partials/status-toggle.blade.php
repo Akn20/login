@@ -83,7 +83,7 @@
 <label class="status-toggle-wrapper mb-0">
     <input
         type="checkbox"
-        class="status-toggle-input"
+        class="form-check-input status-toggle-input"
         data-id="{{ $id }}"
         data-url="{{ $url }}"
         {{ $isActive ? 'checked' : '' }}

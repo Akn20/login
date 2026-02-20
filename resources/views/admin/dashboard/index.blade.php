@@ -1,13 +1,69 @@
+{{-- resources/views/admin/dashboard/index.blade.php --}}
 @extends('layouts.admin')
 
 @section('page-title', 'Dashboard | ' . config('app.name'))
+@section('title', 'Dashboard')
+
+@push('styles')
+    <style>
+        .avatar-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+    </style>
+@endpush
 
 @section('content')
+    {{-- Page Header --}}
+    <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">
+                    <i class="feather-airplay me-2"></i>Dashboard
+                </h5>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('admin.dashboard') }}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">Dashboard</li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-header-right ms-auto">
+            <div class="page-header-right-items d-flex align-items-center gap-2">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                    <i class="feather-plus me-2"></i>
+                    Add User
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- Flash Messages --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="feather-check-circle me-2"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="feather-alert-triangle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="main-content">
-        <div class="row">
-            <!-- [Organization] start -->
+        <div class="row g-3">
+
+            {{-- Organizations card --}}
             <div class="col-xxl-3 col-md-6">
-                <div class="card stretch stretch-full">
+                <div class="card stretch stretch-full h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <div class="avatar-text avatar-lg bg-gray-200">
@@ -42,11 +98,10 @@
                     </div>
                 </div>
             </div>
-            <!-- [Organization] end -->
 
-            <!-- [Hospitals] start -->
+            {{-- Hospitals card --}}
             <div class="col-xxl-3 col-md-6">
-                <div class="card stretch stretch-full">
+                <div class="card stretch stretch-full h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <div class="avatar-text avatar-lg bg-gray-200">
@@ -63,30 +118,26 @@
                             </div>
                         </div>
 
-                        <div class="pt-2">
-                            <div class="d-flex justify-content-between fs-12 mb-1">
-                                <span class="text-success">
-                                    Active: {{ $activeHospitals }}
-                                </span>
-                                <span class="text-danger">
-                                    Inactive: {{ $inactiveHospitals }}
-                                </span>
-                            </div>
+                        <div class="d-flex justify-content-between fs-12 mb-1">
+                            <span class="text-success">
+                                Active: {{ $activeHospitals }}
+                            </span>
+                            <span class="text-danger">
+                                Inactive: {{ $inactiveHospitals }}
+                            </span>
+                        </div>
 
-                            <div class="progress mt-2 ht-3">
-                                <div class="progress-bar bg-success" style="width: {{ $activeHospitalPercentage }}%"></div>
-                                <div class="progress-bar bg-danger" style="width: {{ 100 - $activeHospitalPercentage }}%">
-                                </div>
-                            </div>
+                        <div class="progress mt-2 ht-3">
+                            <div class="progress-bar bg-success" style="width: {{ $activeHospitalPercentage }}%"></div>
+                            <div class="progress-bar bg-danger" style="width: {{ 100 - $activeHospitalPercentage }}%"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- [Hospitals] end -->
 
-            <!-- [Users] start -->
+            {{-- Users card --}}
             <div class="col-xxl-3 col-md-6">
-                <div class="card stretch stretch-full">
+                <div class="card stretch stretch-full h-100">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <div class="avatar-text avatar-lg bg-gray-200">
@@ -101,29 +152,26 @@
                             {{ $userCount }}
                         </h2>
 
-                        <div class="w-100 mt-2">
-                            <div class="d-flex justify-content-between fs-12 mb-1">
-                                <span class="text-success">
-                                    Active: {{ $activeUsers }}
-                                </span>
-                                <span class="text-danger">
-                                    Inactive: {{ $inactiveUsers }}
-                                </span>
-                            </div>
+                        <div class="d-flex justify-content-between fs-12 mb-1">
+                            <span class="text-success">
+                                Active: {{ $activeUsers }}
+                            </span>
+                            <span class="text-danger">
+                                Inactive: {{ $inactiveUsers }}
+                            </span>
+                        </div>
 
-                            <div class="progress mt-2 ht-3">
-                                <div class="progress-bar bg-success" style="width: {{ $activePercentage }}%"></div>
-                                <div class="progress-bar bg-danger" style="width: {{ 100 - $activePercentage }}%"></div>
-                            </div>
+                        <div class="progress mt-2 ht-3">
+                            <div class="progress-bar bg-success" style="width: {{ $activePercentage }}%"></div>
+                            <div class="progress-bar bg-danger" style="width: {{ 100 - $activePercentage }}%"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- [Users] end -->
 
-            <!-- [Modules] start -->
+            {{-- Modules card --}}
             <div class="col-xxl-3 col-md-6">
-                <div class="card stretch stretch-full">
+                <div class="card stretch stretch-full h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <div class="avatar-text avatar-lg bg-gray-200">
@@ -156,9 +204,8 @@
                     </div>
                 </div>
             </div>
-            <!-- [Modules] end -->
 
-            <!-- [Role wise user] start -->
+            {{-- Role-wise user donut --}}
             <div class="col-xxl-6">
                 <div class="card stretch stretch-full">
                     <div class="card-header">
@@ -169,9 +216,8 @@
                     </div>
                 </div>
             </div>
-            <!-- [Role wise user] end -->
 
-            <!-- [Total hospitals] start -->
+            {{-- Hospitals created + summary --}}
             <div class="col-xxl-6">
                 <div class="card stretch stretch-full overflow-hidden">
                     <div class="bg-primary text-white p-4">
@@ -185,34 +231,33 @@
                         <div id="hospitals-created-chart" style="height:250px;"></div>
                     </div>
 
-                    <div class="card-footer text-center">
-                        <span class="fw-bold text-uppercase text-muted">
-                            View Hospitals
-                        </span>
+                    <div class="card-footer">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="text-uppercase text-muted fs-11 d-block">Pending Approvals</span>
+                                <h4 class="fw-bold mb-0">{{ $pendingApprovals ?? 0 }}</h4>
+                            </div>
+                            <div class="avatar-text avatar-md bg-soft-warning text-warning">
+                                <i class="feather-user-clock"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- [Total hospitals] end -->
 
-            <!-- [Organization and Hospital growth chart] start -->
-            <div class="col-xxl-13">
+            {{-- Organizations & Hospitals growth bar chart --}}
+            <div class="col-xxl-12">
                 <div class="card stretch stretch-full">
-                    <div class="card-header">
-                        <h5 class="card-title">Organizations & Hospitals Growth</h5>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Organizations & Hospitals Growth</h5>
                         <div class="card-header-action">
                             <div class="card-header-btn">
-                                <div data-bs-toggle="tooltip" title="Delete">
-                                    <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger"
-                                        data-bs-toggle="remove"></a>
-                                </div>
-                                <div data-bs-toggle="tooltip" title="Refresh">
-                                    <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
-                                        data-bs-toggle="refresh"></a>
-                                </div>
-                                <div data-bs-toggle="tooltip" title="Maximize/Minimize">
-                                    <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
-                                        data-bs-toggle="expand"></a>
-                                </div>
+                                <a href="javascript:void(0);" class="avatar-text avatar-xs bg-danger"
+                                    data-bs-toggle="remove"></a>
+                                <a href="javascript:void(0);" class="avatar-text avatar-xs bg-warning"
+                                    data-bs-toggle="refresh"></a>
+                                <a href="javascript:void(0);" class="avatar-text avatar-xs bg-success"
+                                    data-bs-toggle="expand"></a>
                             </div>
                         </div>
                     </div>
@@ -221,12 +266,13 @@
                     </div>
                 </div>
             </div>
-            <!-- [Organization and Hospital growth chart] end -->
+
         </div>
     </div>
 @endsection
+{{-- {!! dd($hospitalMonths, $hospitalCounts) !!} --}}
 
-@section('scripts')
+@push('scripts')
     {{-- Org vs Hospitals bar chart --}}
     @if(isset($orgData) && isset($hospitalData))
         <script>
@@ -344,8 +390,6 @@
             var hospitalMonths = @json($hospitalMonths);
             var hospitalCounts = @json($hospitalCounts);
 
-            console.log('DEBUG hospitals', hospitalMonths, hospitalCounts);
-
             var options = {
                 chart: {
                     type: 'line',
@@ -353,18 +397,21 @@
                     toolbar: { show: false }
                 },
                 series: [{
-                    name: "Hospitals Created",
+                    name: "Hospitals Created (Last 12 Months)",
                     data: hospitalCounts
                 }],
                 xaxis: {
-                    categories: hospitalMonths
+                    categories: hospitalMonths,
+                    labels: {
+                        rotate: -45
+                    }
                 },
                 stroke: {
                     curve: 'smooth',
                     width: 3
                 },
                 markers: {
-                    size: 5
+                    size: 4
                 },
                 dataLabels: {
                     enabled: false
@@ -378,6 +425,10 @@
                         opacityTo: 0.1,
                         stops: [0, 90, 100]
                     }
+                },
+                yaxis: {
+                    min: 0,
+                    forceNiceScale: true
                 }
             };
 
@@ -387,4 +438,5 @@
             ).render();
         });
     </script>
-@endsection
+
+@endpush

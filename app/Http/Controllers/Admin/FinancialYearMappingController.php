@@ -13,6 +13,7 @@ class FinancialYearMappingController extends Controller
     public function index(Request $request)
     {
         $hospitals = Hospital::orderBy('name')->get();
+
         $financialYears = FinancialYear::where('is_active', true)
             ->orderBy('start_date', 'desc')
             ->get();
@@ -36,10 +37,6 @@ class FinancialYearMappingController extends Controller
         ));
     }
 
-    /**
-     * Store/update mappings.
-     * Covers TC_MAP_001–006, 008–010, 012 + DB tests handled by DB schema.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -52,7 +49,7 @@ class FinancialYearMappingController extends Controller
         $hospital = Hospital::findOrFail($data['hospital_id']);
         $selectedIds = $data['financial_year_ids'] ?? [];
 
-        // 1) Block mapping to inactive or deleted FY (TC_MAP_002, TC_MAP_009)
+        // 1) Block mapping to inactive or deleted FY
         $invalidFyCount = FinancialYear::whereIn('id', $selectedIds)
             ->where(function ($q) {
                 $q->where('is_active', false)
@@ -66,7 +63,7 @@ class FinancialYearMappingController extends Controller
                 ->withInput();
         }
 
-        // 2) Check for removal when transactions exist (TC_MAP_004, TC_MAP_010)
+        // 2) Prevent removing FYs that have transactions
         $existingMappings = $hospital->financialYears()->get();
         $toRemove = $existingMappings->whereNotIn('id', $selectedIds)->pluck('id');
 
@@ -82,7 +79,7 @@ class FinancialYearMappingController extends Controller
                 ->withInput();
         }
 
-        // 3) Build sync data (create/update mappings, unique pair enforced by DB)
+        // 3) Build sync data: many mapped, one current
         $syncData = [];
         foreach ($selectedIds as $fyId) {
             $syncData[$fyId] = [
@@ -96,5 +93,4 @@ class FinancialYearMappingController extends Controller
             ->route('admin.financial-years.mapping', ['hospital_id' => $hospital->id])
             ->with('success', 'Financial year mapping updated.');
     }
-
 }

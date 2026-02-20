@@ -1,25 +1,24 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
-use Illuminate\Support\Facades\Route;
-
 // Auth & Admin controllers
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
-
-// Masters controllers
-use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\WorkStatusController;
-use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BloodGroupController;
+// Masters controllers
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\WorkStatusController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,8 +30,10 @@ Route::view('/', 'auth.login')->name('login');
 Route::view('/forgot-mpin', 'auth.forgot-mpin')->name('forgot.mpin');
 Route::view('/set-mpin', 'auth.set-mpin')->name('set.mpin');
 Route::view('/otp', 'auth.otp')->name('otp');
+
 Route::get('/create-default-admin', [SignInController::class, 'createDefaultAdmin'])
     ->name('admin.create.default');
+
 /*
 |--------------------------------------------------------------------------
 | Auth-related POST actions
@@ -52,66 +53,73 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 */
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    // Logout
-    Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Admin prefix & name prefix
-    |--------------------------------------------------------------------------
-    */
+    Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
 
     Route::prefix('admin')->name('admin.')->group(function () {
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Dashboard
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         /*
-        |--------------------------------------------------------------------------
-        | Roles & Users
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Roles
+        |----------------------------------------------------------------------
         */
 
-        // Roles CRUD (resource, except show)
+        Route::get('roles/deleted', [RoleController::class, 'displayDeletedRoles'])
+            ->name('roles.deleted');
+        Route::put('roles/{id}/restore', [RoleController::class, 'restore'])
+            ->name('roles.restore');
+        Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDeleteRole'])
+            ->name('roles.forceDelete');
+        Route::patch('roles/{id}/toggle-status', [RoleController::class, 'toggleStatus'])
+            ->name('roles.toggleStatus');
+
         Route::resource('roles', RoleController::class)->except(['show']);
 
-        // Roles extra routes (deleted, restore, force delete)
-        Route::get('roles/deleted', [RoleController::class, 'displayDeletedRoles'])->name('roles.deleted');
-        Route::put('roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
-        Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDeleteRole'])->name('roles.forceDelete');
-
-        // Users CRUD (resource, except show)
-        Route::resource('users', UserController::class)->except(['show']);
-
-        // Users extra routes (deleted, restore, force delete)
-        Route::get('users/deleted', [UserController::class, 'displayDeletedUser'])->name('users.deleted');
-        Route::put('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-        Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])->name('users.forceDelete');
-
         /*
-        |--------------------------------------------------------------------------
-        | Financial Years & Mapping
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Users
+        |----------------------------------------------------------------------
         */
 
-        // Financial Years CRUD (resource, except show)
-        Route::resource('financial-years', FinancialYearController::class)->except(['show']);
+        Route::get('users/deleted', [UserController::class, 'displayDeletedUser'])
+            ->name('users.deleted');
+        Route::put('users/{id}/restore', [UserController::class, 'restore'])
+            ->name('users.restore');
+        Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])
+            ->name('users.forceDelete');
+        Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
+            ->name('users.toggleStatus');
 
-        // Financial Year Mapping
+        Route::resource('users', UserController::class)->except(['show']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Financial Years & Mapping
+        |----------------------------------------------------------------------
+        */
+
         Route::get('financial-years/mapping', [FinancialYearMappingController::class, 'index'])
             ->name('financial-years.mapping');
         Route::post('financial-years/mapping', [FinancialYearMappingController::class, 'store'])
             ->name('financial-years.mapping.store');
+        Route::patch('financial-years/{id}/toggle-status', [FinancialYearController::class, 'toggleStatus'])
+            ->name('financial-years.toggleStatus');
+
+        Route::resource('financial-years', FinancialYearController::class)->except(['show']);
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Religion
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('religion')->name('religion.')->group(function () {
@@ -121,16 +129,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/edit/{id}', [ReligionController::class, 'edit'])->name('edit');
             Route::post('/update/{id}', [ReligionController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [ReligionController::class, 'destroy'])->name('delete');
-
             Route::get('/trash', [ReligionController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [ReligionController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [ReligionController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Job Type
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('job-type')->name('job-type.')->group(function () {
@@ -140,16 +147,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/edit/{id}', [JobTypeController::class, 'edit'])->name('edit');
             Route::post('/update/{id}', [JobTypeController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [JobTypeController::class, 'destroy'])->name('delete');
-
             Route::get('/trash', [JobTypeController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [JobTypeController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [JobTypeController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Work Status
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('work-status')->name('work-status.')->group(function () {
@@ -159,21 +165,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/edit/{id}', [WorkStatusController::class, 'edit'])->name('edit');
             Route::post('/update/{id}', [WorkStatusController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [WorkStatusController::class, 'destroy'])->name('delete');
-
             Route::get('/trash', [WorkStatusController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [WorkStatusController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [WorkStatusController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
-        |--------------------------------------------------------------------------
-        | Masters: Blood Group (resource-style)
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
+        | Masters: Blood Group
+        |----------------------------------------------------------------------
         */
-
-        Route::prefix('masters')->group(function () {
-            Route::resource('blood-groups', BloodGroupController::class)->except(['show']);
-        });
 
         Route::get('blood-groups/deleted/history', [BloodGroupController::class, 'deletedHistory'])
             ->name('blood-groups.deleted');
@@ -182,10 +183,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('blood-groups/{id}/force-delete', [BloodGroupController::class, 'forceDelete'])
             ->name('blood-groups.forceDelete');
 
+        Route::prefix('masters')->group(function () {
+            Route::resource('blood-groups', BloodGroupController::class)->except(['show']);
+        });
+
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Designation
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
         Route::prefix('designation')->name('designation.')->group(function () {
@@ -195,19 +200,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/edit/{id}', [DesignationController::class, 'edit'])->name('edit');
             Route::post('/update/{id}', [DesignationController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [DesignationController::class, 'destroy'])->name('delete');
-
             Route::get('/trash', [DesignationController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [DesignationController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [DesignationController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         | Masters: Department
-        |--------------------------------------------------------------------------
+        |----------------------------------------------------------------------
         */
 
-        Route::resource('departments', DepartmentController::class);
         Route::get('departments/deleted/history', [DepartmentController::class, 'deletedHistory'])
             ->name('departments.deleted');
         Route::put('departments/{id}/restore', [DepartmentController::class, 'restore'])
@@ -215,67 +218,68 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])
             ->name('departments.forceDelete');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Organization, Institutions, Modules
-        |--------------------------------------------------------------------------
-        */
+        Route::resource('departments', DepartmentController::class);
 
-        // Organizations (matches admin.organization.* in Blade)
-        Route::resource('organization', OrganizationController::class);
+        /*
+        |----------------------------------------------------------------------
+        | Organization
+        |----------------------------------------------------------------------
+        */
 
         Route::get('organization/deleted', [OrganizationController::class, 'deleted'])
             ->name('organization.deleted');
-        Route::post('organization/{id}/restore', [OrganizationController::class, 'restore'])
+        Route::put('organization/{id}/restore', [OrganizationController::class, 'restore'])
             ->name('organization.restore');
         Route::delete('organization/{id}/force-delete', [OrganizationController::class, 'forceDelete'])
             ->name('organization.forceDelete');
         Route::patch('organization/{id}/toggle-status', [OrganizationController::class, 'toggleStatus'])
             ->name('organization.toggleStatus');
 
-        // Institutions
-        Route::resource('institutions', InstitutionController::class);
+        Route::resource('organization', OrganizationController::class);
+
+        /*
+        |----------------------------------------------------------------------
+        | Institutions
+        |----------------------------------------------------------------------
+        */
 
         Route::get('institutions/deleted', [InstitutionController::class, 'deleted'])
             ->name('institutions.deleted');
-        Route::post('institutions/{id}/restore', [InstitutionController::class, 'restore'])
+        Route::put('institutions/{id}/restore', [InstitutionController::class, 'restore'])
             ->name('institutions.restore');
         Route::delete('institutions/{id}/force-delete', [InstitutionController::class, 'forceDelete'])
             ->name('institutions.forceDelete');
-
-        // Modules
-        Route::resource('modules', ModuleController::class);
-
-        Route::get('modules/deleted', [ModuleController::class, 'deleted'])
-            ->name('modules.deleted');
-        Route::post('modules/{id}/restore', [ModuleController::class, 'restore'])
-            ->name('modules.restore');
-        Route::delete('modules/{id}/force-delete', [ModuleController::class, 'forceDelete'])
-            ->name('modules.forceDelete');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Toggle Status Routes (others)
-        |--------------------------------------------------------------------------
-        */
-
-        Route::patch(
-            'financial-years/{financial_year}/toggle-status',
-            [FinancialYearController::class, 'toggleStatus']
-        )->name('financial-years.toggle-status');
-
-        Route::patch(
-            'roles/{role}/toggle-status',
-            [RoleController::class, 'toggleStatus']
-        )->name('roles.toggle-status');
-
-        Route::patch(
-            'users/{user}/toggle-status',
-            [UserController::class, 'toggleStatus']
-        )->name('users.toggle-status');
-
         Route::patch('institutions/{id}/toggle-status', [InstitutionController::class, 'toggleStatus'])
             ->name('institutions.toggleStatus');
 
+        Route::resource('institutions', InstitutionController::class);
+
+        /*
+        |----------------------------------------------------------------------
+        | Hospitals
+        |----------------------------------------------------------------------
+        */
+
+        Route::get('hospitals/deleted', [HospitalController::class, 'deleted'])
+            ->name('hospitals.deleted');
+        Route::put('hospitals/{id}/restore', [HospitalController::class, 'restore'])
+            ->name('hospitals.restore');
+        Route::delete('hospitals/{id}/force-delete', [HospitalController::class, 'forceDelete'])
+            ->name('hospitals.forceDelete');
+        Route::patch('hospitals/{id}/toggle-status', [HospitalController::class, 'toggleStatus'])
+            ->name('hospitals.toggleStatus');
+
+        Route::resource('hospitals', HospitalController::class)->except(['show']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Modules
+        |----------------------------------------------------------------------
+        */
+
+        Route::patch('modules/{id}/toggle-status', [ModuleController::class, 'toggleStatus'])
+            ->name('modules.toggleStatus');
+
+        Route::resource('modules', ModuleController::class);
     });
 });

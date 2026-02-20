@@ -13,7 +13,7 @@
 <div class="card">
     <div class="card-body">
 
-        <form action="{{ route('admin.modules.update', $module->id) }}" method="POST">
+        <form action="{{ route('modules.update', $module->id) }}" method="POST">
             @csrf
             @method('PUT')
 

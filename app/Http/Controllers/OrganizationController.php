@@ -162,7 +162,15 @@ class OrganizationController extends Controller
         $organization->status = !$organization->status;
         $organization->save();
 
-        return back()->with('success', 'Status updated');
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $organization->status ? 'active' : 'inactive',
+                'is_active' => (bool) $organization->status
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status updated successfully');
     }
 
     /* ===================== API ===================== */
@@ -277,6 +285,26 @@ class OrganizationController extends Controller
         return response()->json([
             'status' => true,
             'data' => $organization,
+        ]);
+    }
+    public function apiToggleStatus($id)
+    {
+        $org = Organization::find($id);
+    
+        if (!$org) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Organization not found'
+            ], 404);
+        }
+    
+        $org->status = !$org->status;
+        $org->save();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Status updated successfully',
+            'data' => $org
         ]);
     }
 }
