@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->string('module_label')->unique();
             $table->string('module_display_name');
-            $table->string('parent_module')->nullable();
+            $table->uuid('parent_module')->nullable()->index();
             $table->integer('priority');
             $table->string('icon');
             $table->string('file_url');

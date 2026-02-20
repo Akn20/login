@@ -1,3 +1,4 @@
+deleted.blade.php:
 @extends('layouts.admin')
 
 @section('content')
@@ -7,7 +8,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="mb-0">Deleted Modules</h4>
 
-            <a href="{{ route('modules.index') }}" class="btn btn-sm btn-outline-primary">
+            <a href="{{ route('admin.modules.index') }}" class="btn btn-sm btn-outline-primary">
                 <i class="feather feather-arrow-left"></i> Back
             </a>
         </div>
@@ -70,22 +71,14 @@
                                             <div class="d-flex justify-content-center gap-2">
 
                                                 <!-- Restore -->
-<<<<<<< HEAD
-                                                <a href="{{ route('modules.restore', $module->id) }}"
-=======
                                                 <a href="{{ route('admin.modules.restore', $module->id) }}"
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
                                                     class="avatar-text avatar-md text-success" data-bs-toggle="tooltip"
                                                     title="Restore">
                                                     <i class="feather feather-rotate-ccw"></i>
                                                 </a>
 
                                                 <!-- Permanent Delete -->
-<<<<<<< HEAD
-                                                <form action="{{ route('modules.forceDelete', $module->id) }}" method="POST"
-=======
                                                 <form action="{{ route('admin.modules.forceDelete', $module->id) }}" method="POST"
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
                                                     onsubmit="return confirm('Permanently delete this module?')" class="m-0">
 
                                                     @csrf

@@ -3,124 +3,250 @@
 @section('page-title', 'Modules | ' . config('app.name'))
 
 @section('content')
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    <!-- Paste Modules-view INNER content here -->
+    <!--! ================================================================ !-->
+    <!--! [Start] Main Content !-->
+    <!--! ================================================================ !-->
 
-    <div class="main-content">
-
-        {{-- ================= SUCCESS MESSAGE ================= --}}
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- [ page-header ] start -->
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Modules</h5>
             </div>
-        @endif
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item">Modules</li>
+            </ul>
+        </div>
+        <div class="page-header-right ms-auto">
+            <div class="page-header-right-items">
+                <div class="d-flex d-md-none">
+                    <a href="javascript:void(0)" class="page-header-right-close-toggle">
+                        <i class="feather-arrow-left me-2"></i>
+                        <span>Back</span>
+                    </a>
+                </div>
+    <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
 
-        {{-- ================= PAGE HEADER ================= --}}
-        <div class="page-header mb-4">
-            <div class="page-header-left d-flex align-items-center">
-                <div class="page-header-title">
-                    <h5 class="m-b-10">Modules</h5>
+
+                    <form method="GET" action="{{ route('admin.modules.index') }}" class="d-flex">
+                        <input type="text" name="search" class="form-control form-control-sm me-2"
+                            placeholder="Search Module" value="{{ request('search') }}">
+                        <button class="btn btn-light-brand btn-sm">
+                            <i class="feather-search"></i>
+                        </button>
+                    </form>
+
+                    <a href="{{ route('admin.modules.create') }}" class="btn btn-primary">
+                        <i class="feather-plus me-2"></i>
+                        <span>Add Module</span>
+                    </a>
+                    <a href="{{ route('admin.modules.deleted') }}" class="btn btn-danger">
+                        Deleted Modules
+                    </a>
+
                 </div>
             </div>
-
-            <div class="page-header-right ms-auto d-flex align-items-center gap-2">
-                <a href="{{ route('admin.modules.create') }}" class="btn btn-primary">
-                    <i class="feather-plus me-2"></i>
-                    Add Module
+            <div class="d-md-none d-flex align-items-center">
+                <a href="javascript:void(0)" class="page-header-right-open-toggle">
+                    <i class="feather-align-right fs-20"></i>
                 </a>
             </div>
         </div>
-
-        {{-- ================= TABLE CARD ================= --}}
-        <div class="card stretch stretch-full">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-
-                    <table class="table table-hover mb-0">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>S.N</th>
-                                <th>Module Label</th>
-                                <th>Display Name</th>
-                                <th>Parent</th>
-                                <th>File Path</th>
-                                <th>Access For</th>
-                                <th>Page Name</th>
-                                <th>Type</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            @if($modules->count() > 0)
-
-                                @foreach($modules as $index => $module)
-                                    <tr>
-
-                                        <td>
-                                            <div class="custom-control custom-checkbox ms-1">
-                                                <input type="checkbox" class="custom-control-input" id="check{{ $module->id }}">
-                                                <label class="custom-control-label" for="check{{ $module->id }}"></label>
-                                            </div>
-                                        </td>
-
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $module->module_label }}</td>
-                                        <td>{{ $module->module_display_name }}</td>
-                                        <td>{{ $module->parent_module ?? '-' }}</td>
-                                        <td>{{ $module->file_url }}</td>
-                                        <td>{{ ucfirst($module->access_for) }}</td>
-                                        <td>{{ $module->page_name }}</td>
-                                        <td>{{ ucfirst($module->type) }}</td>
-
-
-                                        <td class="text-end">
-                                            <div class="hstack gap-2 justify-content-end">
-
-                                                <!-- View Icon -->
-                                                <a href="{{ route('admin.modules.index', $module->id) }}"
-                                                    class="avatar-text avatar-md" data-bs-toggle="tooltip" title="View">
-                                                    <i class="feather feather-eye"></i>
-                                                </a>
-
-                                                <!-- Delete Icon -->
-                                                <form action="{{ route('admin.modules.destroy', $module->id) }}" method="POST"
-                                                    onsubmit="return confirm('Are you sure?')">
-
-                                                    @csrf
-                                                    @method('DELETE')
-
-                                                    <button type="submit" class="avatar-text avatar-md border-0 bg-transparent"
-                                                        data-bs-toggle="tooltip" title="Delete">
-                                                        <i class="feather feather-trash-2"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-
-
-                                    </tr>
-                                @endforeach
-
-                            @else
-
-                                <tr>
-                                    <td colspan="10" class="text-center py-4">
-                                        No Modules Found
-                                    </td>
-                                </tr>
-
-                            @endif
-
-                        </tbody>
-
-                    </table>
-
+    </div>
+    <div id="collapseOne" class="accordion-collapse collapse page-header-collapse">
+        <div class="accordion-body pb-2">
+            <div class="row">
+                <div class="col-xxl-3 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                    <span class="d-block">Paid</span>
+                                    <span class="fs-20 fw-bold d-block">78/100</span>
+                                </a>
+                                <div class="progress-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                    <span class="d-block">Unpaid</span>
+                                    <span class="fs-20 fw-bold d-block">38/50</span>
+                                </a>
+                                <div class="progress-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                    <span class="d-block">Overdue</span>
+                                    <span class="fs-20 fw-bold d-block">15/30</span>
+                                </a>
+                                <div class="progress-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-md-6">
+                    <div class="card stretch stretch-full">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="javascript:void(0);" class="fw-bold d-block">
+                                    <span class="d-block">Draft</span>
+                                    <span class="fs-20 fw-bold d-block">3/10</span>
+                                </a>
+                                <div class="progress-4"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
+    <!-- [ page-header ] end -->
+    <!-- [ Main Content ] start -->
+    <div class="main-content">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card stretch stretch-full">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="proposalList">
+                                <thead>
+                                    <tr>
 
-@endsection
+                                        <th>SL.NO</th>
+                                        <th>Module Label</th>
+                                        <th>Display Name</th>
+                                        <th>Parent</th>
+                                        <th>File Path</th>
+                                        <th>Access For</th>
+                                        <th>Page Name</th>
+                                        <th>Type</th>
+                                        <th>status</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if($modules->count() > 0)
+
+                                        @foreach($modules as $index => $module)
+                                            <tr>
+
+
+
+                                                <!-- Serial Number -->
+                                                <td>{{ $index + 1 }}</td>
+
+                                                <!-- Module Label -->
+                                                <td>{{ $module->module_label }}</td>
+
+                                                <!-- Display Name -->
+                                                <td>{{ $module->module_display_name }}</td>
+
+                                                <!-- Parent -->
+                                                <td>{{ $module->parent_module ?? '-' }}</td>
+
+                                                <!-- File Path -->
+                                                <td>{{ $module->file_url }}</td>
+
+                                                <!-- Access For -->
+                                                <td>{{ ucfirst($module->access_for) }}</td>
+
+                                                <!-- Page Name -->
+                                                <td>{{ $module->page_name }}</td>
+
+                                                <!-- Type -->
+                                                <td>{{ ucfirst($module->type) }}</td>
+
+                                                <!--Status-->
+                                                <td>
+                                                    @if($module->status)
+                                                        <span class="badge bg-soft-success text-success">Active</span>
+                                                    @else
+                                                        <span class="badge bg-soft-danger text-danger">Inactive</span>
+                                                    @endif
+                                                </td>
+
+                                                <!-- Actions -->
+                                                <td class="text-end">
+                                                    <div class="hstack gap-2 justify-content-end">
+
+                                                        <!-- View Icon -->
+                                                        <a href="{{ route('admin.modules.show', $module->id) }}"
+                                                            class="avatar-text avatar-md" data-bs-toggle="tooltip" title="View">
+                                                            <i class="feather feather-eye"></i>
+                                                        </a>
+
+                                                        <!-- Edit Icon -->
+                                                        <a href="{{ route('admin.modules.edit', $module->id) }}"
+                                                            class="avatar-text avatar-md" data-bs-toggle="tooltip" title="Edit">
+                                                            <i class="feather feather-edit"></i>
+                                                        </a>
+
+                                                        <!-- Delete Icon -->
+                                                        <form action="{{ route('admin.modules.destroy', $module->id) }}" method="POST"
+                                                            onsubmit="return confirm('Are you sure?')">
+
+                                                            @csrf
+                                                            @method('DELETE')
+
+                                                            <button type="submit"
+                                                                class="avatar-text avatar-md d-flex align-items-center justify-content-center"
+                                                                data-bs-toggle="tooltip" title="Delete">
+                                                                <i class="feather feather-trash-2"></i>
+                                                            </button>
+                                                        </form>
+
+                                                        <!--Status Toggle-->
+                                                        <form action="{{ route('admin.modules.toggleStatus', $module->id) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('PATCH')
+
+                                                            <button type="submit"
+                                                                class="status-toggle 
+                                                                {{ $module->status ? 'active' : 'inactive' }}">
+                                                                <span>{{ $module->status ? 'Deactivate' : 'Activate' }}</span>
+                                                            </button>
+                                                        </form>
+
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+
+                                    @else
+
+                                        <tr>
+                                            <td colspan="10" class="text-center">No Modules Found</td>
+                                        </tr>
+
+                                    @endif
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div></div>@endsection

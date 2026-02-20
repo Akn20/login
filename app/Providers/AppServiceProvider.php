@@ -22,15 +22,15 @@ class AppServiceProvider extends ServiceProvider
         {
             View::composer('*', function ($view) {
 
-            $modules = Module::whereNull('parent_module')
-                ->where('status', 1)
-                ->orderBy('priority')
-                ->with(['children' => function ($q) {
-                    $q->where('status', 1)->orderBy('priority');
-                }])
-                ->get();
+                $modules = Module::whereNull('parent_module')
+                    ->where('status', 1)
+                    ->orderBy('priority')
+                    ->with(['children' => function ($q) {
+                        $q->where('status', 1)->orderBy('priority');
+                    }])
+                    ->get();
 
-            $view->with('sidebarModules', $modules);
-        });
+                $view->with('sidebarModules', $modules);
+            });
     }
 }
