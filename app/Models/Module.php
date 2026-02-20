@@ -44,12 +44,12 @@ class Module extends Model
     }
     public function parent()
     {
-        return $this->belongsTo(Module::class, 'parent_module');
+        return $this->belongsTo(Module::class, 'parent_module', 'id');
     }
 
     public function children()
     {
-        return $this->hasMany(Module::class, 'parent_module')
+        return $this->hasMany(Module::class, 'parent_module', 'id')
                     ->orderBy('priority');
     }
 

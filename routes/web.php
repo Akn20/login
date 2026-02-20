@@ -247,7 +247,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::resource('modules', ModuleController::class);
 
         Route::prefix('modules')->name('modules.')->group(function () {
+            Route::get('/', [ModuleController::class, 'index'])->name('index');
+            Route::get('/create', [ModuleController::class, 'create'])->name('create');
             Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [ModuleController::class, 'update'])->name('update');
+             Route::get('/deleted/history', [ModuleController::class, 'deletedHistory'])->name('deleted');
+             Route::put('/{id}/restore', [ModuleController::class, 'restore'])->name('restore');
+             Route::delete('/{id}/force-delete', [ModuleController::class, 'forceDelete'])->name('forceDelete');
         });
         /*
         |----------------------------------------------------------------------

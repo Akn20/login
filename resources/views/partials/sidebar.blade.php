@@ -1,16 +1,43 @@
 <style>
-    /* Sidebar scroll with page */
-    .nxl-navigation .navbar-content {
-        height: 100vh;
-        /* full viewport height */
-        overflow-y: auto;
-        /* vertical scroll when content is taller */
-    }
+/* FIXED SIDEBAR LAYOUT */
+.nxl-navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    height: 100vh;
+}
 
-    .nxl-navigation .navbar-wrapper {
-        height: 100vh;
-        overflow-y: auto;
-    }
+/* HEADER (logo) */
+.nxl-navigation .m-header {
+    height: 70px;
+    flex-shrink: 0;
+}
+
+/* WRAPPER FLEX */
+.nxl-navigation .navbar-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ONLY THIS AREA SCROLLS */
+.nxl-navigation .navbar-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 40px;
+}
+
+/* Smooth scroll */
+.nxl-navigation .navbar-content::-webkit-scrollbar {
+    width: 6px;
+}
+.nxl-navigation .navbar-content::-webkit-scrollbar-thumb {
+    background: rgba(120,120,120,.4);
+    border-radius: 10px;
+}
 </style>
 
 <nav class="nxl-navigation">
@@ -171,14 +198,64 @@
                 </li>
 
                 {{-- ================= MODULE MANAGEMENT ================= --}}
-                <li class="nxl-item">
+                                <li class="nxl-item">
                     <a href="{{ route('admin.modules.index') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-grid"></i></span>
                         <span class="nxl-mtext">Module Management</span>
                     </a>
                 </li>
+        {{-- SCROLL AREA (IMPORTANT) --}}
+        <div class="navbar-content">
+            <ul class="nxl-navbar">
 
+                <li class="nxl-item nxl-caption">
+                    <label>Modules</label>
+                </li>
 
+                @foreach($sidebarModules as $module)
+
+                    {{-- PARENT --}}
+                    @if($module->children->count() > 0)
+
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="{{ $module->icon ?? 'feather-grid' }}"></i>
+                                </span>
+                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                <span class="nxl-arrow">
+                                    <i class="feather-chevron-right"></i>
+                                </span>
+                            </a>
+
+                            <ul class="nxl-submenu">
+                                @foreach($module->children as $child)
+                                    <li class="nxl-item">
+                                        <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                            {{ $child->module_display_name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
+
+                    @else
+
+                        {{-- SINGLE --}}
+                        <li class="nxl-item">
+                            <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                </span>
+                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                            </a>
+                        </li>
+
+                    @endif
+
+                @endforeach
+
+                {{-- ================= CONFIGURATION ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-cast"></i></span>

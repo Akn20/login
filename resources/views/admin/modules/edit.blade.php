@@ -1,3 +1,4 @@
+edit.blade.php:
 @extends('layouts.admin')
 
 @section('content')
@@ -13,11 +14,11 @@
 <div class="card">
     <div class="card-body">
 
-        <form action="{{ route('modules.update', $module->id) }}" method="POST">
+        <form action="{{ route('admin.modules.update', $module->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            @include('modules.form')
+            @include('admin.modules.form')
 
         </form>
     </div>
