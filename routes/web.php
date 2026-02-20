@@ -277,15 +277,26 @@ Route::middleware(['auth', 'admin'])->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::get('modules/deleted', [ModuleController::class, 'deleted'])
-            ->name('modules.deleted');
-        Route::put('modules/{id}/restore', [ModuleController::class, 'restore'])
-            ->name('modules.restore');
-        Route::delete('modules/{id}/force-delete', [ModuleController::class, 'forceDelete'])
-            ->name('modules.forceDelete');
-        Route::patch('modules/{id}/toggle-status', [ModuleController::class, 'toggleStatus'])
-            ->name('modules.toggleStatus');
+        Route::prefix('modules')->name('modules.')->group(function () {
 
-        Route::resource('modules', ModuleController::class);
+                    Route::get('/', [ModuleController::class, 'index'])->name('index');
+
+                    Route::get('/create', [ModuleController::class, 'create'])->name('create');
+                    Route::post('/store', [ModuleController::class, 'store'])->name('store');
+
+                    Route::get('/show/{id}', [ModuleController::class, 'show'])->name('show');
+
+                    Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+                    Route::put('/update/{id}', [ModuleController::class, 'update'])->name('update');
+
+                    Route::delete('/delete/{id}', [ModuleController::class, 'destroy'])->name('delete');
+
+                    Route::get('/deleted', [ModuleController::class, 'deleted'])->name('deleted');
+                    Route::post('/restore/{id}', [ModuleController::class, 'restore'])->name('restore');
+                    Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
+
+                    Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
+
+        });
     });
 });
