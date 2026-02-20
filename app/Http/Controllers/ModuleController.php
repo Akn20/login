@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,18 +24,30 @@ class ModuleController extends Controller
             });
         }
 
-        $modules = $query->get();
+        $modules = $query->paginate(10);
 
-        return view('admin.modules.index', compact('modules'));
+        // Stats for cards (non-deleted only)
+        $totalModules = Module::count();
+        $activeModules = Module::where('status', 1)->count();
+        $inactiveModules = Module::where('status', 0)->count();
+
+        return view('admin.modules.index', compact(
+            'modules',
+            'totalModules',
+            'activeModules',
+            'inactiveModules'
+        ));
     }
+
     // Show Create Module Form
     public function create()
     {
-        $modules = Module::all(); // get existing modules
+        $modules = Module::all(); // for parent dropdown
+
         return view('admin.modules.create', compact('modules'));
     }
 
-    //Store Module
+    // Store Module
     public function store(Request $request)
     {
         $request->validate([
@@ -45,51 +58,61 @@ class ModuleController extends Controller
             'file_url' => 'required|string|max:255',
             'page_name' => 'required|string|max:255',
             'type' => 'required|in:Web,App,Both',
-            'access_for' => 'required|in:institution,service'
-
+            'access_for' => 'required|in:institution,service',
         ]);
 
-        Module::create($request->all());
+        Module::create($request->all() + ['status' => 1]);
 
-        return redirect()->route('admin.modules.index')
+        return redirect()
+            ->route('admin.modules.index')
             ->with('success', 'Module created successfully!');
     }
 
+    // Soft delete
     public function destroy($id)
     {
         $module = Module::findOrFail($id);
         $module->delete();
 
-        return redirect()->route('admin.modules.index')
+        return redirect()
+            ->route('admin.modules.index')
             ->with('success', 'Module moved to trash.');
     }
 
-
+    // List deleted modules
     public function deleted()
     {
-        $modules = Module::onlyTrashed()->get();
+        $modules = Module::onlyTrashed()->orderBy('priority')->get();
+
         return view('admin.modules.deleted', compact('modules'));
     }
 
+    // Restore soft-deleted module
     public function restore($id)
     {
-        Module::withTrashed()->find($id)->restore();
+        $module = Module::withTrashed()->findOrFail($id);
+        $module->restore();
 
-        return redirect()->route('admin.modules.deleted')
+        return redirect()
+            ->route('admin.modules.deleted')
             ->with('success', 'Module restored successfully.');
     }
 
+    // Permanently delete
     public function forceDelete($id)
     {
-        Module::withTrashed()->find($id)->forceDelete();
+        $module = Module::withTrashed()->findOrFail($id);
+        $module->forceDelete();
 
-        return redirect()->route('admin.modules.deleted')
+        return redirect()
+            ->route('admin.modules.deleted')
             ->with('success', 'Module permanently deleted.');
     }
 
     public function show($id)
     {
         $module = Module::findOrFail($id);
+
         return view('admin.modules.show', compact('module'));
     }
 
@@ -100,8 +123,6 @@ class ModuleController extends Controller
 
         return view('admin.modules.edit', compact('module', 'modules'));
     }
-
-
 
     public function update(Request $request, $id)
     {
@@ -120,7 +141,7 @@ class ModuleController extends Controller
             'file_url' => 'required|string|max:255',
             'page_name' => 'required|string|max:255',
             'type' => 'required|in:Web,App,Both',
-            'access_for' => 'required|in:institution,service'
+            'access_for' => 'required|in:institution,service',
         ]);
 
         $module->update($request->only([
@@ -132,32 +153,46 @@ class ModuleController extends Controller
             'file_url',
             'page_name',
             'type',
-            'access_for'
+            'access_for',
         ]));
 
-        return redirect()->route('admin.modules.index')
+        return redirect()
+            ->route('admin.modules.index')
             ->with('success', 'Module updated successfully!');
     }
 
-
+    // Toggle status (WEB + AJAX)
     public function toggleStatus($id)
     {
         $module = Module::findOrFail($id);
-
-        $module->status = !$module->status;
+        $module->status = ! $module->status;
         $module->save();
 
-        return back();
+        $totalModules = Module::count();
+        $activeModules = Module::where('status', 1)->count();
+        $inactiveModules = Module::where('status', 0)->count();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $module->status ? 'active' : 'inactive',
+                'is_active' => (bool) $module->status,
+                'totalModules' => $totalModules,
+                'activeModules' => $activeModules,
+                'inactiveModules' => $inactiveModules,
+            ]);
+        }
+
+        return back()->with('success', 'Status updated successfully');
     }
 
-
-
+    /* ===================== API ===================== */
 
     public function apiIndex()
     {
         return response()->json([
             'status' => true,
-            'data' => \App\Models\Module::latest()->get()
+            'data' => Module::latest()->get(),
         ]);
     }
 
@@ -167,7 +202,7 @@ class ModuleController extends Controller
             'module_label' => 'required|string|max:100|unique:modules,module_label',
         ]);
 
-        $module = \App\Models\Module::create($request->only([
+        $module = Module::create($request->only([
             'module_label',
             'module_display_name',
             'parent_module',
@@ -176,19 +211,20 @@ class ModuleController extends Controller
             'file_url',
             'page_name',
             'type',
-            'access_for'
-        ]));
+            'access_for',
+        ]) + ['status' => 1]);
 
         return response()->json([
             'status' => true,
             'message' => 'Module created',
-            'data' => $module
+            'data' => $module,
         ]);
     }
 
     public function apiUpdate(Request $request, $id)
     {
-        $module = \App\Models\Module::findOrFail($id);
+        $module = Module::findOrFail($id);
+
         $module->update($request->only([
             'module_label',
             'module_display_name',
@@ -198,50 +234,46 @@ class ModuleController extends Controller
             'file_url',
             'page_name',
             'type',
-            'access_for'
+            'access_for',
         ]));
 
         return response()->json([
             'status' => true,
-            'message' => 'Module updated'
+            'message' => 'Module updated',
         ]);
     }
 
     public function apiDelete($id)
     {
-        $module = \App\Models\Module::findOrFail($id);
+        $module = Module::findOrFail($id);
         $module->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Module deleted'
+            'message' => 'Module deleted',
         ]);
     }
+
     public function apiShow($id)
     {
         $module = Module::findOrFail($id);
+
         return response()->json([
             'status' => true,
-            'data' => $module
+            'data' => $module,
         ]);
     }
 
-
-    //Module Api to get types
+    // Module Api to get types
     public function getModuleTypes()
     {
         return response()->json([
             'success' => true,
             'data' => [
-                ['value' => 'web', 'label' => 'Web'],
-                ['value' => 'app', 'label' => 'App'],
+                ['value' => 'web',  'label' => 'Web'],
+                ['value' => 'app',  'label' => 'App'],
                 ['value' => 'both', 'label' => 'Both'],
-            ]
+            ],
         ]);
     }
-
-
-
 }
-
-
