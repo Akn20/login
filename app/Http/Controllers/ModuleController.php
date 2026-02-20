@@ -23,7 +23,7 @@ class ModuleController extends Controller
                     ->orWhere('page_name', 'like', "%$search%");
             });
         }
-        $modules = $query->with('parent')->get();
+       // $modules = $query->with('parent')->get();
         $modules = $query->paginate(10);
 
         // Stats for cards (non-deleted only)
