@@ -10,6 +10,7 @@ class Module extends Model
 {
     use SoftDeletes;
     protected $fillable = [
+        'id',
         'module_label',
         'module_display_name',
         'parent_module',
@@ -41,6 +42,15 @@ class Module extends Model
     {
         return $this->belongsToMany(Institution::class);
     }
+    public function parent()
+    {
+        return $this->belongsTo(Module::class, 'parent_module');
+    }
 
+    public function children()
+    {
+        return $this->hasMany(Module::class, 'parent_module')
+                    ->orderBy('priority');
+    }
 
 }
