@@ -42,7 +42,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $module->module_label }}</td>
                                         <td>{{ $module->module_display_name }}</td>
-                                        <td>{{ $module->parent_module ?? '-' }}</td>
+                                        <td>{{ $module->module_display_name?? '-' }}</td>
                                         <td>{{ $module->file_url }}</td>
                                         <td>{{ ucfirst($module->access_for) }}</td>
                                         <td>{{ $module->page_name }}</td>
@@ -50,13 +50,12 @@
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
                                                 {{-- Restore --}}
-                                                <form action="{{ route('admin.modules.restore', $module->id) }}" method="POST"
-                                                    class="m-0 d-inline">
+                                                <form action="{{ route('admin.modules.restore', $module->id) }}" method="POST" class="d-inline">
                                                     @csrf
-                                                    @method('PUT')
                                                     <button type="submit"
-                                                        class="avatar-text avatar-md border-0 bg-transparent text-success"
+                                                        class="avatar-text avatar-md text-success border-0 bg-transparent"
                                                         data-bs-toggle="tooltip" title="Restore">
+
                                                         <i class="feather feather-rotate-ccw"></i>
                                                     </button>
                                                 </form>

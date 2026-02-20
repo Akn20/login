@@ -101,7 +101,7 @@
                                     <td>{{ $modules->firstItem() ? $modules->firstItem() + $index : $index + 1 }}</td>
                                     <td>{{ $module->module_label }}</td>
                                     <td>{{ $module->module_display_name }}</td>
-                                    <td>{{ $module->parent_module ?? '-' }}</td>
+                                    <td>{{ $module->parent->module_display_name ?? '-' }}</td>
                                     <td>{{ $module->file_url }}</td>
                                     <td>{{ ucfirst($module->access_for) }}</td>
                                     <td>{{ $module->page_name }}</td>
@@ -131,21 +131,18 @@
                                                 <i class="feather-edit-2"></i>
                                             </a>
 
-                                            <form
-                                                action="{{ route('admin.modules.destroy', $module->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Delete this module?')"
-                                            >
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-outline-danger btn-icon rounded-circle"
-                                                    title="Delete"
-                                                >
-                                                    <i class="feather-trash-2"></i>
-                                                </button>
-                                            </form>
+                                        <form action="{{ route('admin.modules.delete', $module->id) }}" method="POST"
+                                            onsubmit="return confirm('Move module to trash?')">
+
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                class="avatar-text avatar-md d-flex align-items-center justify-content-center"
+                                                data-bs-toggle="tooltip" title="Trash">
+                                                <i class="feather feather-trash-2"></i>
+                                            </button>
+                                        </form>
                                         </div>
                                     </td>
                                 </tr>
