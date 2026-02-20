@@ -86,8 +86,7 @@ Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'ap
 
 //Module Management Type Api
 
-Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
-
+Route::get('/modules', [ModuleController::class, 'apiIndex']);
 Route::get('/test-api', function () {
     return 'API working';
 });
