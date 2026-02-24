@@ -162,7 +162,15 @@ class OrganizationController extends Controller
         $organization->status = !$organization->status;
         $organization->save();
 
-        return back()->with('success', 'Status updated');
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $organization->status ? 'active' : 'inactive',
+                'is_active' => (bool) $organization->status
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status updated successfully');
     }
 
     /* ===================== API ===================== */
