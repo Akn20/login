@@ -17,7 +17,6 @@ class weekends extends Model
     protected $fillable = [
         'name',
         'days',
-        'details',
         'status',
     ];
 

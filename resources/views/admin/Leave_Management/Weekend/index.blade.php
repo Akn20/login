@@ -94,7 +94,7 @@
                                         @include('partials.status-toggle', [
                                             'id'      => $weekend->id,
                                             'url'     => route('admin.weekends.toggleStatus', $weekend->id),
-                                            'checked' => (bool) $weekend->status,
+                                            'checked' => $weekend->status === 'active',
                                         ])
                                     </td>
 
@@ -102,14 +102,7 @@
 
                                     <td class="text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                                            <a
-                                                href="{{ route('admin.weekends.show', $weekend->id) }}"
-                                                class="btn btn-outline-secondary btn-icon rounded-circle"
-                                                title="View"
-                                            >
-                                                <i class="feather-eye"></i>
-                                            </a>
-
+                                            
                                             <a
                                                 href="{{ route('admin.weekends.edit', $weekend->id) }}"
                                                 class="btn btn-outline-secondary btn-icon rounded-circle"
@@ -167,8 +160,23 @@ document.addEventListener('DOMContentLoaded', function () {
         toggle.dataset.bound = '1';
 
         toggle.addEventListener('change', function () {
+            // if already loading, ignore this change
+            if (this.dataset.loading === '1') {
+                // revert visual change because we are ignoring this click
+                this.checked = !this.checked;
+                return;
+            }
+
             const url     = this.getAttribute('data-url');
             const checked = this.checked;
+
+            this.dataset.loading = '1';
+            this.disabled = true;
+
+            const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
+            const prevText = textEl ? textEl.textContent : '';
+
+            if (textEl) textEl.textContent = '...';
 
             fetch(url, {
                 method: 'PATCH',
@@ -183,10 +191,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!data.success) {
                     alert('Failed to update status.');
                     this.checked = !checked;
+                    if (textEl) textEl.textContent = prevText;
                     return;
                 }
 
-                const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
                 if (textEl) {
                     textEl.textContent =
                         (data.status === 'active' || data.is_active || data.status === 1)
@@ -197,9 +205,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(() => {
                 alert('Failed to update status.');
                 this.checked = !checked;
+                if (textEl) textEl.textContent = prevText;
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.dataset.loading = '0';
             });
         });
     });
 });
 </script>
 @endpush
+

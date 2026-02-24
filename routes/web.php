@@ -305,7 +305,6 @@ Route::prefix('weekends')->name('weekends.')->group(function () {
     Route::get('/',            [WeekendController::class, 'index'])->name('index');
     Route::get('/create',      [WeekendController::class, 'create'])->name('create');
     Route::post('/store',      [WeekendController::class, 'store'])->name('store');
-    Route::get('/show/{id}',   [WeekendController::class, 'show'])->name('show');
     Route::get('/edit/{id}',   [WeekendController::class, 'edit'])->name('edit');
     Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
     Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
