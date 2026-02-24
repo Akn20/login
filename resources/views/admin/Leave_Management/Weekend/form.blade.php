@@ -73,40 +73,41 @@
                         </div>
 
                         {{-- Weekend Days --}}
-                        <div class="mb-3">
-                            <label class="form-label">Weekend Days<span class="text-danger">*</span></label>
-                            @php
-                                $selectedDays = old(
-                                    'days',
-                                    isset($weekend) && $weekend->days
-                                        ? (is_array($weekend->days) ? $weekend->days : (json_decode($weekend->days, true) ?? []))
-                                        : []
-                                );
-                            @endphp
-                            <select
-                                name="days[]"
-                                class="form-select @error('days') is-invalid @enderror"
-                                multiple
-                                size="7"
-                            >
-                                @foreach ($days as $day)
-                                    <option
-                                        value="{{ $day }}"
-                                        {{ collect($selectedDays)->contains($day) ? 'selected' : '' }}
-                                    >
-                                        {{ $day }}
-                                    </option>
-                                @endforeach
-                            </select>
+                   <div class="mb-3">
+    <label class="form-label">Weekend Days<span class="text-danger">*</span></label>
+    @php
+        $selectedDays = old(
+            'days',
+            isset($weekend) && $weekend->days
+                ? (is_array($weekend->days) ? $weekend->days : (json_decode($weekend->days, true) ?? []))
+                : []
+        );
+    @endphp
+    <select
+        id="weekend-days-select"
+        name="days[]"
+        class="form-select @error('days') is-invalid @enderror"
+        multiple
+        autocomplete="off"
+    >
+        @foreach ($days as $day)
+            <option
+                value="{{ $day }}"
+                {{ collect($selectedDays)->contains($day) ? 'selected' : '' }}
+            >
+                {{ $day }}
+            </option>
+        @endforeach
+    </select>
 
-                            @error('days')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                            @error('days.*')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+    @error('days')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+    @error('days.*')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+</div>
 
-                        </div>
 
                     </div>
 
