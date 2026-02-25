@@ -18,6 +18,8 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WorkStatusController;
+
+use App\Http\Controllers\BedController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -298,5 +300,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
                     Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
 
         });
+         /*
+        |----------------------------------------------------------------------
+        | Beds
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('beds')->name('beds.')->group(function () {
+
+                    Route::get('/', [BedController::class, 'index'])->name('index');
+
+                    Route::get('/create', [BedController::class, 'create'])->name('create');
+                    Route::post('/store', [BedController::class, 'store'])->name('store');
+
+                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+
+                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
+                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+
+                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
+        });           
+
     });
 });

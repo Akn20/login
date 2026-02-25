@@ -314,6 +314,34 @@
                     </ul>
                 </li>
 
+                {{-- ================Bed Management================== --}}
+<li class="nxl-item nxl-hasmenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <span class="nxl-micon"><i class="feather-layers"></i></span>
+        <span class="nxl-mtext">Bed Management</span>
+        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+    </a>
+
+    <ul class="nxl-submenu">
+
+        {{-- All Beds --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.beds.index') }}" class="nxl-link">
+                <span class="nxl-micon"><i class="feather-list"></i></span>
+                <span class="nxl-mtext">All Beds</span>
+            </a>
+        </li>
+
+        {{-- Add Bed --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.beds.create') }}" class="nxl-link">
+                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                <span class="nxl-mtext">Add Bed</span>
+            </a>
+        </li>
+
+    </ul>
+</li>
                 {{-- Section: Account --}}
                 <li class="nxl-item nxl-caption">
                     <label>Account</label>
