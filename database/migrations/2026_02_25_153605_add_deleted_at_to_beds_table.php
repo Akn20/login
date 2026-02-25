@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wards', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+       Schema::table('beds', function (Blueprint $table) {
+            $table->softDeletes(); // adds deleted_at column
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wards');
+        Schema::table('beds', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

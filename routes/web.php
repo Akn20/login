@@ -326,20 +326,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
         | Beds
         |----------------------------------------------------------------------
         */
-        Route::prefix('beds')->name('beds.')->group(function () {
 
-                    Route::get('/', [BedController::class, 'index'])->name('index');
+            Route::get('beds/deleted', [BedController::class, 'deleted'])
+                ->name('beds.deleted');
 
-                    Route::get('/create', [BedController::class, 'create'])->name('create');
-                    Route::post('/store', [BedController::class, 'store'])->name('store');
+            Route::put('beds/{id}/restore', [BedController::class, 'restore'])
+                ->name('beds.restore');
 
-                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+            Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDelete'])
+                ->name('beds.forceDelete');
 
-                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
-                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+            Route::get('beds/generate-code/{ward}', [BedController::class, 'generateCode'])
+                ->name('beds.generateCode');
+            Route::resource('beds', BedController::class);
 
-                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
-        });           
+
 
     });
 });

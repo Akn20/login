@@ -12,9 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('beds', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+                $table->uuid('id')->primary();
+                $table->string('bed_code');
+                $table->uuid('ward_id');   // IMPORTANT (because ward uses UUID)
+                $table->string('room_number')->nullable();
+                $table->string('bed_type')->nullable();
+                $table->string('status');
+                $table->timestamps();
+                $table->softDeletes();
+                $table->foreign('ward_id')->references('id')->on('wards')->onDelete('cascade');
+                    });
     }
 
     /**
