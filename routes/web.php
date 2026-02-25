@@ -20,10 +20,14 @@ use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\WardController;
 // HR controllers
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\EmployeeController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -248,6 +252,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('organization', OrganizationController::class);
 
         /*
+|--------------------------------------------------------------------------
+| Wards
+|--------------------------------------------------------------------------
+*/
+
+        Route::get('ward/deleted', [WardController::class, 'deleted'])
+            ->name('ward.deleted');
+
+        Route::put('ward/{id}/restore', [WardController::class, 'restore'])
+            ->name('ward.restore');
+
+        Route::delete('ward/{id}/force-delete', [WardController::class, 'forceDelete'])
+            ->name('ward.forceDelete');
+
+        Route::patch('ward/{id}/toggle-status', [WardController::class, 'toggleStatus'])
+            ->name('ward.toggleStatus');
+
+        Route::resource('ward', WardController::class);
+
+        /*
         |----------------------------------------------------------------------
         | Institutions
         |----------------------------------------------------------------------
@@ -337,6 +361,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
             Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
         });
+         /*
+        |----------------------------------------------------------------------
+        | Beds
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('beds')->name('beds.')->group(function () {
+
+                    Route::get('/', [BedController::class, 'index'])->name('index');
+
+                    Route::get('/create', [BedController::class, 'create'])->name('create');
+                    Route::post('/store', [BedController::class, 'store'])->name('store');
+
+                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+
+                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
+                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+
+                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
+        });           
+
     });
 
 });
