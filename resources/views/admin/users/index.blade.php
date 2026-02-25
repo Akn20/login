@@ -65,7 +65,7 @@
                                     <td>
                                         @include('partials.status-toggle', [
                                             'id'      => $user->id,
-                                            'url'     => route('admin.users.toggle-status', $user->id),
+                                            'url'     => route('admin.users.toggle-Status', $user->id),
                                             'checked' => $user->status === 'active',
                                         ])
                                     </td>

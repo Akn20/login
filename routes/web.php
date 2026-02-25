@@ -97,7 +97,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])
             ->name('users.forceDelete');
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-            ->name('users.toggleStatus');
+            ->name('users.toggle-Status');
 
         Route::resource('users', UserController::class)->except(['show']);
 
