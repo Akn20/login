@@ -1,26 +1,29 @@
 <?php
 
+// Auth
+use App\Http\Controllers\Auth\SignInController;
+// Admin controllers
 use App\Http\Controllers\Admin\DashboardController;
-// Auth & Admin controllers
-use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\Admin\FinancialYearController;
+// Masters controllers
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
-// Masters controllers
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\WorkStatusController;
+// HR controllers
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\HR\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,15 +54,18 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated + Admin-only routes
+| ADMIN-ONLY routes  (role = admin)
+|--------------------------------------------------------------------------
+|
+| Admin = Superuser: system setup, masters, institutions, hospitals,
+| financial year, modules, etc.
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
 
-    // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
 
         /*
@@ -274,23 +280,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
-        
-        /*
-        |----------------------------------------------------------------------
-        | HR -  staff management
-        |----------------------------------------------------------------------
-        */
-        
-        Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
-            ->name('staff-management.deleted');
 
-        Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
-            ->name('staff-management.restore');
-
-        Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
-            ->name('staff-management.forceDelete');
-
-        Route::resource('staff-management', StaffManagementController::class);
         /*
         |----------------------------------------------------------------------
         | Modules
@@ -298,30 +288,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
         */
 
         Route::prefix('modules')->name('modules.')->group(function () {
-
             Route::get('/', [ModuleController::class, 'index'])->name('index');
-
             Route::get('/create', [ModuleController::class, 'create'])->name('create');
             Route::post('/store', [ModuleController::class, 'store'])->name('store');
-
             Route::get('/show/{id}', [ModuleController::class, 'show'])->name('show');
-
             Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [ModuleController::class, 'update'])->name('update');
-
             Route::delete('/delete/{id}', [ModuleController::class, 'destroy'])->name('delete');
-
             Route::get('/deleted', [ModuleController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [ModuleController::class, 'restore'])->name('restore');
             Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
-
             Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
-
         });
 
         /*
         |----------------------------------------------------------------------
-        | Weekends
+        | Weekends (Leave management master)
         |----------------------------------------------------------------------
         */
 
@@ -338,28 +320,54 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
             Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
         });
-        
+
         Route::prefix('holidays')->name('holidays.')->group(function () {
 
-    Route::get('/',            [HolidayController::class, 'index'])->name('index');
-    Route::get('/create',      [HolidayController::class, 'create'])->name('create');
-    Route::post('/store',      [HolidayController::class, 'store'])->name('store');
-    Route::get('/show/{id}',   [HolidayController::class, 'show'])->name('show');
-    Route::get('/edit/{id}',   [HolidayController::class, 'edit'])->name('edit');
-    Route::put('/update/{id}', [HolidayController::class, 'update'])->name('update');
-    Route::delete('/delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
+            Route::get('/', [HolidayController::class, 'index'])->name('index');
+            Route::get('/create', [HolidayController::class, 'create'])->name('create');
+            Route::post('/store', [HolidayController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [HolidayController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [HolidayController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [HolidayController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
 
-    Route::get('/deleted',        [HolidayController::class, 'deleted'])->name('deleted');
-    Route::post('/restore/{id}',  [HolidayController::class, 'restore'])->name('restore');
-    Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/deleted', [HolidayController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [HolidayController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
 
-    Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
+            Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
+        });
     });
-    });
 
-   
-         
 });
 
+/*
+|--------------------------------------------------------------------------
+| HR MODULE routes  (role = hr OR admin)
+|--------------------------------------------------------------------------
+|
+| HR = staff management. Admin can also access (superuser).
+|--------------------------------------------------------------------------
+*/
 
+Route::middleware(['auth', 'role:hr,admin'])
+    ->prefix('hr')
+    ->name('hr.')
+    ->group(function () {
 
+        // HR Dashboard (create later)
+        Route::get('/dashboard', [HRDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // Staff management (employee master) – moved here for HR
+        Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
+            ->name('staff-management.deleted');
+
+        Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
+            ->name('staff-management.restore');
+
+        Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+            ->name('staff-management.forceDelete');
+
+        Route::resource('staff-management', StaffManagementController::class);
+    });

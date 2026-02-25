@@ -323,12 +323,12 @@
                                 <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                             </a>
                             <ul class="nxl-submenu">
-                       
-                         <li class="nxl-item">
-                        <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-calendar"></i></span>
-                            <span class="nxl-mtext">Holiday Master</span>
-                        </a>
+
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                        <span class="nxl-mtext">Holiday Master</span>
+                                    </a>
                                 <li class="nxl-item">
                                     <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
                                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
@@ -346,7 +346,7 @@
                             </a>
                             <ul class="nxl-submenu">
                                 <li class="nxl-item">
-                                    <a href="{{ route('admin.staff-management.index') }}" class="nxl-link">
+                                    <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
                                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
                                         <span class="nxl-mtext">Staff Management</span>
                                     </a>
