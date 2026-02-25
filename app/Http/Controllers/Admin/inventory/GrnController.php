@@ -36,7 +36,7 @@ class GrnController extends Controller
 
             $po = PurchaseOrder::with('items')->findOrFail($request->purchase_order_id);
 
-            $grn = Grn::create([
+            $grn = Grn ::create([ 
                 'grn_number' => 'GRN-' . time(),
                 'purchase_order_id' => $po->id,
                 'received_date' => $request->received_date,

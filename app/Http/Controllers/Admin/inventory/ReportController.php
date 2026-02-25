@@ -22,6 +22,7 @@ class ReportController extends Controller
         $recentPOs = PurchaseOrder::latest()->take(5)->get();
 
         $recentGrns = Grn::latest()->take(5)->get();
+        
 
         return view('admin.inventory.reports.index', compact(
             'totalItems',

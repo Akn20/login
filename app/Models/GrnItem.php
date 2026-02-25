@@ -18,7 +18,7 @@ class GrnItem extends Model
     public function grn()
     {
         return $this->belongsTo(Grn::class);
-    }
+    } 
 
     public function item()
     {
