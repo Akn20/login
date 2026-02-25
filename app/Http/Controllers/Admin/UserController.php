@@ -109,6 +109,7 @@ class UserController extends Controller
 
     public function toggleStatus(User $user)
     {
+        echo $user;
         $user->status = $user->status === 'active' ? 'inactive' : 'active';
         $user->save();
 
