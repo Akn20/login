@@ -109,6 +109,8 @@
             </option>
         </select></div>
     <div class="mt-3">
-    <button type="submit" class="btn btn-primary">
-        {{ isset($module) ? 'Update' : 'Submit' }}
-    </button></div></div>
+        <button type="submit" class="btn btn-primary">
+            {{ isset($module) ? 'Update' : 'Submit' }}
+        </button>
+    </div>
+</div>

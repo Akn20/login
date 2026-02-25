@@ -67,6 +67,7 @@ return new class extends Migration
             $table->string('support_sla')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
