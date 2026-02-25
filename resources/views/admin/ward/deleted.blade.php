@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Deleted Wards | ' . config('app.name'))
+
 @section('content')
 
     <div class="page-header">

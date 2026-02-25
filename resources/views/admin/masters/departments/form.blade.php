@@ -8,15 +8,14 @@
 <div class="mb-4">
     <label class="form-label">Department Code <span class="text-danger">*</span></label>
     <input type="text" name="department_code" value="{{ old('department_code', $department->department_code ?? '') }}"
-        class="form-control @error('department_code') is-invalid @enderror"
-        placeholder="MED / NUR / ADM">
+        class="form-control @error('department_code') is-invalid @enderror" placeholder="MED / NUR / ADM">
     @error('department_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
 <div class="mb-4">
     <label class="form-label">Description</label>
     <textarea name="description" rows="3"
-            class="form-control @error('description') is-invalid @enderror">{{ old('description', $department->description ?? '') }}</textarea>
+        class="form-control @error('description') is-invalid @enderror">{{ old('description', $department->description ?? '') }}</textarea>
     @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 <div class="mb-4">

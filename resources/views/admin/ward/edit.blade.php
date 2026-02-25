@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Edit Ward | ' . config('app.name'))
+
 @section('content')
 
     <form action="{{ route('admin.ward.update', $ward->id) }}" method="POST">

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+
        Schema::table('beds', function (Blueprint $table) {
             $table->softDeletes(); // adds deleted_at column
+
+       
         });
     }
 
@@ -21,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+
         Schema::table('beds', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
+
     }
 };

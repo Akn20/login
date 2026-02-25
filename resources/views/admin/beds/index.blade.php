@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Beds | ' . config('app.name'))
+
 @section('content')
 
   <div class="page-header mb-4 d-flex align-items-center justify-content-between">

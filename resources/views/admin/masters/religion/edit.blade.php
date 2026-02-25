@@ -11,11 +11,7 @@
                 <form action="{{ route('admin.religion.update', $religion->id) }}" method="POST">
                     @csrf
 
-<<<<<<< HEAD
-                    @include('masters.religion.form')
-
-=======
-                    <div class="mb-3">
+                     <div class="mb-3">
                         <label class="form-label">Religion Name</label>
                         <input type="text" name="religion_name" class="form-control" value="{{ $religion->religion_name }}">
                     </div>
@@ -27,8 +23,7 @@
                             <option value="Inactive" {{ $religion->status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
-
+ 
                     <div class="d-flex gap-2 mt-3">
                         <button type="submit" class="btn btn-primary">
                             Update
