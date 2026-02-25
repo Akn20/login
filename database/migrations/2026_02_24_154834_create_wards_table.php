@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('ward_type')->nullable();
             $table->integer('floor_number')->nullable();
             $table->integer('total_beds')->default(0);
+            $table->boolean('status')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });
