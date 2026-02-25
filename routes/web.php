@@ -18,6 +18,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\WardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -238,6 +239,26 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::resource('organization', OrganizationController::class);
 
         /*
+|--------------------------------------------------------------------------
+| Wards
+|--------------------------------------------------------------------------
+*/
+
+        Route::get('ward/deleted', [WardController::class, 'deleted'])
+            ->name('ward.deleted');
+
+        Route::put('ward/{id}/restore', [WardController::class, 'restore'])
+            ->name('ward.restore');
+
+        Route::delete('ward/{id}/force-delete', [WardController::class, 'forceDelete'])
+            ->name('ward.forceDelete');
+
+        Route::patch('ward/{id}/toggle-status', [WardController::class, 'toggleStatus'])
+            ->name('ward.toggleStatus');
+
+        Route::resource('ward', WardController::class);
+
+        /*
         |----------------------------------------------------------------------
         | Institutions
         |----------------------------------------------------------------------
@@ -279,23 +300,23 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::prefix('modules')->name('modules.')->group(function () {
 
-                    Route::get('/', [ModuleController::class, 'index'])->name('index');
+            Route::get('/', [ModuleController::class, 'index'])->name('index');
 
-                    Route::get('/create', [ModuleController::class, 'create'])->name('create');
-                    Route::post('/store', [ModuleController::class, 'store'])->name('store');
+            Route::get('/create', [ModuleController::class, 'create'])->name('create');
+            Route::post('/store', [ModuleController::class, 'store'])->name('store');
 
-                    Route::get('/show/{id}', [ModuleController::class, 'show'])->name('show');
+            Route::get('/show/{id}', [ModuleController::class, 'show'])->name('show');
 
-                    Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
-                    Route::put('/update/{id}', [ModuleController::class, 'update'])->name('update');
+            Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [ModuleController::class, 'update'])->name('update');
 
-                    Route::delete('/delete/{id}', [ModuleController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id}', [ModuleController::class, 'destroy'])->name('delete');
 
-                    Route::get('/deleted', [ModuleController::class, 'deleted'])->name('deleted');
-                    Route::post('/restore/{id}', [ModuleController::class, 'restore'])->name('restore');
-                    Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/deleted', [ModuleController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [ModuleController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
 
-                    Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
+            Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
 
         });
     });
