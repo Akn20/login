@@ -12,12 +12,15 @@ return new class extends Migration {
     {
         Schema::create('designation_master', function (Blueprint $table) {
             $table->uuid('id')->primary();
+
             $table->string('designation_code', 20)->unique();
             $table->string('designation_name', 100);
-            $table->uuid('department_id')->nullable();
+            
+            $table->uuid('department_id')->nullable()->index();
+
             $table->text('description')->nullable();
             $table->boolean('status')->default(true);
-            $table->uuid('created_by');
+            $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
