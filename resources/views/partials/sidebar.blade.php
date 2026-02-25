@@ -327,7 +327,13 @@
                             <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-airplay"></i></span>
                                 <span class="nxl-mtext">Weekend Holiday</span>
-                            </a>
+                            </a>  
+                        </li>
+                         <li class="nxl-item">
+                        <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                            <span class="nxl-mtext">Holiday Master</span>
+                        </a>
                         </li>
                         </ul>
                         </li>
