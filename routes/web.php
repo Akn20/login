@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BloodGroupController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WorkStatusController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -270,7 +272,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
+/*
+        |----------------------------------------------------------------------
+        | HR -  staff management
+        |----------------------------------------------------------------------
+        */
+        Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
+    ->name('staff-management.deleted');
 
+Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
+    ->name('staff-management.restore');
+
+Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+    ->name('staff-management.forceDelete');
+
+        Route::resource('staff-management', StaffManagementController::class);
         /*
         |----------------------------------------------------------------------
         | Modules
@@ -296,6 +312,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
                     Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
 
                     Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
+
+
+
+
 
         });
     });
