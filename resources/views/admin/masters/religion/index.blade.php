@@ -14,7 +14,7 @@
                     <li class="breadcrumb-item">Religion</li>
                 </ul>
             </div>
- 
+
             <div class="page-header-right ms-auto d-flex gap-2">
                 <a href="{{ route('admin.religion.trash') }}" class="btn btn-neutral">
                     Deleted Records
