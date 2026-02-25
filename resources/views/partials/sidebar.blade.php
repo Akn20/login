@@ -1,3 +1,8 @@
+@php
+    $user = auth()->user();
+    $role = $user?->role?->name ? strtolower($user->role->name) : null;
+@endphp
+
 <style>
     /* FIXED SIDEBAR LAYOUT */
     .nxl-navigation {
@@ -9,20 +14,17 @@
         height: 100vh;
     }
 
-    /* HEADER (logo) */
     .nxl-navigation .m-header {
         height: 70px;
         flex-shrink: 0;
     }
 
-    /* WRAPPER FLEX */
     .nxl-navigation .navbar-wrapper {
         display: flex;
         flex-direction: column;
         height: 100%;
     }
 
-    /* ONLY THIS AREA SCROLLS */
     .nxl-navigation .navbar-content {
         flex: 1;
         overflow-y: auto;
@@ -30,7 +32,6 @@
         padding-bottom: 40px;
     }
 
-    /* Smooth scroll */
     .nxl-navigation .navbar-content::-webkit-scrollbar {
         width: 6px;
     }
@@ -43,160 +44,305 @@
 
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
+
+        {{-- HEADER / LOGO --}}
         <div class="m-header">
-            <a href="{{ route('admin.dashboard') }}" class="b-brand">
+            <a href="{{ $role === 'hr' ? route('hr.dashboard') : route('admin.dashboard') }}" class="b-brand">
                 <img src="{{ asset('assets/images/logo-full.png') }}" alt="" class="logo logo-lg">
                 <img src="{{ asset('assets/images/logo-abbr.png') }}" alt="" class="logo logo-sm">
             </a>
         </div>
 
+        {{-- MAIN SCROLLABLE CONTENT --}}
         <div class="navbar-content">
             <ul class="nxl-navbar">
 
-                {{-- Section: Main --}}
+                {{-- ================= MAIN ================= --}}
                 <li class="nxl-item nxl-caption">
                     <label>Main</label>
                 </li>
 
                 <li class="nxl-item">
-                    <a href="{{ route('admin.dashboard') }}" class="nxl-link">
+                    <a href="{{ $role === 'hr' ? route('hr.dashboard') : route('admin.dashboard') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
                         <span class="nxl-mtext">Dashboard</span>
                     </a>
                 </li>
 
-                {{-- Section: Access Control --}}
-                <li class="nxl-item nxl-caption">
-                    <label>Access Control</label>
-                </li>
+                {{-- ================= ADMIN ONLY ================= --}}
+                @if($role === 'admin')
+                    {{-- Access Control --}}
+                    <li class="nxl-item nxl-caption">
+                        <label>Access Control</label>
+                    </li>
 
-                {{-- Users --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0)" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-users"></i></span>
-                        <span class="nxl-mtext">Users</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.users.index') }}" class="nxl-link">All Users</a>
-                        </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.users.create') }}" class="nxl-link">Add User</a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- Users --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0)" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-users"></i></span>
+                            <span class="nxl-mtext">Users</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.users.index') }}" class="nxl-link">All Users</a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.users.create') }}" class="nxl-link">Add User</a>
+                            </li>
+                        </ul>
+                    </li>
 
-                {{-- Roles --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0)" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-shield"></i></span>
-                        <span class="nxl-mtext">Roles &amp; Permissions</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.roles.index') }}" class="nxl-link">All Roles</a>
-                        </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.roles.create') }}" class="nxl-link">Add Role</a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- Roles --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0)" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-shield"></i></span>
+                            <span class="nxl-mtext">Roles &amp; Permissions</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.roles.index') }}" class="nxl-link">All Roles</a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.roles.create') }}" class="nxl-link">Add Role</a>
+                            </li>
+                        </ul>
+                    </li>
 
-                {{-- Section: App Management --}}
-                <li class="nxl-item nxl-caption">
-                    <label>App Management</label>
-                </li>
+                    {{-- App Management --}}
+                    <li class="nxl-item nxl-caption">
+                        <label>App Management</label>
+                    </li>
 
-                {{-- System (Financial Years) --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0)" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-settings"></i></span>
-                        <span class="nxl-mtext">System</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.financial-years.index') }}" class="nxl-link">
-                                Financial Years
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.financial-years.mapping') }}" class="nxl-link">
-                                FY–Hospital Mapping
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- System (Financial Years) --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0)" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-settings"></i></span>
+                            <span class="nxl-mtext">System</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.financial-years.index') }}" class="nxl-link">
+                                    Financial Years
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.financial-years.mapping') }}" class="nxl-link">
+                                    FY–Hospital Mapping
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                {{-- Section: Navigation --}}
-                <li class="nxl-item nxl-caption">
-                    <label>Navigation</label>
-                </li>
+                    {{-- Navigation --}}
+                    <li class="nxl-item nxl-caption">
+                        <label>Navigation</label>
+                    </li>
 
-                {{-- ================= HOSPITAL ================= --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-cast"></i></span>
-                        <span class="nxl-mtext">Hospitals</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.hospitals.index') }}">
-                                All Hospitals
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.hospitals.create') }}">
-                                Add Hospital
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- Hospitals --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-cast"></i></span>
+                            <span class="nxl-mtext">Hospitals</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.hospitals.index') }}">
+                                    All Hospitals
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.hospitals.create') }}">
+                                    Add Hospital
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                {{-- ================= ORGANIZATION ================= --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-cast"></i></span>
-                        <span class="nxl-mtext">Organization</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.organization.index') }}">
-                                All Organizations
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.organization.create') }}">
-                                Add Organization
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- Organization --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-cast"></i></span>
+                            <span class="nxl-mtext">Organization</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.organization.index') }}">
+                                    All Organizations
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.organization.create') }}">
+                                    Add Organization
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                {{-- ================= INSTITUTION ================= --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-send"></i></span>
-                        <span class="nxl-mtext">Institution</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.institutions.index') }}">
-                                All Institutions
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a class="nxl-link" href="{{ route('admin.institutions.create') }}">
-                                Add Institution
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    {{-- Institution --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-send"></i></span>
+                            <span class="nxl-mtext">Institution</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.institutions.index') }}">
+                                    All Institutions
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a class="nxl-link" href="{{ route('admin.institutions.create') }}">
+                                    Add Institution
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Module Management --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.modules.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-grid"></i></span>
+                            <span class="nxl-mtext">Module Management</span>
+                        </a>
+                    </li>
+
+                    {{-- Dynamic Modules (from $sidebarModules) --}}
+                    <li class="nxl-item nxl-caption">
+                        <label>Modules</label>
+                    </li>
+
+                    @foreach($sidebarModules as $module)
+                        @if($module->children->count() > 0)
+                            <li class="nxl-item nxl-hasmenu">
+                                <a href="javascript:void(0);" class="nxl-link">
+                                    <span class="nxl-micon">
+                                        <i class="{{ $module->icon ?? 'feather-grid' }}"></i>
+                                    </span>
+                                    <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                    <span class="nxl-arrow">
+                                        <i class="feather-chevron-right"></i>
+                                    </span>
+                                </a>
+
+                                <ul class="nxl-submenu">
+                                    @foreach($module->children as $child)
+                                        <li class="nxl-item">
+                                            <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                                {{ $child->module_display_name }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @else
+                            <li class="nxl-item">
+                                <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                    <span class="nxl-micon">
+                                        <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                    </span>
+                                    <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Configuration --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-cast"></i></span>
+                            <span class="nxl-mtext">Configuration</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.religion.index') }}" class="nxl-link">
+                                    Religion
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.job-type.index') }}" class="nxl-link">
+                                    Job Type
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.work-status.index') }}" class="nxl-link">
+                                    Work Status
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.designation.index') }}" class="nxl-link">
+                                    Designation
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.blood-groups.index') }}" class="nxl-link">
+                                    Blood Group
+                                </a>
+                            </li>
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.departments.index') }}" class="nxl-link">
+                                    Department
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {{-- Leave Management --}}
+                    <li class="nxl-item nxl-hasmenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-cast"></i></span>
+                            <span class="nxl-mtext">Leave Management</span>
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
+                                    Weekend Holiday
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+                {{-- ================= HR SECTION (hr + admin) ================= --}}
+                @if(in_array($role, ['hr']))
+                    <li class="nxl-item nxl-caption">
+                        <label>HR Management</label>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.dashboard') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                            <span class="nxl-mtext">HR Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-users"></i></span>
+                            <span class="nxl-mtext">Staff Management</span>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- ================= ACCOUNT / PROFILE ================= --}}
+                @if($user)
+                    <li class="nxl-item nxl-caption">
+                        <label>Account</label>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="#" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-user"></i></span>
+                            <span class="nxl-mtext">Profile</span>
+                        </a>
+                    </li>
 
                 {{-- ================= MODULE MANAGEMENT ================= --}}
                 <li class="nxl-item">
@@ -380,4 +526,5 @@
                     </ul>
                 </div>
         </div>
+    </div>
 </nav>
