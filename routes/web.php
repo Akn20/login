@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BloodGroupController;
 // Masters controllers
@@ -82,7 +83,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDeleteRole'])
             ->name('roles.forceDelete');
         Route::patch('roles/{id}/toggle-status', [RoleController::class, 'toggleStatus'])
-            ->name('roles.toggleStatus');
+            ->name('roles.toggle-status');
 
         Route::resource('roles', RoleController::class)->except(['show']);
 
@@ -99,7 +100,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])
             ->name('users.forceDelete');
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-            ->name('users.toggleStatus');
+            ->name('users.toggle-status');
 
         Route::resource('users', UserController::class)->except(['show']);
 
@@ -114,7 +115,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('financial-years/mapping', [FinancialYearMappingController::class, 'store'])
             ->name('financial-years.mapping.store');
         Route::patch('financial-years/{id}/toggle-status', [FinancialYearController::class, 'toggleStatus'])
-            ->name('financial-years.toggleStatus');
+            ->name('financial-years.toggle-status');
 
         Route::resource('financial-years', FinancialYearController::class)->except(['show']);
 
@@ -318,5 +319,22 @@ Route::delete('staff-management/{id}/force-delete', [StaffManagementController::
 
 
         });
+       // routes/web.php (inside Route::middleware(['auth','admin'])->group and prefix('admin'))
+
+Route::prefix('weekends')->name('weekends.')->group(function () {
+    Route::get('/',            [WeekendController::class, 'index'])->name('index');
+    Route::get('/create',      [WeekendController::class, 'create'])->name('create');
+    Route::post('/store',      [WeekendController::class, 'store'])->name('store');
+    Route::get('/edit/{id}',   [WeekendController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
+    Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
+
+    Route::get('/deleted',        [WeekendController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}',  [WeekendController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
+
+    Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+});
+
     });
 });
