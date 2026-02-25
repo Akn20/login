@@ -144,7 +144,7 @@ class WeekendController extends Controller
         ]);
     }
 
-    return back()->with('success', 'Status updated.');
+    return back();
 }
 
 }

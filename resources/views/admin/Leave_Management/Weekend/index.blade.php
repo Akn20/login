@@ -91,11 +91,11 @@
                                     </td>
 
                                     <td>
-                                        @include('partials.status-toggle', [
-                                            'id'      => $weekend->id,
-                                            'url'     => route('admin.weekends.toggleStatus', $weekend->id),
-                                            'checked' => $weekend->status === 'active',
-                                        ])
+                                        @if ($weekend->status === 'active')
+                                            <span class="badge bg-soft-success text-success">Active</span>
+                                        @else
+                                            <span class="badge bg-soft-danger text-danger">Inactive</span>
+                                        @endif
                                     </td>
 
                                     <td>{{ $weekend->created_at?->format('d-m-Y H:i') }}</td>
@@ -128,7 +128,20 @@
                                                     <i class="feather feather-trash-2"></i>
                                                 </button>
                                             </form>
+                                                    <form action="{{ route('admin.weekends.toggleStatus', $weekend->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit"
+                                                    class="status-toggle {{ $weekend->status === 'active' ? 'inactive' : 'active' }}">
+                                                    <span>
+                                                        {{ $weekend->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                    </span>
+                                                </button>
+                                            </form>
                                         </div>
+                                        
                                     </td>
                                 </tr>
                             @endforeach
@@ -149,71 +162,4 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggles = document.querySelectorAll('.status-toggle-input[data-url*="weekends"]');
-
-    toggles.forEach(toggle => {
-        if (toggle.dataset.bound === '1') return;
-        toggle.dataset.bound = '1';
-
-        toggle.addEventListener('change', function () {
-            // if already loading, ignore this change
-            if (this.dataset.loading === '1') {
-                // revert visual change because we are ignoring this click
-                this.checked = !this.checked;
-                return;
-            }
-
-            const url     = this.getAttribute('data-url');
-            const checked = this.checked;
-
-            this.dataset.loading = '1';
-            this.disabled = true;
-
-            const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
-            const prevText = textEl ? textEl.textContent : '';
-
-            if (textEl) textEl.textContent = '...';
-
-            fetch(url, {
-                method: 'PATCH',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    alert('Failed to update status.');
-                    this.checked = !checked;
-                    if (textEl) textEl.textContent = prevText;
-                    return;
-                }
-
-                if (textEl) {
-                    textEl.textContent =
-                        (data.status === 'active' || data.is_active || data.status === 1)
-                            ? 'Active'
-                            : 'Inactive';
-                }
-            })
-            .catch(() => {
-                alert('Failed to update status.');
-                this.checked = !checked;
-                if (textEl) textEl.textContent = prevText;
-            })
-            .finally(() => {
-                this.disabled = false;
-                this.dataset.loading = '0';
-            });
-        });
-    });
-});
-</script>
-@endpush
 
