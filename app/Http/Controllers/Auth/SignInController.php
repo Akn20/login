@@ -64,11 +64,6 @@ class SignInController extends Controller
                 ->with('success', 'Login successful');
         }
 
-        if ($roleName === 'hr') {
-            return redirect()->route('hr.dashboard')
-                ->with('success', 'Login successful');
-        }
-
         return redirect()->route('login')
             ->with('error', 'No dashboard configured for this role');
     }
