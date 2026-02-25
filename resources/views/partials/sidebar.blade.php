@@ -301,6 +301,11 @@
                                 Weekend Holiday
                             </a>
                         </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                                Holidays
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
