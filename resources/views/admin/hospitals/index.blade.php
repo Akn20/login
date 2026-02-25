@@ -21,6 +21,10 @@
         <a href="{{ route('admin.hospitals.create') }}" class="btn btn-primary">
             <i class="feather-plus me-1"></i> Add Hospital
         </a>
+
+        <a href="{{ route('admin.hospitals.deleted') }}" class="btn btn-danger">
+            Deleted Hospitals
+        </a>
     </div>
 </div>
 
@@ -85,7 +89,7 @@
                                 <td>
                                     @include('partials.status-toggle', [
                                         'id'      => $hospital->id,
-                                        'url'     => route('admin.hospitals.toggle-status', $hospital->id),
+                                        'url'     => route('admin.hospitals.toggleStatus', $hospital->id),
                                         'checked' => (bool) $hospital->status,
                                     ])
                                 </td>

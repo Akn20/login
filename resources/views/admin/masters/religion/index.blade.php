@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="nxl-content">
+     <div class="nxl-content">
 
         <!-- Page Header -->
         <div class="page-header">
@@ -15,7 +15,7 @@
                 </ul>
             </div>
 
-            <div class="page-header-right ms-auto d-flex gap-2">
+             <div class="page-header-right ms-auto d-flex gap-2">
                 <a href="{{ route('admin.religion.trash') }}" class="btn btn-neutral">
                     Deleted Records
                 </a>
@@ -23,7 +23,7 @@
                 <a href="{{ route('admin.religion.create') }}" class="btn btn-neutral">
                     Add Religion
                 </a>
-            </div>
+             </div>
         </div>
 
         <!-- Main Content -->
@@ -75,14 +75,13 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
-                                                                class="avatar-text avatar-md action-icon action-delete"
-                                                                title="Delete">
-                                                                <i class="feather-trash-2"></i>
+                                                                class="avatar-text avatar-md action-icon action-delete">
+                                                                 <i class="feather-trash-2"></i>
                                                             </button>
                                                         </form>
 
-                                                    </div>
-                                                </td>
+                                                     </div>
+                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -96,5 +95,6 @@
                 </div>
             </div>
         </div>
-    </div>
+
+     </div>
 @endsection

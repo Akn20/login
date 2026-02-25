@@ -1,28 +1,28 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Deleted Organizations | ' . config('app.name'))
-@section('title', 'Deleted Organizations')
+@section('page-title', 'Deleted Hospitals | ' . config('app.name'))
+@section('title', 'Deleted Hospitals')
 
 @section('content')
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
         <div class="page-header-title">
             <h5 class="m-b-10 mb-1">
-                <i class="feather-trash-2 me-2"></i>Deleted Organizations
+                <i class="feather-trash-2 me-2"></i>Deleted Hospitals
             </h5>
             <ul class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
                     <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('admin.organization.index') }}">Organizations</a>
+                    <a href="{{ route('admin.hospitals.index') }}">Hospitals</a>
                 </li>
                 <li class="breadcrumb-item">Deleted</li>
             </ul>
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.organization.index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="feather-arrow-left me-1"></i> Back to Organizations
+            <a href="{{ route('admin.hospitals.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="feather-arrow-left me-1"></i> Back to Hospitals
             </a>
         </div>
     </div>
@@ -41,37 +41,33 @@
                     <thead>
                         <tr class="border-b">
                             <th>Sl.No</th>
-                            <th>Organization Name</th>
-                            <th>Type</th>
-                            <th>Email</th>
-                            <th>Plan</th>
+                            <th>Hospital Name</th>
+                            <th>Code</th>
+                            <th>Institution</th>
+                            <th>Contact</th>
                             <th>Deleted At</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($organizations as $index => $organization)
+                        @forelse($hospitals as $hospital)
                             <tr>
-                                <td>{{ $organizations->firstItem() ? $organizations->firstItem() + $index : $index + 1 }}</td>
+                                <td>{{ $loop->iteration }}</td>
 
                                 <td>
-                                    <div class="fw-bold">{{ $organization->name }}</div>
-                                    <small class="text-muted">{{ $organization->city }}</small>
+                                    <div class="fw-bold">{{ $hospital->name }}</div>
+                                    <small class="text-muted">{{ $hospital->city ?? '' }}</small>
                                 </td>
 
-                                <td>{{ $organization->type ?? '-' }}</td>
+                                <td>{{ $hospital->code ?? '-' }}</td>
 
-                                <td>{{ $organization->email }}</td>
+                                <td>{{ optional($hospital->institution)->name ?? '-' }}</td>
 
-                                <td>
-                                    <span class="badge bg-soft-primary text-primary">
-                                        {{ $organization->plan_type ?? '-' }}
-                                    </span>
-                                </td>
+                                <td>{{ $hospital->contact_number ?? '-' }}</td>
 
                                 <td>
                                     <small class="text-muted">
-                                        {{ optional($organization->deleted_at)->format('d M Y, H:i') }}
+                                        {{ optional($hospital->deleted_at)->format('d M Y, H:i') }}
                                     </small>
                                 </td>
 
@@ -79,8 +75,8 @@
                                     <div class="hstack gap-2 justify-content-end">
 
                                         {{-- Restore --}}
-                                        <form action="{{ route('admin.organization.restore', $organization->id) }}"
-                                            method="POST" onsubmit="return confirm('Restore this organization?')">
+                                        <form action="{{ route('admin.hospitals.restore', $hospital->id) }}" method="POST"
+                                            onsubmit="return confirm('Restore this hospital?')">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit"
@@ -91,9 +87,8 @@
                                         </form>
 
                                         {{-- Force Delete --}}
-                                        <form action="{{ route('admin.organization.forceDelete', $organization->id) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Permanently delete this organization? This cannot be undone.')">
+                                        <form action="{{ route('admin.hospitals.forceDelete', $hospital->id) }}" method="POST"
+                                            onsubmit="return confirm('Permanently delete this hospital? This cannot be undone.')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -109,7 +104,7 @@
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center p-4">
-                                    No Deleted Organizations Found
+                                    No Deleted Hospitals Found
                                 </td>
                             </tr>
                         @endforelse
@@ -120,7 +115,7 @@
         </div>
 
         <div class="card-footer">
-            {{ $organizations->links() }}
+            {{ $hospitals->links() }}
         </div>
     </div>
 @endsection
