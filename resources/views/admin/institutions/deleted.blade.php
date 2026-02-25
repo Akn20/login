@@ -1,94 +1,116 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Deleted Institutions | ' . config('app.name'))
+@section('title', 'Deleted Institutions')
+
 @section('content')
+    <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+        <div class="page-header-title">
+            <h5 class="m-b-10 mb-1">
+                <i class="feather-trash-2 me-2"></i>Deleted Institutions
+            </h5>
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ route('admin.institutions.index') }}">Institutions</a>
+                </li>
+                <li class="breadcrumb-item">Deleted</li>
+            </ul>
+        </div>
 
-<div class="page-header">
-    <div class="page-header-left">
-        <h5 class="m-b-10 text-danger">Deleted Institutions</h5>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.institutions.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="feather-arrow-left me-1"></i> Back to Institutions
+            </a>
+        </div>
     </div>
 
-    <div class="page-header-right ms-auto">
-        <a href="{{ route('admin.institutions.index') }}" class="btn btn-light-brand btn-sm">
-            <i class="feather-arrow-left me-1"></i> Back to List
-        </a>
-    </div>
-</div>
+    <div class="main-content">
+        <div class="card stretch stretch-full">
+            <div class="card-body custom-card-action p-0">
 
-<div class="main-content">
-    <div class="card stretch stretch-full">
-        <div class="card-body custom-card-action p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead>
+                            <tr class="border-b">
+                                <th>Sl.No</th>
+                                <th>Institution Name</th>
+                                <th>Organization</th>
+                                <th>Email</th>
+                                <th>Deleted At</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($institutions as $index => $institution)
+                                <tr>
+                                    <td>{{ $institutions->firstItem() ? $institutions->firstItem() + $index : $index + 1 }}</td>
 
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr class="border-b">
-                            <th>Sl.No</th>
-                            <th>Institution Name</th>
-                            <th>Email</th>
-                            <th>Deleted At</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                                    <td>{{ $institution->name }}</td>
 
-                        @forelse($institutions as $institution)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $institution->name }}</td>
-                            <td>{{ $institution->email }}</td>
-                            <td>{{ $institution->deleted_at->format('d M Y H:i') }}</td>
-                           <td class="text-center">
-                        
-                               <div class="d-flex justify-content-center gap-2">
+                                    <td>{{ $institution->organization->name ?? '-' }}</td>
 
-                                                            <!-- Restore -->
-                                                            <a href="{{ route('admin.institutions.restore', $institution->id) }}"
-                                                            class="avatar-text avatar-md text-success"
-                                                            data-bs-toggle="tooltip"
-                                                            title="Restore">
-                                                                <i class="feather feather-rotate-ccw"></i>
-                                                            </a>
+                                    <td>{{ $institution->email }}</td>
 
-                                                            <!-- Permanent Delete -->
-                                                            <form action="{{ route('admin.institutions.forceDelete', $institution->id) }}"
-                                                                method="POST"
-                                                                onsubmit="return confirm('Permanently delete this institution?')"
-                                                                class="m-0">
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ optional($institution->deleted_at)->format('d M Y, H:i') }}
+                                        </small>
+                                    </td>
 
-                                                                @csrf
-                                                                @method('DELETE')
+                                    <td class="text-end">
+                                        <div class="hstack gap-2 justify-content-end">
+                                            {{-- View (optional) --}}
+                                            @if(Route::has('admin.institutions.show'))
+                                                <a href="{{ route('admin.institutions.show', $institution->id) }}"
+                                                    class="btn btn-outline-secondary btn-icon rounded-circle" title="View">
+                                                    <i class="feather-eye"></i>
+                                                </a>
+                                            @endif
 
-                                                                <button type="submit"
-                                                                        class="avatar-text avatar-md border-0 bg-transparent text-danger"
-                                                                        data-bs-toggle="tooltip"
-                                                                        title="Delete Permanently">
-                                                                    <i class="feather feather-trash-2"></i>
-                                                                </button>
-                                                            </form>
+                                            {{-- Restore --}}
+                                            <form action="{{ route('admin.institutions.restore', $institution->id) }}"
+                                                method="POST" onsubmit="return confirm('Restore this institution?')">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-outline-success btn-icon rounded-circle"
+                                                    title="Restore">
+                                                    <i class="feather-rotate-ccw"></i>
+                                                </button>
+                                            </form>
 
-                                                        </div>
-                                                    </td>
-                        </tr>
+                                            {{-- Force Delete --}}
+                                            <form action="{{ route('admin.institutions.forceDelete', $institution->id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Permanently delete this institution? This cannot be undone.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-icon rounded-circle"
+                                                    title="Delete Permanently">
+                                                    <i class="feather-trash-2"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center p-4">
+                                        No Deleted Institutions Found
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                No Deleted Institutions Found
-                            </td>
-                        </tr>
-                        @endforelse
-
-                    </tbody>
-                </table>
             </div>
 
+            <div class="card-footer">
+                {{ $institutions->links() }}
+            </div>
         </div>
-
-        <div class="card-footer">
-            {{ $institutions->links() }}
-        </div>
-
     </div>
-</div>
-
 @endsection

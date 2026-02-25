@@ -1,26 +1,33 @@
 <?php
 
+// Auth
+use App\Http\Controllers\Auth\SignInController;
+// Admin controllers
 use App\Http\Controllers\Admin\DashboardController;
-// Auth & Admin controllers
-use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\Admin\FinancialYearController;
 // Masters controllers
+use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WorkStatusController;
-
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\WardController;
+// HR controllers
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\HR\EmployeeController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,11 +58,15 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated + Admin-only routes
+| ADMIN-ONLY routes  (role = admin)
+|--------------------------------------------------------------------------
+|
+| Admin = Superuser: system setup, masters, institutions, hospitals,
+| financial year, modules, etc.
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
 
@@ -83,7 +94,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDeleteRole'])
             ->name('roles.forceDelete');
         Route::patch('roles/{id}/toggle-status', [RoleController::class, 'toggleStatus'])
-            ->name('roles.toggleStatus');
+            ->name('roles.toggle-status');
 
         Route::resource('roles', RoleController::class)->except(['show']);
 
@@ -100,7 +111,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])
             ->name('users.forceDelete');
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-            ->name('users.toggleStatus');
+            ->name('users.toggle-status');
 
         Route::resource('users', UserController::class)->except(['show']);
 
@@ -115,7 +126,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('financial-years/mapping', [FinancialYearMappingController::class, 'store'])
             ->name('financial-years.mapping.store');
         Route::patch('financial-years/{id}/toggle-status', [FinancialYearController::class, 'toggleStatus'])
-            ->name('financial-years.toggleStatus');
+            ->name('financial-years.toggle-status');
 
         Route::resource('financial-years', FinancialYearController::class)->except(['show']);
 
@@ -170,7 +181,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::delete('/delete/{id}', [WorkStatusController::class, 'destroy'])->name('delete');
             Route::get('/trash', [WorkStatusController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [WorkStatusController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [WorkStatusController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/force-delete/{id}', [WorkStatusController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
@@ -301,25 +312,54 @@ Route::middleware(['auth', 'admin'])->group(function () {
         */
 
         Route::prefix('modules')->name('modules.')->group(function () {
-
             Route::get('/', [ModuleController::class, 'index'])->name('index');
-
             Route::get('/create', [ModuleController::class, 'create'])->name('create');
             Route::post('/store', [ModuleController::class, 'store'])->name('store');
-
             Route::get('/show/{id}', [ModuleController::class, 'show'])->name('show');
-
             Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [ModuleController::class, 'update'])->name('update');
-
             Route::delete('/delete/{id}', [ModuleController::class, 'destroy'])->name('delete');
-
             Route::get('/deleted', [ModuleController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [ModuleController::class, 'restore'])->name('restore');
             Route::delete('/force-delete/{id}', [ModuleController::class, 'forceDelete'])->name('forceDelete');
-
             Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
+        });
 
+        /*
+        |----------------------------------------------------------------------
+        | Weekends (Leave management master)
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('weekends')->name('weekends.')->group(function () {
+            Route::get('/', [WeekendController::class, 'index'])->name('index');
+            Route::get('/create', [WeekendController::class, 'create'])->name('create');
+            Route::post('/store', [WeekendController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [WeekendController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
+            Route::get('/deleted', [WeekendController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [WeekendController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        });
+
+        Route::prefix('holidays')->name('holidays.')->group(function () {
+
+            Route::get('/', [HolidayController::class, 'index'])->name('index');
+            Route::get('/create', [HolidayController::class, 'create'])->name('create');
+            Route::post('/store', [HolidayController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [HolidayController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [HolidayController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [HolidayController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
+
+            Route::get('/deleted', [HolidayController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [HolidayController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
         });
          /*
         |----------------------------------------------------------------------
@@ -342,4 +382,36 @@ Route::middleware(['auth', 'admin'])->group(function () {
         });           
 
     });
+
 });
+
+/*
+|--------------------------------------------------------------------------
+| HR MODULE routes  (role = hr OR admin)
+|--------------------------------------------------------------------------
+|
+| HR = staff management. Admin can also access (superuser).
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:hr,admin'])
+    ->prefix('hr')
+    ->name('hr.')
+    ->group(function () {
+
+        // HR Dashboard (create later)
+        Route::get('/dashboard', [HRDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // Staff management (employee master) – moved here for HR
+        Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
+            ->name('staff-management.deleted');
+
+        Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
+            ->name('staff-management.restore');
+
+        Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+            ->name('staff-management.forceDelete');
+
+        Route::resource('staff-management', StaffManagementController::class);
+    });
