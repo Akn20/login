@@ -168,7 +168,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::delete('/delete/{id}', [WorkStatusController::class, 'destroy'])->name('delete');
             Route::get('/trash', [WorkStatusController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [WorkStatusController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [WorkStatusController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/force-delete/{id}', [WorkStatusController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*

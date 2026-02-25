@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
-@section('content')
-
+@section('content') 
 <div class="nxl-content">
 
     <!-- Page Header -->
@@ -77,4 +76,4 @@
 
 </div>
 
-@endsection
+ @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
+ <div class="container">
 
     <h3 class="mb-3">Edit Work Status</h3>
 
@@ -60,4 +60,4 @@
     </div>
 
 </div>
-@endsection
+ @endsection

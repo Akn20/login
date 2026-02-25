@@ -107,9 +107,15 @@ class UserController extends Controller
         return redirect()->route('admin.users.deleted')->with('success', 'User permanently deleted');
     }
 
-    public function toggleStatus(User $user)
+    public function toggleStatus(Request $request)
     {
-        echo $user;
+        $user=User::findOrFail($request->id);
+        if($user->role->name == 'admin'){
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot change status of Admin user',
+            ], 403);
+        }
         $user->status = $user->status === 'active' ? 'inactive' : 'active';
         $user->save();
 

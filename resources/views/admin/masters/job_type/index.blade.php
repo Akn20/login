@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="nxl-content">
+ <div class="nxl-content">
 
     <!-- Page Header -->
     <div class="page-header">
@@ -74,15 +74,17 @@
             <td class="text-end">
                 <div class="hstack gap-2 justify-content-end">
 
-<a href="{{ route('admin.job-type.edit', $jobType->id) }}"
+                <a href="{{ route('admin.job-type.edit', $jobType->id) }}"
                         class="avatar-text avatar-md action-icon action-edit">
                         <i class="feather-edit"></i>
                     </a>
 
-                    <a href="{{ route('admin.job-type.delete', $jobType->id) }}"
-                       class="avatar-text avatar-md action-icon action-delete">
-                        <i class="feather-trash-2"></i>
-                    </a>
+                    <form action="{{ route('admin.job-type.delete', $jobType->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this job type?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="avatar-text avatar-md action-icon action-delete">
+                            <i class="feather-trash-2"></i>
+                        </button>
 
                 </div>
             </td>
@@ -91,14 +93,14 @@
         @endforeach
     </tbody>
 </table>
-
+ 
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+         </div>
     </div>
 
 </div>
 
-@endsection
+ @endsection
