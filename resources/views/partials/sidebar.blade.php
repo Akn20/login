@@ -255,6 +255,26 @@
 
                 @endforeach
 
+                {{-- ================= PHARMACY ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-shopping-bag"></i></span>
+                        <span class="nxl-mtext">Pharmacy</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+
+                        {{-- Vendor Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.vendors.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Vendor Management</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 {{-- ================= CONFIGURATION ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
@@ -314,23 +334,6 @@
                     </ul>
                 </li>
 
-                {{-- ================= Pharmacy ================= --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-cast"></i></span>
-                        <span class="nxl-mtext">Configuration</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        {{-- vendor--}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.vendor.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-grid"></i></span>
-                                <span class="nxl-mtext">Vendor Management</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
 
                 {{-- Section: Account --}}
                 <li class="nxl-item nxl-caption">

@@ -17,6 +17,7 @@ use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -270,6 +271,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
+
+        /*
+        |----------------------------------------------------------------------
+        | Pharmacy: Vendor Management
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('vendors')->name('vendors.')->group(function () {
+            Route::get('/', [VendorController::class, 'index'])->name('index');
+            Route::get('/create', [VendorController::class, 'create'])->name('create');
+            Route::post('/store', [VendorController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [VendorController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [VendorController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [VendorController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('delete');
+            Route::get('/trash', [VendorController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [VendorController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
+        });
 
         /*
         |----------------------------------------------------------------------
