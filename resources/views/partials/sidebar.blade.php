@@ -314,6 +314,25 @@
                     </ul>
                 </li>
 
+                {{-- Pharmacy --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-cast"></i></span>
+                        <span class="nxl-mtext">Pharmacy</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+
+                        {{-- GRN --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.religion.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 {{-- Section: Account --}}
                 <li class="nxl-item nxl-caption">
                     <label>Account</label>
