@@ -377,6 +377,62 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
                     
 
         });
+        /*
+        |----------------------------------------------------------------------
+        | Weekends (Leave management master)
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('weekends')->name('weekends.')->group(function () {
+            Route::get('/', [WeekendController::class, 'index'])->name('index');
+            Route::get('/create', [WeekendController::class, 'create'])->name('create');
+            Route::post('/store', [WeekendController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [WeekendController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
+            Route::get('/deleted', [WeekendController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [WeekendController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        });
+
+        Route::prefix('holidays')->name('holidays.')->group(function () {
+
+            Route::get('/', [HolidayController::class, 'index'])->name('index');
+            Route::get('/create', [HolidayController::class, 'create'])->name('create');
+            Route::post('/store', [HolidayController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [HolidayController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [HolidayController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [HolidayController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [HolidayController::class, 'destroy'])->name('delete');
+
+            Route::get('/deleted', [HolidayController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [HolidayController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
+        });
+         /*
+        |----------------------------------------------------------------------
+        | Beds
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('beds')->name('beds.')->group(function () {
+
+                    Route::get('/', [BedController::class, 'index'])->name('index');
+
+                    Route::get('/create', [BedController::class, 'create'])->name('create');
+                    Route::post('/store', [BedController::class, 'store'])->name('store');
+
+                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+
+                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
+                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+
+                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
+        });           
+
     });
 
 });
