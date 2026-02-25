@@ -1,56 +1,60 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Deleted Departments | ' . config('app.name'))
+@section('page-title', 'Deleted Staff | ' . config('app.name'))
 
 @section('content')
     <div class="nxl-content">
 
-        <div class="page-header d-flex align-items-center justify-content-between mb-4">
-            <div>
-                <h5 class="mb-0">Deleted Departments</h5>
+        <div class="page-header d-flex align-items-center justify-content-between">
+            <div class="page-header-left">
+                <h5 class="mb-0">Deleted Staff</h5>
             </div>
-
-            <a href="{{ route('admin.departments.index') }}" class="btn btn-light">Back to List</a>
+            <div class="page-header-right d-flex gap-2">
+                <a href="{{ route('admin.staff-management.index') }}" class="btn btn-neutral">
+                    Back
+                </a>
+            </div>
         </div>
-
 
         <div class="main-content">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body p-0">
 
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle mb-0">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th style="width:80px;">S.No</th>
-                                    <th>Department Name</th>
-                                    <th>Department Code</th>
+                                    <th>S.No</th>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
                                     <th>Status</th>
                                     <th>Deleted At</th>
-                                    <th class="text-end" style="width:180px;">Action</th>
+                                    <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($departments as $i => $d)
+                                @forelse($staffs as $i => $staff)
                                     <tr>
-                                        <td>{{ $departments->firstItem() + $i }}</td>
-                                        <td class="fw-semibold">{{ $d->department_name }}</td>
-                                        <td>{{ $d->department_code }}</td>
+                                        <td>{{ $staffs->firstItem() + $i }}</td>
+                                        <td>{{ $staff->employee_id }}</td>
+                                        <td>{{ $staff->name }}</td>
+                                        <td>{{ $staff->department->name ?? '-' }}</td>
                                         <td>
-                                            @if($d->status)
+                                            @if($staff->status === 'Active')
                                                 <span class="badge bg-soft-success text-success">Active</span>
                                             @else
                                                 <span class="badge bg-soft-danger text-danger">Inactive</span>
                                             @endif
                                         </td>
-                                        <td>{{ optional($d->deleted_at)->format('d-m-Y H:i') }}</td>
+                                        <td>{{ optional($staff->deleted_at)->format('d-m-Y H:i') }}</td>
 
                                         <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
+                                            <div class="hstack gap-2 justify-content-end">
 
                                                 {{-- Restore --}}
-                                                <form action="{{ route('admin.departments.restore', $d->id) }}" method="POST"
-                                                    class="m-0 p-0">
+                                                <form action="{{ route('admin.staff-management.restore', $staff->id) }}"
+                                                    method="POST" class="m-0 p-0">
                                                     @csrf
                                                     @method('PUT')
                                                     <button type="submit"
@@ -61,7 +65,7 @@
                                                 </form>
 
                                                 {{-- Permanent Delete --}}
-                                                <form action="{{ route('admin.departments.forceDelete', $d->id) }}"
+                                                <form action="{{ route('admin.staff-management.forceDelete', $staff->id) }}"
                                                     method="POST" class="m-0 p-0"
                                                     onsubmit="return confirm('This will permanently delete the record. Continue?');">
                                                     @csrf
@@ -78,15 +82,18 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">No deleted records found.</td>
+                                        <td colspan="7" class="text-center py-4">
+                                            No deleted staff records found.
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="mt-3">
-                        {{ $departments->links() }}
+                    {{-- Pagination --}}
+                    <div class="p-3">
+                        {{ $staffs->links() }}
                     </div>
 
                 </div>

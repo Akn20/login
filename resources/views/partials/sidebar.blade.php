@@ -323,19 +323,35 @@
                                 <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                             </a>
                             <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-airplay"></i></span>
-                                <span class="nxl-mtext">Weekend Holiday</span>
-                            </a>  
-                        </li>
+                       
                          <li class="nxl-item">
                         <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-calendar"></i></span>
                             <span class="nxl-mtext">Holiday Master</span>
                         </a>
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                                        <span class="nxl-mtext">Weekend Holiday</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        </ul>
+
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-cast"></i></span>
+                                <span class="nxl-mtext">HR Management</span>
+                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+                            <ul class="nxl-submenu">
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.staff-management.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                                        <span class="nxl-mtext">Staff Management</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         {{-- Section: Account --}}

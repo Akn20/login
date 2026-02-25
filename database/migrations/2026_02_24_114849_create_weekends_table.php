@@ -15,7 +15,6 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name')->unique();
             $table->json('days'); // ["Friday","Saturday"]
-            $table->longText('details')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->softDeletes();
             $table->timestamps();

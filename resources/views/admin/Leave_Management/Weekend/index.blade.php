@@ -91,25 +91,18 @@
                                     </td>
 
                                     <td>
-                                        @include('partials.status-toggle', [
-                                            'id'      => $weekend->id,
-                                            'url'     => route('admin.weekends.toggleStatus', $weekend->id),
-                                            'checked' => (bool) $weekend->status,
-                                        ])
+                                        @if ($weekend->status === 'active')
+                                            <span class="badge bg-soft-success text-success">Active</span>
+                                        @else
+                                            <span class="badge bg-soft-danger text-danger">Inactive</span>
+                                        @endif
                                     </td>
 
                                     <td>{{ $weekend->created_at?->format('d-m-Y H:i') }}</td>
 
                                     <td class="text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                                            <a
-                                                href="{{ route('admin.weekends.show', $weekend->id) }}"
-                                                class="btn btn-outline-secondary btn-icon rounded-circle"
-                                                title="View"
-                                            >
-                                                <i class="feather-eye"></i>
-                                            </a>
-
+                                            
                                             <a
                                                 href="{{ route('admin.weekends.edit', $weekend->id) }}"
                                                 class="btn btn-outline-secondary btn-icon rounded-circle"
@@ -135,7 +128,20 @@
                                                     <i class="feather feather-trash-2"></i>
                                                 </button>
                                             </form>
+                                                    <form action="{{ route('admin.weekends.toggleStatus', $weekend->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit"
+                                                    class="status-toggle {{ $weekend->status === 'active' ? 'inactive' : 'active' }}">
+                                                    <span>
+                                                        {{ $weekend->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                    </span>
+                                                </button>
+                                            </form>
                                         </div>
+                                        
                                     </td>
                                 </tr>
                             @endforeach
@@ -157,49 +163,3 @@
     </div>
 @endsection
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggles = document.querySelectorAll('.status-toggle-input[data-url*="weekends"]');
-
-    toggles.forEach(toggle => {
-        if (toggle.dataset.bound === '1') return;
-        toggle.dataset.bound = '1';
-
-        toggle.addEventListener('change', function () {
-            const url     = this.getAttribute('data-url');
-            const checked = this.checked;
-
-            fetch(url, {
-                method: 'PATCH',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    alert('Failed to update status.');
-                    this.checked = !checked;
-                    return;
-                }
-
-                const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
-                if (textEl) {
-                    textEl.textContent =
-                        (data.status === 'active' || data.is_active || data.status === 1)
-                            ? 'Active'
-                            : 'Inactive';
-                }
-            })
-            .catch(() => {
-                alert('Failed to update status.');
-                this.checked = !checked;
-            });
-        });
-    });
-});
-</script>
-@endpush

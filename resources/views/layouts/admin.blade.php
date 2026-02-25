@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/select2-theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/css/tom-select.bootstrap5.min.css">
     @stack('styles')
     @include('partials.head')
     <style>
@@ -118,7 +118,7 @@
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script> 
-
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/js/tom-select.complete.min.js"></script>
 
 </body>
 
