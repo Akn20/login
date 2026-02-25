@@ -23,8 +23,7 @@ class AdminMiddleware
         if (!auth()->user()->role || auth()->user()->role->name !== 'admin') {
             return redirect()->route('login')->with('error', 'Unauthorized');
         }
-
-
+        
         return $next($request);
     }
 }

@@ -79,6 +79,7 @@
                                                             <i class="feather-edit"></i>
                                                         </a>
 
+<<<<<<< HEAD
                                                         <form action="{{ route('admin.work-status.delete', $workStatus->id) }}"
                                                             method="POST" style="display:inline;">
                                                             @csrf
@@ -89,6 +90,12 @@
                                                                 <i class="feather-trash-2"></i>
                                                             </button>
                                                         </form>
+=======
+                                                        <a href="{{ route('admin.work-status.delete', $workStatus->id) }}"
+                                                            class="avatar-text avatar-md action-icon action-delete">
+                                                            <i class="feather-trash-2"></i>
+                                                        </a>
+>>>>>>> cbc0430ccf1712cd3f0a5246d00bbd83c3d9cd82
 
                                                     </div>
                                                 </td>

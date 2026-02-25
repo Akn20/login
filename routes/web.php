@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\Auth\SignInController;
@@ -19,6 +20,8 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WorkStatusController;
+
+use App\Models\Employee;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,6 +60,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
 
+    // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
 
         /*
@@ -271,7 +275,21 @@ Route::middleware(['auth', 'admin'])->group(function () {
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
+/*
+        |----------------------------------------------------------------------
+        | HR -  staff management
+        |----------------------------------------------------------------------
+        */
+        Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
+    ->name('staff-management.deleted');
 
+Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
+    ->name('staff-management.restore');
+
+Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+    ->name('staff-management.forceDelete');
+
+        Route::resource('staff-management', StaffManagementController::class);
         /*
         |----------------------------------------------------------------------
         | Modules
@@ -298,23 +316,31 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
                     Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
 
+
+
+
+
         });
-       // routes/web.php (inside Route::middleware(['auth','admin'])->group and prefix('admin'))
 
-Route::prefix('weekends')->name('weekends.')->group(function () {
-    Route::get('/',            [WeekendController::class, 'index'])->name('index');
-    Route::get('/create',      [WeekendController::class, 'create'])->name('create');
-    Route::post('/store',      [WeekendController::class, 'store'])->name('store');
-    Route::get('/edit/{id}',   [WeekendController::class, 'edit'])->name('edit');
-    Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
-    Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
+        /*
+        |----------------------------------------------------------------------
+        | Weekends
+        |----------------------------------------------------------------------
+        */
+        
+        Route::prefix('weekends')->name('weekends.')->group(function () {
+            Route::get('/',            [WeekendController::class, 'index'])->name('index');
+            Route::get('/create',      [WeekendController::class, 'create'])->name('create');
+            Route::post('/store',      [WeekendController::class, 'store'])->name('store');
+            Route::get('/edit/{id}',   [WeekendController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
 
-    Route::get('/deleted',        [WeekendController::class, 'deleted'])->name('deleted');
-    Route::post('/restore/{id}',  [WeekendController::class, 'restore'])->name('restore');
-    Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/deleted',        [WeekendController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}',  [WeekendController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
 
-    Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
-});
-
+            Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        });
     });
 });

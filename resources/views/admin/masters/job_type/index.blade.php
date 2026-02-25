@@ -98,9 +98,16 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
          </div>
     </div>
 
 </div>
 
  @endsection
+=======
+        </div>
+    </div>
+
+@endsection
+>>>>>>> cbc0430ccf1712cd3f0a5246d00bbd83c3d9cd82
