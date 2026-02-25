@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page-title', 'Edit Bed | ' . config('app.name'))
+
 @section('content')
 
 <div class="container">
