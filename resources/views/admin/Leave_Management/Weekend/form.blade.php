@@ -125,7 +125,7 @@
                                 class="form-select @error('status') is-invalid @enderror"
                             >
                                 <option value="active"   {{ $statusValue === 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ $statusValue === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="inactive" {{ $statusValue === 'inactive' ? 'selected' : '' }}> Inactive</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
