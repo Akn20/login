@@ -28,7 +28,7 @@
                             <form action="{{ route('admin.religion.store') }}" method="POST">
                                 @csrf
 
-                                <div class="mb-4">
+                                 <div class="mb-4">
                                     <label class="form-label">
                                         Religion Name <span class="text-danger">*</span>
                                     </label>
@@ -42,7 +42,7 @@
                                         <option value="Active">Active</option>
                                         <option value="Inactive">Inactive</option>
                                     </select>
-                                </div>
+                                 </div>
 
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary">

@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="nxl-content">
+ <div class="nxl-content">
 
     <!-- Page Header -->
     <div class="page-header">
@@ -91,15 +91,14 @@
         @endforeach
     </tbody>
 </table>
-
-
+ 
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+         </div>
     </div>
 
 </div>
 
-@endsection
+ @endsection
