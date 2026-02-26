@@ -20,31 +20,33 @@ class StaffManagementController extends Controller
 
         return view('hr.staff_management.index', compact('staffManagements'));
     }
+
     public function create()
     {
         return view('hr.staff_management.create');
     }
+
     public function store(Request $request)
     {
         $request->validate([
-            'employee_id'  => 'required|unique:staff,employee_id',
-            'name'         => 'required',
+            'employee_id' => 'required|unique:staff,employee_id',
+            'name' => 'required',
             'joining_date' => 'required|date',
-            'status'       => 'required',
+            'status' => 'required',
         ]);
 
         Staff::create([
-            'employee_id'  => $request->employee_id,
-            'name'         => $request->name,
+            'employee_id' => $request->employee_id,
+            'name' => $request->name,
             'joining_date' => $request->joining_date,
-            'status'       => $request->status,
+            'status' => $request->status,
         ]);
 
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Staff added successfully.',
-                'data'    => Staff::latest()->first(),
+                'data' => Staff::latest()->first(),
             ]);
         }
 
@@ -52,35 +54,37 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.index')
             ->with('success', 'Staff added successfully.');
     }
+
     public function edit($id)
     {
         $staff = Staff::findOrFail($id);
 
         return view('hr.staff_management.edit', compact('staff'));
     }
+
     public function update(Request $request, $id)
     {
         $staff = Staff::findOrFail($id);
 
         $request->validate([
-            'employee_id'  => 'required|unique:staff,employee_id,' . $id,
-            'name'         => 'required',
+            'employee_id' => 'required|unique:staff,employee_id,'.$id,
+            'name' => 'required',
             'joining_date' => 'required|date',
-            'status'       => 'required',
+            'status' => 'required',
         ]);
 
         $staff->update([
-            'employee_id'  => $request->employee_id,
-            'name'         => $request->name,
+            'employee_id' => $request->employee_id,
+            'name' => $request->name,
             'joining_date' => $request->joining_date,
-            'status'       => $request->status,
+            'status' => $request->status,
         ]);
 
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Staff updated successfully.',
-                'data'    => $staff,
+                'data' => $staff,
             ]);
         }
 
@@ -88,6 +92,7 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.index')
             ->with('success', 'Staff updated successfully.');
     }
+
     public function destroy($id)
     {
         $staff = Staff::findOrFail($id);
@@ -104,6 +109,7 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.index')
             ->with('success', 'Staff deleted successfully.');
     }
+
     public function deleted()
     {
         $staffs = Staff::onlyTrashed()->latest()->paginate(10);
@@ -113,12 +119,13 @@ class StaffManagementController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data'    => $staffs,
+                'data' => $staffs,
             ]);
         }
 
         return view('hr.staff_management.deleted', compact('staffs'));
     }
+
     public function restore($id)
     {
         $staff = Staff::onlyTrashed()->findOrFail($id);
@@ -128,7 +135,7 @@ class StaffManagementController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Staff restored successfully.',
-                'data'    => $staff,
+                'data' => $staff,
             ]);
         }
 
@@ -136,6 +143,7 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.deleted')
             ->with('success', 'Staff restored successfully.');
     }
+
     public function forceDelete($id)
     {
         $staff = Staff::onlyTrashed()->findOrFail($id);
@@ -160,42 +168,45 @@ class StaffManagementController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $staff,
+            'data' => $staff,
         ]);
     }
+
     public function apiStore(Request $request)
     {
         $data = $request->validate([
-            'name'   => 'required|string|max:255',
-            'role'   => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'role' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'joining_date' => 'nullable|date',  // default DOJ for app
         ]);
 
         $staff = Staff::create([
-            'name'         => $data['name'],
-            'status'       => $data['status'],
+            'name' => $data['name'],
+            'status' => $data['status'],
             'joining_date' => $data['joining_date'] ?? now(), // default DOJ for app
-            'role'         => $data['role'] ?? null,
-            'department'   => $data['department'] ?? null,
+            'role' => $data['role'] ?? null,
+            'department' => $data['department'] ?? null,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Staff added successfully.',
-            'data'    => $staff,
+            'data' => $staff,
         ]);
     }
+
     public function apiUpdate(Request $request, $id)
     {
         $staff = Staff::findOrFail($id);
 
         $data = $request->validate([
-            'name'   => 'required|string|max:255',
-            'role'   => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'status' => 'required|in:active,inactive',
+            'name' => 'sometimes|required|string|max:255',
+            'role' => 'sometimes|nullable|string|max:255',
+            'department' => 'sometimes|nullable|string|max:255',
+            'status' => 'sometimes|required|in:active,inactive',
+            'joining_date' => 'sometimes|nullable|date',
         ]);
 
         $staff->update($data);
@@ -203,9 +214,10 @@ class StaffManagementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Staff updated successfully.',
-            'data'    => $staff,
+            'data' => $staff,
         ]);
     }
+
     public function apiDestroy($id)
     {
         $staff = Staff::findOrFail($id);
@@ -216,15 +228,17 @@ class StaffManagementController extends Controller
             'message' => 'Staff deleted successfully.',
         ]);
     }
+
     public function apiDeleted()
     {
         $staffs = Staff::onlyTrashed()->latest()->get();
 
         return response()->json([
             'success' => true,
-            'data'    => $staffs,
+            'data' => $staffs,
         ]);
     }
+
     public function apiRestore($id)
     {
         $staff = Staff::onlyTrashed()->findOrFail($id);
@@ -233,9 +247,10 @@ class StaffManagementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Staff restored successfully.',
-            'data'    => $staff,
+            'data' => $staff,
         ]);
     }
+
     public function apiForceDelete($id)
     {
         $staff = Staff::onlyTrashed()->findOrFail($id);
