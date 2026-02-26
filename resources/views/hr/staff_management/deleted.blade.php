@@ -10,7 +10,7 @@
                 <h5 class="mb-0">Deleted Staff</h5>
             </div>
             <div class="page-header-right d-flex gap-2">
-                <a href="{{ route('admin.staff-management.index') }}" class="btn btn-neutral">
+                <a href="{{ route('hr.staff-management.index') }}" class="btn btn-neutral">
                     Back
                 </a>
             </div>
@@ -53,7 +53,7 @@
                                             <div class="hstack gap-2 justify-content-end">
 
                                                 {{-- Restore --}}
-                                                <form action="{{ route('admin.staff-management.restore', $staff->id) }}"
+                                                <form action="{{ route('hr.staff-management.restore', $staff->id) }}"
                                                     method="POST" class="m-0 p-0">
                                                     @csrf
                                                     @method('PUT')
@@ -65,7 +65,7 @@
                                                 </form>
 
                                                 {{-- Permanent Delete --}}
-                                                <form action="{{ route('admin.staff-management.forceDelete', $staff->id) }}"
+                                                <form action="{{ route('hr.staff-management.forceDelete', $staff->id) }}"
                                                     method="POST" class="m-0 p-0"
                                                     onsubmit="return confirm('This will permanently delete the record. Continue?');">
                                                     @csrf

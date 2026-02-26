@@ -28,6 +28,7 @@
                             <form method="POST" action="{{ route('admin.blood-groups.store') }}">
                                 @csrf
 
+                            @include('admin.blood-groups.form')
                                 @include('admin.masters.blood-groups.form')
 
                                 <div class="d-flex gap-2">

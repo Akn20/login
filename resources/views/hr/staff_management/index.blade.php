@@ -17,10 +17,10 @@
             </div>
 
             <div class="page-header-right ms-auto d-flex gap-2">
-                <a href="{{ route('admin.staff-management.deleted') }}" class="btn btn-neutral">
+                <a href="{{ route('hr.staff-management.deleted') }}" class="btn btn-neutral">
                     Deleted Records
                 </a>
-                <a href="{{ route('admin.staff-management.create') }}" class="btn btn-neutral">
+                <a href="{{ route('hr.staff-management.create') }}" class="btn btn-neutral">
                     Add Staff
                 </a>
             </div>
@@ -63,16 +63,14 @@
                                                     <div class="hstack gap-2 justify-content-end">
 
                                                         <!-- Edit -->
-                                                        <a href="{{ route('admin.staff-management.edit', $staff->id) }}"
-                                                            class="avatar-text avatar-md action-icon action-edit"
-                                                            title="Edit">
+                                                        <a href="{{ route('hr.staff-management.edit', $staff->id) }}"
+                                                            class="avatar-text avatar-md action-icon action-edit" title="Edit">
                                                             <i class="feather-edit"></i>
                                                         </a>
 
                                                         <!-- Delete -->
-                                                        <form action="{{ route('admin.staff-management.destroy', $staff->id) }}"
-                                                            method="POST"
-                                                            class="d-inline"
+                                                        <form action="{{ route('hr.staff-management.destroy', $staff->id) }}"
+                                                            method="POST" class="d-inline"
                                                             onsubmit="return confirm('Are you sure you want to delete this staff?');">
                                                             @csrf
                                                             @method('DELETE')
@@ -100,9 +98,7 @@
 
                             {{-- Pagination --}}
                             <div class="mt-3">
-                          
                             </div>
-
                         </div>
                     </div>
                 </div>

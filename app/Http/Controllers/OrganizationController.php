@@ -290,21 +290,40 @@ class OrganizationController extends Controller
     public function apiToggleStatus($id)
     {
         $org = Organization::find($id);
-    
+
         if (!$org) {
             return response()->json([
                 'status' => false,
                 'message' => 'Organization not found'
             ], 404);
         }
-    
+
         $org->status = !$org->status;
         $org->save();
-    
+
         return response()->json([
             'status' => true,
             'message' => 'Status updated successfully',
             'data' => $org
+        ]);
+    }
+
+    public function apiForceDelete($id)
+    {
+        $org = Organization::onlyTrashed()->find($id);
+
+        if (!$org) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Organization not found in trash'
+            ], 404);
+        }
+
+        $org->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Organization permanently deleted successfully'
         ]);
     }
 }

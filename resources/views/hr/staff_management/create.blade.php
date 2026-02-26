@@ -25,21 +25,20 @@
                     <div class="card stretch stretch-full">
                         <div class="card-body">
 
-                            <form method="POST" action="{{ route('admin.staff-management.store') }}">
+                            <form method="POST" action="{{ route('hr.staff-management.store') }}">
                                 @csrf
 
-                                @include('admin.hr.staff_management.form')
+                                @include('hr.staff_management.form')
 
                                 <div class="d-flex gap-2 mt-3">
                                     <button type="submit" class="btn btn-primary">
                                         Save
                                     </button>
-                                    <a href="{{ route('admin.staff-management.index') }}" class="btn btn-light">
+                                    <a href="{{ route('hr.staff-management.index') }}" class="btn btn-light">
                                         Cancel
                                     </a>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                 </div>
