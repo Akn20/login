@@ -11,13 +11,10 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
-<<<<<<< HEAD
 use App\Http\Controllers\Api\Inventory\ItemApiController;
 use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
-=======
 use App\Http\Controllers\WardController;
->>>>>>> e25d34e2e764c12750ee3dcc3c1b488b652354dc
 
 
 /* Religion */
