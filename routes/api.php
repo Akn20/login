@@ -7,6 +7,7 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\BedController; 
 use App\Http\Controllers\Api\DashboardController;
 
 
@@ -95,3 +96,16 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+
+
+//Bed 
+Route::prefix('admin')->group(function () {
+
+    Route::get('beds', [BedController::class, 'apiIndex']);
+    Route::post('beds', [BedController::class, 'apiStore']);
+    Route::get('beds/{id}', [BedController::class, 'apiShow']);
+    Route::put('beds/{id}', [BedController::class, 'apiUpdate']);
+    Route::delete('beds/{id}', [BedController::class, 'apiDestroy']);
+    Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDeleteApi']); 
+});

@@ -141,25 +141,113 @@ class BedController extends Controller
     }
 
     // Restore
-public function restore($id)
-{
-    $bed = Bed::onlyTrashed()->findOrFail($id);
-    $bed->restore();
+    public function restore($id)
+    {
+        $bed = Bed::onlyTrashed()->findOrFail($id);
+        $bed->restore();
 
-    return redirect()
-        ->route('admin.beds.deleted')
-        ->with('success', 'Bed restored successfully.');
-}
+        return redirect()
+            ->route('admin.beds.deleted')
+            ->with('success', 'Bed restored successfully.');
+    }
 
 
-// Permanent Delete
-public function forceDelete($id)
-{
-    $bed = Bed::onlyTrashed()->findOrFail($id);
-    $bed->forceDelete();
+    // Permanent Delete
+    public function forceDelete($id)
+    {
+        $bed = Bed::onlyTrashed()->findOrFail($id);
+        $bed->forceDelete();
 
-    return redirect()
-        ->route('admin.beds.deleted')
-        ->with('success', 'Bed permanently deleted.');
-}
+        return redirect()
+            ->route('admin.beds.deleted')
+            ->with('success', 'Bed permanently deleted.');
+    }
+
+    //Api to get beds by ward
+    public function apiIndex()
+    {
+        $beds = Bed::with('ward')->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $beds
+        ]);
+    }
+
+    public function apiStore(Request $request)
+    {
+        $validated = $request->validate([
+            'bed_code' => 'required|string|max:100|unique:beds,bed_code',
+            'ward_id' => 'required|uuid|exists:wards,id',
+            'room_number' => 'nullable|string|max:50',
+            'bed_type' => 'required|string',
+            'status' => 'required|string',
+        ]);
+
+        $bed = Bed::create($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bed created successfully',
+            'data' => $bed
+        ], 201);
+    }
+
+    public function apiShow($id)
+    {
+        $bed = Bed::with('ward')->findOrFail($id);
+
+        return response()->json([
+            'status' => true,
+            'data' => $bed
+        ]);
+    }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $bed = Bed::findOrFail($id);
+
+        $validated = $request->validate([
+            'bed_code' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('beds', 'bed_code')->ignore($bed->id),
+            ],
+            'ward_id' => 'required|uuid|exists:wards,id',
+            'room_number' => 'nullable|string|max:50',
+            'bed_type' => 'required|string',
+            'status' => 'required|string',
+        ]);
+
+        $bed->update($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bed updated successfully',
+            'data' => $bed
+        ]);
+    }
+
+    public function apiDestroy($id)
+    {
+        $bed = Bed::findOrFail($id);
+        $bed->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bed deleted successfully'
+        ]);
+    }
+
+    public function forceDeleteApi($id)
+    {
+        $bed = Bed::onlyTrashed()->findOrFail($id);
+        $bed->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bed permanently deleted'
+        ]);
+    }
 }
