@@ -31,6 +31,13 @@ use App\Http\Controllers\HR\EmployeeController;
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\Inventory\ItemController;
+use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
+use App\Http\Controllers\Admin\Inventory\GrnController;
+use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Admin\Inventory\StockAuditController;
+use App\Http\Controllers\Admin\Inventory\ReportController;
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -345,6 +352,31 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
+        Route::get('inventory/reports',
+             [\App\Http\Controllers\Admin\Inventory\ReportController::class, 'index']
+                )->name('inventory.reports');
+
+           Route::prefix('inventory')->name('inventory.')->group(function () {
+
+            // ITEMS
+            Route::get('/', [ItemController::class, 'index'])->name('index');
+            Route::get('/create', [ItemController::class, 'create'])->name('create');
+            Route::post('/store', [ItemController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [ItemController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [ItemController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
+
+            // PURCHASE ORDERS
+            Route::resource('purchase-orders', PurchaseOrderController::class);
+
+            Route::resource('grns', GrnController::class);
+            Route::resource('stock-transfers', StockTransferController::class);
+            Route::resource('stock-audits', StockAuditController::class);
+
+            //Route::get('reports', [ReportController::class, 'index'])->name('inventory.reports');
+                    
+
+        });
         /*
         |----------------------------------------------------------------------
         | Weekends (Leave management master)
@@ -386,20 +418,21 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         | Beds
         |----------------------------------------------------------------------
         */
-        Route::prefix('beds')->name('beds.')->group(function () {
 
-                    Route::get('/', [BedController::class, 'index'])->name('index');
+            Route::get('beds/deleted', [BedController::class, 'deleted'])
+                ->name('beds.deleted');
 
-                    Route::get('/create', [BedController::class, 'create'])->name('create');
-                    Route::post('/store', [BedController::class, 'store'])->name('store');
+            Route::put('beds/{id}/restore', [BedController::class, 'restore'])
+                ->name('beds.restore');
 
-                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+            Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDelete'])
+                ->name('beds.forceDelete');
 
-                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
-                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+            Route::get('beds/generate-code/{ward}', [BedController::class, 'generateCode'])
+                ->name('beds.generateCode');
+            Route::resource('beds', BedController::class);
 
-                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
-        });           
+
 
     });
 

@@ -503,4 +503,23 @@ class InstitutionController extends Controller
             'data' => $institution
         ]);
     }
+    public function apiForceDelete($id)
+    {
+        $institution = Institution::onlyTrashed()->find($id);
+
+        if (!$institution) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Institution not found in trash'
+            ], 404);
+        }
+
+        $institution->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Institution permanently deleted successfully'
+        ]);
+    }
+
 }
