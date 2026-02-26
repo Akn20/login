@@ -21,6 +21,10 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
 
     public function items()
     {

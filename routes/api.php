@@ -8,6 +8,9 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\Inventory\ItemApiController;
+use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
 
 
 /* Religion */
@@ -94,3 +97,19 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+//inventory management api routes
+Route::prefix('inventory')->group(function () {
+
+    Route::get('/items', [ItemApiController::class, 'index']);
+    Route::post('/items', [ItemApiController::class, 'store']);
+
+    Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
+    Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
+
+    Route::get('/grns', [GrnApiController::class, 'index']);
+    Route::post('/grns', [GrnApiController::class, 'store']);
+});
+Route::get('/vendors', function () {
+    return \App\Models\Vendor::select('id','vendor_name')->get();
+});
