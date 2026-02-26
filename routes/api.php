@@ -1,4 +1,9 @@
 <?php
+use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Models\Staff;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\JobTypeController;
@@ -89,9 +94,8 @@ Route::get('departments/deleted', [DepartmentController::class, 'apiDeleted']);
 Route::put('departments/{id}/restore', [DepartmentController::class, 'apiRestore']);
 Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'apiForceDelete']);
 
-/* ================================
-   ORGANIZATION API
-================================ */
+
+// ORGANIZATION API
 
 Route::get('/organizations', [OrganizationController::class, 'apiIndex']);
 Route::post('/organizations', [OrganizationController::class, 'apiStore']);
@@ -101,9 +105,7 @@ Route::put('/organizations/{id}/toggle-status', [OrganizationController::class, 
 Route::delete('/organizations/{id}', [OrganizationController::class, 'apiDelete']);
 Route::delete('/organizations/{id}/force-delete', [OrganizationController::class, 'apiForceDelete']);
 
-/* ================================
-   INSTITUTION API
-================================ */
+// INSTITUTION API
 
 Route::get('/institutions', [InstitutionController::class, 'apiIndex']);
 Route::post('/institutions', [InstitutionController::class, 'apiStore']);
@@ -113,9 +115,7 @@ Route::delete('/institutions/{id}', [InstitutionController::class, 'apiDelete'])
 Route::put('/institutions/{id}/toggle-status', [InstitutionController::class, 'apiToggleStatus']);
 Route::delete('/institutions/{id}/force-delete', [InstitutionController::class, 'apiForceDelete']);
 
-/* ================================
-   MODULE API
-================================ */
+// MODULE API
 
 Route::get('/modules', [ModuleController::class, 'apiIndex']);
 Route::post('/modules', [ModuleController::class, 'apiStore']);
@@ -126,6 +126,36 @@ Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceD
 
 
 //Module Management Type Api
+// Weekend
+Route::get('/weekends', [WeekendController::class, 'index']);
+Route::post('/weekends', [WeekendController::class, 'store']);
+Route::patch('/weekends/{id}', [WeekendController::class, 'update']);
+Route::delete('/weekends/{id}', [WeekendController::class, 'destroy']);
+Route::get('/weekends/deleted', [WeekendController::class, 'deleted']);
+Route::post('/weekends/{id}/restore', [WeekendController::class, 'restore']);
+Route::delete('/weekends/{id}/force-delete', [WeekendController::class, 'forceDelete']);
+Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleStatus']);
+
+//Holiday
+Route::get('/holidays', [HolidayController::class, 'index']);
+Route::post('/holidays', [HolidayController::class, 'store']);
+Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
+Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
+Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
+Route::post('/holidays/{id}/restore', [HolidayController::class, 'restore']);
+Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDelete']);
+Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);
+
+// Staff Management
+Route::get('/staff',[StaffManagementController::class,'apiIndex']);
+Route::post('/staff',[StaffManagementController::class,'apiStore']);
+Route::put('/staff/{id}',[StaffManagementController::class,'apiUpdate']);
+Route::delete('/staff/{id}',[StaffManagementController::class,'apiDestroy']);
+Route::get('/staff/deleted',[StaffManagementController::class,'apiDeleted']);
+Route::post('/staff/{id}/restore',[StaffManagementController::class,'apiRestore']);
+Route::delete('/staff/{id}/force-delete',[StaffManagementController::class,'apiForceDelete']);
+
+Route::get('/employee',[EmployeeController::class,'index']);
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
