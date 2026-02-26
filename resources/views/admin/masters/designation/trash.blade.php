@@ -66,11 +66,13 @@
                                                     class="avatar-text avatar-md action-icon action-restore">
                                                     <i class="feather-refresh-ccw"></i>
                                                 </a>
-                                                <a href="{{ route('admin.designation.forceDelete', $designation->id) }}"
-                                                    class="avatar-text avatar-md action-icon action-delete"
-                                                    onclick="return confirm('This will permanently delete the record. Continue?')">
-                                                    <i class="feather-trash"></i>
-                                                </a>
+                                               <form action="{{ route('admin.designation.forceDelete', $designation->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this designation?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="avatar-text avatar-md action-icon action-delete">
+                                                        <i class="feather-trash-2"></i>
+                                                    </button>
+                                                </form>
 
                                             </div>
                                         </td>

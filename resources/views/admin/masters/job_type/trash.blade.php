@@ -54,11 +54,12 @@
                                             <i class="feather-refresh-ccw"></i>
                                         </a>
 
-                                        <a href="{{ route('admin.job-type.forceDelete', $jobType->id) }}"
-                                            class="avatar-text avatar-md action-icon action-delete"
-                                            onclick="return confirm('This will permanently delete the record. Continue?')">
-                                            <i class="feather-trash"></i>
-                                        </a>
+                                        <form action="{{ route('admin.job-type.forceDelete', $jobType->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this job type?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="avatar-text avatar-md action-icon action-delete">
+                                                <i class="feather-trash-2"></i>
+                                            </button>
 
                                     </div>
                                 </td>

@@ -29,7 +29,7 @@
                             <form action="{{ route('admin.designation.update', $designation->id) }}" method="POST">
                                 @csrf
 
-                                @include('masters.designation.form')
+                                @include('admin.masters.designation.form')
 
                                 <div class="d-flex gap-2 mt-3">
                                     <button type="submit" class="btn btn-primary">
