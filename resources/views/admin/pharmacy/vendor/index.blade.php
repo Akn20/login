@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Pharmacy | ' . config('app.name'))
+
 @section('content')
     <div class="nxl-content">
 

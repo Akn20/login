@@ -25,7 +25,7 @@ class DesignationController extends Controller
     public function create()
     {
         $departments = Department::where('status', 1)->get();
-        return view('masters.designation.create', compact('departments'));
+        return view('admin.masters.designation.create', compact('departments'));
     }
 
     public function store(Request $request)
@@ -63,7 +63,7 @@ class DesignationController extends Controller
             ->orWhere('id', $designation->department_id)
             ->get();
 
-        return view('masters.designation.edit', compact('designation', 'departments'));
+        return view('admin.masters.designation.edit', compact('designation', 'departments'));
     }
 
     public function update(Request $request, $id)
@@ -125,7 +125,7 @@ class DesignationController extends Controller
             ->orderBy('designation_name')
             ->get();
 
-        return view('masters.designation.trash', compact('designations'));
+        return view('admin.masters.designation.trash', compact('designations'));
     }
 
 

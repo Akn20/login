@@ -1,5 +1,8 @@
+@php
+    $user = auth()->user();
+@endphp
+
 <style>
-    /* FIXED SIDEBAR LAYOUT */
     .nxl-navigation {
         position: fixed;
         top: 0;
@@ -9,20 +12,17 @@
         height: 100vh;
     }
 
-    /* HEADER (logo) */
     .nxl-navigation .m-header {
         height: 70px;
         flex-shrink: 0;
     }
 
-    /* WRAPPER FLEX */
     .nxl-navigation .navbar-wrapper {
         display: flex;
         flex-direction: column;
         height: 100%;
     }
 
-    /* ONLY THIS AREA SCROLLS */
     .nxl-navigation .navbar-content {
         flex: 1;
         overflow-y: auto;
@@ -30,7 +30,6 @@
         padding-bottom: 40px;
     }
 
-    /* Smooth scroll */
     .nxl-navigation .navbar-content::-webkit-scrollbar {
         width: 6px;
     }
@@ -43,6 +42,8 @@
 
 <nav class="nxl-navigation">
     <div class="navbar-wrapper">
+
+        {{-- HEADER / LOGO --}}
         <div class="m-header">
             <a href="{{ route('admin.dashboard') }}" class="b-brand">
                 <img src="{{ asset('assets/images/logo-full.png') }}" alt="" class="logo logo-lg">
@@ -50,27 +51,27 @@
             </a>
         </div>
 
+        {{-- MAIN SCROLLABLE CONTENT --}}
         <div class="navbar-content">
             <ul class="nxl-navbar">
 
-                {{-- Section: Main --}}
+                {{-- MAIN --}}
                 <li class="nxl-item nxl-caption">
                     <label>Main</label>
                 </li>
 
                 <li class="nxl-item">
                     <a href="{{ route('admin.dashboard') }}" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                        <span class="nxl-micon"><i class="feather-activity"></i></span>
                         <span class="nxl-mtext">Dashboard</span>
                     </a>
                 </li>
 
-                {{-- Section: Access Control --}}
+                {{-- ACCESS CONTROL --}}
                 <li class="nxl-item nxl-caption">
                     <label>Access Control</label>
                 </li>
 
-                {{-- Users --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0)" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-users"></i></span>
@@ -79,15 +80,20 @@
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
-                            <a href="{{ route('admin.users.index') }}" class="nxl-link">All Users</a>
+                            <a href="{{ route('admin.users.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Users</span>
+                            </a>
                         </li>
                         <li class="nxl-item">
-                            <a href="{{ route('admin.users.create') }}" class="nxl-link">Add User</a>
+                            <a href="{{ route('admin.users.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-user-plus"></i></span>
+                                <span class="nxl-mtext">Add User</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- Roles --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0)" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-shield"></i></span>
@@ -96,20 +102,25 @@
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
-                            <a href="{{ route('admin.roles.index') }}" class="nxl-link">All Roles</a>
+                            <a href="{{ route('admin.roles.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Roles</span>
+                            </a>
                         </li>
                         <li class="nxl-item">
-                            <a href="{{ route('admin.roles.create') }}" class="nxl-link">Add Role</a>
+                            <a href="{{ route('admin.roles.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Role</span>
+                            </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- Section: App Management --}}
+                {{-- APP MANAGEMENT --}}
                 <li class="nxl-item nxl-caption">
                     <label>App Management</label>
                 </li>
 
-                {{-- System (Financial Years) --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0)" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-settings"></i></span>
@@ -119,219 +130,188 @@
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a href="{{ route('admin.financial-years.index') }}" class="nxl-link">
-                                Financial Years
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Financial Years</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a href="{{ route('admin.financial-years.mapping') }}" class="nxl-link">
-                                FY–Hospital Mapping
+                                <span class="nxl-micon"><i class="feather-layers"></i></span>
+                                <span class="nxl-mtext">FY–Hospital Mapping</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- Section: Navigation --}}
+                {{-- NAVIGATION --}}
                 <li class="nxl-item nxl-caption">
                     <label>Navigation</label>
                 </li>
 
-                {{-- ================= HOSPITAL ================= --}}
+                {{-- Hospitals --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-cast"></i></span>
+                        <span class="nxl-micon"><i class="feather-home"></i></span>
                         <span class="nxl-mtext">Hospitals</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.hospitals.index') }}">
-                                All Hospitals
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Hospitals</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.hospitals.create') }}">
-                                Add Hospital
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Hospital</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- ================= ORGANIZATION ================= --}}
+                {{-- Organization --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-cast"></i></span>
+                        <span class="nxl-micon"><i class="feather-briefcase"></i></span>
                         <span class="nxl-mtext">Organization</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.organization.index') }}">
-                                All Organizations
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Organizations</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.organization.create') }}">
-                                Add Organization
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Organization</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- ================= INSTITUTION ================= --}}
+                {{-- Institution --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-send"></i></span>
+                        <span class="nxl-micon"><i class="feather-aperture"></i></span>
                         <span class="nxl-mtext">Institution</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.institutions.index') }}">
-                                All Institutions
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Institutions</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.institutions.create') }}">
-                                Add Institution
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Institution</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                {{-- ================= MODULE MANAGEMENT ================= --}}
+                {{-- Module Management --}}
                 <li class="nxl-item">
                     <a href="{{ route('admin.modules.index') }}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-grid"></i></span>
                         <span class="nxl-mtext">Module Management</span>
                     </a>
                 </li>
-                {{-- SCROLL AREA (IMPORTANT) --}}
-                <div class="navbar-content">
-                    <ul class="nxl-navbar">
 
-                        <li class="nxl-item nxl-caption">
-                            <label>Modules</label>
-                        </li>
+                {{-- Dynamic Modules --}}
+                <li class="nxl-item nxl-caption">
+                    <label>Modules</label>
+                </li>
 
-                        @foreach($sidebarModules as $module)
-
-                            {{-- PARENT --}}
-                            @if($module->children->count() > 0)
-
-                                <li class="nxl-item nxl-hasmenu">
-                                    <a href="javascript:void(0);" class="nxl-link">
-                                        <span class="nxl-micon">
-                                            <i class="{{ $module->icon ?? 'feather-grid' }}"></i>
-                                        </span>
-                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
-                                        <span class="nxl-arrow">
-                                            <i class="feather-chevron-right"></i>
-                                        </span>
-                                    </a>
-
-                                    <ul class="nxl-submenu">
-                                        @foreach($module->children as $child)
-                                            <li class="nxl-item">
-                                                <a href="{{ url($child->file_url) }}" class="nxl-link">
-                                                    {{ $child->module_display_name }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-
-                            @else
-
-                                {{-- SINGLE --}}
-                                <li class="nxl-item">
-                                    <a href="{{ url($module->file_url) }}" class="nxl-link">
-                                        <span class="nxl-micon">
-                                            <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
-                                        </span>
-                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
-                                    </a>
-                                </li>
-
-                            @endif
-
-                        @endforeach
-
-                        {{-- ================= CONFIGURATION ================= --}}
+                @foreach($sidebarModules as $module)
+                    @if($module->children->count() > 0)
                         <li class="nxl-item nxl-hasmenu">
                             <a href="javascript:void(0);" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-cast"></i></span>
-                                <span class="nxl-mtext">Configuration</span>
-                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                                <span class="nxl-micon">
+                                    <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
+                                </span>
+                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                <span class="nxl-arrow">
+                                    <i class="feather-chevron-right"></i>
+                                </span>
                             </a>
                             <ul class="nxl-submenu">
-
-                                {{-- Religion --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.religion.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
-                                        <span class="nxl-mtext">Religion</span>
-                                    </a>
-                                </li>
-
-                                {{-- Job Type --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.job-type.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-cast"></i></span>
-                                        <span class="nxl-mtext">Job Type</span>
-                                    </a>
-                                </li>
-
-                                {{-- Work Status --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.work-status.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-send"></i></span>
-                                        <span class="nxl-mtext">Work Status</span>
-                                    </a>
-                                </li>
-
-                                {{-- Designation --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.designation.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-send"></i></span>
-                                        <span class="nxl-mtext">Designation</span>
-                                    </a>
-                                </li>
-
-                                {{-- Blood Group --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.blood-groups.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-droplet"></i></span>
-                                        <span class="nxl-mtext">Blood Group</span>
-                                    </a>
-                                </li>
-
-                                {{-- Department --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.departments.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-grid"></i></span>
-                                        <span class="nxl-mtext">Department</span>
-                                    </a>
-                                </li>
-
+                                @foreach($module->children as $child)
+                                    <li class="nxl-item">
+                                        <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                            {{ $child->module_display_name }}
+                                        </a>
+                                    </li>
+                                @endforeach
                             </ul>
                         </li>
-
-                        <li class="nxl-item nxl-hasmenu">
-                            <a href="javascript:void(0);" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-cast"></i></span>
-                                <span class="nxl-mtext">Leave Management</span>
-                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                            </a>
-                            <ul class="nxl-submenu">
+                    @else
                         <li class="nxl-item">
-                            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-airplay"></i></span>
-                                <span class="nxl-mtext">Weekend Holiday</span>
+                            <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                </span>
+                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
                             </a>
                         </li>
-                        </ul>
+                    @endif
+                @endforeach
+
+                {{-- Configuration --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-sliders"></i></span>
+                        <span class="nxl-mtext">Configuration</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.religion.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-book"></i></span>
+                                <span class="nxl-mtext">Religion</span>
+                            </a>
                         </li>
-                        {{-- ================= PHARMACY ================= --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.job-type.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-briefcase"></i></span>
+                                <span class="nxl-mtext">Job Type</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.work-status.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Work Status</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.designation.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-tag"></i></span>
+                                <span class="nxl-mtext">Designation</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.blood-groups.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-droplet"></i></span>
+                                <span class="nxl-mtext">Blood Group</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.departments.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Department</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Pharmacy --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-shopping-bag"></i></span>
@@ -339,15 +319,13 @@
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
-
-                        {{-- Vendor Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.vendors.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-truck"></i></span>
                                 <span class="nxl-mtext">Vendor Management</span>
                             </a>
                         </li>
-
+                                
                         {{-- Stock Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.stock.index') }}" class="nxl-link">
@@ -356,32 +334,119 @@
                                 <span class="nxl-mtext">Stock Management</span>
                             </a>
                         </li>
-
-                 
-                        {{-- Section: Account --}}
-                        <li class="nxl-item nxl-caption">
-                            <label>Account</label>
-                        </li>
-                        
-                        <li class="nxl-item">
-                            <a href="#" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-user"></i></span>
-                                <span class="nxl-mtext">Profile</span>
-                            </a>
-                        </li>
-
-                        <li class="nxl-item">
-                            <a href="#" class="nxl-link"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <span class="nxl-micon"><i class="feather-log-out"></i></span>
-                                <span class="nxl-mtext">Logout</span>
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </li>
-
                     </ul>
-                </div>
+                </li>
+
+                {{-- Leave Management --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-clock"></i></span>
+                        <span class="nxl-mtext">Leave Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-sun"></i></span>
+                                <span class="nxl-mtext">Weekend Holiday</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Holidays</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- HR Management --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-users"></i></span>
+                        <span class="nxl-mtext">HR Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                                <span class="nxl-mtext">Staff Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Ward Management --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-layout"></i></span>
+                        <span class="nxl-mtext">Ward Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.ward.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Wards</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.ward.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Ward</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Bed Management --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-layers"></i></span>
+                        <span class="nxl-mtext">Bed Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.beds.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Beds</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.beds.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Bed</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- ACCOUNT --}}
+                <li class="nxl-item nxl-caption">
+                    <label>Account</label>
+                </li>
+
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-user"></i></span>
+                        <span class="nxl-mtext">Profile</span>
+                    </a>
+                </li>
+
+                <li class="nxl-item">
+                    <a href="#" class="nxl-link"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <span class="nxl-micon"><i class="feather-log-out"></i></span>
+                        <span class="nxl-mtext">Logout</span>
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                </li>
+
+            </ul>
         </div>
+    </div>
 </nav>
