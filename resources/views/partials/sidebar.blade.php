@@ -325,6 +325,15 @@
                                 <span class="nxl-mtext">Vendor Management</span>
                             </a>
                         </li>
+                                
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
