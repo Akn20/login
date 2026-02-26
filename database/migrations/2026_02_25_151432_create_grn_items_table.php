@@ -12,24 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grn_items', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    $table->foreignId('grn_id')
-          ->constrained()
-          ->onDelete('cascade');
+            $table->foreignId('grn_id')
+                ->constrained()
+                ->onDelete('cascade');
 
-    $table->foreignId('item_id')
-          ->constrained('items')
-          ->onDelete('cascade');
+            $table->foreignId('item_id')
+                ->constrained('items')
+                ->onDelete('cascade');
 
-    $table->integer('ordered_quantity');
-    $table->integer('received_quantity');
+            $table->integer('ordered_quantity');
+            $table->integer('received_quantity');
 
-    $table->decimal('unit_price', 10, 2);
-    $table->decimal('total', 12, 2);
+            $table->decimal('unit_price', 10, 2);
+            $table->decimal('total', 12, 2);
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

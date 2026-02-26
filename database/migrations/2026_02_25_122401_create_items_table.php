@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('category', [
                 'Medicine',
                 'Equipment',
-                'Consumable'
+                'Consumable',
             ]);
 
             $table->string('unit')->nullable();
@@ -30,10 +30,11 @@ return new class extends Migration
             $table->integer('current_stock')->default(0);
 
             $table->enum('status', ['active', 'inactive'])
-                  ->default('active');
+                ->default('active');
 
             $table->integer('stock')->default(0);
-            
+            $table->integer('minimum_stock')->default(10);
+
             $table->softDeletes(); // for trash
             $table->timestamps();
         });
