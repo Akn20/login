@@ -13,9 +13,11 @@ return new class extends Migration
 {
     Schema::create('staff', function (Blueprint $table) {
         $table->id();
-        $table->string('employee_id')->unique();
+        $table->string('employee_id')->unique()->nullable();
         $table->string('name');
         $table->date('joining_date')->nullable();
+        $table->string('role')->nullable();
+        $table->string('department')->nullable();
         $table->string('status')->default('Active');
         $table->softDeletes();
         $table->timestamps();

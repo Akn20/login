@@ -108,13 +108,13 @@ Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDe
 Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);
 
 // Staff Management
-Route::get('/staff',[StaffManagementController::class,'index']);
-Route::post('/staff',[StaffManagementController::class,'store']);
-Route::put('/staff/{id}',[StaffManagementController::class,'update']);
-Route::delete('/staff/{id}',[StaffManagementController::class,'destroy']);
-Route::get('/staff/deleted',[StaffManagementController::class,'deleted']);
-Route::post('/staff/{id}/restore',[StaffManagementController::class,'restore']);
-Route::delete('/staff/{id}/force-delete',[StaffManagementController::class,'forceDelete']);
+Route::get('/staff',[StaffManagementController::class,'apiIndex']);
+Route::post('/staff',[StaffManagementController::class,'apiStore']);
+Route::put('/staff/{id}',[StaffManagementController::class,'apiUpdate']);
+Route::delete('/staff/{id}',[StaffManagementController::class,'apiDestroy']);
+Route::get('/staff/deleted',[StaffManagementController::class,'apiDeleted']);
+Route::post('/staff/{id}/restore',[StaffManagementController::class,'apiRestore']);
+Route::delete('/staff/{id}/force-delete',[StaffManagementController::class,'apiForceDelete']);
 
 Route::get('/employee',[EmployeeController::class,'index']);
 
