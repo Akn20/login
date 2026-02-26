@@ -86,6 +86,7 @@
 
                                 {{--Edit --}}
                                     <a href="{{ route('admin.beds.edit', $bed->id) }}"
+                                        
                                         class="avatar-text avatar-md" title="Edit">
                                         <i class="feather feather-edit"></i>
                                     </a>
