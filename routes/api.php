@@ -9,6 +9,7 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\WardController;
 
@@ -120,6 +121,7 @@ Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
 Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
 Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceDelete']);
 
+
 //Module Management Type Api
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
@@ -133,10 +135,18 @@ Route::get('/dashboard', [DashboardController::class, 'index']);
 
 
 
+//Bed 
+Route::prefix('admin')->group(function () {
 
-/* ================================
-   WARD API
-================================ */
+    Route::get('beds', [BedController::class, 'apiIndex']);
+    Route::post('beds', [BedController::class, 'apiStore']);
+    Route::get('beds/{id}', [BedController::class, 'apiShow']);
+    Route::put('beds/{id}', [BedController::class, 'apiUpdate']);
+    Route::delete('beds/{id}', [BedController::class, 'apiDestroy']);
+    Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDeleteApi']);
+});
+
+// ================= WARD API =================
 
 
 Route::get('/wards', [WardController::class, 'apiIndex']);
@@ -144,5 +154,8 @@ Route::post('/wards', [WardController::class, 'apiStore']);
 Route::get('/wards/{id}', [WardController::class, 'apiShow']);
 Route::put('/wards/{id}', [WardController::class, 'apiUpdate']);
 Route::delete('/wards/{id}', [WardController::class, 'apiDelete']);
-Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
 Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelete']);
+Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
+
+
+
