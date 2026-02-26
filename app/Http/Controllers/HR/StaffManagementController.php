@@ -12,6 +12,10 @@ class StaffManagementController extends Controller
     {
         $staffManagements = Staff::latest()->paginate(10);
 
+        if(request()->wantsJson()) {
+            $staffManagements = Staff::latest()->get();
+            return response()->json($staffManagements);
+        }
         return view('hr.staff_management.index', compact('staffManagements'));
     }
 
@@ -36,6 +40,13 @@ class StaffManagementController extends Controller
             'status' => $request->status,
         ]);
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff added successfully.',
+                'data' => Staff::latest()->first(),
+            ]);
+        }
         return redirect()->route('hr.staff-management.index')
             ->with('success', 'Staff added successfully.');
     }
@@ -65,6 +76,13 @@ class StaffManagementController extends Controller
             'status' => $request->status,
         ]);
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff updated successfully.',
+                'data' => $staff,
+            ]);
+        }
         return redirect()->route('hr.staff-management.index')
             ->with('success', 'Staff updated successfully.');
     }
@@ -74,6 +92,12 @@ class StaffManagementController extends Controller
         $staff = Staff::findOrFail($id);
         $staff->delete();
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff deleted successfully.',
+            ]);
+        }
         return redirect()->route('hr.staff-management.index')
             ->with('success', 'Staff deleted successfully.');
     }
@@ -82,6 +106,13 @@ class StaffManagementController extends Controller
     {
         $staffs = Staff::onlyTrashed()->latest()->paginate(10);
 
+        if(request()->wantsJson()) {
+            $staffs = Staff::onlyTrashed()->latest()->get();
+            return response()->json([
+                'success' => true,
+                'data' => $staffs,
+            ]);
+        }
         return view('hr.staff_management.deleted', compact('staffs'));
     }
 
@@ -90,6 +121,13 @@ class StaffManagementController extends Controller
         $staff = Staff::onlyTrashed()->findOrFail($id);
         $staff->restore();
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff restored successfully.',
+                'data' => $staff,
+            ]);
+        }
         return redirect()->route('hr.staff-management.deleted')
             ->with('success', 'Staff restored successfully.');
     }
@@ -99,6 +137,12 @@ class StaffManagementController extends Controller
         $staff = Staff::onlyTrashed()->findOrFail($id);
         $staff->forceDelete();
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff permanently deleted.',
+            ]);
+        }
         return redirect()->route('hr.staff-management.deleted')
             ->with('success', 'Staff permanently deleted.');
     }

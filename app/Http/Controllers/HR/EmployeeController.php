@@ -21,6 +21,12 @@ class EmployeeController extends Controller
             ->with(['department', 'designation'])
             ->paginate(15);
 
+        if(request()->wantsJson()) {
+            return response()->json([
+                'employees' => $employees,
+                'stats' => $stats,
+            ]);
+        }
         return view('hr.employees.index', compact('employees', 'stats'));
     }
 
