@@ -6,8 +6,11 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\WardController;
 
 
 /* Religion */
@@ -82,7 +85,40 @@ Route::get('departments/deleted', [DepartmentController::class, 'apiDeleted']);
 Route::put('departments/{id}/restore', [DepartmentController::class, 'apiRestore']);
 Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'apiForceDelete']);
 
+/* ================================
+   ORGANIZATION API
+================================ */
 
+Route::get('/organizations', [OrganizationController::class, 'apiIndex']);
+Route::post('/organizations', [OrganizationController::class, 'apiStore']);
+Route::get('/organizations/{id}', [OrganizationController::class, 'apiShow']);
+Route::put('/organizations/{id}', [OrganizationController::class, 'apiUpdate']);
+Route::put('/organizations/{id}/toggle-status', [OrganizationController::class, 'apiToggleStatus']);
+Route::delete('/organizations/{id}', [OrganizationController::class, 'apiDelete']);
+Route::delete('/organizations/{id}/force-delete', [OrganizationController::class, 'apiForceDelete']);
+
+/* ================================
+   INSTITUTION API
+================================ */
+
+Route::get('/institutions', [InstitutionController::class, 'apiIndex']);
+Route::post('/institutions', [InstitutionController::class, 'apiStore']);
+Route::get('/institutions/{id}', [InstitutionController::class, 'apiShow']);
+Route::put('/institutions/{id}', [InstitutionController::class, 'apiUpdate']);
+Route::delete('/institutions/{id}', [InstitutionController::class, 'apiDelete']);
+Route::put('/institutions/{id}/toggle-status', [InstitutionController::class, 'apiToggleStatus']);
+Route::delete('/institutions/{id}/force-delete', [InstitutionController::class, 'apiForceDelete']);
+
+/* ================================
+   MODULE API
+================================ */
+
+Route::get('/modules', [ModuleController::class, 'apiIndex']);
+Route::post('/modules', [ModuleController::class, 'apiStore']);
+Route::get('/modules/{id}', [ModuleController::class, 'apiShow']);
+Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
+Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
+Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceDelete']);
 
 //Module Management Type Api
 
@@ -94,3 +130,19 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+
+
+
+/* ================================
+   WARD API
+================================ */
+
+
+Route::get('/wards', [WardController::class, 'apiIndex']);
+Route::post('/wards', [WardController::class, 'apiStore']);
+Route::get('/wards/{id}', [WardController::class, 'apiShow']);
+Route::put('/wards/{id}', [WardController::class, 'apiUpdate']);
+Route::delete('/wards/{id}', [WardController::class, 'apiDelete']);
+Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
+Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelete']);

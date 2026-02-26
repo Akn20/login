@@ -140,4 +140,162 @@ class WardController extends Controller
 
         return back()->with('success', 'Status updated');
     }
+    /* ============================================================
+   API SECTION
+============================================================ */
+
+    public function apiIndex()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward list fetched successfully',
+            'data' => Ward::latest()->get()
+        ]);
+    }
+
+    /* ============================================================
+       API SHOW
+    ============================================================ */
+
+    public function apiShow($id)
+    {
+        $ward = Ward::find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $ward
+        ]);
+    }
+
+    /* ============================================================
+       API STORE
+    ============================================================ */
+
+    public function apiStore(Request $request)
+    {
+        $validated = $request->validate([
+            'ward_name' => 'required|string|max:100',
+            'ward_type' => 'nullable|string|max:50',
+            'floor_number' => 'nullable|integer',
+            'total_beds' => 'nullable|integer',
+            'status' => 'required|boolean',
+        ]);
+
+        $ward = Ward::create($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward created successfully',
+            'data' => $ward
+        ], 201);
+    }
+
+    /* ============================================================
+       API UPDATE
+    ============================================================ */
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $ward = Ward::find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'ward_name' => 'sometimes|string|max:100',
+            'ward_type' => 'sometimes|nullable|string|max:50',
+            'floor_number' => 'sometimes|nullable|integer',
+            'total_beds' => 'sometimes|nullable|integer',
+            'status' => 'sometimes|boolean',
+        ]);
+
+        $ward->update($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward updated successfully',
+            'data' => $ward
+        ]);
+    }
+
+    /* ============================================================
+       API DELETE (SOFT DELETE)
+    ============================================================ */
+
+    public function apiDelete($id)
+    {
+        $ward = Ward::find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        $ward->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward deleted successfully'
+        ]);
+    }
+
+    /* ============================================================
+       API FORCE DELETE (PERMANENT DELETE)
+    ============================================================ */
+
+    public function apiForceDelete($id)
+    {
+        $ward = Ward::onlyTrashed()->find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found in trash'
+            ], 404);
+        }
+
+        $ward->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward permanently deleted successfully'
+        ]);
+    }
+    /* ============================================================
+   API TOGGLE STATUS
+============================================================ */
+
+    public function apiToggleStatus($id)
+    {
+        $ward = Ward::find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        $ward->status = !$ward->status;
+        $ward->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Status updated successfully',
+            'data' => $ward
+        ]);
+    }
 }
