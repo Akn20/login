@@ -348,8 +348,16 @@
                             </a>
                         </li>
 
-                    </ul>
-                </li>
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
+
+                 
                         {{-- Section: Account --}}
                         <li class="nxl-item nxl-caption">
                             <label>Account</label>

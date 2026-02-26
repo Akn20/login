@@ -21,7 +21,7 @@ use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\StockController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -290,6 +290,34 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/trash', [VendorController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [VendorController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        /*
+        |----------------------------------------------------------------------
+        | Pharmacy: stock management
+        |----------------------------------------------------------------------
+        */
+
+                Route::prefix('stock')->name('stock.')->group(function () {
+
+            Route::get('/', [StockController::class, 'index'])->name('index');
+
+            Route::get('/create', [StockController::class, 'create'])->name('create');
+            Route::post('/store', [StockController::class, 'store'])->name('store');
+
+            Route::get('/show/{id}', [StockController::class, 'show'])->name('show');
+
+            Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
+
+            Route::get('/trash', [StockController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
+
         });
 
         /*
