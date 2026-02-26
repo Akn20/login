@@ -33,7 +33,7 @@
 <div class="card-body table-responsive">
 
 <table class="table table-bordered table-striped">
-    <thead class="table-dark">
+    <thead class="table-white table-bg">
         <tr>
             <th>#</th>
             <th>Name</th>

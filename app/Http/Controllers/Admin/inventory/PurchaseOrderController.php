@@ -86,6 +86,16 @@ class PurchaseOrderController extends Controller
             compact('purchaseOrder')
         );
     }
+
+            public function edit($id)
+        {
+            $purchaseOrder = \App\Models\PurchaseOrder::findOrFail($id);
+
+            return view('admin.inventory.purchase-orders.edit', compact('purchaseOrder'));
+        }
+
+
+
         public function update(Request $request, $id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);

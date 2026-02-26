@@ -353,8 +353,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         Route::get('inventory/reports',
-    [\App\Http\Controllers\Admin\Inventory\ReportController::class, 'index']
-)->name('inventory.reports');
+             [\App\Http\Controllers\Admin\Inventory\ReportController::class, 'index']
+                )->name('inventory.reports');
 
            Route::prefix('inventory')->name('inventory.')->group(function () {
 
