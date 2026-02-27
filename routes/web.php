@@ -1,40 +1,43 @@
 <?php
 
 // Auth
-use App\Http\Controllers\Auth\SignInController;
-// Admin controllers
 use App\Http\Controllers\Admin\DashboardController;
+// Admin controllers
+use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\Inventory\ItemController;
+use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
+use App\Http\Controllers\Admin\Inventory\ReportController;
+use App\Http\Controllers\Admin\Inventory\StockAuditController;
+use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Admin\Pharmacy\GrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\FinancialYearController;
 // Masters controllers
+use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
+// HR controllers
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
+// Module/Institution/Organization controllers
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+// Pharmacy(GRN)
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WorkStatusController;
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\WardController;
-// HR controllers
-use App\Http\Controllers\HR\HRDashboardController;
-use App\Http\Controllers\HR\StaffManagementController;
-use App\Http\Controllers\HR\EmployeeController;
-
-//Pharmacy(GRN)
-use App\Http\Controllers\Admin\Pharmacy\GrnController;
-
-
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WardController;
+use App\Http\Controllers\WorkStatusController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -329,42 +332,40 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
-
         // ============================
-        // PHARMACY -> GRN 
+        // PHARMACY -> GRN
         // ============================
 
+        Route::prefix('pharmacy')->name('grn.')->group(function () {
 
-Route::prefix('pharmacy')->name('grn.')->group(function () {
+            Route::get('/grn', [GrnController::class, 'index'])->name('index');
+            Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
+            Route::post('/grn', [GrnController::class, 'store'])->name('store');
 
-    Route::get('/grn', [GrnController::class, 'index'])->name('index');
-    Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
-    Route::post('/grn', [GrnController::class, 'store'])->name('store');
+            Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
+            Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
+            Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
+            Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
+            Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
 
-    Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
-    Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
-    Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
-    Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
-    Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+            Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
 
-    Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+            Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+                ->name('print');
 
-    Route::get('/grn/{id}/print', [GrnController::class, 'print'])
-    ->name('print');
-    
-    Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
-    Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
-    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
-    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
+            Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
+            Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
+            Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
 
-});
+        });
         /*
         |----------------------------------------------------------------------
         | Pharmacy: stock management
         |----------------------------------------------------------------------
         */
 
-                Route::prefix('stock')->name('stock.')->group(function () {
+        Route::prefix('stock')->name('stock.')->group(function () {
 
             Route::get('/', [StockController::class, 'index'])->name('index');
 
@@ -406,6 +407,39 @@ Route::prefix('pharmacy')->name('grn.')->group(function () {
             Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
+        Route::get('inventory/reports',
+            [\App\Http\Controllers\Admin\Inventory\ReportController::class, 'index']
+        )->name('inventory.reports');
+
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+
+            // ITEMS
+            Route::get('/', [ItemController::class, 'index'])->name('index');
+            Route::get('/create', [ItemController::class, 'create'])->name('create');
+            Route::post('/store', [ItemController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [ItemController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [ItemController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
+
+            // PURCHASE ORDERS
+            Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
+                ->name('purchase-orders.index');
+            Route::get('purchase-orders/deleted', [PurchaseOrderController::class, 'deleted'])
+                ->name('purchase-orders.deleted');
+            Route::put('purchase-orders/{id}/restore', [PurchaseOrderController::class, 'restore'])
+                ->name('purchase-orders.restore');
+            Route::delete('purchase-orders/{id}/force-delete', [PurchaseOrderController::class, 'forceDelete'])
+                ->name('purchase-orders.forceDelete');
+            Route::resource('purchase-orders', PurchaseOrderController::class);
+
+            // GRNS
+            Route::resource('grns', GrnController::class);
+            Route::resource('stock-transfers', StockTransferController::class);
+            Route::resource('stock-audits', StockAuditController::class);
+
+            // Route::get('reports', [ReportController::class, 'index'])->name('inventory.reports');
+
+        });
         /*
         |----------------------------------------------------------------------
         | Weekends (Leave management master)
@@ -442,25 +476,24 @@ Route::prefix('pharmacy')->name('grn.')->group(function () {
 
             Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
         });
-         /*
+        /*
         |----------------------------------------------------------------------
         | Beds
         |----------------------------------------------------------------------
         */
-        Route::prefix('beds')->name('beds.')->group(function () {
 
-                    Route::get('/', [BedController::class, 'index'])->name('index');
+        Route::get('beds/deleted', [BedController::class, 'deleted'])
+            ->name('beds.deleted');
 
-                    Route::get('/create', [BedController::class, 'create'])->name('create');
-                    Route::post('/store', [BedController::class, 'store'])->name('store');
+        Route::put('beds/{id}/restore', [BedController::class, 'restore'])
+            ->name('beds.restore');
 
-                    Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+        Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDelete'])
+            ->name('beds.forceDelete');
 
-                    Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
-                    Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
-
-                    Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
-        });           
+        Route::get('beds/generate-code/{ward}', [BedController::class, 'generateCode'])
+            ->name('beds.generateCode');
+        Route::resource('beds', BedController::class);
 
     });
 
@@ -497,8 +530,7 @@ Route::middleware(['auth', 'role:hr,admin'])
         Route::resource('staff-management', StaffManagementController::class);
     });
 
-
-    Route::prefix('stock')->group(function () {
+Route::prefix('stock')->group(function () {
 
     Route::get('stock', [StockController::class, 'apiIndex']);
     Route::get('stock/low', [StockController::class, 'apiLowStock']);

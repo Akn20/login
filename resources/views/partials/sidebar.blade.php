@@ -264,7 +264,85 @@
                     @endif
                 @endforeach
 
-                {{-- Configuration --}}
+                {{-- ================= INVENTORY ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-package"></i></span>
+                        <span class="nxl-mtext">Inventory</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                        {{-- Items --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.index') }}">
+                                All Items
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.create') }}">
+                                Add Item
+                            </a>
+                        </li>
+
+                        {{-- Purchase Orders --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.index') }}">
+                                Purchase Orders
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.create') }}">
+                                Create Purchase Order
+                            </a>
+                        </li>
+
+                        {{-- GRN --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.grns.index') }}">
+                                GRN List
+                            </a>
+                        </li>
+
+                        {{-- Stock Transfers --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
+                                Stock Transfers
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
+                                Create Stock Transfer
+                            </a>
+                        </li>
+
+                        {{-- Stock Audit --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
+                                Stock Audits
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
+                                New Stock Audit
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
+                                Reports Dashboard
+                            </a>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+                {{-- ================= CONFIGURATION ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-sliders"></i></span>
@@ -333,7 +411,7 @@
                             </a>
                         </li>
 
-                                
+
                         {{-- Stock Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.stock.index') }}" class="nxl-link">
