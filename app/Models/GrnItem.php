@@ -6,18 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class GrnItem extends Model
 {
+    protected $table = 'grn_items';
+
     protected $fillable = [
         'grn_id',
-        'item_id',
-        'ordered_quantity',
-        'received_quantity',
-        'unit_price',
-        'total'
+        'medicine_name',
+        'batch_no',
+        'expiry',
+        'qty',
+        'free_qty',
+        'purchase_rate',
+        'discount_percent',
+        'tax_percent',
+        'amount',
     ];
 
     public function grn()
     {
-        return $this->belongsTo(Grn::class);
+        return $this->belongsTo(Grn::class, 'grn_id');
     } 
 
     public function item()
