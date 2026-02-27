@@ -16,8 +16,8 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\Inventory\ItemApiController;
-use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
+use App\Http\Controllers\api\Inventory\ItemApiController;
+use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 
