@@ -1,9 +1,16 @@
+@if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
 <div class="row">
 
     {{-- Ward --}}
     <div class="col-md-6 mb-3">
         <label class="form-label">Ward</label>
-        <select name="ward_id" class="form-control">
+        <select name="ward_id" class="form-control" required>
             <option value="">Select Ward</option>
             @foreach($wards as $ward)
                 <option value="{{ $ward->id }}"
@@ -20,13 +27,13 @@
         <input type="text"
                name="room_number"
                class="form-control"
-               value="{{ old('room_number', $room->room_number ?? '') }}">
+               value="{{ old('room_number', $room->room_number ?? '') }}" required>
     </div>
 
     {{-- Room Type --}}
     <div class="col-md-6 mb-3">
         <label class="form-label">Room Type</label>
-        <select name="room_type" class="form-control">
+        <select name="room_type" class="form-control" required>
             <option value="">Select Type</option>
 
             <option value="General"
@@ -52,13 +59,13 @@
         <input type="number"
                name="total_beds"
                class="form-control"
-               value="{{ old('total_beds', $room->total_beds ?? '') }}">
+               value="{{ old('total_beds', $room->total_beds ?? '') }}" required>
     </div>
 
     {{-- Status --}}
     <div class="col-md-6 mb-3">
         <label class="form-label">Status</label>
-        <select name="status" class="form-control">
+        <select name="status" class="form-control" required>
             <option value="available"
                 {{ old('status', $room->status ?? '') == 'available' ? 'selected' : '' }}>
                 Available

@@ -20,8 +20,6 @@ return new class extends Migration
             $table->enum('status', ['available', 'occupied', 'maintenance', 'cleaning'])
                 ->default('available');
             $table->timestamps();
-         
-            $table->timestamps();
 
             $table->foreign('ward_id')
                 ->references('id')
