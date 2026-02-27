@@ -463,3 +463,20 @@ Route::middleware(['auth', 'role:hr,admin'])
 
         Route::resource('staff-management', StaffManagementController::class);
     });
+
+
+    Route::prefix('stock')->group(function () {
+
+    Route::get('stock', [StockController::class, 'apiIndex']);
+    Route::get('stock/low', [StockController::class, 'apiLowStock']);
+    Route::get('stock/{id}', [StockController::class, 'apiShow']);
+
+    Route::post('stock', [StockController::class, 'apiStore']);
+    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
+
+    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
+
+    Route::get('stock-trash', [StockController::class, 'apiTrash']);
+    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
+    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+});
