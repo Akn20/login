@@ -100,6 +100,7 @@ Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleS
 //Holiday
 Route::get('/holidays', [HolidayController::class, 'index']);
 Route::post('/holidays', [HolidayController::class, 'store']);
+Route::get('/holidays/{id}', [HolidayController::class, 'show']);
 Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
 Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
 Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
