@@ -39,6 +39,38 @@
 
 <div class="mb-4">
     <label class="form-label">
+        Department <span class="text-danger">*</span>
+    </label>
+
+    <input type="text" name="department"
+        value="{{ old('department', $staff->department ?? '') }}"
+        class="form-control @error('department') is-invalid @enderror"
+        placeholder="Enter Department">
+
+    @error('department')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
+<div class="mb-4">
+    <label class="form-label">
+        Designation <span class="text-danger">*</span>
+    </label>
+
+    <input type="text" name="designation"
+        value="{{ old('designation', $staff->designation ?? '') }}"
+        class="form-control @error('designation') is-invalid @enderror"
+        placeholder="Enter Designation">
+
+    @error('designation')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
+<div class="mb-4">
+    <label class="form-label">
         Joining Date <span class="text-danger">*</span>
     </label>
 

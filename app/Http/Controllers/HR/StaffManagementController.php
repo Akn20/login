@@ -54,18 +54,9 @@ class StaffManagementController extends Controller
             'status' => $request->status,
         ]);
 
-        if (request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Staff added successfully.',
-                'data' => Staff::latest()->first(),
-            ]);
-        }
-
-        return redirect()
-            ->route('hr.staff-management.index')
-            ->with('success', 'Staff added successfully.');
-    }
+    return redirect()->route('hr.staff-management.index')
+        ->with('success', 'Staff added successfully.');
+}
 
     public function edit($id)
     {
@@ -74,9 +65,9 @@ class StaffManagementController extends Controller
         return view('hr.staff_management.edit', compact('staff'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $staff = Staff::findOrFail($id);
+   public function update(Request $request, $id)
+{
+    $staff = Staff::findOrFail($id);
 
         $request->validate([
             'name' => 'required',
@@ -94,18 +85,9 @@ class StaffManagementController extends Controller
             'status' => $request->status,
         ]);
 
-        if (request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Staff updated successfully.',
-                'data' => $staff,
-            ]);
-        }
-
-        return redirect()
-            ->route('hr.staff-management.index')
-            ->with('success', 'Staff updated successfully.');
-    }
+    return redirect()->route('hr.staff-management.index')
+        ->with('success', 'Staff updated successfully.');
+}
 
     public function destroy($id)
     {
