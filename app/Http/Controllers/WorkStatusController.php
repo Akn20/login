@@ -49,7 +49,7 @@ class WorkStatusController extends Controller
         ]);
 
 
-        return redirect()->route('work-status.index')
+        return redirect()->route('admin.work-status.index')
             ->with('success', 'Work Status added successfully');
     }
 

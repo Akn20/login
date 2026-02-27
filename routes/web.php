@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BloodGroupController;
 // Masters controllers
@@ -17,8 +18,13 @@ use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
+
+//Pharmacy(GRN)
+use App\Http\Controllers\Admin\Pharmacy\GrnController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +86,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDeleteRole'])
             ->name('roles.forceDelete');
         Route::patch('roles/{id}/toggle-status', [RoleController::class, 'toggleStatus'])
-            ->name('roles.toggleStatus');
+            ->name('roles.toggle-status');
 
         Route::resource('roles', RoleController::class)->except(['show']);
 
@@ -97,7 +103,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('users/{id}/force-delete', [UserController::class, 'forceDeleteUser'])
             ->name('users.forceDelete');
         Route::patch('users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-            ->name('users.toggleStatus');
+            ->name('users.toggle-status');
 
         Route::resource('users', UserController::class)->except(['show']);
 
@@ -112,7 +118,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('financial-years/mapping', [FinancialYearMappingController::class, 'store'])
             ->name('financial-years.mapping.store');
         Route::patch('financial-years/{id}/toggle-status', [FinancialYearController::class, 'toggleStatus'])
-            ->name('financial-years.toggleStatus');
+            ->name('financial-years.toggle-status');
 
         Route::resource('financial-years', FinancialYearController::class)->except(['show']);
 
@@ -273,6 +279,54 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         /*
         |----------------------------------------------------------------------
+        | Pharmacy: Vendor Management
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('vendors')->name('vendors.')->group(function () {
+            Route::get('/', [VendorController::class, 'index'])->name('index');
+            Route::get('/create', [VendorController::class, 'create'])->name('create');
+            Route::post('/store', [VendorController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [VendorController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [VendorController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [VendorController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('delete');
+            Route::get('/trash', [VendorController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [VendorController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+
+        // ============================
+        // PHARMACY -> GRN 
+        // ============================
+
+
+Route::prefix('pharmacy')->name('grn.')->group(function () {
+
+    Route::get('/grn', [GrnController::class, 'index'])->name('index');
+    Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
+    Route::post('/grn', [GrnController::class, 'store'])->name('store');
+
+    Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
+    Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
+    Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
+    Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
+    Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+
+    Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+
+    Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+    ->name('print');
+    
+    Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
+    Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
+    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
+    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
+
+});
+        /*
+        |----------------------------------------------------------------------
         | Modules
         |----------------------------------------------------------------------
         */
@@ -298,5 +352,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
                     Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
 
         });
+       // routes/web.php (inside Route::middleware(['auth','admin'])->group and prefix('admin'))
+
+Route::prefix('weekends')->name('weekends.')->group(function () {
+    Route::get('/',            [WeekendController::class, 'index'])->name('index');
+    Route::get('/create',      [WeekendController::class, 'create'])->name('create');
+    Route::post('/store',      [WeekendController::class, 'store'])->name('store');
+    Route::get('/edit/{id}',   [WeekendController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [WeekendController::class, 'update'])->name('update');
+    Route::delete('/delete/{id}', [WeekendController::class, 'destroy'])->name('delete');
+
+    Route::get('/deleted',        [WeekendController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}',  [WeekendController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
+
+    Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+});
+
     });
 });

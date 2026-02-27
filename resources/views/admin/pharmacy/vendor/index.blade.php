@@ -1,29 +1,29 @@
 @extends('layouts.admin')
 
 @section('content')
-     <div class="nxl-content">
+    <div class="nxl-content">
 
         <!-- Page Header -->
         <div class="page-header">
             <div class="page-header-left d-flex align-items-center">
                 <div class="page-header-title">
-                    <h5 class="m-b-10">Religion Master</h5>
+                    <h5 class="m-b-10">Vendor Management</h5>
                 </div>
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item">Masters</li>
-                    <li class="breadcrumb-item">Religion</li>
+                    <li class="breadcrumb-item">Pharmacy</li>
+                    <li class="breadcrumb-item">Vendors</li>
                 </ul>
             </div>
 
-             <div class="page-header-right ms-auto d-flex gap-2">
-                <a href="{{ route('admin.religion.trash') }}" class="btn btn-neutral">
+            <div class="page-header-right ms-auto d-flex gap-2">
+                <a href="{{ route('admin.vendors.trash') }}" class="btn btn-neutral">
                     Deleted Records
                 </a>
 
-                <a href="{{ route('admin.religion.create') }}" class="btn btn-neutral">
-                    Add Religion
+                <a href="{{ route('admin.vendors.create') }}" class="btn btn-neutral">
+                    Add Vendor
                 </a>
-             </div>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -39,20 +39,26 @@
                                     <thead>
                                         <tr>
                                             <th>Sl.No.</th>
-                                            <th>Religion Name</th>
+                                            <th>Vendor Name</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Address</th>
                                             <th>Status</th>
                                             <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        @foreach($religions as $index => $religion)
+                                        @foreach($vendors as $index => $vendor)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
-                                                <td>{{ $religion->religion_name }}</td>
+                                                <td>{{ $vendor->vendor_name }}</td>
+                                                <td>{{ $vendor->phone_number ?? '-' }}</td>
+                                                <td>{{ $vendor->email ?? '-' }}</td>
+                                                <td>{{ $vendor->address ?? '-' }}</td>
 
                                                 <td>
-                                                    @if($religion->status == 'Active')
+                                                    @if($vendor->status == 'Active')
                                                         <span class="badge bg-soft-success text-success">Active</span>
                                                     @else
                                                         <span class="badge bg-soft-danger text-danger">Inactive</span>
@@ -62,26 +68,32 @@
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
 
+                                                        {{-- View --}}
+                                                        <a href="{{ route('admin.vendors.show', $vendor->id) }}"
+                                                            class="avatar-text avatar-md action-icon">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
+
                                                         {{-- Edit --}}
-                                                        <a href="{{ route('admin.religion.edit', $religion->id) }}"
+                                                        <a href="{{ route('admin.vendors.edit', $vendor->id) }}"
                                                             class="avatar-text avatar-md action-icon action-edit">
                                                             <i class="feather-edit"></i>
                                                         </a>
 
-                                                        {{-- Delete (DELETE verb) --}}
-                                                        <form action="{{ route('admin.religion.delete', $religion->id) }}"
+                                                        {{-- Delete --}}
+                                                        <form action="{{ route('admin.vendors.delete', $vendor->id) }}"
                                                             method="POST"
-                                                            onsubmit="return confirm('Are you sure you want to delete this religion?')">
+                                                            onsubmit="return confirm('Are you sure you want to delete this vendor?')">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
                                                                 class="avatar-text avatar-md action-icon action-delete">
-                                                                 <i class="feather-trash-2"></i>
+                                                                <i class="feather-trash-2"></i>
                                                             </button>
                                                         </form>
 
-                                                     </div>
-                                                 </td>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -96,5 +108,5 @@
             </div>
         </div>
 
-     </div>
+    </div>
 @endsection
