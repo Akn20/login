@@ -84,6 +84,12 @@ class HolidayController extends Controller
     public function show(string $id)
     {
         $holiday = Holiday::findOrFail($id);
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $holiday,
+            ]);
+        }
         return view('admin.Leave_Management.holidays.show', compact('holiday'));
     }
 

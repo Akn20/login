@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
@@ -16,12 +18,13 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\Inventory\ItemApiController;
-use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
+use App\Http\Controllers\api\Inventory\ItemApiController;
+use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 
-
+/* Login API */
+Route::post('login', [SignInController::class, 'apiLogin']);
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -139,6 +142,7 @@ Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleS
 //Holiday
 Route::get('/holidays', [HolidayController::class, 'index']);
 Route::post('/holidays', [HolidayController::class, 'store']);
+Route::get('/holidays/{id}', [HolidayController::class, 'show']);
 Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
 Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
 Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
