@@ -5,43 +5,46 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Models\PurchaseOrder;
 
 class Vendor extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'vendors';
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    public $incrementing = false;      // Because UUID
+    protected $keyType = 'string';     // UUID is string
 
     protected $fillable = [
-        'id',
         'vendor_name',
         'phone_number',
         'email',
         'address',
         'status',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 
+    // 🔥 Auto generate UUID
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = Str::uuid();
+            if (!$model->id) {
+                $model->id = (string) Str::uuid();
+            }
         });
     }
 
-    public function purchases()
+    // 🔥 Allow $vendor->name in Blade
+    public function getNameAttribute()
     {
-        return $this->hasMany(Purchase::class, 'vendor_id');
+        return $this->vendor_name;
     }
 
-    public function payments()
+    // 🔥 Relationship
+    public function purchaseOrders()
     {
-        return $this->hasMany(Payment::class, 'vendor_id');
+        return $this->hasMany(PurchaseOrder::class);
     }
 }

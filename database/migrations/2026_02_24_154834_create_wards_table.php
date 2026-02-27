@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('wards', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('ward_name');
             $table->string('ward_type')->nullable();
             $table->integer('floor_number')->nullable();

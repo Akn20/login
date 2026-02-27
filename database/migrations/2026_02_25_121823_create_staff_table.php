@@ -11,15 +11,29 @@ return new class extends Migration
      */
     public function up(): void
 {
+    // Schema::create('staff', function (Blueprint $table) {
+    //     $table->id();
+    //     $table->string('employee_id')->unique();
+    //     $table->string('name');
+    //     $table->date('joining_date')->nullable();
+    //     $table->string('status')->default('Active');
+    //     $table->string('department');
+    //     $table->string('designation');
+    //     $table->softDeletes();
+    //     $table->timestamps();
+    // });
+
     Schema::create('staff', function (Blueprint $table) {
-        $table->id();
-        $table->string('employee_id')->unique();
-        $table->string('name');
-        $table->date('joining_date')->nullable();
-        $table->string('status')->default('Active');
-        $table->softDeletes();
-        $table->timestamps();
-    });
+    $table->id();
+    $table->string('employee_id')->unique();
+    $table->string('name');
+    $table->string('department');
+    $table->string('designation');
+    $table->date('joining_date');
+    $table->string('status')->default('Active');
+    $table->softDeletes();
+    $table->timestamps();
+});
 }
 
     /**

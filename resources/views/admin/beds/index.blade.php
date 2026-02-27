@@ -4,19 +4,44 @@
 
 @section('content')
 
-<div class="page-header">
-    <h4>Bed Management</h4>
-</div>
+  <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+        <div class="page-header-title">
+            <h5 class="m-b-10 mb-1">
+                <i class="feather-grid me-2"></i>Beds
+            </h5>
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">Beds</li>
+            </ul>
+        </div>
 
-<div class="card">
+        <div class="d-flex gap-2 align-items-center">
+            <form method="GET" action="{{ route('admin.beds.index') }}" class="d-flex">
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control form-control-sm me-2"
+                    placeholder="Search Bed"
+                    value="{{ request('search') }}"
+                >
+                <button class="btn btn-light-brand btn-sm">
+                    <i class="feather-search"></i>
+                </button>
+            </form>
 
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">All Beds</h5>
+            <a href="{{ route('admin.beds.create') }}" class="btn btn-primary">
+                <i class="feather-plus me-1"></i> Add Bed
+            </a>
 
-        <a href="{{ route('admin.beds.create') }}" class="btn btn-primary">
-            + Add Bed
-        </a>
+            <a href="{{ route('admin.beds.deleted') }}" class="btn btn-danger">
+                Deleted Beds
+            </a>
+        </div>
     </div>
+
+<div class="card"
 
     <div class="card-body">
 
@@ -24,13 +49,13 @@
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>SL.No</th>
                         <th>Bed Code</th>
                         <th>Ward</th>
                         <th>Room</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th width="150">Action</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -44,36 +69,45 @@
                             <td>{{ $bed->bed_type }}</td>
                             <td>
                                 @if($bed->status == 'Available')
-                                    <span class="badge bg-success">Available</span>
+                                    <span class="badge bg-soft-success text-success">Available</span>
                                 @elseif($bed->status == 'Occupied')
-                                    <span class="badge bg-danger">Occupied</span>
+                                    <span class="badge bg-soft-danger text-danger">Occupied</span>
                                 @elseif($bed->status == 'Maintenance')
-                                    <span class="badge bg-warning text-dark">Maintenance</span>
+                                    <span class="badge bg-soft-dark text-dark">Maintenance</span>
                                 @elseif($bed->status == 'Cleaning')
-                                    <span class="badge bg-info">Cleaning</span>
+                                    <span class="badge bg-soft-warning text-warning">Cleaning</span>
                                 @else
                                     <span class="badge bg-secondary">{{ $bed->status }}</span>
                                 @endif
                             </td>
 
                             <td>
-                                <a href="{{ route('admin.beds.edit', $bed->id) }}"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Edit
-                                </a>
+                                <div class="d-flex gap-2 align-items-center">
 
-                                <form action="{{ route('admin.beds.delete', $bed->id) }}"
-                                      method="POST"
-                                      style="display:inline-block;">
-                                    @csrf
-                                    @method('DELETE')
+                                {{--Edit --}}
+                                    <a href="{{ route('admin.beds.edit', $bed->id) }}"
+                                        
+                                        class="avatar-text avatar-md" title="Edit">
+                                        <i class="feather feather-edit"></i>
+                                    </a>
 
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Are you sure?')">
-                                        Delete
-                                    </button>
-                                </form>
+                                   {{---Delete--}}
+                                   <form action="{{ route('admin.beds.destroy', $bed->id) }}"
+                                        method="POST"
+                                        class="m-0"
+                                        onsubmit="return confirm('Move this bed to deleted list?')">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                            class="avatar-text avatar-md d-flex align-items-center justify-content-center"
+                                            data-bs-toggle="tooltip"
+                                            title="Delete">
+                                            <i class="feather feather-trash-2"></i>
+                                        </button>
+
+                                    </form>
                             </td>
 
                         </tr>
