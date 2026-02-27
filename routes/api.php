@@ -8,6 +8,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\VendorController;
 
 
 /* Religion */
@@ -94,3 +95,26 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+//Vendor api
+
+
+Route::prefix('vendors')->group(function () {
+
+    Route::get('/', [VendorController::class, 'apiIndex']);
+
+    Route::post('/', [VendorController::class, 'apiStore']);
+
+    Route::get('/trash', [VendorController::class, 'apiTrash']);
+
+    Route::get('/{id}', [VendorController::class, 'apiShow']);
+
+    Route::put('/{id}', [VendorController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [VendorController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [VendorController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
+
+});

@@ -17,10 +17,11 @@
                         <form method="POST" action="{{ route('admin.departments.store') }}">
                             @csrf
 
-                           @include('admin.masters.departments.form')
+                            @include('admin.masters.departments.form')
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary">Save</button>
-                                <a href="{{ route('admin.departments.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                                <a href="{{ route('admin.departments.index') }}"
+                                    class="btn btn-outline-secondary">Cancel</a>
                             </div>
                         </form>
                     </div>

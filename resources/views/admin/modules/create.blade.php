@@ -1,5 +1,6 @@
 
-@extends('layouts.admin')@section('content')
+@extends('layouts.admin')
+@section('content')
 <div class="page-header">
     <div class="row align-items-center">
         <div class="col">

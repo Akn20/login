@@ -74,15 +74,17 @@
             <td class="text-end">
                 <div class="hstack gap-2 justify-content-end">
 
-<a href="{{ route('admin.job-type.edit', $jobType->id) }}"
+                <a href="{{ route('admin.job-type.edit', $jobType->id) }}"
                         class="avatar-text avatar-md action-icon action-edit">
                         <i class="feather-edit"></i>
                     </a>
 
-                    <a href="{{ route('admin.job-type.delete', $jobType->id) }}"
-                       class="avatar-text avatar-md action-icon action-delete">
-                        <i class="feather-trash-2"></i>
-                    </a>
+                    <form action="{{ route('admin.job-type.delete', $jobType->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this job type?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="avatar-text avatar-md action-icon action-delete">
+                            <i class="feather-trash-2"></i>
+                        </button>
 
                 </div>
             </td>
@@ -96,9 +98,16 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
          </div>
     </div>
 
 </div>
 
  @endsection
+=======
+        </div>
+    </div>
+
+@endsection
+>>>>>>> cbc0430ccf1712cd3f0a5246d00bbd83c3d9cd82

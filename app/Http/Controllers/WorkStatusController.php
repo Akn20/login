@@ -87,7 +87,7 @@ class WorkStatusController extends Controller
             'updated_by' => 1
         ]);
 
-        return redirect()->route('work-status.index')
+        return redirect()->route('admin.work-status.index')
             ->with('success', 'Work Status updated successfully');
     }
 
@@ -98,7 +98,7 @@ class WorkStatusController extends Controller
         $workStatus = WorkStatus::findOrFail($id);
         $workStatus->delete();
 
-        return redirect()->route('work-status.index')
+        return redirect()->route('admin.work-status.index')
             ->with('success', 'Work Status deleted successfully');
     }
 
@@ -111,7 +111,7 @@ class WorkStatusController extends Controller
     public function restore($id)
     {
         WorkStatus::withTrashed()->findOrFail($id)->restore();
-        return redirect()->route('work-status.trash')
+        return redirect()->route('admin.work-status.trash')
             ->with('success', 'Work Status restored');
     }
 

@@ -100,8 +100,15 @@ class RoleController extends Controller
         return redirect()->route('admin.roles.deleted')->with('success', 'Role permanently deleted successfully');
     }
 
-    public function toggleStatus(Role $role)
+    public function toggleStatus(Request $request)
     {
+        $role = Roles::findOrFail($request->id);
+        if($role->name=='admin'){
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot change status of Admin role',
+            ], 403);
+        }
         $role->status = $role->status === 'active' ? 'inactive' : 'active';
         $role->save();
 
