@@ -21,6 +21,8 @@ use App\Http\Controllers\WorkStatusController;
 
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\Admin\PatientController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -340,6 +342,38 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
                     Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
         });           
+       /*
+    |--------------------------------------------------------------------------
+    | Patients
+    |--------------------------------------------------------------------------
+    */
 
-    });
+        Route::get('patients/duplicates', [PatientController::class, 'duplicates'])
+            ->name('patients.duplicates');
+
+        Route::post('patients/merge', [PatientController::class, 'merge'])
+            ->name('patients.merge');
+
+        Route::get('patients/deleted', [PatientController::class, 'deleted'])
+            ->name('patients.deleted');
+
+        Route::put('patients/{id}/restore', [PatientController::class, 'restore'])
+            ->name('patients.restore');
+
+        Route::delete('patients/{id}/force-delete', [PatientController::class, 'forceDelete'])
+            ->name('patients.forceDelete');
+
+        Route::patch('patients/{id}/toggle-status', [PatientController::class, 'toggleStatus'])
+            ->name('patients.toggleStatus');
+
+        Route::patch('patients/{id}/toggle-vip', [PatientController::class, 'toggleVip'])
+            ->name('patients.toggleVip');
+
+        
+
+        Route::resource('patients', PatientController::class);
+
+       
+        
+        });
 });
