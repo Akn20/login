@@ -267,4 +267,64 @@ class SignInController extends Controller
             );
         }
     }
+
+    public function apiLogin(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|digits:10',
+            'mpin' => 'required|digits_between:4,6',
+        ]);
+
+        $user = User::where('mobile', $request->mobile)->first();
+
+        if (! $user) {
+            return response()->json([
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        if ($user->status !== 'active') {
+            return response()->json([
+                'message' => 'User is inactive',
+            ], 403);
+        }
+
+        if ($user->locked_until && now()->lt($user->locked_until)) {
+            return response()->json([
+                'message' => 'Account temporarily locked. Please try again later.',
+            ], 423);
+        }
+
+        if (! Hash::check($request->mpin, $user->mpin)) {
+            $user->increment('failed_attempts');
+
+            if ($user->failed_attempts >= 5) {
+                $user->update([
+                    'locked_until' => now()->addMinutes(1),
+                    'failed_attempts' => 0,
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        // reset failed attempts
+        $user->update(['failed_attempts' => 0]);
+
+        // create API token (Laravel Sanctum)
+        $token = $user->createToken('mobile')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'mobile' => $user->mobile,
+                'role' => $user->role?->name,
+            ],
+        ]);
+    }
 }

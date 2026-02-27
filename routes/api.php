@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
@@ -21,7 +23,8 @@ use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 
-
+/* Login API */
+Route::post('login', [SignInController::class, 'apiLogin']);
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
