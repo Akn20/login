@@ -8,6 +8,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\StockController;
 
 
 /* Religion */
@@ -94,3 +95,16 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+//stock management
+Route::prefix('pharmacy')->group(function () {
+    Route::get('/stock', [StockController::class, 'apiIndex']);
+    Route::get('/stock/low', [StockController::class, 'apiLowStock']);
+    Route::get('/stock/{id}', [StockController::class, 'apiShow']);
+    Route::post('/stock', [StockController::class, 'apiStore']);
+    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
+    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
+    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
+    Route::get('stock-trash', [StockController::class, 'apiTrash']);
+    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+});
