@@ -50,8 +50,10 @@
                                                 <td>{{ $staffManagements->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
-                                                <td>{{ $staff->department->name ?? '-' }}</td>
-                                                <td>{{ $staff->designation->name ?? '-' }}</td>
+                                                <!-- <td>{{ $staff->department->name ?? '-' }}</td>
+                                                <td>{{ $staff->designation->name ?? '-' }}</td> -->
+                                                <td>{{ $staff->department }}</td>
+                                                <td>{{ $staff->designation }}</td>
                                                 <td>
                                                     @if($staff->status === 'Active')
                                                         <span class="badge bg-soft-success text-success">Active</span>

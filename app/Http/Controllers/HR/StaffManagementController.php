@@ -24,32 +24,29 @@ class StaffManagementController extends Controller
         return view('hr.staff_management.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|unique:staff,employee_id',
-            'name' => 'required',
-            'joining_date' => 'required|date',
-            'status' => 'required',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required|unique:staff,employee_id',
+        'name' => 'required',
+        'department' => 'required',
+        'designation' => 'required',
+        'joining_date' => 'required|date',
+        'status' => 'required',
+    ]);
 
-        Staff::create([
-            'employee_id' => $request->employee_id,
-            'name' => $request->name,
-            'joining_date' => $request->joining_date,
-            'status' => $request->status,
-        ]);
+    Staff::create([
+        'employee_id' => $request->employee_id,
+        'name' => $request->name,
+        'department' => $request->department,
+        'designation' => $request->designation,
+        'joining_date' => $request->joining_date,
+        'status' => $request->status,
+    ]);
 
-        if(request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Staff added successfully.',
-                'data' => Staff::latest()->first(),
-            ]);
-        }
-        return redirect()->route('hr.staff-management.index')
-            ->with('success', 'Staff added successfully.');
-    }
+    return redirect()->route('hr.staff-management.index')
+        ->with('success', 'Staff added successfully.');
+}
 
     public function edit($id)
     {
@@ -58,34 +55,31 @@ class StaffManagementController extends Controller
         return view('hr.staff_management.edit', compact('staff'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $staff = Staff::findOrFail($id);
+   public function update(Request $request, $id)
+{
+    $staff = Staff::findOrFail($id);
 
-        $request->validate([
-            'employee_id' => 'required|unique:staff,employee_id,'.$id,
-            'name' => 'required',
-            'joining_date' => 'required|date',
-            'status' => 'required',
-        ]);
+    $request->validate([
+        'employee_id' => 'required|unique:staff,employee_id,' . $id,
+        'name' => 'required',
+        'department' => 'required',
+        'designation' => 'required',
+        'joining_date' => 'required|date',
+        'status' => 'required',
+    ]);
 
-        $staff->update([
-            'employee_id' => $request->employee_id,
-            'name' => $request->name,
-            'joining_date' => $request->joining_date,
-            'status' => $request->status,
-        ]);
+    $staff->update([
+        'employee_id' => $request->employee_id,
+        'name' => $request->name,
+        'department' => $request->department,
+        'designation' => $request->designation,
+        'joining_date' => $request->joining_date,
+        'status' => $request->status,
+    ]);
 
-        if(request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Staff updated successfully.',
-                'data' => $staff,
-            ]);
-        }
-        return redirect()->route('hr.staff-management.index')
-            ->with('success', 'Staff updated successfully.');
-    }
+    return redirect()->route('hr.staff-management.index')
+        ->with('success', 'Staff updated successfully.');
+}
 
     public function destroy($id)
     {
