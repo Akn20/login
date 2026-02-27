@@ -6,15 +6,15 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
+// Masters controllers
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Admin\Pharmacy\GrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-// Masters controllers
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
@@ -26,6 +26,7 @@ use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
 // Module/Institution/Organization controllers
 use App\Http\Controllers\JobTypeController;
+// HR controllers
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 // Pharmacy(GRN)
@@ -408,7 +409,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         Route::get('inventory/reports',
-            [\App\Http\Controllers\Admin\Inventory\ReportController::class, 'index']
+            [ReportController::class, 'index']
         )->name('inventory.reports');
 
         Route::prefix('inventory')->name('inventory.')->group(function () {
@@ -526,6 +527,9 @@ Route::middleware(['auth', 'role:hr,admin'])
 
         Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
             ->name('staff-management.forceDelete');
+
+        Route::patch('staff-management/{id}/toggleStatus', [StaffManagementController::class, 'toggleStatus'])
+            ->name('staff-management.toggleStatus');
 
         Route::resource('staff-management', StaffManagementController::class);
     });

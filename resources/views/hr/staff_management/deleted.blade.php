@@ -39,7 +39,7 @@
                                         <td>{{ $staffs->firstItem() + $i }}</td>
                                         <td>{{ $staff->employee_id }}</td>
                                         <td>{{ $staff->name }}</td>
-                                        <td>{{ $staff->department->name ?? '-' }}</td>
+                                       <td>{{ $staff->department ?? '-' }}</td>
                                         <td>
                                             @if($staff->status === 'Active')
                                                 <span class="badge bg-soft-success text-success">Active</span>
