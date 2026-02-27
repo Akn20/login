@@ -9,6 +9,7 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\VendorController;
 
 
 /* Religion */
@@ -107,4 +108,25 @@ Route::prefix('pharmacy')->group(function () {
     Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
     Route::get('stock-trash', [StockController::class, 'apiTrash']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+//Vendor api
+
+
+Route::prefix('vendors')->group(function () {
+
+    Route::get('/', [VendorController::class, 'apiIndex']);
+
+    Route::post('/', [VendorController::class, 'apiStore']);
+
+    Route::get('/trash', [VendorController::class, 'apiTrash']);
+
+    Route::get('/{id}', [VendorController::class, 'apiShow']);
+
+    Route::put('/{id}', [VendorController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [VendorController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [VendorController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
+
 });

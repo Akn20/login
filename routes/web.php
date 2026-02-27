@@ -29,6 +29,10 @@ use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\EmployeeController;
 
+//Pharmacy(GRN)
+use App\Http\Controllers\Admin\Pharmacy\GrnController;
+
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StockController;
 /*
@@ -325,6 +329,35 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
+
+        // ============================
+        // PHARMACY -> GRN 
+        // ============================
+
+
+Route::prefix('pharmacy')->name('grn.')->group(function () {
+
+    Route::get('/grn', [GrnController::class, 'index'])->name('index');
+    Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
+    Route::post('/grn', [GrnController::class, 'store'])->name('store');
+
+    Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
+    Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
+    Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
+    Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
+    Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+
+    Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+
+    Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+    ->name('print');
+    
+    Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
+    Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
+    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
+    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
+
+});
         /*
         |----------------------------------------------------------------------
         | Pharmacy: stock management

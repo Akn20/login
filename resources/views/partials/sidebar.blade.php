@@ -325,6 +325,14 @@
                                 <span class="nxl-mtext">Vendor Management</span>
                             </a>
                         </li>
+                        {{-- Goods Receipt(GRN) --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.grn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+
                                 
                         {{-- Stock Management --}}
                         <li class="nxl-item">
