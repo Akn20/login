@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->integer('minimum_stock')->default(10);
+        Schema::table('rooms', function (Blueprint $table) {
+           $table->softDeletes();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->dropColumn('minimum_stock');
+        Schema::table('rooms', function (Blueprint $table) {
+            //
         });
     }
 };

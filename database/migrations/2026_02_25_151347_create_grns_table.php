@@ -12,20 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grns', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    $table->string('grn_number')->unique();
+            $table->string('grn_number')->unique();
 
-    $table->foreignId('purchase_order_id')
-          ->constrained()
-          ->onDelete('cascade');
+            $table->foreignId('purchase_order_id')
+                ->constrained()
+                ->onDelete('cascade');
 
-    $table->date('received_date');
+            $table->date('received_date');
 
-    $table->decimal('total_amount', 12, 2)->default(0);
+            $table->decimal('total_amount', 12, 2)->default(0);
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

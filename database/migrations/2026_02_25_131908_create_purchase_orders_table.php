@@ -11,27 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('purchase_orders', function (Blueprint $table) {
-    $table->id();
+        Schema::create('purchase_orders', function (Blueprint $table) {
+            $table->id();
 
-    $table->string('po_number')->unique();
-    $table->unsignedBigInteger('vendor_id')->nullable();
+            $table->string('po_number')->unique();
+            $table->uuid('vendor_id')->nullable();
 
-    $table->date('order_date');
-    $table->date('expected_date')->nullable();
+            $table->foreign('vendor_id')
+                ->references('id')
+                ->on('vendors')
+                ->onDelete('set null');
 
-    $table->decimal('total_amount', 12, 2)->default(0);
+            $table->date('order_date');
+            $table->date('expected_date')->nullable();
 
-    $table->enum('status', [
-        'draft',
-        'approved',
-        'ordered',
-        'completed',
-        'cancelled'
-    ])->default('draft');
+            $table->decimal('total_amount', 12, 2)->default(0);
 
-    $table->timestamps();
-});
+            $table->enum('status', [
+                'draft',
+                'approved',
+                'ordered',
+                'completed',
+                'cancelled',
+            ])->default('draft');
+
+            $table->timestamps();
+            $table->softDeletes();
+
+        });
     }
 
     /**

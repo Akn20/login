@@ -22,8 +22,12 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkStatusController;
+
+//Bed,room and Ward controllers
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\RoomController;
+
 // HR controllers
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -432,7 +436,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
                 ->name('beds.generateCode');
             Route::resource('beds', BedController::class);
 
+        /*
+        |----------------------------------------------------------------------
+        | Rooms
+        |----------------------------------------------------------------------
+        */
 
+            Route::get('rooms/deleted', [RoomController::class, 'deleted'])
+                    ->name('rooms.deleted');
+    
+                Route::put('rooms/{id}/restore', [RoomController::class, 'restore'])
+                    ->name('rooms.restore');
+    
+                Route::delete('rooms/{id}/force-delete', [RoomController::class, 'forceDelete'])
+                    ->name('rooms.forceDelete');
+    
+                Route::get('get-rooms/{ward}', [BedController::class, 'getRooms']);
+
+                Route::resource('rooms', RoomController::class);
 
     });
 

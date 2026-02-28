@@ -446,29 +446,6 @@
                     </ul>
                 </li>
 
-                {{-- Ward Management --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-layout"></i></span>
-                        <span class="nxl-mtext">Ward Management</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.ward.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-list"></i></span>
-                                <span class="nxl-mtext">All Wards</span>
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.ward.create') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
-                                <span class="nxl-mtext">Add Ward</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
                 {{-- Bed Management --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
@@ -476,19 +453,30 @@
                         <span class="nxl-mtext">Bed Management</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
+
                     <ul class="nxl-submenu">
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.ward.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-home"></i></span>
+                                <span class="nxl-mtext">Wards</span>
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.rooms.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Rooms</span>
+                            </a>
+                        </li>
+
                         <li class="nxl-item">
                             <a href="{{ route('admin.beds.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-list"></i></span>
-                                <span class="nxl-mtext">All Beds</span>
+                                <span class="nxl-micon"><i class="feather-layers"></i></span>
+                                <span class="nxl-mtext">Beds</span>
                             </a>
                         </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.beds.create') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
-                                <span class="nxl-mtext">Add Bed</span>
-                            </a>
-                        </li>
+
                     </ul>
                 </li>
 

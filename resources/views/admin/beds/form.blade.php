@@ -35,7 +35,7 @@
         <input type="text"
                name="room_number"
                class="form-control"
-               value="{{ old('room_number', $bed->room_number ?? '') }}">
+               value="{{ old('room_number', $bed->room_number ?? '') }}" required>
     </div>
 
     <div class="col-md-6 mb-3">
@@ -52,7 +52,7 @@
 
     <div class="col-md-6 mb-3">
         <label>Status</label>
-        <select name="status" class="form-control">
+        <select name="status" class="form-control" required>
             @foreach(['Available','Occupied','Maintenance','Cleaning'] as $status)
                 <option value="{{ $status }}"
                     {{ old('status', $bed->status ?? 'Available') == $status ? 'selected' : '' }}>
