@@ -3,91 +3,71 @@
 namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderItem;
-use App\Models\Item;
+use Illuminate\Http\Request;
 
 class PurchaseOrderApiController extends Controller
 {
+
     public function index()
     {
-        $orders = PurchaseOrder::with('items')->latest()->get();
-
-        return response()->json([
-            'status' => true,
-            'data' => $orders
-        ]);
+        return PurchaseOrder::with('vendor')
+            ->latest()
+            ->get();
     }
 
-            public function store(Request $request)
-            {
-            $request->validate([
-                'vendor_id' => 'required|exists:vendors,id',
-                'order_date' => 'required|date',
-                'items' => 'required|array|min:1',
-                'items.*.item_id' => 'required|integer',
-                'items.*.quantity' => 'required|numeric|min:1',
-                'items.*.unit_price' => 'required|numeric|min:0'
-            ]);
 
-            DB::beginTransaction();
+    public function show($id)
+    {
+        return PurchaseOrder::with(['vendor', 'items.item'])
+            ->findOrFail($id);
+    }
 
-            try {
 
-                $grandTotal = 0;
+    public function store(Request $request)
+{
+    $request->validate([
+        'po_number' => 'required',
+        'vendor_id' => 'required',
+        'order_date' => 'required',
+        'total_amount' => 'required'
+    ]);
 
-                foreach ($request->items as $item) {
-                    $grandTotal += $item['quantity'] * $item['unit_price'];
-                }
+    $po = PurchaseOrder::create([
+        'po_number' => $request->po_number,
+        'vendor_id' => $request->vendor_id,
+        'order_date' => $request->order_date,
+        'expected_date' => $request->expected_date,
+        'total_amount' => $request->total_amount,
+        'status' => 'draft'
+    ]);
 
-                // ✅ GENERATE PO NUMBER PROPERLY
-                $poNumber = 'PO-' . str_pad(
-                    PurchaseOrder::count() + 1,
-                    5,
-                    '0',
-                    STR_PAD_LEFT
-                );
+    return response()->json($po);
+}
 
-                $purchaseOrder = PurchaseOrder::create([
-    'po_number'     => $poNumber,
-    'vendor_id'     => $request->vendor_id,
-    'order_date'    => $request->order_date,
-    'expected_date' => $request->expected_date,
-    'total_amount'  => $grandTotal,
-    'status'        => 'draft'   // ✅ MUST MATCH ENUM EXACTLY
-]);
 
-                foreach ($request->items as $itemData) {
+    public function update(Request $request, $id)
+    {
+        $po = PurchaseOrder::findOrFail($id);
 
-                    $total = $itemData['quantity'] * $itemData['unit_price'];
+        $po->update([
+            'po_number' => $request->po_number,
+            'vendor_id' => $request->vendor_id,
+            'order_date' => $request->order_date,
+            'total_amount' => $request->total_amount,
+            'status' => $request->status,
+        ]);
 
-                    PurchaseOrderItem::create([
-                        'purchase_order_id' => $purchaseOrder->id,
-                        'item_id'           => $itemData['item_id'],
-                        'quantity'          => $itemData['quantity'],
-                        'unit_price'        => $itemData['unit_price'],
-                        'total'             => $total
-                    ]);
-                }
+        return response()->json($po);
+    }
 
-                DB::commit();
 
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Purchase Order Created Successfully',
-                    'data' => $purchaseOrder
-                ]);
+    public function destroy($id)
+    {
+        PurchaseOrder::destroy($id);
 
-            } catch (\Exception $e) {
-
-                DB::rollBack();
-
-                return response()->json([
-                    'status' => false,
-                    'message' => $e->getMessage()
-                ], 500);
-            }
-        }
+        return response()->json([
+            'message' => 'Deleted'
+        ]);
+    }
 }

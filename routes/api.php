@@ -15,6 +15,10 @@ use App\Http\Controllers\Api\Inventory\ItemApiController;
 use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\Api\Inventory\StockAuditApiController;
+use App\Http\Controllers\Api\Inventory\StockTransferApiController;
+use App\Http\Controllers\Api\Inventory\InventoryDashboardApiController;
+
 
 
 /* Religion */
@@ -136,22 +140,45 @@ Route::get('/test-api', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
-//inventory management api routes
+// ================= INVENTORY API =================
+
 Route::prefix('inventory')->group(function () {
 
+    // ITEMS
     Route::get('/items', [ItemApiController::class, 'index']);
     Route::post('/items', [ItemApiController::class, 'store']);
+    Route::get('/items/{id}', [ItemApiController::class, 'show']);
+    Route::put('/items/{id}', [ItemApiController::class, 'update']);
+    Route::delete('/items/{id}', [ItemApiController::class, 'destroy']);
 
+    // PURCHASE ORDERS
     Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
     Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
+    Route::get('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'show']);
+    Route::put('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'update']);
+    Route::delete('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'destroy']);
 
+    // GRN
     Route::get('/grns', [GrnApiController::class, 'index']);
     Route::post('/grns', [GrnApiController::class, 'store']);
+    Route::get('/grns/{id}', [GrnApiController::class, 'show']);
+
+    // STOCK AUDIT
+    Route::get('/stock-audits', [StockAuditApiController::class, 'index']);
+    Route::post('/stock-audits', [StockAuditApiController::class, 'store']);
+
+    // STOCK TRANSFER
+    Route::get('/stock-transfers', [StockTransferApiController::class, 'index']);
+    Route::post('/stock-transfers', [StockTransferApiController::class, 'store']);
+
+    // DASHBOARD
+    Route::get('/dashboard', [InventoryDashboardApiController::class, 'index']);
 });
+
+// Vendors
 Route::get('/vendors', function () {
     return \App\Models\Vendor::select('id','vendor_name')->get();
 });
-
 
 //Bed 
 Route::prefix('admin')->group(function () {
