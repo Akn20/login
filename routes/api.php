@@ -140,12 +140,12 @@ Route::delete('/weekends/{id}/force-delete', [WeekendController::class, 'forceDe
 Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleStatus']);
 
 //Holiday
+Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
 Route::get('/holidays', [HolidayController::class, 'index']);
-Route::post('/holidays', [HolidayController::class, 'store']);
 Route::get('/holidays/{id}', [HolidayController::class, 'show']);
+Route::post('/holidays', [HolidayController::class, 'store']);
 Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
 Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
-Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
 Route::post('/holidays/{id}/restore', [HolidayController::class, 'restore']);
 Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDelete']);
 Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);

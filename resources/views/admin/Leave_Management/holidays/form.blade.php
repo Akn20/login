@@ -43,12 +43,12 @@
 <div class="mb-3">
     <label class="form-label">Status</label>
     <select name="status" class="form-control">
-        <option value="1"
-            {{ old('status', $holiday->status ?? 1) == 1 ? 'selected' : '' }}>
+        <option value="active"
+            {{ old('status', $holiday->status ?? 'active') == 'active' ? 'selected' : '' }}>
             Active
         </option>
-        <option value="0"
-            {{ old('status', $holiday->status ?? 1) == 0 ? 'selected' : '' }}>
+        <option value="inactive"
+            {{ old('status', $holiday->status ?? 'active') == 'inactive' ? 'selected' : '' }}>
             Inactive
         </option>
     </select>
