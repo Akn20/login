@@ -18,7 +18,7 @@
     </div>
 
     <div class="d-flex gap-2">
-        <a href="{{ route('hr.staff-management.edit', $staff->id) }}" class="btn btn-primary">
+        <a href="{{ route('hr.staff-management.edit', $staffManagement->id) }}" class="btn btn-primary">
             <i class="feather-edit me-1"></i> Edit
         </a>
 
@@ -33,28 +33,28 @@
         <dl class="row mb-0">
 
             <dt class="col-md-3">Employee ID</dt>
-            <dd class="col-md-9">{{ $staff->employee_id }}</dd>
+            <dd class="col-md-9">{{ $staffManagement->employee_id }}</dd>
 
             <dt class="col-md-3">Name</dt>
-            <dd class="col-md-9">{{ $staff->name }}</dd>
+            <dd class="col-md-9">{{ $staffManagement->name }}</dd>
 
             <dt class="col-md-3">Department</dt>
-            <dd class="col-md-9">{{ $staff->department }}</dd>
+            <dd class="col-md-9">{{ $staffManagement->department }}</dd>
 
             <dt class="col-md-3">Designation</dt>
-            <dd class="col-md-9">{{ $staff->designation }}</dd>
+            <dd class="col-md-9">{{ $staffManagement->designation }}</dd>
 
             <dt class="col-md-3">Joining Date</dt>
             <dd class="col-md-9">
-                {{ \Carbon\Carbon::parse($staff->joining_date)->format('d-m-Y') }}
+                {{ \Carbon\Carbon::parse($staffManagement->joining_date)->format('d-m-Y') }}
             </dd>
 
             <dt class="col-md-3">Status</dt>
             <dd class="col-md-9">
-                <span class="badge bg-{{ $staff->status === 'Active' ? 'success' : 'danger' }}">
-                    {{ $staff->status }}
+                <span class="badge bg-{{ $staffManagement->status === 'Active' ? 'success' : 'danger' }}">
+                    {{ $staffManagement->status }}
                 </span>
-            </dd>
+            </dd>   
 
         </dl>
     </div>

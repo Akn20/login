@@ -51,9 +51,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse($staffManagements as $i => $staff)
+                                        @forelse($staffManagement as $i => $staff)
                                             <tr>
-                                                <td>{{ $staffManagements->firstItem() + $i }}</td>
+                                                <td>{{ $staffManagement->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
                                                 <!-- <td>{{ $staff->department->name ?? '-' }}</td>
@@ -112,7 +112,7 @@
 
                             {{-- Pagination --}}
                             <div class="mt-3">
-                                {{ $staffManagements->links() }}
+                                {{ $staffManagement->links() }}
                             </div>
                         </div>
                     </div>
