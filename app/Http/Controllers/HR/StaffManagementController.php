@@ -34,6 +34,7 @@ class StaffManagementController extends Controller
         'department' => 'required',
         'designation' => 'required',
         'joining_date' => 'required|date',
+       // 'joining_date' => 'required',//changed
         'status' => 'required',
     ]);
 
@@ -150,7 +151,12 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.deleted')
             ->with('success', 'Staff permanently deleted.');
     }
+public function show($id)
+{
+    $staff = Staff::findOrFail($id);
 
+    return view('hr.staff_management.show', compact('staff'));
+}
     // App API Endpoints
     public function apiIndex()
     {

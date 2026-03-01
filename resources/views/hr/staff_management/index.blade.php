@@ -27,6 +27,12 @@
         </div>
 
         <div class="main-content">
+             @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card stretch stretch-full">
@@ -63,6 +69,12 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
+                                                        <!-- View -->
+                                 <a href="{{ route('hr.staff-management.show', $staff->id) }}"
+                                         class="avatar-text avatar-md action-icon"
+                                            title="View">
+                                         <i class="feather-eye"></i>
+                                            </a>
 
                                                         <!-- Edit -->
                                                         <a href="{{ route('hr.staff-management.edit', $staff->id) }}"
@@ -100,6 +112,7 @@
 
                             {{-- Pagination --}}
                             <div class="mt-3">
+                                {{ $staffManagements->links() }}
                             </div>
                         </div>
                     </div>
