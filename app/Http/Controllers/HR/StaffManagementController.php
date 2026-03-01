@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 
 class StaffManagementController extends Controller
 {
+
+    private function generateEmployeeId()
+    {
+        $last = Staff::orderBy('id', 'desc')->first();
+        $nextNumber = $last ? ($last->id + 1) : 1;
+    
+        // Format as EMP-0001, EMP-0002, etc.
+        return 'EMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
     public function index()
     {
         $staffManagements = Staff::latest()->paginate(10);
@@ -38,14 +47,14 @@ class StaffManagementController extends Controller
         'status' => 'required',
     ]);
 
-    Staff::create([
-        'employee_id' => $request->employee_id,
-        'name' => $request->name,
-        'department' => $request->department,
-        'designation' => $request->designation,
-        'joining_date' => $request->joining_date,
-        'status' => $request->status,
-    ]);
+        Staff::create([
+            'employee_id' => $this->generateEmployeeId(),
+            'name' => $request->name,
+            'role' => $request->role,
+            'department' => $request->department,
+            'joining_date' => $request->joining_date,
+            'status' => $request->status,
+        ]);
 
     return redirect()->route('hr.staff-management.index')
         ->with('success', 'Staff added successfully.');
@@ -62,23 +71,21 @@ class StaffManagementController extends Controller
 {
     $staff = Staff::findOrFail($id);
 
-    $request->validate([
-        'employee_id' => 'required|unique:staff,employee_id,' . $id,
-        'name' => 'required',
-        'department' => 'required',
-        'designation' => 'required',
-        'joining_date' => 'required|date',
-        'status' => 'required',
-    ]);
+        $request->validate([
+            'name' => 'required',
+            'role' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'joining_date' => 'required|date',
+            'status' => 'required',
+        ]);
 
-    $staff->update([
-        'employee_id' => $request->employee_id,
-        'name' => $request->name,
-        'department' => $request->department,
-        'designation' => $request->designation,
-        'joining_date' => $request->joining_date,
-        'status' => $request->status,
-    ]);
+        $staff->update([
+            'name' => $request->name,
+            'role' => $request->role,
+            'department' => $request->department,
+            'joining_date' => $request->joining_date,
+            'status' => $request->status,
+        ]);
 
     return redirect()->route('hr.staff-management.index')
         ->with('success', 'Staff updated successfully.');
@@ -179,6 +186,7 @@ public function show($id)
         ]);
 
         $staff = Staff::create([
+            'employee_id' => $this->generateEmployeeId(),
             'name' => $data['name'],
             'status' => $data['status'],
             'joining_date' => $data['joining_date'] ?? now(), // default DOJ for app
