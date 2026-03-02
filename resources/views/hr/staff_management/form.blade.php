@@ -16,36 +16,43 @@
         Role <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="role" value="{{ old('role', $staffManagement->role ?? '') }}"
-        class="form-control @error('role') is-invalid @enderror" placeholder="Enter Role">
+    <select name="role_id" class="form-select @error('role_id') is-invalid @enderror">
+        <option value="">Select a Role</option>
+        @foreach($roles as $role)
+            <option value="{{ $role->id }}" {{ old('role_id', $staffManagement->role_id ?? '') == $role->id ? 'selected' : '' }}>
+                {{ $role->name }}
+            </option>
+        @endforeach
+    </select>
 
-    @error('role')
+    @error('role_id')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
+</div>
+
+
+<div class="mb-4">
+    <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+    <input type="text" name="mobile" class="form-control @error('mobile') is-invalid @enderror"
+        value="{{ old('mobile', $staffManagement->user->mobile ?? '') }}">
+    @error('mobile') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
 
 <div class="mb-4">
-    <label class="form-label">
-        Department
-    </label>
-
-    <input type="text" name="department" value="{{ old('department', $staffManagement->department ?? '') }}"
-        class="form-control @error('department') is-invalid @enderror" placeholder="Enter Department">
-
-    @error('department')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
+    <label class="form-label">Email Address</label>
+    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+        value="{{ old('email', $staffManagement->user->email ?? '') }}">
+    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
 </div>
+
 
 <div class="mb-4">
     <label class="form-label">
         Department <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="department"
-        value="{{ old('department', $staff->department ?? '') }}"
-        class="form-control @error('department') is-invalid @enderror"
-        placeholder="Enter Department">
+    <input type="text" name="department" value="{{ old('department', $staffManagement->department ?? '') }}"
+        class="form-control @error('department') is-invalid @enderror" placeholder="Enter Department" required>
 
     @error('department')
         <div class="invalid-feedback">{{ $message }}</div>
@@ -58,10 +65,8 @@
         Designation <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="designation"
-        value="{{ old('designation', $staff->designation ?? '') }}"
-        class="form-control @error('designation') is-invalid @enderror"
-        placeholder="Enter Designation">
+    <input type="text" name="designation" value="{{ old('designation', $staffManagement->designation ?? '') }}"
+        class="form-control @error('designation') is-invalid @enderror" placeholder="Enter Designation">
 
     @error('designation')
         <div class="invalid-feedback">{{ $message }}</div>

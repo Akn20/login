@@ -27,6 +27,12 @@
         </div>
 
         <div class="main-content">
+             @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card stretch stretch-full">
@@ -40,80 +46,64 @@
                                             <th>Name</th>
                                             <th>Role</th>
                                             <th>Department</th>
-                                            <th>Date Joined</th>
+                                            <th>Designation</th>
                                             <th>Status</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse($staffManagements as $i => $staff)
+                                        @forelse($staffManagement as $i => $staff)
                                             <tr>
-                                                {{-- S.No --}}
-                                                <td>{{ $staffManagements->firstItem() + $i }}</td>
-
-                                                {{-- Employee ID --}}
-                                                <td class="fw-semibold">
-                                                    {{ $staff->employee_id ?? '-' }}
-                                                </td>
-
-                                                {{-- Name --}}
+                                                <td>{{ $staffManagement->firstItem() + $i }}</td>
+                                                <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
-
-                                                {{-- Role --}}
-                                                <td>{{ $staff->role ?? '-' }}</td>
-
-                                                {{-- Department --}}
-                                                <td>{{ $staff->department ?? '-' }}</td>
-
-                                                {{-- Date Joined --}}
+                                                <td>{{ $staff->role->name ?? '-' }}</td>
+                                                <!-- <td>{{ $staff->department->name ?? '-' }}</td>
+                                                <td>{{ $staff->designation->name ?? '-' }}</td> -->
+                                                <td>{{ $staff->department }}</td>
+                                                <td>{{ $staff->designation }}</td>
                                                 <td>
-                                                    @if($staff->joining_date)
-                                                        {{ \Carbon\Carbon::parse($staff->joining_date)->format('d-m-Y') }}
+                                                    @if($staff->status === 'Active')
+                                                        <span class="badge bg-soft-success text-success">Active</span>
                                                     @else
-                                                        -
+                                                        <span class="badge bg-soft-danger text-danger">Inactive</span>
                                                     @endif
                                                 </td>
-
-                                                {{-- Status toggle --}}
-                                                <td>
-                                                    @include('partials.status-toggle', [
-                                                        'id'      => $staff->id,
-                                                        'url'     => route('hr.staff-management.toggleStatus', $staff->id),
-                                                        'checked' => $staff->status === 'active' || $staff->status === 'Active',
-                                                    ])
-                                                </td>
-
-                                                {{-- Actions --}}
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
+                                                        <!-- View -->
+                                 <a href="{{ route('hr.staff-management.show', $staff->id) }}"
+                                         class="avatar-text avatar-md action-icon"
+                                            title="View">
+                                         <i class="feather-eye"></i>
+                                            </a>
 
-                                                        {{-- Edit --}}
+                                                        <!-- Edit -->
                                                         <a href="{{ route('hr.staff-management.edit', $staff->id) }}"
-                                                           class="avatar-text avatar-md action-icon action-edit"
-                                                           title="Edit">
+                                                            class="avatar-text avatar-md action-icon action-edit" title="Edit">
                                                             <i class="feather-edit"></i>
                                                         </a>
 
-                                                        {{-- Delete (AJAX) --}}
+                                                        <!-- Delete -->
                                                         <form action="{{ route('hr.staff-management.destroy', $staff->id) }}"
-                                                              method="POST"
-                                                              class="d-inline"
-                                                              data-ajax="staff-delete">
+                                                            method="POST" class="d-inline"
+                                                            onsubmit="return confirm('Are you sure you want to delete this staff?');">
                                                             @csrf
                                                             @method('DELETE')
 
                                                             <button type="submit"
-                                                                    class="avatar-text avatar-md action-icon action-delete"
-                                                                    title="Delete">
+                                                                class="avatar-text avatar-md action-icon action-delete"
+                                                                title="Delete">
                                                                 <i class="feather-trash-2"></i>
                                                             </button>
                                                         </form>
+
                                                     </div>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="8" class="text-center py-4">
+                                                <td colspan="7" class="text-center py-4">
                                                     No staff records found.
                                                 </td>
                                             </tr>
@@ -124,7 +114,7 @@
 
                             {{-- Pagination --}}
                             <div class="mt-3">
-                                {{ $staffManagements->links() }}
+                                {{ $staffManagement->links() }}
                             </div>
                         </div>
                     </div>
@@ -133,88 +123,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Toggle status via AJAX
-    function bindStaffStatusToggles() {
-        const toggles = document.querySelectorAll('.status-toggle-input[data-url*="staff-management"]');
-
-        toggles.forEach(toggle => {
-            if (toggle.dataset.bound === '1') return;
-            toggle.dataset.bound = '1';
-
-            toggle.addEventListener('change', function () {
-                const url     = this.getAttribute('data-url');
-                const checked = this.checked;
-
-                fetch(url, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        alert('Failed to update status.');
-                        this.checked = !checked;
-                        return;
-                    }
-
-                    const textEl = this.nextElementSibling.querySelector('.status-toggle-text');
-                    if (textEl) {
-                        textEl.textContent =
-                            (data.status === 'active' || data.status === 'Active')
-                            ? 'Active'
-                            : 'Inactive';
-                    }
-                })
-                .catch(() => {
-                    alert('Failed to update status.');
-                    this.checked = !checked;
-                });
-            });
-        });
-    }
-
-    bindStaffStatusToggles();
-
-    // AJAX delete without reload
-    document.querySelectorAll('form[data-ajax="staff-delete"]').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!confirm('Delete this staff?')) return;
-
-            const row    = this.closest('tr');
-            const action = this.getAttribute('action');
-
-            fetch(action, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: new URLSearchParams(new FormData(this)),
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.success) {
-                    alert('Failed to delete staff.');
-                    return;
-                }
-                if (row) row.remove();
-            })
-            .catch(() => {
-                alert('Failed to delete staff.');
-            });
-        });
-    });
-});
-</script>
-@endpush

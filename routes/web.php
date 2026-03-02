@@ -27,7 +27,7 @@ use App\Http\Controllers\JobTypeController;
 // HR controllers
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
-use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
@@ -410,7 +410,40 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
             Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
         });
+
+
+
         /*
+/*
+|--------------------------------------------------------------------------
+| Leave Types (Leave management master)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('leave-type')->name('leave-type.')->group(function () {
+
+    Route::get('/', [LeaveTypeController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveTypeController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveTypeController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('edit');
+
+    Route::put('/update/{id}', [LeaveTypeController::class, 'update'])->name('update');
+
+    Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy'])->name('delete');
+
+    Route::get('/deleted', [LeaveTypeController::class, 'deleted'])->name('deleted');
+
+     Route::post('/restore/{id}', [LeaveTypeController::class, 'restore'])->name('restore');
+     
+    Route::delete('/force-delete/{id}', [LeaveTypeController::class, 'forceDelete'])->name('forceDelete');
+});
+         /*
+=======
+        /*
+
         |----------------------------------------------------------------------
         | Leave Mappings
         |----------------------------------------------------------------------
@@ -486,3 +519,30 @@ Route::middleware(['auth', 'role:hr,admin'])
 
         Route::resource('staff-management', StaffManagementController::class);
     });
+
+/*// Leave Type UI (temporary UI routes)
+
+Route::get('/leave-type', function () {
+    return view('admin.Leave_Management.leave_type.index');
+})->name('admin.leave-type.index');
+
+Route::get('/leave-type/create', function () {
+    return view('admin.Leave_Management.leave_type.form');
+})->name('admin.leave-type.create');
+
+Route::get('/leave-type/deleted', function () {
+    return view('admin.Leave_Management.leave_type.deleted');
+})->name('admin.leave-type.deleted');
+Route::get('/leave-type/edit/{id}', function ($id) {
+
+    // temporary dummy data
+    $leave = (object)[
+        'name' => 'Casual Leave',
+        'description' => 'Sample leave',
+        'allow_half_day' => true,
+        'approval_required' => true
+    ];
+
+    return view('admin.Leave_Management.leave_type.edit', compact('leave'));
+
+})->name('admin.leave-type.edit');*/

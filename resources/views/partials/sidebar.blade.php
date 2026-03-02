@@ -426,6 +426,15 @@
                                 <span class="nxl-mtext">Holidays</span>
                             </a>
                         </li>
+                         {{-- ✅ Leave Type (ADDED ONLY THIS PART) --}}
+            <li class="nxl-item">
+            <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
+                <span class="nxl-micon">
+                    <i class="feather-file-text"></i>
+                </span>
+                <span class="nxl-mtext">Leave Type</span>
+            </a>
+        </li>
                         {{-- Leave Mapping  --}}
                      <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
                         <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
@@ -435,6 +444,8 @@
                      </li>
                     </ul>
                 </li>
+    </ul>
+</li>
 
                 {{-- HR Management --}}
                 <li class="nxl-item nxl-hasmenu">
