@@ -20,7 +20,7 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\api\Inventory\ItemApiController;
 use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
-use App\Http\Controllers\Api\Inventory\GrnApiController;
+// use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
@@ -230,8 +230,8 @@ Route::prefix('inventory')->group(function () {
     Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
     Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
 
-    Route::get('/grns', [GrnApiController::class, 'index']);
-    Route::post('/grns', [GrnApiController::class, 'store']);
+    // Route::get('/grns', [GrnApiController::class, 'index']);
+    // Route::post('/grns', [GrnApiController::class, 'store']);
 });
 Route::get('/vendors', function () {
     return \App\Models\Vendor::select('id', 'vendor_name')->get();

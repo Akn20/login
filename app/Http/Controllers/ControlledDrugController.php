@@ -233,9 +233,8 @@ class ControlledDrugController extends Controller
 
 
 
-    public function dispense()
+    public function dispenseCreate()
     {
-
         $drugs = ControlledDrug::
             where('status', 'Active')
             ->whereNull('deleted_at')
@@ -245,7 +244,6 @@ class ControlledDrugController extends Controller
             'admin.pharmacy.controlledDrug.dispense',
             compact('drugs')
         );
-
     }
 
 
