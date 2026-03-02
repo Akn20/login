@@ -6,52 +6,82 @@ use App\Models\UserBiometrics;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Log;
 
 class BiometricController extends Controller
 {
 
-public function enroll(Request $request)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'file' => 'required|image'
-    ]);
+    public function enroll(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'file' => 'required|image'
+        ]);
 
-    $response = Http::timeout(10)->attach(
-        'file',
-        file_get_contents($request->file('file')->getRealPath()),
-        'face.jpg'
-    )->post('http://127.0.0.1:6000/enroll', [
-        'user_id' => $request->user_id
-    ]);
+        $response = Http::attach(
+            'file',
+            fopen($request->file('file')->getRealPath(), 'r'),
+            $request->file('file')->getClientOriginalName()
+        )->post('http://127.0.0.1:8099/enroll', [
+                    'user_id' => $request->user_id
+                ]);
+        print ($response);
+     
 
-    if (!$response->successful()) {
+        $result = $response->json();
+
+        if (!isset($result['status']) || $result['status'] !== 'success') {
+            return response()->json([
+                'message' => $result['message'] ?? 'Enrollment failed'
+            ], 400);
+        }
+
+        $encryptedEmbedding = Crypt::encryptString(
+            json_encode($result['embedding'])
+        );
+
+        UserBiometrics::updateOrCreate(
+            ['user_id' => $request->user_id],
+            [
+                'face_embeddings' => $encryptedEmbedding,
+            ]
+        );
+
         return response()->json([
-            'message' => 'Face service not reachable'
-        ], 500);
+            'message' => 'Biometric enrolled successfully'
+        ]);
     }
 
-    $result = $response->json();
+    public function match(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'file' => 'required|image'
+        ]);
 
-    if (!isset($result['status']) || $result['status'] !== 'success') {
+        $stored_embedding=UserBiometrics::where('user_id', $request->user_id)->first();
+        $stored_embedding=$stored_embedding->face_embeddings;
+        $stored_embedding=Crypt::decryptString($stored_embedding);
+
+        $response = Http::attach(
+            'file',
+            fopen($request->file('file')->getRealPath(), 'r'),
+            $request->file('file')->getClientOriginalName()
+        )->post('http://127.0.0.1:8099/verify', [
+                    'user_id' => $request->user_id,
+                    'stored_embedding'=>$stored_embedding
+                ]);
+
+        $result = $response->json();
+
+        if (!isset($result['status']) || $result['status'] !== 'success') {
+            return response()->json([
+                'message' => $result['message'] ?? 'Matching failed'
+            ], 400);
+        }
+
         return response()->json([
-            'message' => $result['message'] ?? 'Enrollment failed'
-        ], 400);
+            'message' => 'Biometric matched successfully'
+        ]);
     }
-
-    $encryptedEmbedding = Crypt::encryptString(
-        json_encode($result['embedding'])
-    );
-
-    UserBiometrics::updateOrCreate(
-        ['user_id' => $request->user_id],
-        [
-            'face_embedding' => $encryptedEmbedding,
-        ]
-    );
-
-    return response()->json([
-        'message' => 'Biometric enrolled successfully'
-    ]);
-}
 }

@@ -25,8 +25,7 @@ class UserBiometrics extends Model
     }
         protected $fillable = [
         'user_id',
-        'embedding_file',
-        'enrolled_by'
+        'face_embeddings',   
     ];
     
 }

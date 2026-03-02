@@ -212,4 +212,5 @@ Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus
 
 
 
-Route::post('/check-in',[BiometricController::class,'enroll']);
+Route::post('/enroll',[BiometricController::class,'enroll']);
+Route::post('/check-in',[BiometricController::class,'match']);
