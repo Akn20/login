@@ -188,6 +188,7 @@ public function show($id)
             'role' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
+            'designation' => 'required|string|max:255',
             'joining_date' => 'nullable|date',  // default DOJ for app
         ]);
 
@@ -196,6 +197,7 @@ public function show($id)
             'name' => $data['name'],
             'status' => $data['status'],
             'joining_date' => $data['joining_date'] ?? now(), // default DOJ for app
+            'designation' => $data['designation'],
             'role' => $data['role'] ?? null,
             'department' => $data['department'] ?? null,
         ]);
@@ -217,6 +219,7 @@ public function show($id)
             'department' => 'sometimes|nullable|string|max:255',
             'status' => 'sometimes|required|in:active,inactive',
             'joining_date' => 'sometimes|nullable|date',
+            'designation' => 'sometimes|required|string|max:255',
         ]);
 
         $staff->update($data);
