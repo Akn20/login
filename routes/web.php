@@ -27,6 +27,7 @@ use App\Http\Controllers\JobTypeController;
 // HR controllers
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
@@ -408,6 +409,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
 
             Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
+        });
+        /*
+        |----------------------------------------------------------------------
+        | Leave Mappings
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('leave-mappings')->name('leave-mappings.')->group(function () {
+            Route::get('/', [LeaveMappingController::class, 'index'])->name('index');
+            Route::get('/create', [LeaveMappingController::class, 'create'])->name('create');
+            Route::post('/store', [LeaveMappingController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [LeaveMappingController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [LeaveMappingController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [LeaveMappingController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [LeaveMappingController::class, 'destroy'])->name('delete');
+            
+            // Soft Delete & Status Toggle
+            Route::get('/deleted', [LeaveMappingController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [LeaveMappingController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
+            Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
         /*
         |----------------------------------------------------------------------

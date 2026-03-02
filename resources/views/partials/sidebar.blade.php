@@ -426,6 +426,13 @@
                                 <span class="nxl-mtext">Holidays</span>
                             </a>
                         </li>
+                        {{-- Leave Mapping  --}}
+                     <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-map"></i></span>
+                            <span class="nxl-mtext">Leave Mapping</span>
+                        </a>
+                     </li>
                     </ul>
                 </li>
 
