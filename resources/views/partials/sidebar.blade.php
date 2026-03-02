@@ -420,7 +420,7 @@
                                 <span class="nxl-mtext">Stock Management</span>
                             </a>
                         </li>
-                                {{-- Expiry Management --}}
+                        {{-- Expiry Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.expiries.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
@@ -433,6 +433,16 @@
                             <a href="{{ route('admin.returns.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
                                 <span class="nxl-mtext">Return Management</span>
+
+                                {{-- Controlled Drug Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-shield"></i>
+                                </span>
+                                <span class="nxl-mtext">
+                                    Controlled Drug Management
+                                </span>
                             </a>
                         </li>
                     </ul>

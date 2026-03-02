@@ -33,11 +33,18 @@ use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WardController;
+use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\WardController;
+// HR controllers
+use App\Http\Controllers\HR\EmployeeController;
+
+//Pharmacy(GRN)
+
+
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 
@@ -335,9 +342,74 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
+        /*
+        |----------------------------------------------------------------------
+        | Pharmacy: Vendor Management
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('controlledDrug')->name('controlledDrug.')->group(function () {
+
+            Route::get('/', [ControlledDrugController::class, 'index'])->name('index');
+
+            Route::get('/create', [ControlledDrugController::class, 'create'])->name('create');
+
+            Route::post('/store', [ControlledDrugController::class, 'store'])->name('store');
+
+            Route::get('/show/{id}', [ControlledDrugController::class, 'show'])->name('show');
+
+            Route::get('/edit/{id}', [ControlledDrugController::class, 'edit'])->name('edit');
+
+            Route::post('/update/{id}', [ControlledDrugController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [ControlledDrugController::class, 'destroy'])->name('delete');
+
+            Route::get('/trash', [ControlledDrugController::class, 'trash'])->name('trash');
+
+            Route::get('/restore/{id}', [ControlledDrugController::class, 'restore'])->name('restore');
+
+            Route::get('/force-delete/{id}', [ControlledDrugController::class, 'forceDelete'])->name('forceDelete');
+
+
+            Route::get('/dispense', [ControlledDrugController::class, 'dispenseIndex'])
+                ->name('dispenseIndex');
+
+            Route::get('/dispense/create', [ControlledDrugController::class, 'dispense'])
+                ->name('dispenseCreate');
+
+            Route::post('/dispense/store', [ControlledDrugController::class, 'dispenseStore'])
+                ->name('dispenseStore');
+
+
+            Route::get('/log', [ControlledDrugController::class, 'log'])
+                ->name('log');
+
+        });
+
         // ============================
         // PHARMACY -> GRN
         // ============================
+
+        Route::prefix('pharmacy')->name('grn.')->group(function () {
+
+            Route::get('/grn', [GrnController::class, 'index'])->name('index');
+            Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
+            Route::post('/grn', [GrnController::class, 'store'])->name('store');
+
+            Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
+            Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
+            Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
+            Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
+            Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+
+            Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+
+            Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+                ->name('print');
+
+            Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
+            Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
+            Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
+            Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
 
         Route::prefix('pharmacy')->name('grn.')->group(function () {
 
@@ -534,6 +606,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('beds/generate-code/{ward}', [BedController::class, 'generateCode'])
             ->name('beds.generateCode');
         Route::resource('beds', BedController::class);
+       |----------------------------------------------------------------------
+       | Beds
+       |----------------------------------------------------------------------
+       */
+        Route::prefix('beds')->name('beds.')->group(function () {
+
+            Route::get('/', [BedController::class, 'index'])->name('index');
+
+            Route::get('/create', [BedController::class, 'create'])->name('create');
+            Route::post('/store', [BedController::class, 'store'])->name('store');
+
+            Route::get('/show/{id}', [BedController::class, 'show'])->name('show');
+
+            Route::get('/edit/{id}', [BedController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [BedController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [BedController::class, 'destroy'])->name('delete');
+        });
 
     });
 
@@ -573,6 +663,7 @@ Route::middleware(['auth', 'role:hr,admin'])
         Route::resource('staff-management', StaffManagementController::class);
     });
 
+
 Route::prefix('stock')->group(function () {
 
     Route::get('stock', [StockController::class, 'apiIndex']);
@@ -588,3 +679,4 @@ Route::prefix('stock')->group(function () {
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 });
+
