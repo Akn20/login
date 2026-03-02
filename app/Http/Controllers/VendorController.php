@@ -121,4 +121,9 @@ class VendorController extends Controller
         Vendor::withTrashed()->findOrFail($id)->forceDelete();
         return redirect()->route('admin.vendors.trash')->with('success', 'Vendor removed permanently');
     }
+    //added by sushan for api
+    public function apiIndex(){
+        $vendors=vendor::where('status','Active')->get();
+        return response()->json($vendors);
+    }
 }

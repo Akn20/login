@@ -14,24 +14,53 @@ class StockAuditApiController extends Controller
         return StockAudit::with('item')->latest()->get();
     }
 
+    // public function store(Request $request)
+    // {
+    //     $item = Item::findOrFail($request->item_id);
+
+    //     $difference = $request->physical_stock - $item->stock;
+
+    //     $audit = StockAudit::create([
+    //         'item_id' => $item->id,
+    //         'system_stock' => $item->stock,
+    //         'physical_stock' => $request->physical_stock,
+    //         'difference' => $difference,
+    //     ]);
+
+    //     // Adjust stock
+    //     $item->update([
+    //         'stock' => $request->physical_stock
+    //     ]);
+
+    //     return response()->json($audit, 201);
+    // }
+    //updated store
     public function store(Request $request)
-    {
-        $item = Item::findOrFail($request->item_id);
+{
+    // ✅ Validate request
+    $request->validate([
+        'item_id' => 'required|exists:items,id',
+        'physical_stock' => 'required|numeric|min:0'
+    ]);
 
-        $difference = $request->physical_stock - $item->stock;
+    $item = Item::findOrFail($request->item_id);
 
-        $audit = StockAudit::create([
-            'item_id' => $item->id,
-            'system_stock' => $item->stock,
-            'physical_stock' => $request->physical_stock,
-            'difference' => $difference,
-        ]);
+    $difference = $request->physical_stock - $item->stock;
 
-        // Adjust stock
-        $item->update([
-            'stock' => $request->physical_stock
-        ]);
+    $audit = StockAudit::create([
+        'item_id' => $item->id,
+        'system_stock' => $item->stock,
+        'physical_stock' => $request->physical_stock,
+        'difference' => $difference,
+        'audit_date' => now()
+    ]);
 
-        return response()->json($audit, 201);
-    }
+    // ✅ Update stock
+    $item->update([
+        'stock' => $request->physical_stock
+    ]);
+
+    return response()->json($audit, 201);
+}
+    
 }
