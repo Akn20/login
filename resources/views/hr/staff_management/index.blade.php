@@ -27,6 +27,12 @@
         </div>
 
         <div class="main-content">
+             @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card stretch stretch-full">
@@ -38,6 +44,7 @@
                                             <th>S.No</th>
                                             <th>Employee ID</th>
                                             <th>Name</th>
+                                            <th>Role</th>
                                             <th>Department</th>
                                             <th>Designation</th>
                                             <th>Status</th>
@@ -45,13 +52,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse($staffManagements as $i => $staff)
+                                        @forelse($staffManagement as $i => $staff)
                                             <tr>
-                                                <td>{{ $staffManagements->firstItem() + $i }}</td>
+                                                <td>{{ $staffManagement->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
-                                                <td>{{ $staff->department->name ?? '-' }}</td>
-                                                <td>{{ $staff->designation->name ?? '-' }}</td>
+                                                <td>{{ $staff->role->name ?? '-' }}</td>
+                                                <!-- <td>{{ $staff->department->name ?? '-' }}</td>
+                                                <td>{{ $staff->designation->name ?? '-' }}</td> -->
+                                                <td>{{ $staff->department }}</td>
+                                                <td>{{ $staff->designation }}</td>
                                                 <td>
                                                     @if($staff->status === 'Active')
                                                         <span class="badge bg-soft-success text-success">Active</span>
@@ -61,6 +71,12 @@
                                                 </td>
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
+                                                        <!-- View -->
+                                 <a href="{{ route('hr.staff-management.show', $staff->id) }}"
+                                         class="avatar-text avatar-md action-icon"
+                                            title="View">
+                                         <i class="feather-eye"></i>
+                                            </a>
 
                                                         <!-- Edit -->
                                                         <a href="{{ route('hr.staff-management.edit', $staff->id) }}"
@@ -98,6 +114,7 @@
 
                             {{-- Pagination --}}
                             <div class="mt-3">
+                                {{ $staffManagement->links() }}
                             </div>
                         </div>
                     </div>

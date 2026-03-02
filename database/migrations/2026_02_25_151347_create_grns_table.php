@@ -13,17 +13,15 @@ return new class extends Migration
     {
         Schema::create('grns', function (Blueprint $table) {
             $table->id();
-
             $table->string('grn_number')->unique();
 
-            $table->foreignId('purchase_order_id')
-                ->constrained()
+            // Change from foreignId to foreignUuid
+            $table->foreignUuid('purchase_order_id')
+                ->constrained('purchases')
                 ->onDelete('cascade');
 
             $table->date('received_date');
-
             $table->decimal('total_amount', 12, 2)->default(0);
-
             $table->timestamps();
         });
     }

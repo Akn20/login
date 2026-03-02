@@ -18,9 +18,9 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('item_id')
-                ->constrained('items')
-                ->onDelete('cascade');
+            // $table->foreignId('item_id')
+            //     ->constrained('items')
+            //     ->onDelete('cascade');
 
             $table->integer('ordered_quantity');
             $table->integer('received_quantity');

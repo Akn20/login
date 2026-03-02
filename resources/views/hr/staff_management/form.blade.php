@@ -1,14 +1,60 @@
 <div class="mb-4">
     <label class="form-label">
-        Employee ID <span class="text-danger">*</span>
+        Full Name <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="employee_id"
-        value="{{ old('employee_id', $staffManagement->employee_id ?? '') }}"
-        class="form-control @error('employee_id') is-invalid @enderror"
-        placeholder="Enter Employee ID">
+    <input type="text" name="name" value="{{ old('name', $staffManagement->name ?? '') }}"
+        class="form-control @error('name') is-invalid @enderror" placeholder="Enter Full Name">
 
-    @error('employee_id')
+    @error('name')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="mb-4">
+    <label class="form-label">
+        Role <span class="text-danger">*</span>
+    </label>
+
+    <select name="role_id" class="form-select @error('role_id') is-invalid @enderror">
+        <option value="">Select a Role</option>
+        @foreach($roles as $role)
+            <option value="{{ $role->id }}" {{ old('role_id', $staffManagement->role_id ?? '') == $role->id ? 'selected' : '' }}>
+                {{ $role->name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('role_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
+<div class="mb-4">
+    <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+    <input type="text" name="mobile" class="form-control @error('mobile') is-invalid @enderror"
+        value="{{ old('mobile', $staffManagement->user->mobile ?? '') }}">
+    @error('mobile') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
+<div class="mb-4">
+    <label class="form-label">Email Address</label>
+    <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+        value="{{ old('email', $staffManagement->user->email ?? '') }}">
+    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
+
+<div class="mb-4">
+    <label class="form-label">
+        Department <span class="text-danger">*</span>
+    </label>
+
+    <input type="text" name="department" value="{{ old('department', $staffManagement->department ?? '') }}"
+        class="form-control @error('department') is-invalid @enderror" placeholder="Enter Department" required>
+
+    @error('department')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
 </div>
@@ -16,15 +62,13 @@
 
 <div class="mb-4">
     <label class="form-label">
-        Full Name <span class="text-danger">*</span>
+        Designation <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="name"
-        value="{{ old('name', $staffManagement->name ?? '') }}"
-        class="form-control @error('name') is-invalid @enderror"
-        placeholder="Enter Full Name">
+    <input type="text" name="designation" value="{{ old('designation', $staffManagement->designation ?? '') }}"
+        class="form-control @error('designation') is-invalid @enderror" placeholder="Enter Designation">
 
-    @error('name')
+    @error('designation')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
 </div>
@@ -35,8 +79,7 @@
         Joining Date <span class="text-danger">*</span>
     </label>
 
-    <input type="date" name="joining_date"
-        value="{{ old('joining_date', $staffManagement->joining_date ?? '') }}"
+    <input type="date" name="joining_date" value="{{ old('joining_date', $staffManagement->joining_date ?? '') }}"
         class="form-control @error('joining_date') is-invalid @enderror">
 
     @error('joining_date')
@@ -44,25 +87,20 @@
     @enderror
 </div>
 
-
 <div class="mb-4">
     <label class="form-label">
         Status <span class="text-danger">*</span>
     </label>
 
-    <select name="status"
-        class="form-select @error('status') is-invalid @enderror">
+    <select name="status" class="form-select @error('status') is-invalid @enderror">
 
-        <option value="Active"
-            {{ old('status', $staffManagement->status ?? '') == 'Active' ? 'selected' : '' }}>
+        <option value="Active" {{ old('status', $staffManagement->status ?? '') == 'Active' ? 'selected' : '' }}>
             Active
         </option>
 
-        <option value="Inactive"
-            {{ old('status', $staffManagement->status ?? '') == 'Inactive' ? 'selected' : '' }}>
+        <option value="Inactive" {{ old('status', $staffManagement->status ?? '') == 'Inactive' ? 'selected' : '' }}>
             Inactive
         </option>
-
     </select>
 
     @error('status')
