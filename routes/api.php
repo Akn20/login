@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
@@ -211,3 +212,4 @@ Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus
 
 
 
+Route::post('/check-in',[BiometricController::class,'enroll']);
