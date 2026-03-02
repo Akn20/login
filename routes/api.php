@@ -28,6 +28,7 @@ use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\BedController;
+use App\Http\Controllers\StockController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);

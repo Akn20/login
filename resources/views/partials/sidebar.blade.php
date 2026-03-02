@@ -420,6 +420,21 @@
                                 <span class="nxl-mtext">Stock Management</span>
                             </a>
                         </li>
+                                {{-- Expiry Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.expiries.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                                <span class="nxl-mtext">Expiry Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.returns.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Return Management</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
