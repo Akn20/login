@@ -44,6 +44,7 @@
                                             <th>S.No</th>
                                             <th>Employee ID</th>
                                             <th>Name</th>
+                                            <th>Role</th>
                                             <th>Department</th>
                                             <th>Designation</th>
                                             <th>Status</th>
@@ -56,6 +57,7 @@
                                                 <td>{{ $staffManagement->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
+                                                <td>{{ $staff->role->name ?? '-' }}</td>
                                                 <!-- <td>{{ $staff->department->name ?? '-' }}</td>
                                                 <td>{{ $staff->designation->name ?? '-' }}</td> -->
                                                 <td>{{ $staff->department }}</td>

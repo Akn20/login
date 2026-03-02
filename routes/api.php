@@ -22,6 +22,7 @@ use App\Http\Controllers\api\Inventory\ItemApiController;
 use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\Admin\FaceRecognitionController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
@@ -210,4 +211,10 @@ Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelet
 Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
 
 
+// ================= Face Recognition & Attendance API =================
 
+Route::prefix('face-recognition')->group(function () {
+    Route::post('/register', [FaceRecognitionController::class, 'register']);
+    Route::post('/verify', [FaceRecognitionController::class, 'verify']);
+    Route::get('/status/{user_id}', [FaceRecognitionController::class, 'checkStatus']);
+});
