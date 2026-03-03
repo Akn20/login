@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
+use App\Models\PurchaseOrderItem;
 
 class PurchaseOrderApiController extends Controller
 {
@@ -24,7 +25,7 @@ class PurchaseOrderApiController extends Controller
     }
 
 
-    public function store(Request $request)
+   public function store(Request $request)
 {
     $request->validate([
         'po_number' => 'required',
@@ -42,9 +43,25 @@ class PurchaseOrderApiController extends Controller
         'status' => 'draft'
     ]);
 
+    // ✅ save items
+    if ($request->items) {
+
+        foreach ($request->items as $item) {
+
+            PurchaseOrderItem::create([
+                'purchase_order_id' => $po->id,
+                'item_id' => $item['item_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'total' => $item['quantity'] * $item['unit_price'],
+            ]);
+
+        }
+
+    }
+
     return response()->json($po);
 }
-
 
     public function update(Request $request, $id)
     {
@@ -70,4 +87,71 @@ class PurchaseOrderApiController extends Controller
             'message' => 'Deleted'
         ]);
     }
+
+
+    // ✅ APPROVE
+    public function approve($id)
+    {
+        $po = PurchaseOrder::findOrFail($id);
+
+        if ($po->status != 'draft') {
+            return response()->json([
+                'message' => 'Only draft can be approved'
+            ], 400);
+        }
+
+        $po->status = 'approved';
+        $po->save();
+
+        return response()->json($po);
+    }
+
+
+    // ✅ ORDERED
+    public function ordered($id)
+    {
+        $po = PurchaseOrder::findOrFail($id);
+
+        if ($po->status != 'approved') {
+            return response()->json([
+                'message' => 'Only approved can be ordered'
+            ], 400);
+        }
+
+        $po->status = 'ordered';
+        $po->save();
+
+        return response()->json($po);
+    }
+
+
+    // ✅ COMPLETED
+    public function completed($id)
+    {
+        $po = PurchaseOrder::findOrFail($id);
+
+        if ($po->status != 'ordered') {
+            return response()->json([
+                'message' => 'Only ordered can be completed'
+            ], 400);
+        }
+
+        $po->status = 'completed';
+        $po->save();
+
+        return response()->json($po);
+    }
+
+
+    // ✅ CANCEL
+    public function cancel($id)
+    {
+        $po = PurchaseOrder::findOrFail($id);
+
+        $po->status = 'cancelled';
+        $po->save();
+
+        return response()->json($po);
+    }
+
 }

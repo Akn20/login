@@ -32,8 +32,13 @@ class ItemController extends Controller
         }
 
         $items = $query->latest()->paginate(10);
+        // list of existing categories from stored items
+        $categories = Item::select('category')
+            ->distinct()
+            ->whereNotNull('category')
+            ->pluck('category');
 
-        return view('admin.inventory.views.index', compact('items'));
+        return view('admin.inventory.views.index', compact('items', 'categories'));
     }
 
     /*
@@ -44,7 +49,12 @@ class ItemController extends Controller
 
     public function create()
     {
-        return view('admin.inventory.views.create');
+        $categories = Item::select('category')
+            ->distinct()
+            ->whereNotNull('category')
+            ->pluck('category');
+
+        return view('admin.inventory.views.create', compact('categories'));
     }
 
     /*
@@ -58,17 +68,24 @@ class ItemController extends Controller
     $request->validate([
         'name'           => 'required|string|max:255',
         'code'           => 'nullable|unique:items,code',
-        'category'       => 'required',
+        'category'       => 'required|string|max:255',
+        'category_other' => 'required_if:category,other|string|max:255',
         'stock'          => 'required|integer|min:0',
         'reorder_level'  => 'required|integer|min:0',
         'purchase_price' => 'nullable|numeric|min:0',
         'selling_price'  => 'nullable|numeric|min:0',
     ]);
 
+    // if the user selected "other" we take the alternative input
+    $category = $request->category;
+    if ($category === 'other') {
+        $category = $request->category_other;
+    }
+
     Item::create([
         'name'           => $request->name,
         'code'           => $request->code,
-        'category'       => $request->category,
+        'category'       => $category,
         'stock'          => $request->stock,
         'reorder_level'  => $request->reorder_level,
         'purchase_price' => $request->purchase_price,
@@ -90,7 +107,12 @@ class ItemController extends Controller
     {
         $item = Item::findOrFail($id);
 
-        return view('admin.inventory.views.edit', compact('item'));
+        $categories = Item::select('category')
+            ->distinct()
+            ->whereNotNull('category')
+            ->pluck('category');
+
+        return view('admin.inventory.views.edit', compact('item', 'categories'));
     }
 
     /*
@@ -106,17 +128,23 @@ class ItemController extends Controller
     $request->validate([
         'name'           => 'required|string|max:255',
         'code'           => 'nullable|unique:items,code,' . $id,
-        'category'       => 'required',
+        'category'       => 'required|string|max:255',
+        'category_other' => 'required_if:category,other|string|max:255',
         'stock'          => 'required|integer|min:0',
         'reorder_level'  => 'required|integer|min:0',
         'purchase_price' => 'nullable|numeric|min:0',
         'selling_price'  => 'nullable|numeric|min:0',
     ]);
 
+    $category = $request->category;
+    if ($category === 'other') {
+        $category = $request->category_other;
+    }
+
     $item->update([
         'name'           => $request->name,
         'code'           => $request->code,
-        'category'       => $request->category,
+        'category'       => $category,
         'stock'          => $request->stock,
         'reorder_level'  => $request->reorder_level,
         'purchase_price' => $request->purchase_price,
@@ -198,6 +226,15 @@ class ItemController extends Controller
             : 'active';
 
         $item->save();
+
+        // respond differently for AJAX
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'status'  => $item->status,
+                'is_active' => $item->status === 'active',
+            ]);
+        }
 
         return back()->with('success', 'Item status updated.');
     }

@@ -64,33 +64,41 @@
                 @endif
             </td>
 
-            <td>
+            <td class="text-end">
+                <div class="d-flex justify-content-end gap-2 align-items-center">
 
-                <a href="{{ route('admin.inventory.purchase-orders.show', $po->id) }}" 
-                   class="btn btn-sm btn-info">
-                    View
-                </a>
+                    <!-- View -->
+                    <a href="{{ route('admin.inventory.purchase-orders.show', $po->id) }}"
+                    class="btn btn-outline-secondary btn-icon rounded-circle"
+                    title="View">
+                        <i class="feather feather-eye"></i>
+                    </a>
 
-                @if($po->status == 'draft')
-                <a href="{{ route('admin.inventory.purchase-orders.edit', $po->id) }}" 
-                   class="btn btn-sm btn-warning">
-                    Edit
-                </a>
-                @endif
+                    @if($po->status == 'draft')
+                    <!-- Edit -->
+                    <a href="{{ route('admin.inventory.purchase-orders.edit', $po->id) }}"
+                    class="btn btn-outline-secondary btn-icon rounded-circle"
+                    title="Edit">
+                        <i class="feather feather-edit-2"></i>
+                    </a>
+                    @endif
 
-                <form action="{{ route('admin.inventory.purchase-orders.destroy', $po->id) }}" 
-                      method="POST" 
-                      class="d-inline">
-                    @csrf
-                    @method('DELETE')
+                    <!-- Delete -->
+                    <form action="{{ route('admin.inventory.purchase-orders.destroy', $po->id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Delete this PO?')"
+                        class="d-inline">
+                        @csrf
+                        @method('DELETE')
 
-                    <button type="submit" 
-                            onclick="return confirm('Delete this PO?')"
-                            class="btn btn-sm btn-danger">
-                        Delete
-                    </button>
-                </form>
+                        <button type="submit"
+                            class="btn btn-outline-secondary btn-icon rounded-circle"
+                            title="Delete">
+                            <i class="feather feather-trash-2"></i>
+                        </button>
+                    </form>
 
+                </div>
             </td>
         </tr>
         @empty

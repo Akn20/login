@@ -369,6 +369,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/edit/{id}', [ItemController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
+            Route::patch('/toggle-status/{id}', [ItemController::class, 'toggleStatus'])->name('toggleStatus');
 
             // PURCHASE ORDERS
             Route::resource('purchase-orders', PurchaseOrderController::class);
