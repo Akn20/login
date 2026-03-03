@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
+use App\Models\Geofence;
 use App\Models\UserBiometrics;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -17,7 +20,7 @@ class BiometricController extends Controller
             'longitude' => 'required|numeric',
         ]);
 
-        $user = Auth::user();
+        $user = auth()->user();
 
         $already = Attendance::where('user_id', $user->id)
             ->where('date', Carbon::today())
@@ -45,12 +48,6 @@ class BiometricController extends Controller
         );
 
         if ($distance > $geofence->radius) {
-
-            AttendanceLog::create([
-                'user_id' => $user->id,
-                'type' => 'geo_failed',
-                'message' => 'Outside allowed radius'
-            ]);
 
             return response()->json([
                 'message' => 'Outside hospital geofence'

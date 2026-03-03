@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 
 /* Login API */
-Route::post('login', [SignInController::class, 'apiLogin']);
+Route::post('/login', [SignInController::class, 'apiLogin']);
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -218,6 +218,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/match',[BiometricController::class,'match']);
 
     Route::post('/attendance/checkin', [BiometricController::class, 'checkIn']);
-    Route::post('/attendance/checkout', [BiometircController::class, 'checkOut']);
+    Route::post('/attendance/checkout', [BiometricController::class, 'checkOut']);
     
 });
