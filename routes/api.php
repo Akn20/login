@@ -278,3 +278,37 @@ Route::prefix('pharmacy')->group(function () {
     Route::post('/grn/{id}/verify', [GrnController::class, 'apiVerify']); // verify
     Route::post('/grn/{id}/reject', [GrnController::class, 'apiReject']); // reject
 });
+
+
+use App\Http\Controllers\ControlledDrugController;
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Drug API Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('controlled-drugs')->group(function () {
+
+    Route::get('/', [ControlledDrugController::class, 'apiIndex']);
+
+    Route::get('/{id}', [ControlledDrugController::class, 'apiShow']);
+
+    Route::post('/', [ControlledDrugController::class, 'apiStore']);
+
+    Route::put('/{id}', [ControlledDrugController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
+
+});
+
+
+Route::get(
+    '/controlled-drugs/{id}/dispense',
+    [ControlledDrugController::class, 'apiDispenseRecords']
+);
+
+Route::get(
+    '/controlled-drugs/{id}/logs',
+    [ControlledDrugController::class, 'apiLogs']
+);

@@ -75,7 +75,7 @@
 
                                     <th>Sl.No.</th>
 
-                                    <th>Drug ID</th>
+                                    <th>Drug Name</th>
 
                                     <th>Type</th>
 

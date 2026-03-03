@@ -64,30 +64,70 @@
 
                             <table class="table table-borderless mb-0">
 
+
+                                <tr>
+                                    <th class="ps-0">Drug Name</th>
+                                    <td>{{ $drug->drug_name }}</td>
+                                </tr>
+
+
                                 <tr>
                                     <th class="ps-0">Drug ID</th>
                                     <td>{{ $drug->drug_id }}</td>
                                 </tr>
+
 
                                 <tr>
                                     <th class="ps-0">Batch Number</th>
                                     <td>{{ $drug->batch_number }}</td>
                                 </tr>
 
+
                                 <tr>
                                     <th class="ps-0">Expiry Date</th>
                                     <td>{{ $drug->expiry_date }}</td>
                                 </tr>
+
 
                                 <tr>
                                     <th class="ps-0">Stock Quantity</th>
                                     <td>{{ $drug->stock_quantity }}</td>
                                 </tr>
 
+
                                 <tr>
                                     <th class="ps-0">Supplier ID</th>
                                     <td>{{ $drug->supplier_id }}</td>
                                 </tr>
+
+
+                                <tr>
+                                    <th class="ps-0">Status</th>
+
+                                    <td>
+
+                                        @if($drug->status == 'Active')
+
+                                            <span class="badge bg-soft-success text-success">
+
+                                                Active
+
+                                            </span>
+
+                                        @else
+
+                                            <span class="badge bg-soft-danger text-danger">
+
+                                                Inactive
+
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+                                </tr>
+
 
                             </table>
 
@@ -164,84 +204,52 @@
 
                 {{-- Drug Logs --}}
 
+                {{-- Drug Logs --}}
                 <div class="col-lg-4">
 
                     <div class="card stretch stretch-full">
 
                         <div class="card-header">
-                            <h5 class="card-title">Drug Information</h5>
+                            <h5 class="card-title">Drug Logs</h5>
                         </div>
 
                         <div class="card-body">
 
-                            <table class="table table-borderless mb-0">
+                            @forelse($drug->logs as $log)
 
+                                <table class="table table-borderless mb-3">
 
-                                <tr>
-                                    <th class="ps-0">Drug Name</th>
-                                    <td>{{ $drug->drug_name }}</td>
-                                </tr>
+                                    <tr>
+                                        <th class="ps-0">Action</th>
+                                        <td>{{ $log->action ?? '-' }}</td>
+                                    </tr>
 
+                                    <tr>
+                                        <th class="ps-0">Quantity</th>
+                                        <td>{{ $log->quantity ?? '-' }}</td>
+                                    </tr>
 
-                                <tr>
-                                    <th class="ps-0">Drug ID</th>
-                                    <td>{{ $drug->drug_id }}</td>
-                                </tr>
+                                    <tr>
+                                        <th class="ps-0">Remarks</th>
+                                        <td>{{ $log->remarks ?? '-' }}</td>
+                                    </tr>
 
+                                    <tr>
+                                        <th class="ps-0">Date</th>
+                                        <td>{{ $log->created_at }}</td>
+                                    </tr>
 
-                                <tr>
-                                    <th class="ps-0">Batch Number</th>
-                                    <td>{{ $drug->batch_number }}</td>
-                                </tr>
+                                </table>
 
+                                <hr>
 
-                                <tr>
-                                    <th class="ps-0">Expiry Date</th>
-                                    <td>{{ $drug->expiry_date }}</td>
-                                </tr>
+                            @empty
 
+                                <p class="text-muted">
+                                    No log records found.
+                                </p>
 
-                                <tr>
-                                    <th class="ps-0">Stock Quantity</th>
-                                    <td>{{ $drug->stock_quantity }}</td>
-                                </tr>
-
-
-                                <tr>
-                                    <th class="ps-0">Supplier ID</th>
-                                    <td>{{ $drug->supplier_id }}</td>
-                                </tr>
-
-
-                                <tr>
-                                    <th class="ps-0">Status</th>
-
-                                    <td>
-
-                                        @if($drug->status == 'Active')
-
-                                            <span class="badge bg-soft-success text-success">
-
-                                                Active
-
-                                            </span>
-
-                                        @else
-
-                                            <span class="badge bg-soft-danger text-danger">
-
-                                                Inactive
-
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-                                </tr>
-
-
-                            </table>
+                            @endforelse
 
                         </div>
 

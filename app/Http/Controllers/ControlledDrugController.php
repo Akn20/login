@@ -220,15 +220,14 @@ class ControlledDrugController extends Controller
 
     public function dispenseIndex()
     {
-
-        $dispenses =
-            ControlledDrugDispense::latest()->get();
+        $dispenses = ControlledDrugDispense::with('drug')
+            ->latest()
+            ->get();
 
         return view(
             'admin.pharmacy.controlledDrug.dispense_index',
             compact('dispenses')
         );
-
     }
 
 
@@ -353,6 +352,10 @@ class ControlledDrugController extends Controller
         );
 
     }
+
+    //API Functions for mobile app
+
+
 
 
 
