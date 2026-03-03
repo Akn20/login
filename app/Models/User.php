@@ -37,13 +37,16 @@ class User extends Authenticatable
         'failed_attempts',
         'locked_until',
         'is_enrolled',
-        'face_embeddings'
     ];
 
     protected $hidden = [
         'mpin'
     ];
 
+    public function getAuthPassword() 
+    {
+        return $this->mpin;    
+    }
     public function role()
     {
         return $this->belongsTo(Roles::class);

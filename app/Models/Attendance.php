@@ -30,6 +30,7 @@ class Attendance extends Model
         'checkout_time',
         'checkin_lat',
         'checkin_lng',
+        'distance',
         'status'
     ];
 

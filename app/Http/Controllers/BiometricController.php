@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Geofence;
-use App\Models\User;
 use App\Models\UserBiometrics;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -109,11 +108,17 @@ class BiometricController extends Controller
 
     public function enroll(Request $request)
     {
+        $user = auth('sanctum')->user();
+
+        if (! $user) {
+            return response()->json(['message' => 'User is not authenticated.'], 401);
+        }
+        if ($user->is_enrolled) {
+            return response()->json(['message' => 'Already enrolled'], 400);
+        }
         $request->validate([
             'file' => 'required|string', // Base64 string from phone
         ]);
-
-        $user = auth()->user();
 
         try {
             $fileResource = $this->getFileResource($request->file);
@@ -148,6 +153,7 @@ class BiometricController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Enrollment Error: '.$e->getMessage());
+
             return response()->json(['message' => 'Internal Server Error during enrollment'], 500);
         }
     }

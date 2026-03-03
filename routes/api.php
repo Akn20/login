@@ -207,11 +207,10 @@ Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus
 
 // Biometric API
 
-// Route::middleware('auth:sanctum')->group(function () {
-Route::post('/enroll', [BiometricController::class, 'enroll']);
-Route::post('/match', [BiometricController::class, 'match']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/enroll', [BiometricController::class, 'enroll']);
+    Route::post('/match', [BiometricController::class, 'match']);
 
-Route::post('/attendance/checkin', [BiometricController::class, 'checkIn']);
-Route::post('/attendance/checkout', [BiometricController::class, 'checkOut']);
-
-// });
+    Route::post('/check-in', [BiometricController::class, 'checkIn']);
+    Route::post('/check-out', [BiometricController::class, 'checkOut']);
+});

@@ -13,16 +13,19 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('user_id');
+            $table->foreignUuid('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
             $table->date('date');
             $table->timestamp('checkin_time')->nullable();
             $table->timestamp('checkout_time')->nullable();
             $table->decimal('checkin_lat', 10, 7)->nullable();
             $table->decimal('checkin_lng', 10, 7)->nullable();
+            $table->decimal('distance', 10, 2)->nullable();
             $table->string('status')->default('present');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['user_id', 'date']); // prevent multiple check-ins per day
+
+            $table->unique(['user_id', 'date']);
         });
     }
 
