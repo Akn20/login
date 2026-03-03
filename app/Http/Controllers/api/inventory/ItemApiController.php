@@ -31,9 +31,22 @@ class ItemApiController extends Controller
         return response()->json($item);
     }
 
+    // public function destroy($id)
+    // {
+    //     Item::destroy($id);
+    //     return response()->json(['message' => 'Deleted successfully']);
+    // }
+
+    //sushan delete permanently
     public function destroy($id)
-    {
-        Item::destroy($id);
-        return response()->json(['message' => 'Deleted successfully']);
-    }
+{
+    $item = Item::findOrFail($id);
+
+    $item->forceDelete(); // 🔥 permanently removes row from DB
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Item permanently deleted'
+    ]);
+}
 }

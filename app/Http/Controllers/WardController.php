@@ -298,4 +298,39 @@ class WardController extends Controller
             'data' => $ward
         ]);
     }
+    /* ============================================================
+API Trash List
+============================================================ */
+    public function apiTrash()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Deleted wards fetched successfully',
+            'data' => Ward::onlyTrashed()->latest()->get()
+        ]);
+    }
+
+    /* ============================================================
+       API Restore
+    ============================================================ */
+
+    public function apiRestore($id)
+    {
+        $ward = Ward::withTrashed()->find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        $ward->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward restored successfully',
+            'data' => $ward
+        ]);
+    }
 }

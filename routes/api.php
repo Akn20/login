@@ -23,6 +23,7 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\Api\Inventory\StockAuditApiController;
 use App\Http\Controllers\Api\Inventory\StockTransferApiController;
 use App\Http\Controllers\Api\Inventory\InventoryDashboardApiController;
+use App\Http\Controllers\RoomController;
 
 
 
@@ -151,15 +152,15 @@ Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDe
 Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);
 
 // Staff Management
-Route::get('/staff',[StaffManagementController::class,'apiIndex']);
-Route::post('/staff',[StaffManagementController::class,'apiStore']);
-Route::put('/staff/{id}',[StaffManagementController::class,'apiUpdate']);
-Route::delete('/staff/{id}',[StaffManagementController::class,'apiDestroy']);
-Route::get('/staff/deleted',[StaffManagementController::class,'apiDeleted']);
-Route::post('/staff/{id}/restore',[StaffManagementController::class,'apiRestore']);
-Route::delete('/staff/{id}/force-delete',[StaffManagementController::class,'apiForceDelete']);
+Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
+Route::post('/staff', [StaffManagementController::class, 'apiStore']);
+Route::put('/staff/{id}', [StaffManagementController::class, 'apiUpdate']);
+Route::delete('/staff/{id}', [StaffManagementController::class, 'apiDestroy']);
+Route::get('/staff/deleted', [StaffManagementController::class, 'apiDeleted']);
+Route::post('/staff/{id}/restore', [StaffManagementController::class, 'apiRestore']);
+Route::delete('/staff/{id}/force-delete', [StaffManagementController::class, 'apiForceDelete']);
 
-Route::get('/employee',[EmployeeController::class,'index']);
+Route::get('/employee', [EmployeeController::class, 'index']);
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
@@ -184,14 +185,13 @@ Route::prefix('inventory')->group(function () {
     // PURCHASE ORDERS
     Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
     Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
+        Route::get('/purchase-orders/approved', [PurchaseOrderApiController::class, 'approved']);
     Route::get('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'show']);
     Route::put('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'update']);
     Route::delete('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'destroy']);
-     
-    Route::post('purchase-orders/{id}/approve', [PurchaseOrderApiController::class, 'approve']);
-    Route::post('purchase-orders/{id}/ordered', [PurchaseOrderApiController::class, 'ordered']);
-    Route::post('purchase-orders/{id}/completed', [PurchaseOrderApiController::class, 'completed']);
-    Route::post('purchase-orders/{id}/cancel', [PurchaseOrderApiController::class, 'cancel']);
+    Route::put('/purchase-orders/{id}/approve', [PurchaseOrderApiController::class, 'approve']);
+    
+
 
 
     // GRN
@@ -213,25 +213,28 @@ Route::prefix('inventory')->group(function () {
 
 // Vendors
 Route::get('/vendors', function () {
-    return \App\Models\Vendor::select('id','vendor_name')->get();
+    return \App\Models\Vendor::select('id', 'vendor_name')->get();
 });
 
 //Bed 
-Route::prefix('admin')->group(function () {
-
-    Route::get('beds', [BedController::class, 'apiIndex']);
-    Route::post('beds', [BedController::class, 'apiStore']);
-    Route::get('beds/{id}', [BedController::class, 'apiShow']);
-    Route::put('beds/{id}', [BedController::class, 'apiUpdate']);
-    Route::delete('beds/{id}', [BedController::class, 'apiDestroy']);
-    Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDeleteApi']);
-});
+Route::get('/beds/trash', [BedController::class, 'trash']);
+Route::get('/beds', [BedController::class, 'apiIndex']);
+Route::post('/beds', [BedController::class, 'apiStore']);
+Route::get('/beds/{id}', [BedController::class, 'apiShow']);
+Route::put('/beds/{id}', [BedController::class, 'apiUpdate']);
+Route::put('/beds/{id}/restore', [BedController::class, 'apiRestore']);
+Route::delete('/beds/{id}/force-delete', [BedController::class, 'forceDeleteApi']);
+Route::delete('/beds/{id}', [BedController::class, 'apiDelete']);
 
 // ================= WARD API =================
 
 
 Route::get('/wards', [WardController::class, 'apiIndex']);
 Route::post('/wards', [WardController::class, 'apiStore']);
+
+Route::get('/wards/trash', [WardController::class, 'apiTrash']);
+Route::put('/wards/{id}/restore', [WardController::class, 'apiRestore']);
+
 Route::get('/wards/{id}', [WardController::class, 'apiShow']);
 Route::put('/wards/{id}', [WardController::class, 'apiUpdate']);
 Route::delete('/wards/{id}', [WardController::class, 'apiDelete']);
@@ -239,4 +242,16 @@ Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelet
 Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
 
 
+// ================= ROOM API =================
 
+Route::get('/rooms', [RoomController::class, 'apiIndex']);
+Route::post('/rooms', [RoomController::class, 'apiStore']);
+
+Route::get('/rooms/trash', [RoomController::class, 'apiTrash']);
+Route::put('/rooms/{id}/restore', [RoomController::class, 'apiRestore']);
+
+Route::get('/rooms/{id}', [RoomController::class, 'apiShow']);
+Route::put('/rooms/{id}', [RoomController::class, 'apiUpdate']);
+Route::delete('/rooms/{id}', [RoomController::class, 'apiDelete']);
+Route::delete('/rooms/{id}/force-delete', [RoomController::class, 'apiForceDelete']);
+Route::put('/rooms/{id}/toggle-status', [RoomController::class, 'apiToggleStatus']);

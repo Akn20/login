@@ -228,7 +228,7 @@ class BedController extends Controller
         ]);
     }
 
-    public function apiDestroy($id)
+    public function apiDelete($id)
     {
         $bed = Bed::findOrFail($id);
         $bed->delete();
@@ -247,6 +247,27 @@ class BedController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Bed permanently deleted'
+        ]);
+    }
+
+    public function trash()
+    {
+        $beds = Bed::onlyTrashed()->with('ward')->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $beds
+        ]);
+    }
+
+    public function apiRestore($id)
+    {
+        $bed = Bed::onlyTrashed()->findOrFail($id);
+        $bed->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bed restored successfully'
         ]);
     }
 }
