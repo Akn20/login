@@ -75,7 +75,7 @@
 
                                             <th>Stock</th>
 
-                                            <th>Supplier</th>
+                                            <th>Vendor name</th>
 
                                             <th>Status</th>
 
@@ -106,8 +106,7 @@
 
                                                 <td>{{ $drug->stock_quantity }}</td>
 
-                                                <td>{{ $drug->supplier_id }}</td>
-
+                                                <td>{{ $drug->vendor->vendor_name ?? 'N/A' }}</td>
 
                                                 <td>
 

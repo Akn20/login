@@ -7,7 +7,7 @@ use App\Models\ControlledDrugDispense;
 use App\Models\ControlledDrugLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use App\Models\Vendor;
 class ControlledDrugController extends Controller
 {
 
@@ -29,11 +29,12 @@ class ControlledDrugController extends Controller
 
     public function create()
     {
+        $vendors = Vendor::where('status', 'Active')->get();
 
         return view(
-            'admin.pharmacy.controlledDrug.create'
+            'admin.pharmacy.controlledDrug.create',
+            compact('vendors')
         );
-
     }
 
 
@@ -53,8 +54,7 @@ class ControlledDrugController extends Controller
 
             'stock_quantity' => 'required',
 
-            'supplier_id' => 'required',
-
+            'supplier_id' => 'required|exists:vendors,id',
             'status' => 'required'
 
         ]);
