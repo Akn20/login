@@ -98,4 +98,151 @@ class LeaveMappingController extends Controller
         LeaveMapping::withTrashed()->findOrFail($id)->restore();
         return redirect()->route('admin.leave-mappings.index')->with('success', 'Restored');
     }
+
+
+    // ================== API METHODS ==================
+
+public function apiIndex()
+{
+    $mappings = LeaveMapping::with('leaveType')->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $mappings
+    ]);
+}
+
+public function apiShow($id)
+{
+    $mapping = LeaveMapping::with('leaveType')->find($id);
+
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $mapping
+    ]);
+}
+
+public function apiStore(Request $request)
+{
+    $data = $request->validate([
+        'leave_type_id' => 'required|uuid',
+        'priority' => 'required|integer',
+        'employee_status' => 'required|array',
+        'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
+        'accrual_value' => 'required|integer',
+        'leave_nature' => 'required|in:Paid,Unpaid',
+    ]);
+
+    $mapping = LeaveMapping::create($data);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Mapping created successfully',
+        'data' => $mapping
+    ]);
+}
+
+public function apiUpdate(Request $request, $id)
+{
+    $mapping = LeaveMapping::find($id);
+
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
+    }
+
+   $data = $request->validate([
+    'leave_type_id' => 'sometimes|uuid',
+    'priority' => 'sometimes|integer',
+    'employee_status' => 'sometimes|array',
+    'accrual_frequency' => 'sometimes|in:Monthly,Yearly,Event Based',
+    'accrual_value' => 'sometimes|integer',
+    'leave_nature' => 'sometimes|in:Paid,Unpaid',
+]);
+
+    $mapping->update($data);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Mapping updated successfully',
+        'data' => $mapping
+    ]);
+}
+
+public function apiDestroy($id)
+{
+    $mapping = LeaveMapping::find($id);
+
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
+    }
+
+    $mapping->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Mapping deleted successfully'
+    ]);
+}
+public function apiDeleted()
+{
+    $mappings = LeaveMapping::onlyTrashed()
+                    ->with('leaveType')
+                    ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $mappings
+    ]);
+}
+public function apiRestore($id)
+{
+    $mapping = LeaveMapping::onlyTrashed()->find($id);
+
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
+    }
+
+    $mapping->restore();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Mapping restored successfully'
+    ]);
+}
+
+public function apiForceDelete($id)
+{
+    $mapping = LeaveMapping::onlyTrashed()->find($id);
+
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
+    }
+
+    $mapping->forceDelete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Mapping permanently deleted'
+    ]);
+}
+
 }
