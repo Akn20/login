@@ -185,9 +185,14 @@ Route::prefix('inventory')->group(function () {
     // PURCHASE ORDERS
     Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
     Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
+        Route::get('/purchase-orders/approved', [PurchaseOrderApiController::class, 'approved']);
     Route::get('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'show']);
     Route::put('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'update']);
     Route::delete('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'destroy']);
+    Route::put('/purchase-orders/{id}/approve', [PurchaseOrderApiController::class, 'approve']);
+    
+
+
 
     // GRN
     Route::get('/grns', [GrnApiController::class, 'index']);
