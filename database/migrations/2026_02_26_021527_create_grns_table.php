@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->string('po_no')->nullable();
             $table->string('status')->default('Draft');         // Draft/Submitted/Verified/Completed/Cancelled
             $table->text('remarks')->nullable();
+            $table->string('verify_remarks')->nullable();
+            $table->string('reject_reason')->nullable();
 
             $table->decimal('sub_total', 12, 2)->default(0);
             $table->decimal('total_discount', 12, 2)->default(0);
@@ -27,7 +29,7 @@ return new class extends Migration {
             $table->decimal('grand_total', 12, 2)->default(0);
 
             $table->timestamps();
-            $table->softDeletes(); // ✅ for Trash / soft delete
+            $table->softDeletes(); 
         });
     }
 

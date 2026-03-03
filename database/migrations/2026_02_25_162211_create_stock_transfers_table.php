@@ -10,20 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('grns', function (Blueprint $table) {
-        $table->string('verify_remarks')->nullable()->after('remarks');
-        $table->string('reject_reason')->nullable()->after('verify_remarks');
-    });
-}
+    {
+        Schema::create('stock_transfers', function (Blueprint $table) {
+    $table->id();
+    $table->string('transfer_number');
+    $table->date('transfer_date');
+    $table->timestamps();
+});
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('grns', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('stock_transfers');
     }
 };

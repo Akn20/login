@@ -1,9 +1,17 @@
+@if ($errors->any())
+    <div class="alert alert-danger">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
 <div class="row">
 
     <div class="col-md-6 mb-3">
         <label>Bed Code</label>
         <input type="text"
                name="bed_code"
+               id="bed_code"
                class="form-control"
                value="{{ old('bed_code', $bed->bed_code ?? '') }}"
                required>
@@ -45,7 +53,7 @@
     <div class="col-md-6 mb-3">
         <label>Status</label>
         <select name="status" class="form-control">
-            @foreach(['Available','Maintenance'] as $status)
+            @foreach(['Available','Occupied','Maintenance','Cleaning'] as $status)
                 <option value="{{ $status }}"
                     {{ old('status', $bed->status ?? 'Available') == $status ? 'selected' : '' }}>
                     {{ $status }}

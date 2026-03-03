@@ -24,5 +24,10 @@ class GrnItem extends Model
     public function grn()
     {
         return $this->belongsTo(Grn::class, 'grn_id');
+    } 
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
     }
 }
