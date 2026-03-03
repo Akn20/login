@@ -422,7 +422,7 @@
                         </li>
                                 {{-- Expiry Management --}}
                         <li class="nxl-item">
-                            <a href="{{ route('admin.expiries.index') }}" class="nxl-link">
+                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
                                 <span class="nxl-mtext">Expiry Management</span>
                             </a>

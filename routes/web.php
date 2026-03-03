@@ -396,18 +396,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         |----------------------------------------------------------------------
         */
 
-        Route::prefix('expiries')->name('expiries.')->group(function () {
-            Route::get('/', [ExpiryController::class, 'index'])->name('index');
-            Route::get('/create', [ExpiryController::class, 'create'])->name('create');
-            Route::post('/store', [ExpiryController::class, 'store'])->name('store');
-            Route::get('/show/{id}', [ExpiryController::class, 'show'])->name('show');
-            Route::get('/edit/{id}', [ExpiryController::class, 'edit'])->name('edit');
-            Route::put('/update/{id}', [ExpiryController::class, 'update'])->name('update');
-            Route::delete('/delete/{id}', [ExpiryController::class, 'destroy'])->name('delete');
-            Route::get('/trash', [ExpiryController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id}', [ExpiryController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [ExpiryController::class, 'forceDelete'])->name('forceDelete');
-        });
+       Route::prefix('expiry')->name('expiry.')->group(function () {
+
+        Route::get('/', [ExpiryController::class, 'index'])->name('index');
+        Route::get('/show/{id}', [ExpiryController::class, 'show'])->name('show');
+        Route::delete('/delete/{id}', [ExpiryController::class, 'destroy'])->name('delete');
+        Route::get('/trash', [ExpiryController::class, 'trash'])->name('trash');
+        Route::get('/restore/{id}', [ExpiryController::class, 'restore'])->name('restore');
+        Route::get('/force-delete/{id}', [ExpiryController::class, 'forceDelete'])->name('forceDelete');
+
+        // Extra actions (as per requirement)
+        Route::post('/mark-expired/{id}', [ExpiryController::class, 'markExpired'])->name('markExpired');
+        Route::post('/return-to-vendor/{id}', [ExpiryController::class, 'returnToVendor'])->name('returnToVendor');
+        Route::post('/approve/{id}', [ExpiryController::class, 'approve'])->name('approve');
+        Route::post('/complete/{id}', [ExpiryController::class, 'complete'])->name('complete');
+
+    });
 
         /*
         |----------------------------------------------------------------------
@@ -588,3 +592,4 @@ Route::prefix('stock')->group(function () {
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 });
+

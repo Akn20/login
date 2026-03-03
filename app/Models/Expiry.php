@@ -8,16 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Expiry extends Model
 {
     use SoftDeletes;
+    protected $table = 'expiry_logs';
 
     protected $fillable = [
-        'medicine_name',
-        'batch_number',
+        'batch_id',
         'expiry_date',
         'quantity',
+        'status',
+        'remarks',
+        'created_by',
+        'updated_by',
     ];
-
-    protected $dates = [
-        'expiry_date',
-        'deleted_at',
-    ];
+     public function batch()
+    {
+        return $this->belongsTo(\App\Models\MedicineBatch::class, 'batch_id');
+    }
+    
 }

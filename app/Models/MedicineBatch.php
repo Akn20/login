@@ -77,4 +77,15 @@ class MedicineBatch extends Model
     {
         return now()->greaterThan($this->expiry_date);
     }
+
+    //expiry logs
+    public function expiryLogs()
+    {
+        return $this->hasMany(\App\Models\Expiry::class, 'batch_id');
+    }
+
+    public function latestExpiryLog()
+    {
+        return $this->hasOne(\App\Models\Expiry::class, 'batch_id')->latestOfMany();
+    }
 }

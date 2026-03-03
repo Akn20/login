@@ -11,16 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expiries', function (Blueprint $table) {
-            $table->id();
+        Schema::create('expiry_logs', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('batch_id'); // medicine_batches.id
+            $table->date('expiry_date')->nullable();
+            $table->enum('status', ['EXPIRED', 'PENDING', 'APPROVED', 'COMPLETED'])->default('EXPIRED');
+            $table->text('remarks')->nullable();
 
-            $table->string('medicine_name');
-            $table->string('batch_number')->nullable();
-            $table->date('expiry_date');
-            $table->integer('quantity')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->timestamps();
-            $table->softDeletes(); // deleted_at
+            $table->softDeletes();
+
+            $table->foreign('batch_id')->references('id')->on('medicine_batches')->onDelete('cascade');
         });
     }
 
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expiries');
+        Schema::dropIfExists('expiry_logs');
     }
 };
