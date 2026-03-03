@@ -48,7 +48,7 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:roles,id',
             'department' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
-            'joining_date' => 'required|date',
+            'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
             'mobile' => 'required|digits:10|unique:users,mobile',
             'email' => 'nullable|email|unique:users,email',
@@ -105,8 +105,13 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:roles,id',
             'department' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
-            'joining_date' => 'required|date',
+            'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
+            // 'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id,
+            // 'email' => 'nullable|email|unique:users,email,' . $staff->user_id,
+            'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id . ',id',
+            'email'  => 'nullable|email|unique:users,email,' . $staff->user_id . ',id',
+
         ]);
 
         try {
@@ -123,12 +128,14 @@ class StaffManagementController extends Controller
 
                 // Update linked User if exists
                 if ($staff->user_id) {
-                    User::where('id', $staff->user_id)->update([
-                        'name' => $request->name,
-                        'role_id' => $request->role_id,
-                        'status' => strtolower($request->status),
-                    ]);
-                }
+    User::where('id', $staff->user_id)->update([
+        'name' => $request->name,
+        'mobile' => $request->mobile,
+        'email' => $request->email,
+        'role_id' => $request->role_id,
+        'status' => strtolower($request->status),
+    ]);
+}
             });
 
             return redirect()->route('hr.staff-management.index')
