@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->uuid('role_id');
             $table->string('mpin')->nullable();
+            $table->json('face_embeddings')->nullable();
+            $table->boolean('is_enrolled')->default(false);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->integer('failed_attempts')->default(0);
             $table->timestamp('locked_until')->nullable();

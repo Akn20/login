@@ -35,7 +35,9 @@ class User extends Authenticatable
         'mpin',
         'status',
         'failed_attempts',
-        'locked_until'
+        'locked_until',
+        'is_enrolled',
+        'face_embeddings'
     ];
 
     protected $hidden = [
