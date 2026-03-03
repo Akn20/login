@@ -19,7 +19,7 @@
             </a>
 
             <a href="{{ route('admin.leave-mappings.deleted') }}" class="btn btn-danger">
-                Trash
+                Deleted Records
             </a>
         </div>
     </div>
@@ -44,7 +44,7 @@
                                     <tr>
                                         <td>
                                             <span class="badge bg-soft-primary text-primary">
-                                                {{ $mapping->leaveType->name }} {{-- Blue badge style  --}}
+                                                {{ $mapping->leaveType->display_name }} {{-- Blue badge style  --}}
                                             </span>
                                         </td>
                                         <td>{{ is_array($mapping->employee_status) ? implode(', ', $mapping->employee_status) : $mapping->employee_status }}</td>

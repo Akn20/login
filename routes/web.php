@@ -28,6 +28,7 @@ use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
@@ -423,6 +424,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::prefix('leave-type')->name('leave-type.')->group(function () {
 
     Route::get('/', [LeaveTypeController::class, 'index'])->name('index');
+    
 
     Route::get('/create', [LeaveTypeController::class, 'create'])->name('create');
 

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('leave_mappings', function (Blueprint $table) {
             $table->uuid('id')->primary();
-           $table->foreignId('leave_type_id')->constrained('leave_types')->onDelete('cascade');
+           $table->foreignUuid('leave_type_id')->constrained('leave_types')->onDelete('cascade');
             $table->integer('priority')->default(1);
 
             // Eligibility Scope
