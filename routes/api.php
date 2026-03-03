@@ -211,6 +211,13 @@ Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelet
 Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
 
 
+// Biometric API
 
-Route::post('/enroll',[BiometricController::class,'enroll']);
-Route::post('/check-in',[BiometricController::class,'match']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/enroll',[BiometricController::class,'enroll']);
+    Route::post('/match',[BiometricController::class,'match']);
+
+    Route::post('/attendance/checkin', [BiometricController::class, 'checkIn']);
+    Route::post('/attendance/checkout', [BiometircController::class, 'checkOut']);
+    
+});
