@@ -57,7 +57,7 @@ class BiometricController extends Controller
             $geofence->center_lat,
             $geofence->center_lng
         );
-
+        Log::info("distance:". $distance);
         if ($distance > $geofence->radius) {
             return response()->json(['message' => 'Outside hospital geofence'], 403);
         }
@@ -97,12 +97,12 @@ class BiometricController extends Controller
                 'status' => 'present',
             ]);
 
-            return response()->json(['message' => 'Check-in successful']);
+            return response()->json(['status'=>'success','message' => 'Check-in successful']);
 
         } catch (\Exception $e) {
             Log::error('Check-in Error: '.$e->getMessage());
 
-            return response()->json(['message' => 'Server error during verification'], 500);
+            return response()->json(['status'=>'error','message' => 'Server error during verification'], 500);
         }
     }
 
@@ -111,10 +111,10 @@ class BiometricController extends Controller
         $user = auth('sanctum')->user();
 
         if (! $user) {
-            return response()->json(['message' => 'User is not authenticated.'], 401);
+            return response()->json(['status'=>'error', 'message' => 'User is not authenticated.'], 401);
         }
         if ($user->is_enrolled) {
-            return response()->json(['message' => 'Already enrolled'], 400);
+            return response()->json(['status'=>'error', 'message' => 'Already enrolled'], 400);
         }
         $request->validate([
             'file' => 'required|string', // Base64 string from phone
@@ -144,17 +144,17 @@ class BiometricController extends Controller
                 $user->is_enrolled = true;
                 $user->save();
 
-                return response()->json(['message' => 'Biometric enrolled successfully']);
+                return response()->json(['status'=>'success','message' => 'Biometric enrolled successfully']);
             }
 
-            return response()->json([
+            return response()->json(['status'=>'error',
                 'message' => $result['message'] ?? 'Face not detected. Please try again with better lighting.',
             ], 400);
 
         } catch (\Exception $e) {
             Log::error('Enrollment Error: '.$e->getMessage());
 
-            return response()->json(['message' => 'Internal Server Error during enrollment'], 500);
+            return response()->json(['status'=>'error','message' => 'Internal Server Error during enrollment'], 500);
         }
     }
 
