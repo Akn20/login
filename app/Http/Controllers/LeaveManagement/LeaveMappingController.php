@@ -98,4 +98,19 @@ class LeaveMappingController extends Controller
         LeaveMapping::withTrashed()->findOrFail($id)->restore();
         return redirect()->route('admin.leave-mappings.index')->with('success', 'Restored');
     }
+    public function forceDelete($id)
+    {
+        // Find the record even if it is in the trash
+        $mapping = LeaveMapping::withTrashed()->findOrFail($id);
+        
+        // Permanently delete from the database
+        $mapping->forceDelete();
+
+        return redirect()->route('admin.leave-mappings.deleted')->with('success', 'Record permanently deleted.');
+    }
+    public function show($id)
+    {
+        $mapping = LeaveMapping::with('leaveType')->findOrFail($id);
+        return view('admin.Leave_Management.leave_mappings.show', compact('mapping'));
+    }
 }
