@@ -27,6 +27,7 @@ class GrnApiController extends Controller
 
         try {
             $grn = Grn::create([
+                'grn_number' => 'GRN-' . now()->format('YmdHis'),
                 'purchase_order_id' => $request->purchase_order_id,
                 'received_date' => $request->received_date,
                 'total_amount' => 0,
