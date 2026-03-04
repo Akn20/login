@@ -26,6 +26,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\GrnController;
+use App\Http\Controllers\ControlledDrugController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
@@ -192,7 +193,7 @@ Route::prefix('pharmacy')->group(function () {
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 
 });
-//Vendor api
+
 
 
 
@@ -233,9 +234,9 @@ Route::prefix('inventory')->group(function () {
     // Route::get('/grns', [GrnApiController::class, 'index']);
     // Route::post('/grns', [GrnApiController::class, 'store']);
 });
-Route::get('/vendors', function () {
-    return \App\Models\Vendor::select('id', 'vendor_name')->get();
-});
+// Route::get('/vendors', function () {
+//     return \App\Models\Vendor::select('id', 'vendor_name')->get();
+// });
 
 // Bed
 
@@ -280,11 +281,10 @@ Route::prefix('pharmacy')->group(function () {
 });
 
 
-use App\Http\Controllers\ControlledDrugController;
 
 /*
 |--------------------------------------------------------------------------
-| Controlled Drug API Routes
+| Controlled Drugs API
 |--------------------------------------------------------------------------
 */
 
@@ -300,15 +300,47 @@ Route::prefix('controlled-drugs')->group(function () {
 
     Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
 
+    Route::get('/trash/list', [ControlledDrugController::class, 'apiTrash']);
+
+    Route::post('/restore/{id}', [ControlledDrugController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [ControlledDrugController::class, 'apiForceDelete']);
 });
 
 
-Route::get(
-    '/controlled-drugs/{id}/dispense',
-    [ControlledDrugController::class, 'apiDispenseRecords']
-);
+/*
+|--------------------------------------------------------------------------
+| Dispense API
+|--------------------------------------------------------------------------
+*/
 
 Route::get(
-    '/controlled-drugs/{id}/logs',
-    [ControlledDrugController::class, 'apiLogs']
+    '/controlled-drug-dispense',
+    [ControlledDrugController::class, 'apiDispense']
 );
+
+Route::post(
+    '/controlled-drug-dispense',
+    [ControlledDrugController::class, 'apiStoreDispense']
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Drug Logs API
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/controlled-drug-log',
+    [ControlledDrugController::class, 'apiDrugLog']
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Active Vendors for Dropdown
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/vendors-active', [VendorController::class, 'apiActiveVendors']);
