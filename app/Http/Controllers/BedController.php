@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Bed;
 use App\Models\Ward;
 use Illuminate\Validation\Rule;
+
 class BedController extends Controller
 {
     /**
@@ -22,9 +23,9 @@ class BedController extends Controller
      */
     public function create()
     {
-
         $wards = Ward::all();
         $bed = null;
+
         return view('admin.beds.create', compact('wards', 'bed'));
     }
 
@@ -34,21 +35,39 @@ class BedController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
-            'bed_code' => 'required|string|max:100|unique:beds,bed_code',
             'ward_id' => 'required|uuid|exists:wards,id',
-            'room_number' => 'nullable|string|max:50',
-            'bed_type' => 'required|string',
-            'status' => 'required|string',
+            'room_number' => 'required|string|max:50',
+            'bed_type' => 'required|string|max:50',
+            'status' => 'required|string|max:20',
         ]);
 
+        $ward = Ward::findOrFail($validated['ward_id']);
 
-        Bed::create($validated);
+        // Generate bed code automatically
+        $prefix = strtoupper(substr($ward->ward_name, 0, 3));
+
+        $count = Bed::where('ward_id', $ward->id)->count() + 1;
+
+        $bedCode = $prefix . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+
+        $bed = Bed::create([
+            'bed_code' => $bedCode,
+            'ward_id' => $validated['ward_id'],
+            'room_number' => $validated['room_number'],
+            'bed_type' => $validated['bed_type'],
+            'status' => $validated['status'],
+        ]);
+
+        // Update ward bed count
+        Ward::where('id', $ward->id)->update([
+            'total_beds' => Bed::where('ward_id', $ward->id)->count()
+        ]);
 
         return redirect()
             ->route('admin.beds.index')
             ->with('success', 'Bed created successfully');
     }
+
     /**
      * Display the specified resource.
      */
@@ -84,19 +103,21 @@ class BedController extends Controller
             ],
             'ward_id' => 'required|uuid|exists:wards,id',
             'room_number' => 'nullable|string|max:50',
-            'bed_type' => 'required|string',
-            'status' => 'required|string',
+            'bed_type' => 'required|string|max:50',
+            'status' => 'required|string|max:20',
         ]);
 
         $bed->update($validated);
 
+        // Update ward bed count
+        Ward::where('id', $validated['ward_id'])->update([
+            'total_beds' => Bed::where('ward_id', $validated['ward_id'])->count()
+        ]);
+
         return redirect()
             ->route('admin.beds.index')
             ->with('success', 'Bed updated successfully');
-
-
     }
-
 
     /**
      * Suggest BedCode based on ward
@@ -105,10 +126,8 @@ class BedController extends Controller
     {
         $ward = Ward::findOrFail($wardId);
 
-        // Create prefix from ward name (first 3 letters uppercase)
         $prefix = strtoupper(substr($ward->ward_name, 0, 3));
 
-        // Count existing beds in that ward
         $count = Bed::where('ward_id', $wardId)->count() + 1;
 
         $number = str_pad($count, 3, '0', STR_PAD_LEFT);
@@ -119,50 +138,76 @@ class BedController extends Controller
     }
 
     /**
-     * Soft delete
+     * Soft delete list
      */
     public function deleted()
     {
         $beds = Bed::onlyTrashed()->with('ward')->latest()->get();
+
         return view('admin.beds.deleted', compact('beds'));
     }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy($id)
     {
-        $bed = Bed::where('id', $id)->firstOrFail();
-        $bed->delete();   // This will soft delete
+        $bed = Bed::findOrFail($id);
+
+        $wardId = $bed->ward_id;
+
+        $bed->delete();
+
+        Ward::where('id', $wardId)->update([
+            'total_beds' => Bed::where('ward_id', $wardId)->count()
+        ]);
 
         return redirect()
             ->route('admin.beds.index')
             ->with('success', 'Bed moved to trash successfully');
     }
 
-    // Restore
+    /**
+     * Restore deleted bed
+     */
     public function restore($id)
     {
         $bed = Bed::onlyTrashed()->findOrFail($id);
+
         $bed->restore();
+
+        Ward::where('id', $bed->ward_id)->update([
+            'total_beds' => Bed::where('ward_id', $bed->ward_id)->count()
+        ]);
 
         return redirect()
             ->route('admin.beds.deleted')
             ->with('success', 'Bed restored successfully.');
     }
 
-
-    // Permanent Delete
+    /**
+     * Permanently delete
+     */
     public function forceDelete($id)
     {
         $bed = Bed::onlyTrashed()->findOrFail($id);
+
+        $wardId = $bed->ward_id;
+
         $bed->forceDelete();
+
+        Ward::where('id', $wardId)->update([
+            'total_beds' => Bed::where('ward_id', $wardId)->count()
+        ]);
 
         return redirect()
             ->route('admin.beds.deleted')
             ->with('success', 'Bed permanently deleted.');
     }
 
-    //Api to get beds by ward
+    /**
+     * API - Get beds
+     */
     public function apiIndex()
     {
         $beds = Bed::with('ward')->latest()->get();
@@ -173,17 +218,24 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Store bed
+     */
     public function apiStore(Request $request)
     {
         $validated = $request->validate([
             'bed_code' => 'required|string|max:100|unique:beds,bed_code',
             'ward_id' => 'required|uuid|exists:wards,id',
             'room_number' => 'nullable|string|max:50',
-            'bed_type' => 'required|string',
-            'status' => 'required|string',
+            'bed_type' => 'required|string|max:50',
+            'status' => 'required|string|max:20',
         ]);
 
         $bed = Bed::create($validated);
+
+        Ward::where('id', $validated['ward_id'])->update([
+            'total_beds' => Bed::where('ward_id', $validated['ward_id'])->count()
+        ]);
 
         return response()->json([
             'status' => true,
@@ -192,6 +244,9 @@ class BedController extends Controller
         ], 201);
     }
 
+    /**
+     * API - Show
+     */
     public function apiShow($id)
     {
         $bed = Bed::with('ward')->findOrFail($id);
@@ -202,6 +257,9 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Update
+     */
     public function apiUpdate(Request $request, $id)
     {
         $bed = Bed::findOrFail($id);
@@ -215,11 +273,15 @@ class BedController extends Controller
             ],
             'ward_id' => 'required|uuid|exists:wards,id',
             'room_number' => 'nullable|string|max:50',
-            'bed_type' => 'required|string',
-            'status' => 'required|string',
+            'bed_type' => 'required|string|max:50',
+            'status' => 'required|string|max:20',
         ]);
 
         $bed->update($validated);
+
+        Ward::where('id', $validated['ward_id'])->update([
+            'total_beds' => Bed::where('ward_id', $validated['ward_id'])->count()
+        ]);
 
         return response()->json([
             'status' => true,
@@ -228,10 +290,20 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Soft delete
+     */
     public function apiDelete($id)
     {
         $bed = Bed::findOrFail($id);
+
+        $wardId = $bed->ward_id;
+
         $bed->delete();
+
+        Ward::where('id', $wardId)->update([
+            'total_beds' => Bed::where('ward_id', $wardId)->count()
+        ]);
 
         return response()->json([
             'status' => true,
@@ -239,10 +311,20 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Permanent delete
+     */
     public function forceDeleteApi($id)
     {
         $bed = Bed::onlyTrashed()->findOrFail($id);
+
+        $wardId = $bed->ward_id;
+
         $bed->forceDelete();
+
+        Ward::where('id', $wardId)->update([
+            'total_beds' => Bed::where('ward_id', $wardId)->count()
+        ]);
 
         return response()->json([
             'status' => true,
@@ -250,6 +332,9 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Trash list
+     */
     public function trash()
     {
         $beds = Bed::onlyTrashed()->with('ward')->latest()->get();
@@ -260,10 +345,18 @@ class BedController extends Controller
         ]);
     }
 
+    /**
+     * API - Restore
+     */
     public function apiRestore($id)
     {
         $bed = Bed::onlyTrashed()->findOrFail($id);
+
         $bed->restore();
+
+        Ward::where('id', $bed->ward_id)->update([
+            'total_beds' => Bed::where('ward_id', $bed->ward_id)->count()
+        ]);
 
         return response()->json([
             'status' => true,

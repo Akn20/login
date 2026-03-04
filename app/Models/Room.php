@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Room extends Model
 {
-    use HasUlids,SoftDeletes;
+    use HasUlids, SoftDeletes;
 
-    protected $keyType="string";
-    public $incrementing=false;
+    protected $keyType = "string";
+    public $incrementing = false;
 
     protected $fillable = [
         'room_number',
@@ -22,11 +22,11 @@ class Room extends Model
     ];
     public function ward()
     {
-        return $this->belongsTo(Ward::class); 
-        
+        return $this->belongsTo(Ward::class);
+
     }
     public function beds()
     {
-        return $this->hasMany(Bed::class);
+        return $this->hasMany(\App\Models\Bed::class, 'room_number', 'room_number');
     }
 }

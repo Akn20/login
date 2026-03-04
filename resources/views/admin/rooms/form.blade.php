@@ -52,10 +52,9 @@
     </div>
 
     {{-- Total Beds --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Total Beds</label>
-        <input type="number" name="total_beds" class="form-control"
-            value="{{ old('total_beds', $room->total_beds ?? '') }}" required>
+    <div class="col-md-6">
+        <label>Total Beds</label>
+        <input type="number" class="form-control" value="{{ isset($room) ? $room->beds()->count() : 0 }}" readonly>
     </div>
 
     {{-- Status --}}
