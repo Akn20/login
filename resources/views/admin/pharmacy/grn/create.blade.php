@@ -18,6 +18,20 @@
         </a>
     </div>
 
+
+
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+
     <form action="{{ route('admin.grn.store') }}" method="POST" id="grnForm">
         @csrf
 
@@ -44,12 +58,13 @@
 
                     <div class="col-md-3">
                         <label class="form-label">Vendor <span class="text-danger">*</span></label>
-                        <select name="vendor_name" class="form-select" required>
+                        <select class="form-select" name="vendor_id" required>
                             <option value="">Select Vendor</option>
-                            <option value="ABC Pharma">ABC Pharma</option>
-                            <option value="XYZ Suppliers">XYZ Suppliers</option>
-                            <option value="City Pharma">City Pharma</option>
-                            <option value="Medico Traders">Medico Traders</option>
+                            @foreach($vendors as $v)
+                                <option value="{{ $v->id }}">
+                                    {{ $v->vendor_name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -64,8 +79,8 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label">Purchase Order (Optional)</label>
-                        <input type="text" name="po_no" class="form-control" placeholder="PO No (if any)">
+                        <label class="form-label">Purchase Order No.</label>
+                        <input type="text" name="po_no" class="form-control" placeholder="PO No">
                     </div>
 
                     <div class="col-md-6">
@@ -111,12 +126,16 @@
                             <td class="sl">1</td>
 
                             <td>
-                                <select name="items[0][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
+                                <select class="form-select medicine"
+                                name="items[0][medicine_name]"
+                                onchange="calcRow(this)"
+                                required>
                                     <option value="">Select</option>
-                                    <option value="Paracetamol 500mg">Paracetamol 500mg</option>
-                                    <option value="Amoxicillin 250mg">Amoxicillin 250mg</option>
-                                    <option value="Cetirizine 10mg">Cetirizine 10mg</option>
-                                    <option value="Pantoprazole 40mg">Pantoprazole 40mg</option>
+                                    @foreach($medicines as $m)
+                                        <option value="{{ $m->medicine_name }}">
+                                            {{ $m->medicine_name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </td>
 
@@ -125,11 +144,11 @@
                             </td>
 
                             <td>
-                                <input type="month" name="items[0][expiry]" class="form-control expiry" onchange="calcRow(this)">
+                                <input type="date" name="items[0][expiry]" class="form-control expiry" onchange="calcRow(this)">
                             </td>
 
                             <td>
-                                <input type="number" name="items[0][qty]" class="form-control qty text-end" min="0" value="0" oninput="calcRow(this)">
+                                <input type="number" name="items[0][qty]" class="form-control qty text-end" min="1" value="1" oninput="calcRow(this)">
                             </td>
 
                             <td>
@@ -246,17 +265,20 @@ let rowIndex = 1;
 function addRow() {
     const tbody = document.getElementById('itemsBody');
     const tr = document.createElement('tr');
-
+    const medicineOptions = ['<option value="">Select</option>']
+    .concat((window.__MEDICINES__ || []).map(name =>
+        `<option value="${name}">${name}</option>`
+    )).join('');
+    
     tr.innerHTML = `
         <td class="sl">0</td>
 
         <td>
-            <select name="items[${rowIndex}][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
-                <option value="">Select</option>
-                <option value="Paracetamol 500mg">Paracetamol 500mg</option>
-                <option value="Amoxicillin 250mg">Amoxicillin 250mg</option>
-                <option value="Cetirizine 10mg">Cetirizine 10mg</option>
-                <option value="Pantoprazole 40mg">Pantoprazole 40mg</option>
+            <select class="form-select medicine"
+            name="items[${rowIndex}][medicine_name]"
+            onchange="calcRow(this)"
+            required>
+                ${medicineOptions}
             </select>
         </td>
 
@@ -269,7 +291,7 @@ function addRow() {
         </td>
 
         <td>
-            <input type="number" name="items[${rowIndex}][qty]" class="form-control qty text-end" min="0" value="0" oninput="calcRow(this)">
+            <input type="number" name="items[${rowIndex}][qty]" class="form-control qty text-end" min="1" value="1" oninput="calcRow(this)">
         </td>
 
         <td>
@@ -369,5 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSL();
     calcTotals();
 });
+</script>
+<script>
+    window.__MEDICINES__ = @json($medicines->pluck('medicine_name'));
 </script>
 @endpush

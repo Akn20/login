@@ -9,7 +9,7 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\VendorController;
-
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 
 /* Religion */
 
@@ -117,4 +117,22 @@ Route::prefix('vendors')->group(function () {
 
     Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
 
+});
+
+//GRN APIS
+
+Route::prefix('pharmacy')->group(function () {
+
+    Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);      // list
+    Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);     // create
+    Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);  // single view
+    Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']); // update
+    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']); // soft delete
+
+    Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']); // trash list
+    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']); // restore
+    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']); // force delete
+
+    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']); // verify
+    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']); // reject
 });

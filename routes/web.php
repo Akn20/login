@@ -1,3 +1,4 @@
+
 <?php
 
 // Auth
@@ -30,7 +31,7 @@ use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\EmployeeController;
 
 //Pharmacy(GRN)
-use App\Http\Controllers\Admin\Pharmacy\GrnController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 
 
 use Illuminate\Support\Facades\Route;
@@ -337,25 +338,25 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 Route::prefix('pharmacy')->name('grn.')->group(function () {
 
-    Route::get('/grn', [GrnController::class, 'index'])->name('index');
-    Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
-    Route::post('/grn', [GrnController::class, 'store'])->name('store');
+    Route::get('/grn', [PharmacyGrnController::class, 'index'])->name('index');
+    Route::get('/grn/create', [PharmacyGrnController::class, 'create'])->name('create');
+    Route::post('/grn', [PharmacyGrnController::class, 'store'])->name('store');
 
-    Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
-    Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
-    Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
-    Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
-    Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+    Route::get('/grn/{id}', [PharmacyGrnController::class, 'show'])->name('show');
+    Route::get('/grn/{id}/edit', [PharmacyGrnController::class, 'edit'])->name('edit');
+    Route::put('/grn/{id}', [PharmacyGrnController::class, 'update'])->name('update');
+    Route::get('/grn/{id}/verify', [PharmacyGrnController::class, 'verify'])->name('verify');
+    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'verifyStore'])->name('verify.store');
 
-    Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'rejectStore'])->name('reject.store');
 
-    Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+    Route::get('/grn/{id}/print', [PharmacyGrnController::class, 'print'])
     ->name('print');
     
-    Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
-    Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
-    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
-    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
+    Route::get('/grn-trash', [PharmacyGrnController::class, 'trash'])->name('trash');
+    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'destroy'])->name('destroy');
+    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'restore'])->name('restore');
+    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'forceDelete'])->name('forceDelete');
 
 });
         /*
