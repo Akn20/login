@@ -7,7 +7,7 @@ use App\Models\ControlledDrugDispense;
 use App\Models\ControlledDrugLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use App\Models\Vendor;
 class ControlledDrugController extends Controller
 {
 
@@ -29,11 +29,12 @@ class ControlledDrugController extends Controller
 
     public function create()
     {
+        $vendors = Vendor::where('status', 'Active')->get();
 
         return view(
-            'admin.pharmacy.controlledDrug.create'
+            'admin.pharmacy.controlledDrug.create',
+            compact('vendors')
         );
-
     }
 
 
@@ -45,7 +46,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => 'required',
 
-            'drug_id' => 'required',
 
             'batch_number' => 'required',
 
@@ -53,8 +53,7 @@ class ControlledDrugController extends Controller
 
             'stock_quantity' => 'required',
 
-            'supplier_id' => 'required',
-
+            'supplier_id' => 'required|exists:vendors,id',
             'status' => 'required'
 
         ]);
@@ -66,7 +65,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => $request->drug_name,
 
-            'drug_id' => $request->drug_id,
 
             'batch_number' => $request->batch_number,
 
@@ -131,7 +129,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => $request->drug_name,
 
-            'drug_id' => $request->drug_id,
 
             'batch_number' => $request->batch_number,
 
@@ -220,15 +217,14 @@ class ControlledDrugController extends Controller
 
     public function dispenseIndex()
     {
-
-        $dispenses =
-            ControlledDrugDispense::latest()->get();
+        $dispenses = ControlledDrugDispense::with('drug')
+            ->latest()
+            ->get();
 
         return view(
             'admin.pharmacy.controlledDrug.dispense_index',
             compact('dispenses')
         );
-
     }
 
 
@@ -353,6 +349,10 @@ class ControlledDrugController extends Controller
         );
 
     }
+
+    //API Functions for mobile app
+
+
 
 
 

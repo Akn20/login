@@ -67,7 +67,6 @@
 
                                             <th>Drug Name</th>
 
-                                            <th>Drug ID</th>
 
                                             <th>Batch</th>
 
@@ -75,7 +74,7 @@
 
                                             <th>Stock</th>
 
-                                            <th>Supplier</th>
+                                            <th>Vendor name</th>
 
                                             <th>Status</th>
 
@@ -98,7 +97,6 @@
 
                                                 <td>{{ $drug->drug_name }}</td>
 
-                                                <td>{{ $drug->drug_id }}</td>
 
                                                 <td>{{ $drug->batch_number }}</td>
 
@@ -106,8 +104,7 @@
 
                                                 <td>{{ $drug->stock_quantity }}</td>
 
-                                                <td>{{ $drug->supplier_id }}</td>
-
+                                                <td>{{ $drug->vendor->vendor_name ?? 'N/A' }}</td>
 
                                                 <td>
 

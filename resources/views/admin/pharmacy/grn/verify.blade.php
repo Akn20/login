@@ -116,15 +116,33 @@
     {{-- ACTIONS: VERIFY + REJECT --}}
     <div class="row g-3">
         <div class="col-md-6">
-            <form action="{{ route('admin.grn.verify.store', $grn->id) }}" method="POST" class="card">
+            <form action="{{ route('admin.grn.verify.store', $grn->id) }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="card">
                 @csrf
                 <div class="card-header">
                     <strong>Verify</strong>
                 </div>
+
                 <div class="card-body">
+                    {{-- ✅ Invoice upload added here --}}
+                    <label class="form-label">Upload Invoice (optional)</label>
+                    <input type="file"
+                        name="invoice_file"
+                        class="form-control"
+                        accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="text-muted">Allowed: PDF/JPG/PNG (max 2MB)</small>
+
+                    <hr>
+
                     <label class="form-label">Verifier Remarks (optional)</label>
-                    <textarea name="verify_remarks" class="form-control" rows="3" placeholder="Optional..."></textarea>
+                    <textarea name="verify_remarks"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Optional..."></textarea>
                 </div>
+
                 <div class="card-footer d-flex justify-content-end">
                     <button type="submit" class="btn btn-success"
                             onclick="return confirm('Verify this GRN?')">

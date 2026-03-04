@@ -84,7 +84,7 @@
 
                                     <th>Sl.No.</th>
 
-                                    <th>Drug ID</th>
+                                    <th>Drug Name</th>
 
                                     <th>Patient</th>
 
@@ -110,8 +110,9 @@
 
                                         <td>{{ $index + 1 }}</td>
 
-                                        <td>{{ $dispense->controlled_drug_id }}</td>
-
+                                        <td>{{ $dispense->drug->drug_name ?? 'N/A' }}
+                                            - Batch {{ $dispense->drug->batch_number }}
+                                        </td>
                                         <td>{{ $dispense->patient_id }}</td>
 
                                         <td>{{ $dispense->prescription_id }}</td>

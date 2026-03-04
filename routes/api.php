@@ -16,15 +16,16 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\ModuleController;
-#use App\Http\Controllers\BedController;
+use App\Http\Controllers\BedController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\api\Inventory\ItemApiController;
 use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
-// use App\Http\Controllers\Api\Inventory\GrnApiController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\Admin\Pharmacy\GrnController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
@@ -260,3 +261,56 @@ Route::delete('/wards/{id}', [WardController::class, 'apiDelete']);
 Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelete']);
 Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
 
+
+
+//GRN APIS
+
+Route::prefix('pharmacy')->group(function () {
+
+    Route::get('/grn', [GrnController::class, 'apiIndex']);      // list
+    Route::post('/grn', [GrnController::class, 'apiStore']);     // create
+    Route::get('/grn/{id}', [GrnController::class, 'apiShow']);  // single view
+    Route::put('/grn/{id}', [GrnController::class, 'apiUpdate']); // update
+    Route::delete('/grn/{id}', [GrnController::class, 'apiDestroy']); // soft delete
+
+    Route::get('/grn-trash', [GrnController::class, 'apiTrash']); // trash list
+    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'apiRestore']); // restore
+    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'apiForceDelete']); // force delete
+
+    Route::post('/grn/{id}/verify', [GrnController::class, 'apiVerify']); // verify
+    Route::post('/grn/{id}/reject', [GrnController::class, 'apiReject']); // reject
+});
+
+
+use App\Http\Controllers\ControlledDrugController;
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Drug API Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('controlled-drugs')->group(function () {
+
+    Route::get('/', [ControlledDrugController::class, 'apiIndex']);
+
+    Route::get('/{id}', [ControlledDrugController::class, 'apiShow']);
+
+    Route::post('/', [ControlledDrugController::class, 'apiStore']);
+
+    Route::put('/{id}', [ControlledDrugController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
+
+});
+
+
+Route::get(
+    '/controlled-drugs/{id}/dispense',
+    [ControlledDrugController::class, 'apiDispenseRecords']
+);
+
+Route::get(
+    '/controlled-drugs/{id}/logs',
+    [ControlledDrugController::class, 'apiLogs']
+);

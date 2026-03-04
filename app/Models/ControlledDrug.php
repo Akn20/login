@@ -63,4 +63,9 @@ class ControlledDrug extends Model
             'controlled_drug_id'
         );
     }
+
+    public function vendor()
+    {
+        return $this->belongsTo(\App\Models\Vendor::class, 'supplier_id');
+    }
 }

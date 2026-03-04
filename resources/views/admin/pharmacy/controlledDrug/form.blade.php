@@ -14,19 +14,6 @@
 
 
 
-{{-- Drug ID --}}
-<div class="mb-4">
-    <label class="form-label">
-        Drug ID <span class="text-danger">*</span>
-    </label>
-
-    <input type="text" name="drug_id" class="form-control" value="{{ old('drug_id', $drug->drug_id ?? '') }}"
-        placeholder="Enter drug ID">
-</div>
-
-@error('drug_id')
-    <small class="text-danger">{{ $message }}</small>
-@enderror
 
 
 
@@ -78,14 +65,21 @@
 
 
 
-{{-- Supplier ID --}}
+{{-- Vendor name --}}
 <div class="mb-4">
     <label class="form-label">
-        Supplier ID <span class="text-danger">*</span>
+        Vendor Name
     </label>
 
-    <input type="text" name="supplier_id" class="form-control"
-        value="{{ old('supplier_id', $drug->supplier_id ?? '') }}" placeholder="Enter supplier ID">
+    <select name="supplier_id" class="form-select" required>
+        <option value="">Select Vendor</option>
+
+        @foreach($vendors as $vendor)
+            <option value="{{ $vendor->id }}">
+                {{ $vendor->vendor_name }}
+            </option>
+        @endforeach
+    </select>
 </div>
 
 @error('supplier_id')

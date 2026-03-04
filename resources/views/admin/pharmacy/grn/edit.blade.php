@@ -66,11 +66,12 @@
 
                     <div class="col-md-3">
                         <label class="form-label">Vendor <span class="text-danger">*</span></label>
-                        <select name="vendor_name" class="form-select" required>
+                        <select class="form-select" name="vendor_id" required>
                             <option value="">Select Vendor</option>
-                            @foreach(['ABC Pharma','XYZ Suppliers','City Pharma','Medico Traders'] as $v)
-                                <option value="{{ $v }}" {{ old('vendor_name', $grn->vendor_name) == $v ? 'selected' : '' }}>
-                                    {{ $v }}
+                            @foreach($vendors as $v)
+                                <option value="{{ $v->id }}"
+                                    {{ old('vendor_id', $grn->vendor_id) == $v->id ? 'selected' : '' }}>
+                                    {{ $v->vendor_name }}
                                 </option>
                             @endforeach
                         </select>
@@ -155,10 +156,15 @@
                                 <td class="sl">{{ $idx + 1 }}</td>
 
                                 <td>
-                                    <select name="items[{{ $idx }}][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
+                                    <select name="items[{{ $idx }}][medicine_name]"
+                                            class="form-select medicine"
+                                            onchange="calcRow(this)"
+                                            required>
                                         <option value="">Select</option>
-                                        @foreach(['Paracetamol 500mg','Amoxicillin 250mg','Cetirizine 10mg','Pantoprazole 40mg'] as $m)
-                                            <option value="{{ $m }}" {{ $med == $m ? 'selected' : '' }}>{{ $m }}</option>
+                                        @foreach($medicines as $m)
+                                            <option value="{{ $m->medicine_name }}" {{ $med == $m->medicine_name ? 'selected' : '' }}>
+                                                {{ $m->medicine_name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </td>
@@ -169,8 +175,11 @@
                                 </td>
 
                                 <td>
-                                    <input type="month" name="items[{{ $idx }}][expiry]" class="form-control expiry"
-                                           value="{{ $expiry }}" onchange="calcRow(this)">
+                                    <input type="date"
+                                        name="items[{{ $idx }}][expiry]"
+                                        class="form-control expiry"
+                                        value="{{ $expiry }}"
+                                        onchange="calcRow(this)">
                                 </td>
 
                                 <td>
@@ -302,11 +311,10 @@ function addRow(){
 
         <td>
             <select name="items[${idx}][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
-                <option value="">Select</option>
-                <option value="Paracetamol 500mg">Paracetamol 500mg</option>
-                <option value="Amoxicillin 250mg">Amoxicillin 250mg</option>
-                <option value="Cetirizine 10mg">Cetirizine 10mg</option>
-                <option value="Pantoprazole 40mg">Pantoprazole 40mg</option>
+                const medicineOptions = ['<option value="">Select</option>']
+                .concat((window.__MEDICINES__ || []).map(name =>
+                    `<option value="${name}">${name}</option>`
+                )).join('');
             </select>
         </td>
 
@@ -387,12 +395,19 @@ function calcTotals(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // init calc for existing rows
-    document.querySelectorAll('#itemsBody tr').forEach(tr => {
-        calcRow(tr.querySelector('.qty') || tr);
-    });
     updateSL();
+
+    // calculate each row properly
+    document.querySelectorAll('#itemsBody tr').forEach(tr => {
+        const qtyInput = tr.querySelector('.qty');
+        if (qtyInput) calcRow(qtyInput);  // ✅ always send an input element
+    });
+
     calcTotals();
 });
+</script>
+
+<script>
+    window.__MEDICINES__ = @json($medicines->pluck('medicine_name'));
 </script>
 @endpush
