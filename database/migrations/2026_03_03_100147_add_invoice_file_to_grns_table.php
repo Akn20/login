@@ -9,21 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-{
-    Schema::table('grns', function (Blueprint $table) {
-        $table->string('verify_remarks')->nullable()->after('remarks');
-        $table->string('reject_reason')->nullable()->after('verify_remarks');
-    });
-}
+    public function up()
+    {
+        Schema::table('grns', function (Blueprint $table) {
+            $table->string('invoice_file')->nullable()->after('invoice_date');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('grns', function (Blueprint $table) {
-            //
+            $table->dropColumn('invoice_file');
         });
     }
+
 };

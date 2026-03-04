@@ -27,6 +27,7 @@ class Grn extends Model
         'total_discount',
         'total_tax',
         'grand_total',
+        'invoice_file',
     ];
 
     public function items()

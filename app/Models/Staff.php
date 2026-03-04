@@ -15,6 +15,8 @@ class Staff extends Model
         'employee_id',
         'name',
         'joining_date',
-        'status'
+        'status',
+        'department',
+        'designation',
     ];
 }
