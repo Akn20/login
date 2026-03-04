@@ -17,9 +17,9 @@
     <div class="col-md-3">
         <select name="category" class="form-control">
             <option value="">All Categories</option>
-            <option value="Medicine" {{ request('category')=='Medicine'?'selected':'' }}>Medicine</option>
-            <option value="Equipment" {{ request('category')=='Equipment'?'selected':'' }}>Equipment</option>
-            <option value="Consumable" {{ request('category')=='Consumable'?'selected':'' }}>Consumable</option>
+            @foreach($categories ?? [] as $cat)
+                <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+            @endforeach
         </select>
     </div>
 
@@ -63,23 +63,37 @@
             </td>
             <td>{{ $item->reorder_level }}</td>
             <td>
-                @if($item->status == 'active')
-                    <span class="badge bg-success">Active</span>
-                @else
-                    <span class="badge bg-secondary">Inactive</span>
-                @endif
+                @include('partials.status-toggle', [
+                    'id'      => $item->id,
+                    'url'     => route('admin.inventory.toggleStatus', $item->id),
+                    'checked' => $item->status === 'active',
+                ])
             </td>
-            <td>
-                <a href="{{ route('admin.inventory.edit',$item->id) }}" 
-                   class="btn btn-sm btn-warning">Edit</a>
+            <td class="text-end">
+                <div class="d-flex justify-content-end gap-2 align-items-center">
 
-                <form action="{{ route('admin.inventory.delete',$item->id) }}" 
-                      method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button onclick="return confirm('Delete item?')" 
-                            class="btn btn-sm btn-danger">Delete</button>
-                </form>
+                    <!-- Edit -->
+                    <a href="{{ route('admin.inventory.edit',$item->id) }}"
+                    class="btn btn-outline-secondary btn-icon rounded-circle"
+                    title="Edit">
+                        <i class="feather feather-edit-2"></i>
+                    </a>
+
+                    <!-- Delete -->
+                    <form action="{{ route('admin.inventory.delete',$item->id) }}"
+                        method="POST"
+                        onsubmit="return confirm('Delete item?')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                            class="btn btn-outline-secondary btn-icon rounded-circle"
+                            title="Delete">
+                            <i class="feather feather-trash-2"></i>
+                        </button>
+                    </form>
+
+                </div>
             </td>
         </tr>
         @empty
@@ -97,5 +111,53 @@
 <div class="mt-3">
     {{ $items->links() }}
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggles = document.querySelectorAll('.status-toggle-input[data-url*="inventory"]');
+
+    toggles.forEach(toggle => {
+        if (toggle.dataset.bound === '1') return;
+        toggle.dataset.bound = '1';
+
+        toggle.addEventListener('change', function () {
+            const url     = this.getAttribute('data-url');
+            const checked = this.checked;
+
+            fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network error');
+                return res.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    alert('Failed to update status.');
+                    this.checked = !checked;
+                    return;
+                }
+
+                const textEl = this.parentElement.querySelector('.status-toggle-text');
+                if (textEl) {
+                    const active = (data.status === 'active' || data.is_active);
+                    textEl.textContent = active ? 'Active' : 'Inactive';
+                }
+            })
+            .catch(() => {
+                alert('Failed to update status.');
+                this.checked = !checked;
+            });
+        });
+    });
+});
+</script>
+@endpush
 
 @endsection
