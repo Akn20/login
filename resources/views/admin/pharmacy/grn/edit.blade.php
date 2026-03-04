@@ -262,14 +262,13 @@
 
         {{-- BUTTONS --}}
         <div class="d-flex justify-content-end gap-2 mb-4">
-            <button type="submit" class="btn btn-secondary">
-                <i class="feather-save"></i> Update Draft
-            </button>
+           <button type="submit" name="action" value="draft" class="btn btn-secondary">
+    <i class="feather-save"></i> Update Draft
+</button>
 
-            {{-- Submit button (we will implement later) --}}
-            <button type="button" class="btn btn-success" onclick="alert('Submit will be connected next')">
-                <i class="feather-check"></i> Submit
-            </button>
+<button type="submit" name="action" value="submit" class="btn btn-success">
+    <i class="feather-check"></i> Submit
+</button>
 
             <a href="{{ route('admin.grn.index') }}" class="btn btn-light">
                 Cancel
@@ -305,22 +304,23 @@ function addRow(){
 
     const tr = document.createElement('tr');
     tr.dataset.index = idx;
+    const medicineOptions = ['<option value="">Select</option>']
+    .concat((window.__MEDICINES__ || []).map(name =>
+        `<option value="${name}">${name}</option>`
+    )).join('');
 
     tr.innerHTML = `
-        <td class="sl">${idx + 1}</td>
+    <td class="sl">${idx + 1}</td>
 
-        <td>
-            <select name="items[${idx}][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
-                const medicineOptions = ['<option value="">Select</option>']
-                .concat((window.__MEDICINES__ || []).map(name =>
-                    `<option value="${name}">${name}</option>`
-                )).join('');
-            </select>
-        </td>
+    <td>
+        <select name="items[${idx}][medicine_name]" class="form-select medicine" onchange="calcRow(this)">
+            ${medicineOptions}
+        </select>
+    </td>
+    
 
         <td><input type="text" name="items[${idx}][batch_no]" class="form-control batch" placeholder="Batch"></td>
-        <td><input type="month" name="items[${idx}][expiry]" class="form-control expiry" onchange="calcRow(this)"></td>
-
+       <input type="date" name="items[${idx}][expiry]" class="form-control expiry" onchange="calcRow(this)">
         <td><input type="number" name="items[${idx}][qty]" class="form-control qty text-end" min="0" value="0" oninput="calcRow(this)"></td>
         <td><input type="number" name="items[${idx}][free_qty]" class="form-control free_qty text-end" min="0" value="0" oninput="calcRow(this)"></td>
 
@@ -397,10 +397,11 @@ function calcTotals(){
 document.addEventListener('DOMContentLoaded', () => {
     updateSL();
 
-    // calculate each row properly
     document.querySelectorAll('#itemsBody tr').forEach(tr => {
-        const qtyInput = tr.querySelector('.qty');
-        if (qtyInput) calcRow(qtyInput);  // ✅ always send an input element
+        const qty = tr.querySelector('.qty');
+        if (qty) {
+            calcRow(qty);   // this sets base, disc, tax, amount
+        }
     });
 
     calcTotals();
