@@ -34,7 +34,7 @@ class StockController extends Controller
             
             'medicine_name' => 'required',
             'batch_number'  => 'required',
-            'expiry_date' => 'required|date ', |after:today,
+            'expiry_date' => 'required|date ', 
             'quantity'      => 'required|integer|min:1'
         ]);
 
