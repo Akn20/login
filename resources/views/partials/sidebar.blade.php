@@ -300,6 +300,19 @@
                             </a>
                         </li>
 
+                        {{-- Inventory Vendors --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.index') }}">
+                                Vendors
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.create') }}">
+                                Add Vendor
+                            </a>
+                        </li>
+
                         {{-- GRN --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.grns.index') }}">

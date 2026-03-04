@@ -44,7 +44,7 @@
 
             <td>{{ $po->po_number }}</td>
 
-            <td>{{ $po->vendor->name ?? '-' }}</td>
+            <td>{{ $po->inventoryVendor->name ?? '-' }}</td>
 
             <td>{{ \Carbon\Carbon::parse($po->order_date)->format('d-m-Y') }}</td>
 

@@ -211,9 +211,14 @@ Route::prefix('inventory')->group(function () {
     Route::get('/dashboard', [InventoryDashboardApiController::class, 'index']);
 });
 
-// Vendors
+// Vendors (pharmacy)
 Route::get('/vendors', function () {
     return \App\Models\Vendor::select('id', 'vendor_name')->get();
+});
+
+// Inventory vendors
+Route::get('/inventory-vendors', function () {
+    return \App\Models\InventoryVendor::select('id', 'vendor_name')->get();
 });
 
 //Bed 

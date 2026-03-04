@@ -21,6 +21,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\Admin\InventoryVendorController;
 use App\Http\Controllers\WorkStatusController;
 
 //Bed,room and Ward controllers
@@ -323,6 +324,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         |----------------------------------------------------------------------
         */
 
+        // pharmacy vendor routes unchanged
         Route::prefix('vendors')->name('vendors.')->group(function () {
             Route::get('/', [VendorController::class, 'index'])->name('index');
             Route::get('/create', [VendorController::class, 'create'])->name('create');
@@ -334,6 +336,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/trash', [VendorController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [VendorController::class, 'restore'])->name('restore');
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        // inventory vendor management
+        Route::prefix('inventory-vendors')->name('inventory-vendors.')->group(function () {
+            Route::get('/', [InventoryVendorController::class, 'index'])->name('index');
+            Route::get('/create', [InventoryVendorController::class, 'create'])->name('create');
+            Route::post('/store', [InventoryVendorController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [InventoryVendorController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [InventoryVendorController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [InventoryVendorController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [InventoryVendorController::class, 'delete'])->name('delete');
+            Route::get('/trash', [InventoryVendorController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [InventoryVendorController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [InventoryVendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
