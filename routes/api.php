@@ -213,4 +213,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/check-in', [BiometricController::class, 'checkIn']);
     Route::post('/check-out', [BiometricController::class, 'checkOut']);
+    Route::get('/check-status', [BiometricController::class, 'checkStatus']);
 });

@@ -79,16 +79,18 @@ class BiometricController extends Controller
                 ]);
 
             $bioResult = $bioResponse->json();
+            Log::info( $bioResult);
 
-            if (! $bioResponse->successful() || ($bioResult['status'] ?? '') !== 'success') {
+            if (! $bioResponse->successful() || ($bioResult['status']) !== 'success') {
                 return response()->json([
-                    'message' => 'Face verification failed',
+                    'message' =>  $bioResult['message'],
                     'error' => $bioResult['message'] ?? 'Mismatch',
                 ], 401);
             }
 
             // 4. Create Attendance Record
-            Attendance::create([
+            if($bioResponse['status'] == 'success'){
+                 Attendance::create([
                 'user_id' => $user->id,
                 'date' => Carbon::today(),
                 'checkin_time' => now(),
@@ -96,8 +98,9 @@ class BiometricController extends Controller
                 'checkin_lng' => $request->longitude,
                 'status' => 'present',
             ]);
-
             return response()->json(['status'=>'success','message' => 'Check-in successful']);
+            }
+           
 
         } catch (\Exception $e) {
             Log::error('Check-in Error: '.$e->getMessage());
@@ -198,5 +201,26 @@ class BiometricController extends Controller
         ));
 
         return $angle * $earthRadius;
+    }
+
+
+public function checkstatus(Request $request)
+{
+    $user = auth()->user();
+
+    $attendance = Attendance::where('user_id', $user->id)
+        ->whereDate('date', Carbon::today())
+        ->first();
+
+          if (!$attendance || $attendance->checkin_time === null) {
+        return response()->json(['status' => 'check-in']);
+    }
+
+    if ($attendance->checkout_time === null) {
+        return response()->json(['status' => 'check-out']);
+    }
+
+    return response()->json(['status' => 'completed']);
+
     }
 }
