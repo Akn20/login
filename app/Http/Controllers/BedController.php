@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Bed;
 use App\Models\Ward;
+use App\Models\Room;
 use Illuminate\Validation\Rule;
 
 class BedController extends Controller
@@ -25,8 +26,9 @@ class BedController extends Controller
     {
         $wards = Ward::all();
         $bed = null;
+        $rooms = Room::all();
 
-        return view('admin.beds.create', compact('wards', 'bed'));
+        return view('admin.beds.create', compact('wards', 'bed', 'rooms'));
     }
 
     /**
@@ -83,8 +85,9 @@ class BedController extends Controller
     {
         $bed = Bed::findOrFail($id);
         $wards = Ward::all();
+        $rooms = Room::all();
 
-        return view('admin.beds.edit', compact('bed', 'wards'));
+        return view('admin.beds.edit', compact('bed', 'wards', 'rooms'));
     }
 
     /**
@@ -93,6 +96,10 @@ class BedController extends Controller
     public function update(Request $request, $id)
     {
         $bed = Bed::findOrFail($id);
+
+        // Store old values before update
+        $oldWardId = $bed->ward_id;
+        $oldRoomNumber = $bed->room_number;
 
         $validated = $request->validate([
             'bed_code' => [
@@ -107,11 +114,39 @@ class BedController extends Controller
             'status' => 'required|string|max:20',
         ]);
 
+        // Update bed
         $bed->update($validated);
 
-        // Update ward bed count
+        /*
+        |--------------------------------------------------------------------------
+        | Update Ward Bed Counts
+        |--------------------------------------------------------------------------
+        */
+
+        // Old ward
+        Ward::where('id', $oldWardId)->update([
+            'total_beds' => Bed::where('ward_id', $oldWardId)->count()
+        ]);
+
+        // New ward
         Ward::where('id', $validated['ward_id'])->update([
             'total_beds' => Bed::where('ward_id', $validated['ward_id'])->count()
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Room Bed Counts
+        |--------------------------------------------------------------------------
+        */
+
+        // Old room
+        Room::where('room_number', $oldRoomNumber)->update([
+            'total_beds' => Bed::where('room_number', $oldRoomNumber)->count()
+        ]);
+
+        // New room
+        Room::where('room_number', $validated['room_number'])->update([
+            'total_beds' => Bed::where('room_number', $validated['room_number'])->count()
         ]);
 
         return redirect()

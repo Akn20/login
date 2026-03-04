@@ -87,6 +87,10 @@ class RoomController extends Controller
             'status' => 'required|in:available,occupied,maintenance,cleaning',
         ]);
 
+        // Store old room number before updating
+        $oldRoomNumber = $room->room_number;
+
+        // Update room
         $room->update([
             'room_number' => $validated['room_number'],
             'ward_id' => $validated['ward_id'],
@@ -94,11 +98,20 @@ class RoomController extends Controller
             'status' => $validated['status'],
         ]);
 
+        // Update beds if room number changed
+        \App\Models\Bed::where('room_number', $oldRoomNumber)
+            ->update([
+                'room_number' => $validated['room_number']
+            ]);
+
+        // Update room bed count
+        $room->total_beds = \App\Models\Bed::where('room_number', $validated['room_number'])->count();
+        $room->save();
+
         return redirect()
             ->route('admin.rooms.index')
             ->with('success', 'Room Updated Successfully');
     }
-
     /**
      * Remove the specified resource from storage.
      */
