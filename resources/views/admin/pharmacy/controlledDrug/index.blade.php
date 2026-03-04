@@ -67,7 +67,6 @@
 
                                             <th>Drug Name</th>
 
-                                            <th>Drug ID</th>
 
                                             <th>Batch</th>
 
@@ -98,7 +97,6 @@
 
                                                 <td>{{ $drug->drug_name }}</td>
 
-                                                <td>{{ $drug->drug_id }}</td>
 
                                                 <td>{{ $drug->batch_number }}</td>
 

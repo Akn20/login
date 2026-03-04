@@ -46,7 +46,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => 'required',
 
-            'drug_id' => 'required',
 
             'batch_number' => 'required',
 
@@ -66,7 +65,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => $request->drug_name,
 
-            'drug_id' => $request->drug_id,
 
             'batch_number' => $request->batch_number,
 
@@ -131,7 +129,6 @@ class ControlledDrugController extends Controller
 
             'drug_name' => $request->drug_name,
 
-            'drug_id' => $request->drug_id,
 
             'batch_number' => $request->batch_number,
 
