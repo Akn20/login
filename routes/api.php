@@ -23,6 +23,7 @@ use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\Admin\FaceRecognitionController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
@@ -170,6 +171,21 @@ Route::get('/test-api', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+
+
+
+
+// Leave Mapping API
+Route::get('/leave-mappings', [LeaveMappingController::class, 'apiIndex']);
+Route::get('/leave-mappings/deleted',  [LeaveMappingController::class, 'apiDeleted']);
+Route::get('/leave-mappings/{id}', [LeaveMappingController::class, 'apiShow']);
+Route::post('/leave-mappings', [LeaveMappingController::class, 'apiStore']);
+Route::patch('/leave-mappings/{id}', [LeaveMappingController::class, 'apiUpdate']);
+Route::delete('/leave-mappings/{id}', [LeaveMappingController::class, 'apiDestroy']);
+
+Route::post('/leave-mappings/{id}/restore',  [LeaveMappingController::class, 'apiRestore']);
+Route::delete('/leave-mappings/{id}/force-delete',  [LeaveMappingController::class, 'apiForceDelete']);
 
 //inventory management api routes
 Route::prefix('inventory')->group(function () {

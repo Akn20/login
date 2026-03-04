@@ -37,6 +37,15 @@
 
             <dt class="col-md-3">Name</dt>
             <dd class="col-md-9">{{ $staffManagement->name }}</dd>
+            <dt class="col-md-3">Mobile Number</dt>
+<dd class="col-md-9">
+    {{ optional($staffManagement->user)->mobile ?? 'N/A' }}
+</dd>
+
+<dt class="col-md-3">Email</dt>
+<dd class="col-md-9">
+    {{ optional($staffManagement->user)->email ?? 'N/A' }}
+</dd>
 
             <dt class="col-md-3">Department</dt>
             <dd class="col-md-9">{{ $staffManagement->department }}</dd>
