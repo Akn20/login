@@ -58,7 +58,23 @@
                             </tr>
                             <tr>
                                 <th>Status</th>
-                                <td><strong>{{ $status }}</strong></td>
+                                <td>
+                                    @if($status === 'COMPLETED')
+                                    <span class="badge bg-soft-success text-success">Returned</span>
+
+                                    @elseif($status === 'APPROVED')
+                                    <span class="badge bg-soft-info text-info">Approved</span>
+
+                                    @elseif($status === 'PENDING')
+                                    <span class="badge bg-soft-warning text-warning">Pending</span>
+
+                                    @elseif($status === 'EXPIRED')
+                                    <span class="badge bg-soft-danger text-danger">Expired</span>
+
+                                    @else
+                                    <span class="badge bg-soft-warning text-warning">Expiring</span>
+                                    @endif
+                                </td>
                             </tr>
                         </table>
 
@@ -66,37 +82,52 @@
 
                             {{-- Mark Expired --}}
                             <form action="{{ route('admin.expiry.markExpired', $batch->id) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Mark this batch as EXPIRED?');">
+                                method="POST"
+                                onsubmit="return confirm('Mark this batch as EXPIRED?');">
                                 @csrf
-                                <button class="btn btn-warning" type="submit">Mark Expired</button>
+                                <button class="btn btn-neutral"
+                                        type="submit"
+                                        {{ $status === 'EXPIRING' ? '' : 'disabled' }}>
+                                    Mark Expired
+                                </button>
                             </form>
 
                             {{-- Return to Vendor --}}
                             <form action="{{ route('admin.expiry.returnToVendor', $batch->id) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Create vendor return request?');">
+                                method="POST"
+                                onsubmit="return confirm('Create vendor return request?');">
                                 @csrf
-                                <button class="btn btn-danger" type="submit">Return to Vendor</button>
+                                <button class="btn btn-neutral"
+                                        type="submit"
+                                        {{ $status === 'EXPIRED' ? '' : 'disabled' }}>
+                                    Return to Vendor
+                                </button>
                             </form>
-                            
+
                             {{-- Approve --}}
-                            <form action="{{ route('admin.expiry.approve', $batch->id) }}" method="POST"
-                                  onsubmit="return confirm('Approve return?');">
+                            <form action="{{ route('admin.expiry.approve', $batch->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Approve return?');">
                                 @csrf
-                                <button class="btn btn-info" type="submit" {{ $status === 'PENDING' ? '' : 'disabled' }}>
+                                <button class="btn btn-neutral"
+                                        type="submit"
+                                        {{ $status === 'PENDING' ? '' : 'disabled' }}>
                                     Approve
                                 </button>
                             </form>
 
                             {{-- Complete --}}
-                            <form action="{{ route('admin.expiry.complete', $batch->id) }}" method="POST"
-                                  onsubmit="return confirm('Complete return?');">
+                            <form action="{{ route('admin.expiry.complete', $batch->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Complete return?');">
                                 @csrf
-                                <button class="btn btn-success" type="submit" {{ $status === 'APPROVED' ? '' : 'disabled' }}>
+                                <button class="btn btn-neutral"
+                                        type="submit"
+                                        {{ $status === 'APPROVED' ? '' : 'disabled' }}>
                                     Complete
                                 </button>
                             </form>
+
                         </div>
                     </div>
                 </div>

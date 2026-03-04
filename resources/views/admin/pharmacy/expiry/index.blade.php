@@ -54,14 +54,13 @@
                                     @forelse($batches as $index => $batch)
                                         @php
                                             $exp = \Carbon\Carbon::parse($batch->expiry_date);
-                                            $daysLeft = $exp->isPast() ? 'Expired' : now()->diffInDays($exp, false);
-                                            // If you attach latest expiry log as $batch->latestExpiryLog, use it
                                             $log = $batch->latestExpiryLog ?? null;
 
-                                            $status =
-                                                $log->status ?? (
-                                                    $exp->isPast() ? 'EXPIRED' : 'EXPIRING'
-                                                );
+                                            if ($log) {
+                                                $status = $log->status;
+                                            } else {
+                                                $status = $exp->isPast() ? 'EXPIRED' : 'EXPIRING';
+                                            }
                                         @endphp
 
                                         <tr>
@@ -71,25 +70,30 @@
                                             <td>{{ \Carbon\Carbon::parse($batch->expiry_date)->format('d-m-Y') }}</td>
                                             <td>{{ $batch->quantity }}</td>
 
-                                            <td>
-                                                @if($exp->isPast())
-                                                    <span class="text-danger fw-bold">Expired</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $batch->quantity }}</td>
+
 
                                             <td>
-                                                @if($status === 'COMPLETED')
-                                                    <span class="badge bg-soft-success text-success">Completed</span>
-                                                @elseif($status === 'APPROVED')
-                                                    <span class="badge bg-soft-info text-info">Approved</span>
-                                                @elseif($status === 'PENDING')
-                                                    <span class="badge bg-soft-warning text-warning">Pending</span>
-                                                @elseif($status === 'EXPIRED')
-                                                    <span class="badge bg-soft-danger text-danger">Expired</span>
-                                                @else
-                                                    <span class="badge bg-soft-warning text-warning">Expiring</span>
-                                                @endif
+                                                @switch($status)
+                                                    @case('EXPIRING')
+                                                        <span class="badge bg-soft-warning text-warning">Expiring</span>
+                                                        @break
+
+                                                    @case('EXPIRED')
+                                                        <span class="badge bg-soft-danger text-danger">Expired</span>
+                                                        @break
+
+                                                    @case('PENDING')
+                                                        <span class="badge bg-soft-warning text-warning">Pending</span>
+                                                        @break
+
+                                                    @case('APPROVED')
+                                                        <span class="badge bg-soft-info text-info">Approved</span>
+                                                        @break
+
+                                                    @case('COMPLETED')
+                                                        <span class="badge bg-soft-success text-success">Completed</span>
+                                                        @break
+                                                @endswitch
                                             </td>
 
                                             <td class="text-end">
@@ -106,7 +110,9 @@
                                                           method="POST"
                                                           onsubmit="return confirm('Mark this batch as EXPIRED?');">
                                                         @csrf
-                                                        <button type="submit" class="avatar-text avatar-md action-icon">
+                                                        <button type="submit"
+                                                            class="avatar-text avatar-md action-icon"
+                                                            {{ $status === 'EXPIRING' ? '' : 'disabled' }}>
                                                             <i class="feather-alert-triangle"></i>
                                                         </button>
                                                     </form>
@@ -116,9 +122,9 @@
                                                           method="POST"
                                                           onsubmit="return confirm('Create return request to vendor?');">
                                                         @csrf
-                                                        <button type="submit"
-                                                                class="avatar-text avatar-md action-icon"
-                                                                {{ $status === 'EXPIRED' ? '' : 'disabled' }}>
+                                                       <button type="submit"
+                                                            class="avatar-text avatar-md action-icon"
+                                                            {{ $status === 'EXPIRED' ? '' : 'disabled' }}>
                                                             <i class="feather-corner-up-left"></i>
                                                         </button>
                                                     </form>
@@ -129,8 +135,8 @@
                                                           onsubmit="return confirm('Approve this return?');">
                                                         @csrf
                                                         <button type="submit"
-                                                                class="avatar-text avatar-md action-icon"
-                                                                {{ $status === 'PENDING' ? '' : 'disabled' }}>
+                                                            class="avatar-text avatar-md action-icon"
+                                                            {{ $status === 'PENDING' ? '' : 'disabled' }}>
                                                             <i class="feather-check-circle"></i>
                                                         </button>
                                                     </form>
@@ -141,8 +147,8 @@
                                                           onsubmit="return confirm('Complete this return?');">
                                                         @csrf
                                                         <button type="submit"
-                                                                class="avatar-text avatar-md action-icon"
-                                                                {{ $status === 'APPROVED' ? '' : 'disabled' }}>
+                                                            class="avatar-text avatar-md action-icon"
+                                                            {{ $status === 'APPROVED' ? '' : 'disabled' }}>
                                                             <i class="feather-flag"></i>
                                                         </button>
                                                     </form>
