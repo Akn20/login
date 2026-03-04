@@ -29,6 +29,18 @@
         <option value="Contract" {{ in_array('Contract', old('employee_status', $mapping->employee_status ?? [])) ? 'selected' : '' }}>Contract</option>
     </select>
 </div>
+<div class="mb-3">
+    <label class="form-label">Target Designations (Multi-select) *</label>
+    <select name="designations[]" class="form-control select2" multiple required>
+        @foreach($designations as $designation)
+            <option value="{{ $designation }}" 
+                {{ (isset($mapping) && in_array($designation, $mapping->designations ?? [])) ? 'selected' : '' }}>
+                {{ ucfirst($designation) }}
+            </option>
+        @endforeach
+    </select>
+    <small class="text-muted">Designations are pulled from current Staff Management records.</small>
+</div>
 
 {{-- Section 3: Accrual Rules ---}}
 <div class="row">

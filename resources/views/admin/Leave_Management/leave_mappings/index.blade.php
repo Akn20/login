@@ -36,9 +36,11 @@
                                     <th>Employee Status</th> 
                                   <th>Accrual</th> 
                                     <th>Carry Forward</th> 
+                                    <th>Category </th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
+                            
                             <tbody>
                                 @foreach($mappings as $mapping)
                                     <tr>
@@ -56,6 +58,12 @@
                                                 <span class="text-danger">No</span> {{-- Red for No [cite: 157] --}}
                                             @endif
                                         </td>
+                                                                            <td>
+    @foreach($mapping->designations ?? [] as $role)
+        <span class="badge bg-soft-info text-info">{{ ucfirst($role) }}</span>
+    @endforeach
+</td>
+    
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
                                                 <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}"
