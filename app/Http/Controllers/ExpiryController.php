@@ -2,67 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Expiry;
-use Illuminate\Http\Request;
 use App\Models\MedicineBatch;
-use Carbon\Carbon;
-
+use Illuminate\Http\Request;
 
 class ExpiryController extends Controller
 {
-     // LIST: show expiring batches (<= 30 days) + existing expiry records
+
     public function index()
     {
         $limitDate = now()->addDays(30);
 
-        $batches = MedicineBatch::with('medicine')
-            ->whereDate('expiry_date', '<=', $limitDate)
+        $batches = MedicineBatch::with(['medicine','latestExpiryLog'])
+            ->whereDate('expiry_date','<=',$limitDate)
             ->latest()
             ->get();
 
-        $expiries = Expiry::with(['batch.medicine'])->latest()->get();
-
-        return view('admin.pharmacy.expiry.index', compact('batches', 'expiries'));
+        return view('admin.pharmacy.expiry.index', compact('batches'));
     }
-    
-    // SHOW
+
     public function show($id)
-    {  
+    {
         $batch = MedicineBatch::with('medicine')->findOrFail($id);
-        $expiry = Expiry::where('batch_id', $batch->id)->latest()->first();
-        return view('admin.pharmacy.expiry.show', compact('batch', 'expiry'));
+
+        $expiryLog = Expiry::where('batch_id',$id)->latest()->first();
+
+        return view('admin.pharmacy.expiry.show',compact('batch','expiryLog'));
     }
 
-    // DELETE (soft delete)
-    public function destroy($id)
-    {
-        Expiry::findOrFail($id)->delete();
-        return redirect()->route('admin.expiry.index')->with('success', 'Expiry record deleted successfully.');
-    }
 
-    // TRASH
-    public function trash()
-    {
-        $expiries = Expiry::onlyTrashed()->with(['batch.medicine'])->latest()->get();
-        return view('admin.pharmacy.expiry.trash', compact('expiries'));
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | MARK EXPIRED
+    |--------------------------------------------------------------------------
+    */
 
-    // RESTORE
-    public function restore($id)
-    {
-        Expiry::onlyTrashed()->findOrFail($id)->restore();
-        return redirect()->route('admin.expiry.index')->with('success', 'Expiry record restored successfully.');
-    }
-
-    // FORCE DELETE
-    public function forceDelete($id)
-    {
-        Expiry::onlyTrashed()->findOrFail($id)->forceDelete();
-        return redirect()->route('admin.expiry.index')->with('success', 'Expiry record permanently deleted.');
-    }
-
-    // MARK EXPIRED (by expiry record id)
     public function markExpired($id)
     {
         $batch = MedicineBatch::findOrFail($id);
@@ -71,71 +45,130 @@ class ExpiryController extends Controller
             ['batch_id' => $batch->id],
             [
                 'expiry_date' => $batch->expiry_date,
-                'quantity'    => $batch->quantity,
-                'status'      => 'EXPIRING',
-                'created_by'  => auth()->id(),
+                'quantity' => $batch->quantity,
+                'status' => 'EXPIRED',
+                'created_by' => auth()->id()
             ]
         );
 
         $expiry->update([
-            'status'     => 'EXPIRED',
-            'updated_by' => auth()->id(),
+            'status' => 'EXPIRED'
         ]);
 
-        return back()->with('success', 'Batch marked as EXPIRED.');
+        return back()->with('success','Batch marked as EXPIRED.');
     }
 
-    // RETURN TO VENDOR (sets PENDING)
-    public function returnToVendor($id) 
+
+    /*
+    |--------------------------------------------------------------------------
+    | RETURN TO VENDOR
+    |--------------------------------------------------------------------------
+    */
+
+public function returnToVendor($id)
+{
+    $batch = MedicineBatch::findOrFail($id);
+
+    $expiry = Expiry::firstOrCreate(
+        ['batch_id' => $batch->id],
+        [
+            'expiry_date' => $batch->expiry_date,
+            'quantity' => $batch->quantity,
+            'status' => 'EXPIRED'
+        ]
+    );
+
+    if ($expiry->status !== 'EXPIRED') {
+        return back()->with('error', 'Only expired batches can be returned.');
+    }
+
+    $expiry->update([
+        'status' => 'PENDING',
+        'updated_by' => auth()->id(),
+    ]);
+
+    return back()->with('success', 'Return request created.');
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPROVE RETURN
+    |--------------------------------------------------------------------------
+    */
+
+    public function approve($id)
     {
-        $batch = MedicineBatch::findOrFail($id);
+        $expiry = Expiry::where('batch_id',$id)->latest()->first();
 
-        $expiry = Expiry::where('batch_id', $batch->id)->latest()->first();
-
-        if (!$expiry || $expiry->status !== 'EXPIRED') {
-            return back()->with('error', 'Only EXPIRED batches can be returned to vendor.');
+        if(!$expiry || $expiry->status !== 'PENDING'){
+            return back()->with('error','Only pending returns can be approved.');
         }
 
         $expiry->update([
-            'status'     => 'PENDING',
-            'updated_by' => auth()->id(),
+            'status' => 'APPROVED',
+            'updated_by' => auth()->id()
         ]);
 
-        return back()->with('success', 'Return request created (PENDING).');
+        return back()->with('success','Return approved.');
     }
 
-    // APPROVE RETURN
-    public function approve($id) 
+
+    /*
+    |--------------------------------------------------------------------------
+    | COMPLETE RETURN
+    |--------------------------------------------------------------------------
+    */
+
+public function complete($id)
+{
+    $expiry = Expiry::where('batch_id', $id)->latest()->first();
+
+    if (!$expiry || $expiry->status !== 'APPROVED') {
+        return back()->with('error', 'Only approved returns can be completed.');
+    }
+
+    $batch = MedicineBatch::findOrFail($id);
+
+    $expiry->update([
+        'status' => 'COMPLETED',
+        'updated_by' => auth()->id(),
+    ]);
+
+    // Reduce stock
+    $batch->update([
+        'quantity' => 0
+    ]);
+
+    return back()->with('success', 'Return completed and stock adjusted.');
+}
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRASH
+    |--------------------------------------------------------------------------
+    */
+
+    public function trash()
     {
-        $expiry = Expiry::where('batch_id', $id)->latest()->first();
+        $logs = Expiry::onlyTrashed()->with(['batch.medicine'])->latest()->get();
 
-        if (!$expiry || $expiry->status !== 'PENDING') {
-            return back()->with('error', 'Only PENDING returns can be approved.');
-        }
-
-        $expiry->update([
-            'status'     => 'APPROVED',
-            'updated_by' => auth()->id(),
-        ]);
-
-        return back()->with('success', 'Return Approved.');
+        return view('admin.pharmacy.expiry.trash',compact('logs'));
     }
 
-    // COMPLETE RETURN
-    public function complete($id) 
+
+    public function restore($id)
     {
-        $expiry = Expiry::where('batch_id', $id)->latest()->first();
+        Expiry::onlyTrashed()->findOrFail($id)->restore();
 
-        if (!$expiry || $expiry->status !== 'APPROVED') {
-            return back()->with('error', 'Only APPROVED returns can be completed.');
-        }
-
-        $expiry->update([
-            'status'     => 'COMPLETED',
-            'updated_by' => auth()->id(),
-        ]);
-
-        return back()->with('success', 'Return Completed.');
+        return back()->with('success','Record restored.');
     }
-    
+
+
+    public function forceDelete($id)
+    {
+        Expiry::onlyTrashed()->findOrFail($id)->forceDelete();
+
+        return back()->with('success','Record permanently deleted.');
+    }
 }

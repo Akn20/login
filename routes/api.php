@@ -26,7 +26,6 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
 
-
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
 
@@ -192,6 +191,8 @@ Route::prefix('pharmacy')->group(function () {
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 
 });
+
+
 //Vendor api
 
 

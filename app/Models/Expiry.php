@@ -4,11 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Expiry extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasUuids;
+
     protected $table = 'expiry_logs';
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'batch_id',
@@ -17,11 +22,29 @@ class Expiry extends Model
         'status',
         'remarks',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
-     public function batch()
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function batch()
     {
-        return $this->belongsTo(\App\Models\MedicineBatch::class, 'batch_id');
+        return $this->belongsTo(MedicineBatch::class, 'batch_id');
     }
-    
+
+    public function medicine()
+    {
+        return $this->hasOneThrough(
+            Medicine::class,
+            MedicineBatch::class,
+            'id',
+            'id',
+            'batch_id',
+            'medicine_id'
+        );
+    }
 }

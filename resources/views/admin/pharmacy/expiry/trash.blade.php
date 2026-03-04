@@ -44,17 +44,17 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $log->batch->medicine->medicine_name ?? '-' }}</td>
                                     <td>{{ $log->batch->batch_number ?? '-' }}</td>
-                                    <td>{{ $log->status }}</td>
-                                    <td>{{ $log->deleted_at }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($log->batch->expiry_date)->format('d-m-Y') }}</td>
+                                    <td>{{ $log->batch->quantity ?? '-' }}</td>
 
                                     <td class="text-end">
                                         <div class="hstack gap-2 justify-content-end">
-                                            <a href="{{ route('admin.expiry.restore', $batch->id) }}"
+                                            <a href="{{ route('admin.expiry.restore', $log->id) }}"
                                                class="avatar-text avatar-md action-icon action-restore">
                                                 <i class="feather-refresh-ccw"></i>
                                             </a>
 
-                                            <a href="{{ route('admin.expiry.forceDelete', $batch->id) }}"
+                                            <a href="{{ route('admin.expiry.forceDelete', $log->id) }}"
                                                class="avatar-text avatar-md action-icon action-delete"
                                                onclick="return confirm('This will permanently delete the record. Continue?');">
                                                 <i class="feather-trash"></i>

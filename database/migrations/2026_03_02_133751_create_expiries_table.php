@@ -15,11 +15,12 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('batch_id'); // medicine_batches.id
             $table->date('expiry_date')->nullable();
-            $table->enum('status', ['EXPIRED', 'PENDING', 'APPROVED', 'COMPLETED'])->default('EXPIRED');
+            $table->integer('quantity')->nullable();
+            $table->enum('status', ['EXPIRED','EXPIRING', 'PENDING', 'APPROVED', 'COMPLETED'])->default('EXPIRING');
             $table->text('remarks')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->uuid('created_by')->nullable();
+            $table->uuid('updated_by')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
