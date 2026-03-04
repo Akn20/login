@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Room;
 use App\Models\Ward;
+
 class RoomController extends Controller
 {
     /**
@@ -12,7 +13,8 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::with('ward')->get();
+        $rooms = Room::with('ward')->latest()->get();
+
         return view('admin.rooms.index', compact('rooms'));
     }
 
@@ -22,6 +24,7 @@ class RoomController extends Controller
     public function create()
     {
         $wards = Ward::all();
+
         return view('admin.rooms.create', compact('wards'));
     }
 
@@ -30,24 +33,28 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'room_number' => 'required|string|max:50|unique:rooms,room_number',
             'ward_id' => 'required|exists:wards,id',
             'room_type' => 'required|string|max:50',
-            'total_beds' => 'required|integer|min:1',
             'status' => 'required|in:available,occupied,maintenance,cleaning',
         ], [
             'ward_id.required' => 'Please select a ward.',
             'room_number.required' => 'Room number is required.',
             'room_number.unique' => 'Room number already exists.',
-            'total_beds.min' => 'Room must have at least 1 bed.'
         ]);
 
-        Room::create($request->all());
+        Room::create([
+            'room_number' => $validated['room_number'],
+            'ward_id' => $validated['ward_id'],
+            'room_type' => $validated['room_type'],
+            'total_beds' => 0, // default when room created
+            'status' => $validated['status'],
+        ]);
 
-        return redirect()->route('admin.rooms.index')
+        return redirect()
+            ->route('admin.rooms.index')
             ->with('success', 'Room Created Successfully');
-
     }
 
     /**
@@ -64,6 +71,7 @@ class RoomController extends Controller
     public function edit(Room $room)
     {
         $wards = Ward::all();
+
         return view('admin.rooms.edit', compact('room', 'wards'));
     }
 
@@ -72,52 +80,83 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room)
     {
-        $request->validate([
-            'room_number' => 'required|unique:rooms,room_number,' . $room->id,
+        $validated = $request->validate([
+            'room_number' => 'required|string|max:50|unique:rooms,room_number,' . $room->id,
             'ward_id' => 'required|exists:wards,id',
             'room_type' => 'required|string|max:50',
-            'total_beds' => 'required|integer|min:1',
-            'status' => 'required|in:available,occupied,maintenance,cleaning'
+            'status' => 'required|in:available,occupied,maintenance,cleaning',
         ]);
 
-        $room->update($request->all());
+        // Store old room number before updating
+        $oldRoomNumber = $room->room_number;
 
-        return redirect()->route('admin.rooms.index')
+        // Update room
+        $room->update([
+            'room_number' => $validated['room_number'],
+            'ward_id' => $validated['ward_id'],
+            'room_type' => $validated['room_type'],
+            'status' => $validated['status'],
+        ]);
+
+        // Update beds if room number changed
+        \App\Models\Bed::where('room_number', $oldRoomNumber)
+            ->update([
+                'room_number' => $validated['room_number']
+            ]);
+
+        // Update room bed count
+        $room->total_beds = \App\Models\Bed::where('room_number', $validated['room_number'])->count();
+        $room->save();
+
+        return redirect()
+            ->route('admin.rooms.index')
             ->with('success', 'Room Updated Successfully');
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Room $room)
     {
         $room->delete();
-        return redirect()->route('admin.rooms.index')
+
+        return redirect()
+            ->route('admin.rooms.index')
             ->with('success', 'Room Deleted Successfully');
     }
 
-    //deleted rooms
+    /**
+     * Deleted Rooms List
+     */
     public function deleted()
     {
-        $rooms = Room::onlyTrashed()->get();
+        $rooms = Room::onlyTrashed()->with('ward')->latest()->get();
+
         return view('admin.rooms.deleted', compact('rooms'));
     }
 
-    //restore
+    /**
+     * Restore Deleted Room
+     */
     public function restore($id)
     {
         Room::onlyTrashed()->findOrFail($id)->restore();
-        return redirect()->route('admin.rooms.index');
+
+        return redirect()
+            ->route('admin.rooms.index')
+            ->with('success', 'Room restored successfully');
     }
 
-    //forcedelete
+    /**
+     * Permanently Delete Room
+     */
     public function forceDelete($id)
     {
         Room::onlyTrashed()->findOrFail($id)->forceDelete();
-        return redirect()->route('admin.rooms.deleted');
+
+        return redirect()
+            ->route('admin.rooms.deleted')
+            ->with('success', 'Room permanently deleted');
     }
-
-
 
 
     /* ============================================================

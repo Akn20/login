@@ -34,12 +34,13 @@ class WardController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'ward_name' => 'required|string|max:255',
+            'ward_name' => 'required|string|max:255|unique:wards,ward_name',
             'ward_type' => 'required|string|max:100',
             'floor_number' => 'required|integer|min:0',
-            'total_beds' => 'required|integer|min:1',
             'status' => 'required|boolean',
         ]);
+
+        $validated['total_beds'] = 0; // system controlled
 
         Ward::create($validated);
 
@@ -73,10 +74,9 @@ class WardController extends Controller
         $ward = Ward::findOrFail($id);
 
         $validated = $request->validate([
-            'ward_name' => 'required|string|max:255',
+            'ward_name' => 'required|string|max:255|unique:wards,ward_name',
             'ward_type' => 'required|string|max:100',
             'floor_number' => 'required|integer|min:0',
-            'total_beds' => 'required|integer|min:1',
             'status' => 'required|boolean',
         ]);
 
