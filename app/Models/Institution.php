@@ -92,4 +92,8 @@ class Institution extends Model
             'module_id'
         );
     }
+     public function geofences()
+    {
+        return $this->hasOne(Geofence::class);
+    }
 }
