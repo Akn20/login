@@ -19,7 +19,6 @@
     </div>
 
 
-{{-- Error 
     @if ($errors->any())
     <div class="alert alert-danger">
         <ul class="mb-0">
@@ -28,30 +27,6 @@
             @endforeach
         </ul>
     </div>
-@endif
---}}
-
-@if ($errors->any())
-<div class="modal fade show" id="errorModal" tabindex="-1" style="display:block;" aria-modal="true" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-danger">Validation Errors</h5>
-      </div>
-      <div class="modal-body">
-        <ul class="mb-0">
-          @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <a href="{{ url()->current() }}" class="btn btn-primary">OK</a>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-backdrop fade show"></div>
 @endif
 
 

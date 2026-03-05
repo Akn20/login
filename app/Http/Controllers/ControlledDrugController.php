@@ -352,8 +352,192 @@ class ControlledDrugController extends Controller
 
     //API Functions for mobile app
 
+    public function apiIndex()
+    {
+        $drugs = ControlledDrug::
+            with('vendor:id,vendor_name')
+            ->latest()
+            ->get();
 
+        return response()->json([
+            'success' => true,
+            'message' => 'Controlled drugs fetched',
+            'data' => $drugs
+        ]);
+    }
 
+    public function apiShow($id)
+    {
+        $drug = ControlledDrug::
+            with('vendor:id,vendor_name')
+            ->where('controlled_drug_id', $id)
+            ->firstOrFail();
 
+        return response()->json([
+            'success' => true,
+            'data' => $drug
+        ]);
+    }
+
+    public function apiStore(Request $request)
+    {
+        $drug = ControlledDrug::create([
+
+            'controlled_drug_id' => Str::uuid(),
+
+            'drug_name' => $request->drug_name,
+
+            'batch_number' => $request->batch_number,
+
+            'expiry_date' => $request->expiry_date,
+
+            'stock_quantity' => $request->stock_quantity,
+
+            'supplier_id' => $request->supplier_id,
+
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug created',
+            'data' => $drug
+        ]);
+    }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $drug = ControlledDrug::
+            where('controlled_drug_id', $id)
+            ->firstOrFail();
+
+        $drug->update([
+
+            'drug_name' => $request->drug_name,
+
+            'batch_number' => $request->batch_number,
+
+            'expiry_date' => $request->expiry_date,
+
+            'stock_quantity' => $request->stock_quantity,
+
+            'supplier_id' => $request->supplier_id,
+
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug updated',
+            'data' => $drug
+        ]);
+    }
+
+    public function apiDestroy($id)
+    {
+        $drug = ControlledDrug::
+            where('controlled_drug_id', $id)
+            ->firstOrFail();
+
+        $drug->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug deleted'
+        ]);
+    }
+
+    public function apiTrash()
+    {
+        $drugs = ControlledDrug::
+            onlyTrashed()
+            ->with('vendor:id,vendor_name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $drugs
+        ]);
+    }
+
+    public function apiRestore($id)
+    {
+        $drug = ControlledDrug::
+            withTrashed()
+            ->where('controlled_drug_id', $id)
+            ->firstOrFail();
+
+        $drug->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug restored'
+        ]);
+    }
+
+    public function apiForceDelete($id)
+    {
+        $drug = ControlledDrug::
+            withTrashed()
+            ->where('controlled_drug_id', $id)
+            ->firstOrFail();
+
+        $drug->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug permanently deleted'
+        ]);
+    }
+
+    public function apiDispense()
+    {
+        $records = ControlledDrugDispense::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dispense records fetched',
+            'data' => $records
+        ]);
+    }
+
+    public function apiStoreDispense(Request $request)
+    {
+        $request->validate([
+            'controlled_drug_id' => 'required',
+            'patient_id' => 'required',
+            'prescription_id' => 'required',
+            'quantity_dispensed' => 'required|integer',
+            'dispense_date' => 'required|date',
+            'pharmacist_id' => 'required'
+        ]);
+
+        $dispense = ControlledDrugDispense::create([
+            'dispense_id' => Str::uuid(),
+            'controlled_drug_id' => $request->controlled_drug_id,
+            'patient_id' => $request->patient_id,
+            'prescription_id' => $request->prescription_id,
+            'quantity_dispensed' => $request->quantity_dispensed,
+            'dispense_date' => $request->dispense_date,
+            'pharmacist_id' => $request->pharmacist_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug dispensed successfully',
+            'data' => $dispense
+        ]);
+    }
+
+    public function apiDrugLog()
+    {
+        $logs = ControlledDrugLog::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Drug logs fetched',
+            'data' => $logs
+        ]);
+    }
 
 }

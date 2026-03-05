@@ -25,11 +25,9 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
-use App\Http\Controllers\Admin\Pharmacy\GrnController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\ExpiryController;
-
-/* Login API */
-Route::post('login', [SignInController::class, 'apiLogin']);
 
 /* Religion */
 
@@ -195,8 +193,6 @@ Route::prefix('pharmacy')->group(function () {
 });
 
 
-//Vendor api
-
 
 
 /* Vendor API */
@@ -216,29 +212,11 @@ Route::prefix('vendors')->group(
 
         Route::delete('/{id}', [VendorController::class, 'apiDestroy']);
 
-        Route::post('/restore/{id}', [VendorController::class, 'apiRestore']);
-
-        Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
-
     }
 );
-
-// inventory management api routes
-
-Route::prefix('inventory')->group(function () {
-
-    Route::get('/items', [ItemApiController::class, 'index']);
-    Route::post('/items', [ItemApiController::class, 'store']);
-
-    Route::get('/purchase-orders', [PurchaseOrderApiController::class, 'index']);
-    Route::post('/purchase-orders', [PurchaseOrderApiController::class, 'store']);
-
-    // Route::get('/grns', [GrnApiController::class, 'index']);
-    // Route::post('/grns', [GrnApiController::class, 'store']);
-});
-Route::get('/vendors', function () {
-    return \App\Models\Vendor::select('id', 'vendor_name')->get();
-});
+// Route::get('/vendors', function () {
+//     return \App\Models\Vendor::select('id', 'vendor_name')->get();
+// });
 
 // Bed
 
@@ -268,26 +246,41 @@ Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus
 
 Route::prefix('pharmacy')->group(function () {
 
-    Route::get('/grn', [GrnController::class, 'apiIndex']);      // list
-    Route::post('/grn', [GrnController::class, 'apiStore']);     // create
-    Route::get('/grn/{id}', [GrnController::class, 'apiShow']);  // single view
-    Route::put('/grn/{id}', [GrnController::class, 'apiUpdate']); // update
-    Route::delete('/grn/{id}', [GrnController::class, 'apiDestroy']); // soft delete
+    Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);      // list
+    Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);     // create
+    Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);  // single view
+    Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']); // update
+    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']); // soft delete
 
-    Route::get('/grn-trash', [GrnController::class, 'apiTrash']); // trash list
-    Route::put('/grn-trash/{id}/restore', [GrnController::class, 'apiRestore']); // restore
-    Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'apiForceDelete']); // force delete
+    Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']); // trash list
+    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']); // restore
+    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']); // force delete
 
-    Route::post('/grn/{id}/verify', [GrnController::class, 'apiVerify']); // verify
-    Route::post('/grn/{id}/reject', [GrnController::class, 'apiReject']); // reject
+    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']); // verify
+    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']); // reject
+});
+/*
+|--------------------------------------------------------------------------
+| Expiry Management API
+|--------------------------------------------------------------------------
+*/
+Route::prefix('expiry')->group(function () {
+    Route::get('/', [ExpiryController::class, 'apiIndex']); 
+    Route::get('/{batchId}', [ExpiryController::class, 'apiShow']);
+    Route::post('/mark-expired/{batchId}', [ExpiryController::class, 'apiMarkExpired']);
+    Route::post('/return-to-vendor/{batchId}', [ExpiryController::class, 'apiReturnToVendor']);
+    Route::post('/approve/{batchId}', [ExpiryController::class, 'apiApprove']);
+    Route::post('/complete/{batchId}', [ExpiryController::class, 'apiComplete']);
+    Route::get('/trash/list', [ExpiryController::class, 'apiTrash']);
+    Route::post('/restore/{id}', [ExpiryController::class, 'apiRestore']);        
+    Route::delete('/force-delete/{id}', [ExpiryController::class, 'apiForceDelete']); 
 });
 
 
-use App\Http\Controllers\ControlledDrugController;
 
 /*
 |--------------------------------------------------------------------------
-| Controlled Drug API Routes
+| Controlled Drugs API
 |--------------------------------------------------------------------------
 */
 
@@ -303,31 +296,47 @@ Route::prefix('controlled-drugs')->group(function () {
 
     Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
 
+    Route::get('/trash/list', [ControlledDrugController::class, 'apiTrash']);
+
+    Route::post('/restore/{id}', [ControlledDrugController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [ControlledDrugController::class, 'apiForceDelete']);
 });
 
 
-Route::get(
-    '/controlled-drugs/{id}/dispense',
-    [ControlledDrugController::class, 'apiDispenseRecords']
-);
-
-Route::get(
-    '/controlled-drugs/{id}/logs',
-    [ControlledDrugController::class, 'apiLogs']
-);
-    /*
+/*
 |--------------------------------------------------------------------------
-| Controlled Drug API Routes
+| Dispense API
 |--------------------------------------------------------------------------
 */
-Route::prefix('expiry')->group(function () {
-    Route::get('/', [ExpiryController::class, 'apiIndex']); 
-    Route::get('/{batchId}', [ExpiryController::class, 'apiShow']);
-    Route::post('/mark-expired/{batchId}', [ExpiryController::class, 'apiMarkExpired']);
-    Route::post('/return-to-vendor/{batchId}', [ExpiryController::class, 'apiReturnToVendor']);
-    Route::post('/approve/{batchId}', [ExpiryController::class, 'apiApprove']);
-    Route::post('/complete/{batchId}', [ExpiryController::class, 'apiComplete']);
-    Route::get('/trash/list', [ExpiryController::class, 'apiTrash']);
-    Route::post('/restore/{id}', [ExpiryController::class, 'apiRestore']);        
-    Route::delete('/force-delete/{id}', [ExpiryController::class, 'apiForceDelete']); 
-});
+
+Route::get(
+    '/controlled-drug-dispense',
+    [ControlledDrugController::class, 'apiDispense']
+);
+
+Route::post(
+    '/controlled-drug-dispense',
+    [ControlledDrugController::class, 'apiStoreDispense']
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Drug Logs API
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/controlled-drug-log',
+    [ControlledDrugController::class, 'apiDrugLog']
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Active Vendors for Dropdown
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/vendors-active', [VendorController::class, 'apiActiveVendors']);
