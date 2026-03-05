@@ -447,23 +447,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     });
 
-        /*
-        |----------------------------------------------------------------------
-        | Pharmacy: Return
-        |----------------------------------------------------------------------
-        */
-        Route::prefix('returns')->name('returns.')->group(function () {
-            Route::get('/', [ReturnController::class, 'index'])->name('index');
-            Route::get('/create', [ReturnController::class, 'create'])->name('create');
-            Route::post('/store', [ReturnController::class, 'store'])->name('store');
-            Route::get('/show/{id}', [ReturnController::class, 'show'])->name('show');
-            Route::get('/edit/{id}', [ReturnController::class, 'edit'])->name('edit');
-            Route::post('/update/{id}', [ReturnController::class, 'update'])->name('update');
-            Route::delete('/delete/{id}', [ReturnController::class, 'destroy'])->name('delete');
-            Route::get('/trash', [ReturnController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id}', [ReturnController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [ReturnController::class, 'forceDelete'])->name('forceDelete');
-        });
+        
 
         /*
         |----------------------------------------------------------------------
