@@ -375,7 +375,7 @@
                             <span class="nxl-micon"><i class="feather-copy"></i></span>
                             <span class="nxl-mtext">Duplicate Patients</span>
                         </a>
-                    </li>
+                    </li>   
                     </ul>
                 </li>
 
