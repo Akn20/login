@@ -25,6 +25,8 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\Admin\FaceRecognitionController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
 /* Religion */
@@ -173,7 +175,9 @@ Route::get('/test-api', function () {
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
 
-
+//leave types api
+// Leave Types API
+Route::get('/leave-types', [LeaveTypeController::class, 'apiIndex']);
 
 
 // Leave Mapping API

@@ -128,10 +128,23 @@ public function apiStore(Request $request)
     $data = $request->validate([
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
+
         'employee_status' => 'required|array',
+        'designations' => 'required|array',
+
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
         'accrual_value' => 'required|integer',
+
         'leave_nature' => 'required|in:Paid,Unpaid',
+
+        'carry_forward_allowed' => 'nullable|boolean',
+        'carry_forward_limit' => 'nullable|integer',
+        'carry_forward_expiry_days' => 'nullable|integer',
+
+        'min_leave_per_application' => 'nullable|integer',
+        'max_leave_per_application' => 'nullable|integer',
+
+        'status' => 'required|in:active,inactive',
     ]);
 
     $mapping = LeaveMapping::create($data);
@@ -154,13 +167,26 @@ public function apiUpdate(Request $request, $id)
         ], 404);
     }
 
-   $data = $request->validate([
+  $data = $request->validate([
     'leave_type_id' => 'sometimes|uuid',
     'priority' => 'sometimes|integer',
+
     'employee_status' => 'sometimes|array',
+    'designations' => 'sometimes|array',
+
     'accrual_frequency' => 'sometimes|in:Monthly,Yearly,Event Based',
     'accrual_value' => 'sometimes|integer',
+
     'leave_nature' => 'sometimes|in:Paid,Unpaid',
+
+    'carry_forward_allowed' => 'nullable|boolean',
+    'carry_forward_limit' => 'nullable|integer',
+    'carry_forward_expiry_days' => 'nullable|integer',
+
+    'min_leave_per_application' => 'nullable|integer',
+    'max_leave_per_application' => 'nullable|integer',
+
+    'status' => 'sometimes|in:active,inactive',
 ]);
 
     $mapping->update($data);
