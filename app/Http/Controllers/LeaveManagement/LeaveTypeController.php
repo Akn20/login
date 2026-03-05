@@ -44,7 +44,7 @@ class LeaveTypeController extends Controller
         $validated = $request->validate(
         [
             // TC_LTM_001 & TC_LTM_002
-            'display_name'        => 'required|string|max:255|unique:leave_types,display_name',
+            'display_name'        => 'required|string|max:255|unique:leave_types,display_name|regex:/^[A-Za-z\s]+$/',
             'description'         => 'nullable|string|max:1000',
 
             // TC_LTM_003
@@ -74,10 +74,11 @@ class LeaveTypeController extends Controller
             'count_holidays'      => 'required|in:0,1',
 
             // TC_LTM_006
-'attendance_code' => 'nullable|string|max:10|unique:leave_types,attendance_code',
+'attendance_code' => 'required|string|max:10|unique:leave_types,attendance_code',
         ],
         [
             'display_name.unique' => 'Leave Type already exists.',
+            'display_name.regex' => 'Leave Type name can only contain letters and spaces.',
             'sandwich_applies_on.required_if' =>
                 'Select where sandwich rule applies when enabled.',
             'approval_level.required_if' =>
@@ -124,7 +125,7 @@ class LeaveTypeController extends Controller
         $leaveType = LeaveType::findOrFail($id);
 
         $validated = $request->validate([
-            'display_name' => 'required|string|max:255',
+            'display_name' => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
             'description' => 'nullable|string',
             'allow_half_day' => 'required|boolean',
             'min_leave_unit' => 'required|numeric',
@@ -137,7 +138,7 @@ class LeaveTypeController extends Controller
             'approval_level' => 'required|string',
             'allow_backdate' => 'required|boolean',
             'max_backdate_days' => 'nullable|integer',
-            'attendance_code' => 'nullable|string|max:50',
+            'attendance_code' => 'required|string|max:50',
         ]);
 
         // ✅ Apply same Half-Day logic in update

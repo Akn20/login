@@ -282,7 +282,7 @@
         <input type="text"
                name="attendance_code"
                class="form-control"
-               value="{{ old('attendance_code', $leaveType->attendance_code ?? '') }}">
+               value="{{ old('attendance_code', $leaveType->attendance_code ?? '') }}" required >
     </div>
 </div>
 
