@@ -15,50 +15,49 @@ class LeaveMappingController extends Controller
         return view('admin.Leave_Management.leave_mappings.index', compact('mappings'));
     }
 
-    public function create()
-    {
-        $leaveTypes = LeaveType::all(); 
-        return view('admin.Leave_Management.leave_mappings.create', compact('leaveTypes'));
-    }
-
-   public function store(Request $request)
+   public function create()
 {
-    // Sync status checkbox
-    $request->merge(['status' => $request->has('status') ? 'active' : 'inactive']);
+    $leaveTypes = \App\Models\LeaveType::all();
+    // Fetch unique designation strings currently assigned to staff
+    $designations = \App\Models\Staff::distinct()->pluck('designation'); 
     
-    // Handle checkboxes that might be missing from the request
+    return view('admin.Leave_Management.leave_mappings.create', compact('leaveTypes', 'designations'));
+}
+
+public function store(Request $request)
+{
     $request->merge([
+        'status' => $request->has('status') ? 'active' : 'inactive',
         'carry_forward_allowed' => $request->has('carry_forward_allowed'),
-        'encashment_allowed' => $request->has('encashment_allowed'),
     ]);
 
     $data = $request->validate([
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
         'employee_status' => 'required|array', 
+        'designations' => 'required|array', // New validation
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based', 
-        'accrual_value' => 'required|integer', // This fixes the error
+        'accrual_value' => 'required|integer',
         'leave_nature' => 'required|in:Paid,Unpaid',
         'status' => 'required|in:active,inactive',
-        'carry_forward_allowed' => 'boolean',
-        'carry_forward_limit' => 'nullable|integer',
-        'carry_forward_expiry_days' => 'nullable|integer',
-        'min_leave_per_application' => 'nullable|integer',
-        'max_leave_per_application' => 'nullable|integer',
     ]);
 
-    LeaveMapping::create($data);
+    \App\Models\LeaveMapping::create($data);
 
     return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created!');
 }
-
     public function edit($id)
     {
         $mapping = LeaveMapping::findOrFail($id);
         $leaveTypes = LeaveType::all(); 
         return view('admin.Leave_Management.leave_mappings.edit', compact('mapping', 'leaveTypes'));
     }
-
+public function show($id)
+{
+    // Eager load leaveType to show the name in the view
+    $mapping = LeaveMapping::with('leaveType')->findOrFail($id);
+    return view('admin.Leave_Management.leave_mappings.show', compact('mapping'));
+}
    public function update(Request $request, $id)
 {
     $mapping = LeaveMapping::findOrFail($id);
@@ -134,10 +133,23 @@ public function apiStore(Request $request)
     $data = $request->validate([
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
+
         'employee_status' => 'required|array',
+        'designations' => 'required|array',
+
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
         'accrual_value' => 'required|integer',
+
         'leave_nature' => 'required|in:Paid,Unpaid',
+
+        'carry_forward_allowed' => 'nullable|boolean',
+        'carry_forward_limit' => 'nullable|integer',
+        'carry_forward_expiry_days' => 'nullable|integer',
+
+        'min_leave_per_application' => 'nullable|integer',
+        'max_leave_per_application' => 'nullable|integer',
+
+        'status' => 'required|in:active,inactive',
     ]);
 
     $mapping = LeaveMapping::create($data);
@@ -160,13 +172,26 @@ public function apiUpdate(Request $request, $id)
         ], 404);
     }
 
-   $data = $request->validate([
+  $data = $request->validate([
     'leave_type_id' => 'sometimes|uuid',
     'priority' => 'sometimes|integer',
+
     'employee_status' => 'sometimes|array',
+    'designations' => 'sometimes|array',
+
     'accrual_frequency' => 'sometimes|in:Monthly,Yearly,Event Based',
     'accrual_value' => 'sometimes|integer',
+
     'leave_nature' => 'sometimes|in:Paid,Unpaid',
+
+    'carry_forward_allowed' => 'nullable|boolean',
+    'carry_forward_limit' => 'nullable|integer',
+    'carry_forward_expiry_days' => 'nullable|integer',
+
+    'min_leave_per_application' => 'nullable|integer',
+    'max_leave_per_application' => 'nullable|integer',
+
+    'status' => 'sometimes|in:active,inactive',
 ]);
 
     $mapping->update($data);

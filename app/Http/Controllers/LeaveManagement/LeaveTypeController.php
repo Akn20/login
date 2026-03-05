@@ -210,4 +210,18 @@ class LeaveTypeController extends Controller
             ->route('admin.leave-type.deleted')
             ->with('success', 'Leave Type permanently deleted!');
     }
+
+
+
+    /**
+     * API Endpoint for Leave Types
+     */
+public function apiIndex()
+ {
+     $leaveTypes = \App\Models\LeaveType::select('id','display_name as name')->get();
+
+     return response()->json([
+         'status' => true,
+         'data' => $leaveTypes   ]);
+ }
 }

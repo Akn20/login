@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\Department;
+use App\Models\Designation;
 
 class StaffManagementController extends Controller
 {
@@ -33,13 +35,37 @@ class StaffManagementController extends Controller
         return view('hr.staff_management.index', compact('staffManagement'));
     }
 
-    public function create()
-    {
-        $staffManagement = null;
-        $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
+    // public function create()
+    // {
+    //     $staffManagement = null;
+    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
 
-        return view('hr.staff_management.create', compact('staffManagement', 'roles'));
-    }
+    //     return view('hr.staff_management.create', compact('staffManagement', 'roles'));
+    // }
+
+public function create()
+{
+    $staffManagement = null;
+
+    $roles = Roles::where('status', 'active')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    $departments = Department::where('status', 1)
+        ->orderBy('department_name', 'asc')
+        ->get();
+
+    $designations = Designation::where('status', 1)
+        ->orderBy('designation_name', 'asc')
+        ->get();
+
+    return view('hr.staff_management.create', compact(
+        'staffManagement',
+        'roles',
+        'departments',
+        'designations'
+    ));
+}
 
     public function store(Request $request)
     {
@@ -88,13 +114,36 @@ class StaffManagementController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        $staffManagement = Staff::findOrFail($id);
-        $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
+    // public function edit($id)
+    // {
+    //     $staffManagement = Staff::findOrFail($id);
+    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
 
-        return view('hr.staff_management.edit', compact('staffManagement', 'roles'));
-    }
+    //     return view('hr.staff_management.edit', compact('staffManagement', 'roles'));
+    // }
+    public function edit($id)
+{
+    $staffManagement = Staff::findOrFail($id);
+
+    $roles = Roles::where('status', 'active')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    $departments = Department::where('status', 1)
+        ->orderBy('department_name', 'asc')
+        ->get();
+
+    $designations = Designation::where('status', 1)
+        ->orderBy('designation_name', 'asc')
+        ->get();
+
+    return view('hr.staff_management.edit', compact(
+        'staffManagement',
+        'roles',
+        'departments',
+        'designations'
+    ));
+}
 
     public function update(Request $request, $id)
     {

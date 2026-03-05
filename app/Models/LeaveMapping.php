@@ -14,25 +14,17 @@ class LeaveMapping extends Model
     public $incrementing = false; 
 
    protected $fillable = [
-    'leave_type_id', 
-    'priority', 
-    'employee_status', 
-    'accrual_frequency', 
-    'accrual_value', 
-    'leave_nature', 
-    'carry_forward_allowed', 
-    'carry_forward_limit', 
-    'carry_forward_expiry_days',
-    'min_leave_per_application',
-    'max_leave_per_application',
-    'status'
+    'leave_type_id', 'priority', 'employee_status', 'designations', 
+    'accrual_frequency', 'accrual_value', 'leave_nature', 
+    'carry_forward_allowed', 'carry_forward_limit', 'carry_forward_expiry_days',
+    'min_leave_per_application', 'max_leave_per_application', 'status'
 ];
 
-    protected $casts = [
-        'employee_status' => 'array', // Automatically handles JSON for multi-select [cite: 82, 171]
-        'carry_forward_allowed' => 'boolean', 
-        'encashment_allowed' => 'boolean', 
-    ];
+protected $casts = [
+    'employee_status' => 'array',
+    'designations' => 'array',
+    'carry_forward_allowed' => 'boolean',
+];
 
     protected static function boot()
     {

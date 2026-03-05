@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Route;
 /* Login API */
 Route::post('/login', [SignInController::class, 'apiLogin']);
 
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
 
@@ -185,7 +187,9 @@ Route::get('/test-api', function () {
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
 
-
+//leave types api
+// Leave Types API
+Route::get('/leave-types', [LeaveTypeController::class, 'apiIndex']);
 
 
 // Leave Mapping API
