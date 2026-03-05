@@ -37,5 +37,13 @@ class ControlledDrugDispense extends Model
         return $this->belongsTo(ControlledDrug::class, 'controlled_drug_id');
     }
 
+    public function controlledDrug()
+    {
+        return $this->belongsTo(
+            ControlledDrug::class,
+            'controlled_drug_id',
+            'controlled_drug_id'
+        );
+    }
 }
 

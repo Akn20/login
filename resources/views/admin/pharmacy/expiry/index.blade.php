@@ -23,11 +23,7 @@
             </ul>
         </div>
 
-        <div class="page-header-right ms-auto d-flex gap-2">
-            <a href="{{ route('admin.expiry.trash') }}" class="btn btn-neutral">
-                Deleted Records
-            </a>
-        </div>
+        
     </div>
 
     {{-- Main Content --}}
