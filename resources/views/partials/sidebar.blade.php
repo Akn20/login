@@ -428,13 +428,7 @@
                             </a>
                         </li>
 
-                        {{-- Return Management --}}
-                        <!-- <li class="nxl-item">
-                            <a href="{{ route('admin.returns.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
-                                <span class="nxl-mtext">Return Management</span>
-                            </a>
-                        </li> -->
+                       
                         {{-- Controlled Drug Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
