@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('page-title', 'Edit Bed | ' . config('app.name'))
 
 @section('content')
 
@@ -13,7 +15,7 @@
                 @csrf
                 @method('PUT')
 
-                @include('beds.form')
+                @include('admin.beds.form')
 
                
             </form>

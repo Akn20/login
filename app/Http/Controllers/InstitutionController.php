@@ -59,7 +59,15 @@ class InstitutionController extends Controller
         $institution->status = !$institution->status;
         $institution->save();
 
-        return back()->with('success', 'Status updated successfully');
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $institution->status ? 'active' : 'inactive',
+                'is_active' => (bool) $institution->status,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status updated successfully');
     }
 
     /**
@@ -167,7 +175,7 @@ class InstitutionController extends Controller
         $organizations = Organization::where('status', 1)->get();
         $modules = Module::orderBy('priority')->get();
 
-        return view('institutions.edit', compact(
+        return view('admin.institutions.edit', compact(
             'institution',
             'organizations',
             'modules'
@@ -259,7 +267,7 @@ class InstitutionController extends Controller
         $institution = Institution::with(['organization', 'modules'])
             ->findOrFail($id);
 
-        return view('institutions.show', compact('institution'));
+        return view('admin.institutions.show', compact('institutions'));
     }
 
     /**
@@ -272,7 +280,7 @@ class InstitutionController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('institutions.deleted', compact('institutions'));
+        return view('admin.institutions.deleted', compact('institutions'));
     }
 
     /**
@@ -473,26 +481,45 @@ class InstitutionController extends Controller
             'status' => true,
             'message' => 'Institution restored successfully'
         ]);
-            
+
     }
     public function apiToggleStatus($id)
     {
         $institution = Institution::find($id);
-    
+
         if (!$institution) {
             return response()->json([
                 'status' => false,
                 'message' => 'Institution not found'
             ], 404);
         }
-    
+
         $institution->status = !$institution->status;
         $institution->save();
-    
+
         return response()->json([
             'status' => true,
             'message' => 'Status updated successfully',
             'data' => $institution
         ]);
     }
+    public function apiForceDelete($id)
+    {
+        $institution = Institution::onlyTrashed()->find($id);
+
+        if (!$institution) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Institution not found in trash'
+            ], 404);
+        }
+
+        $institution->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Institution permanently deleted successfully'
+        ]);
+    }
+
 }

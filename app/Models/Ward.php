@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Ward extends Model
 {
     use SoftDeletes;
-
+    public $incrementing = false;
+protected $keyType = 'string';
     protected $fillable = [
         'ward_name',
         'ward_type',
@@ -30,6 +31,16 @@ class Ward extends Model
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
+    }
+
+    public function beds()
+    {
+        return $this->hasMany(Bed::class);
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
     }
 
 }

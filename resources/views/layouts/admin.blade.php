@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/select2-theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/css/tom-select.bootstrap5.min.css">
     @stack('styles')
     @include('partials.head')
     <style>
@@ -170,8 +170,7 @@
         });
         </script>
                         
-        });
-</script>
+      
 </body>
 
 </html>

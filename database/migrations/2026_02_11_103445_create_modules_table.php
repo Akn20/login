@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->string('type');
             $table->string('access_for');
             $table->boolean('status')->default(1);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
