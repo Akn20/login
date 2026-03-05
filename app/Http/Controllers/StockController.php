@@ -163,7 +163,9 @@ class StockController extends Controller
     //API
     public function apiIndex()
     {
-        $batches = MedicineBatch::with('medicine')->latest()->get();
+         $batches = MedicineBatch::with(['medicine','latestExpiryLog'])
+            ->latest()
+            ->get();
         return ApiResponse::success($batches, 'Stock list retrieved successfully');
     }
 
