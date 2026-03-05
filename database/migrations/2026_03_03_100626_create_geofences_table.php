@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('geofences', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('institution_id');
             $table->string('name'); // Hospital name
             $table->decimal('center_lat', 10, 7);
             $table->decimal('center_lng', 10, 7);
             $table->integer('radius')->default(100); // meters
             $table->boolean('status')->default(true);
             $table->timestamps();
+
+             $table->foreign('institution_id')
+          ->references('id')
+          ->on('institutions')
+          ->onDelete('cascade');
         });
     }
 

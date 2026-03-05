@@ -21,10 +21,16 @@ class Geofence extends Model
     }
 
     protected $fillable = [
+        'institution_id',
         'name',
         'center_lat',
         'center_lng',
         'radius',
         'status',
     ];
+
+     public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
 }
