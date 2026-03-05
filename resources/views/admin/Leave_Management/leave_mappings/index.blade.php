@@ -58,13 +58,18 @@
                                                 <span class="text-danger">No</span> {{-- Red for No [cite: 157] --}}
                                             @endif
                                         </td>
-                                                                            <td>
-    @foreach($mapping->designations ?? [] as $role)
-        <span class="badge bg-soft-info text-info">{{ ucfirst($role) }}</span>
-    @endforeach
-</td>
-    
+                                        <td>
+                                        @foreach($mapping->designations ?? [] as $role)
+                                        <span class="badge bg-soft-info text-info">{{ ucfirst($role) }}</span>
+                                        @endforeach
+                                        </td>
                                         <td class="text-end">
+                                            <div class="d-flex gap-2 justify-content-end">
+                                        {{-- New View Button --}}
+                                        <a href="{{ route('admin.leave-mappings.show', $mapping->id) }}" 
+                                        class="btn btn-outline-secondary btn-icon rounded-circle btn-sm" title="View Details">
+                                        <i class="feather-eye"></i>
+                                            </a>
                                             <div class="d-flex justify-content-end gap-2">
                                                 <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">

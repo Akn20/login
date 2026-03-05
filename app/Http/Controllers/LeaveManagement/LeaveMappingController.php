@@ -52,7 +52,12 @@ public function store(Request $request)
         $leaveTypes = LeaveType::all(); 
         return view('admin.Leave_Management.leave_mappings.edit', compact('mapping', 'leaveTypes'));
     }
-
+public function show($id)
+{
+    // Eager load leaveType to show the name in the view
+    $mapping = LeaveMapping::with('leaveType')->findOrFail($id);
+    return view('admin.Leave_Management.leave_mappings.show', compact('mapping'));
+}
    public function update(Request $request, $id)
 {
     $mapping = LeaveMapping::findOrFail($id);

@@ -216,13 +216,12 @@ class LeaveTypeController extends Controller
     /**
      * API Endpoint for Leave Types
      */
-//     public function apiIndex()
-// {
-//     $leaveTypes = \App\Models\LeaveType::select('id','display_name as name')->get();
+public function apiIndex()
+ {
+     $leaveTypes = \App\Models\LeaveType::select('id','display_name as name')->get();
 
-//     return response()->json([
-//         'status' => true,
-//         'data' => $leaveTypes
-//     ]);
-// }
+     return response()->json([
+         'status' => true,
+         'data' => $leaveTypes   ]);
+ }
 }
