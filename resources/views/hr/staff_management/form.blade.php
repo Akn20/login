@@ -51,8 +51,16 @@
         Department <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="department" value="{{ old('department', $staffManagement->department ?? '') }}"
-        class="form-control @error('department') is-invalid @enderror" placeholder="Enter Department" required>
+    <select name="department" class="form-select @error('department') is-invalid @enderror">
+        <option value="">Select Department</option>
+
+        @foreach($departments as $dept)
+            <option value="{{ $dept->department_name }}"
+                {{ old('department', $staffManagement->department ?? '') == $dept->department_name ? 'selected' : '' }}>
+                {{ $dept->department_name }}
+            </option>
+        @endforeach
+    </select>
 
     @error('department')
         <div class="invalid-feedback">{{ $message }}</div>
@@ -65,8 +73,16 @@
         Designation <span class="text-danger">*</span>
     </label>
 
-    <input type="text" name="designation" value="{{ old('designation', $staffManagement->designation ?? '') }}"
-        class="form-control @error('designation') is-invalid @enderror" placeholder="Enter Designation">
+    <select name="designation" class="form-select @error('designation') is-invalid @enderror">
+        <option value="">Select Designation</option>
+
+        @foreach($designations as $designation)
+            <option value="{{ $designation->designation_name }}"
+                {{ old('designation', $staffManagement->designation ?? '') == $designation->designation_name ? 'selected' : '' }}>
+                {{ $designation->designation_name }}
+            </option>
+        @endforeach
+    </select>
 
     @error('designation')
         <div class="invalid-feedback">{{ $message }}</div>

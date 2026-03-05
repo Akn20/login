@@ -24,7 +24,7 @@
     @csrf
     @method('PUT')
 
-    @include('institutions.form')
+    @include('admin.institutions.form')
 
     <div class="text-end mt-3">
         <button type="submit" class="btn btn-primary">

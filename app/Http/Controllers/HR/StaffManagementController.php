@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\Department;
+use App\Models\Designation;
 
 class StaffManagementController extends Controller
 {
@@ -33,13 +35,37 @@ class StaffManagementController extends Controller
         return view('hr.staff_management.index', compact('staffManagement'));
     }
 
-    public function create()
-    {
-        $staffManagement = null;
-        $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
+    // public function create()
+    // {
+    //     $staffManagement = null;
+    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
 
-        return view('hr.staff_management.create', compact('staffManagement', 'roles'));
-    }
+    //     return view('hr.staff_management.create', compact('staffManagement', 'roles'));
+    // }
+
+public function create()
+{
+    $staffManagement = null;
+
+    $roles = Roles::where('status', 'active')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    $departments = Department::where('status', 1)
+        ->orderBy('department_name', 'asc')
+        ->get();
+
+    $designations = Designation::where('status', 1)
+        ->orderBy('designation_name', 'asc')
+        ->get();
+
+    return view('hr.staff_management.create', compact(
+        'staffManagement',
+        'roles',
+        'departments',
+        'designations'
+    ));
+}
 
     public function store(Request $request)
     {
@@ -48,7 +74,7 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:roles,id',
             'department' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
-            'joining_date' => 'required|date',
+            'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
             'mobile' => 'required|digits:10|unique:users,mobile',
             'email' => 'nullable|email|unique:users,email',
@@ -88,13 +114,36 @@ class StaffManagementController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        $staffManagement = Staff::findOrFail($id);
-        $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
+    // public function edit($id)
+    // {
+    //     $staffManagement = Staff::findOrFail($id);
+    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
 
-        return view('hr.staff_management.edit', compact('staffManagement', 'roles'));
-    }
+    //     return view('hr.staff_management.edit', compact('staffManagement', 'roles'));
+    // }
+    public function edit($id)
+{
+    $staffManagement = Staff::findOrFail($id);
+
+    $roles = Roles::where('status', 'active')
+        ->orderBy('name', 'asc')
+        ->get();
+
+    $departments = Department::where('status', 1)
+        ->orderBy('department_name', 'asc')
+        ->get();
+
+    $designations = Designation::where('status', 1)
+        ->orderBy('designation_name', 'asc')
+        ->get();
+
+    return view('hr.staff_management.edit', compact(
+        'staffManagement',
+        'roles',
+        'departments',
+        'designations'
+    ));
+}
 
     public function update(Request $request, $id)
     {
@@ -105,8 +154,13 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:roles,id',
             'department' => 'required|string|max:255',
             'designation' => 'required|string|max:255',
-            'joining_date' => 'required|date',
+            'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
+            // 'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id,
+            // 'email' => 'nullable|email|unique:users,email,' . $staff->user_id,
+            'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id . ',id',
+            'email'  => 'nullable|email|unique:users,email,' . $staff->user_id . ',id',
+
         ]);
 
         try {
@@ -123,12 +177,14 @@ class StaffManagementController extends Controller
 
                 // Update linked User if exists
                 if ($staff->user_id) {
-                    User::where('id', $staff->user_id)->update([
-                        'name' => $request->name,
-                        'role_id' => $request->role_id,
-                        'status' => strtolower($request->status),
-                    ]);
-                }
+    User::where('id', $staff->user_id)->update([
+        'name' => $request->name,
+        'mobile' => $request->mobile,
+        'email' => $request->email,
+        'role_id' => $request->role_id,
+        'status' => strtolower($request->status),
+    ]);
+}
             });
 
             return redirect()->route('hr.staff-management.index')

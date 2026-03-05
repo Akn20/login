@@ -308,36 +308,36 @@
                         </li>
 
                         {{-- Stock Transfers --}}
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
-                        Stock Transfers
-                    </a>
-                </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
+                                Stock Transfers
+                            </a>
+                        </li>
 
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
-                        Create Stock Transfer
-                    </a>
-                </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
+                                Create Stock Transfer
+                            </a>
+                        </li>
 
-                                {{-- Stock Audit --}}
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
-                        Stock Audits
-                    </a>
-                </li>
+                        {{-- Stock Audit --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
+                                Stock Audits
+                            </a>
+                        </li>
 
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
-                        New Stock Audit
-                    </a>
-                </li>
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
-                             Reports Dashboard
-                     </a>
-                </li>
-                        
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
+                                New Stock Audit
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
+                                Reports Dashboard
+                            </a>
+                        </li>
+
 
                     </ul>
                 </li>
@@ -403,33 +403,48 @@
                                 <span class="nxl-mtext">Vendor Management</span>
                             </a>
                         </li>
+                        {{-- Goods Receipt(GRN) --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.grn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+
+
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
                 {{-- Leave Management --}}
-<li class="nxl-item nxl-hasmenu">
-    <a href="javascript:void(0);" class="nxl-link">
-        <span class="nxl-micon"><i class="feather-clock"></i></span>
-        <span class="nxl-mtext">Leave Management</span>
-        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-    </a>
-    <ul class="nxl-submenu">
-        <li class="nxl-item">
-            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-sun"></i></span>
-                <span class="nxl-mtext">Weekend Holiday</span>
-            </a>
-        </li>
-
-        <li class="nxl-item">
-            <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-calendar"></i></span>
-                <span class="nxl-mtext">Holidays</span>
-            </a>
-        </li>
-
-        {{-- ✅ Leave Type (ADDED ONLY THIS PART) --}}
-        <li class="nxl-item">
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-clock"></i></span>
+                        <span class="nxl-mtext">Leave Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-sun"></i></span>
+                                <span class="nxl-mtext">Weekend Holiday</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Holidays</span>
+                            </a>
+                        </li>
+                         {{-- ✅ Leave Type (ADDED ONLY THIS PART) --}}
+            <li class="nxl-item">
             <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
                 <span class="nxl-micon">
                     <i class="feather-file-text"></i>
@@ -437,7 +452,15 @@
                 <span class="nxl-mtext">Leave Type</span>
             </a>
         </li>
-
+                        {{-- Leave Mapping  --}}
+                     <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-map"></i></span>
+                            <span class="nxl-mtext">Leave Mapping</span>
+                        </a>
+                     </li>
+                    </ul>
+                </li>
     </ul>
 </li>
 
