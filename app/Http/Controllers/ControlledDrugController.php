@@ -492,8 +492,9 @@ class ControlledDrugController extends Controller
 
     public function apiDispense()
     {
-        $records = ControlledDrugDispense::latest()->get();
-
+        $records = ControlledDrugDispense::with('controlledDrug')
+            ->latest()
+            ->get();
         return response()->json([
             'success' => true,
             'message' => 'Dispense records fetched',
@@ -531,8 +532,11 @@ class ControlledDrugController extends Controller
 
     public function apiDrugLog()
     {
-        $logs = ControlledDrugLog::latest()->get();
-
+        $logs = ControlledDrugLog::with([
+            'controlledDrug:controlled_drug_id,drug_name,batch_number'
+        ])
+            ->latest()
+            ->get();
         return response()->json([
             'success' => true,
             'message' => 'Drug logs fetched',
