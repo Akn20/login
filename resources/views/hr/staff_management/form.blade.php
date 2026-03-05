@@ -1,3 +1,4 @@
+
 <div class="mb-4">
     <label class="form-label">
         Full Name <span class="text-danger">*</span>
@@ -24,18 +25,7 @@
     @enderror
 </div>
 
-<div class="mb-4">
-    <label class="form-label">
-        Department
-    </label>
 
-    <input type="text" name="department" value="{{ old('department', $staffManagement->department ?? '') }}"
-        class="form-control @error('department') is-invalid @enderror" placeholder="Enter Department">
-
-    @error('department')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-</div>
 
 <div class="mb-4">
     <label class="form-label">
@@ -43,9 +33,9 @@
     </label>
 
     <input type="text" name="department"
-        value="{{ old('department', $staff->department ?? '') }}"
+        value="{{ old('department', $staffManagement->department ?? '') }}"
         class="form-control @error('department') is-invalid @enderror"
-        placeholder="Enter Department">
+        placeholder="Enter Department" required>
 
     @error('department')
         <div class="invalid-feedback">{{ $message }}</div>
@@ -59,7 +49,7 @@
     </label>
 
     <input type="text" name="designation"
-        value="{{ old('designation', $staff->designation ?? '') }}"
+        value="{{ old('designation', $staffManagement->designation ?? '') }}"
         class="form-control @error('designation') is-invalid @enderror"
         placeholder="Enter Designation">
 

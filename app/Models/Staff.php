@@ -18,5 +18,6 @@ class Staff extends Model
         'status',
         'department',
         'designation',
+        'role',
     ];
 }

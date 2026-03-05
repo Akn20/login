@@ -1,16 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
+use App\Http\Controllers\api\Inventory\ItemApiController;
+use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
 
 use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\StaffManagementController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
-use App\Models\Staff;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
@@ -21,12 +18,15 @@ use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\api\Inventory\ItemApiController;
-use App\Http\Controllers\api\Inventory\PurchaseOrderApiController;
-use App\Http\Controllers\Api\Inventory\GrnApiController;
+use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\WorkStatusController;
+use App\Models\Staff;
+use Illuminate\Support\Facades\Route;
+
+/* Login API */
+Route::post('/login', [SignInController::class, 'apiLogin']);
 use App\Http\Controllers\BedController;
 
 /* Login API */
@@ -74,6 +74,7 @@ Route::post('/designations', [DesignationController::class, 'apiStore']);
 Route::put('/designations/{id}', [DesignationController::class, 'apiUpdate']);
 Route::delete('/designations/{id}', [DesignationController::class, 'apiDelete']);
 
+// For After  deleted records
 /* Religion */
 
 Route::get('religions/deleted', [ReligionController::class, 'apiDeleted']);
@@ -151,12 +152,13 @@ Route::delete('/weekends/{id}/force-delete', [WeekendController::class, 'forceDe
 Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleStatus']);
 
 // Holiday
+
 Route::get('/holidays', [HolidayController::class, 'index']);
-Route::post('/holidays', [HolidayController::class, 'store']);
 Route::get('/holidays/{id}', [HolidayController::class, 'show']);
+Route::post('/holidays', [HolidayController::class, 'store']);
 Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
-Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
 Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
+Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
 Route::post('/holidays/{id}/restore', [HolidayController::class, 'restore']);
 Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDelete']);
 Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);
@@ -180,6 +182,7 @@ Route::get('/test-api', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
+// inventory management api routes
 /* Pharmacy API */
 
 Route::prefix('pharmacy')->group(function () {
@@ -255,3 +258,14 @@ Route::put('/wards/{id}', [WardController::class, 'apiUpdate']);
 Route::delete('/wards/{id}', [WardController::class, 'apiDelete']);
 Route::delete('/wards/{id}/force-delete', [WardController::class, 'apiForceDelete']);
 Route::put('/wards/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
+
+// Biometric API
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/enroll', [BiometricController::class, 'enroll']);
+    Route::post('/match', [BiometricController::class, 'match']);
+
+    Route::post('/check-in', [BiometricController::class, 'checkIn']);
+    Route::post('/check-out', [BiometricController::class, 'checkOut']);
+    Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+});
