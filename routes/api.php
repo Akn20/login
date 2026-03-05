@@ -271,9 +271,7 @@ Route::prefix('expiry')->group(function () {
     Route::post('/return-to-vendor/{batchId}', [ExpiryController::class, 'apiReturnToVendor']);
     Route::post('/approve/{batchId}', [ExpiryController::class, 'apiApprove']);
     Route::post('/complete/{batchId}', [ExpiryController::class, 'apiComplete']);
-    Route::get('/trash/list', [ExpiryController::class, 'apiTrash']);
-    Route::post('/restore/{id}', [ExpiryController::class, 'apiRestore']);        
-    Route::delete('/force-delete/{id}', [ExpiryController::class, 'apiForceDelete']); 
+    
 });
 
 
