@@ -20,6 +20,10 @@ class Staff extends Model
         'department',
         'designation',
         'role_id',
+        'document_path',
+        'basic_salary',
+        'hra',
+        'allowance',
     ];
 
     public function role()

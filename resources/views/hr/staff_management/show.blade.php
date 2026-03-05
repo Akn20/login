@@ -52,6 +52,16 @@
 
             <dt class="col-md-3">Designation</dt>
             <dd class="col-md-9">{{ $staffManagement->designation }}</dd>
+            <dt class="col-md-3">Basic Salary</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->basic_salary ?? 'Not Set' }}
+</dd><dt class="col-md-3">HRA</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->hra ?? 'Not Set' }}
+</dd><dt class="col-md-3">Allowance</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->allowance ?? 'Not Set' }}
+</dd>
 
             <dt class="col-md-3">Joining Date</dt>
             <dd class="col-md-9">
@@ -65,6 +75,17 @@
                 </span>
             </dd>   
 
+            
+    <dt class="col-md-3">Document</dt>
+<dd class="col-md-9">
+@if($staffManagement->document_path)
+<a href="{{ asset('storage/'.$staffManagement->document_path) }}" target="_blank">
+    View Document
+</a>
+@else
+No Document Uploaded
+@endif
+</dd>
         </dl>
     </div>
 </div>
