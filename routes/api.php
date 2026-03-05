@@ -26,6 +26,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\GrnController;
+use App\Http\Controllers\ExpiryController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
@@ -314,3 +315,19 @@ Route::get(
     '/controlled-drugs/{id}/logs',
     [ControlledDrugController::class, 'apiLogs']
 );
+    /*
+|--------------------------------------------------------------------------
+| Controlled Drug API Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('expiry')->group(function () {
+    Route::get('/', [ExpiryController::class, 'apiIndex']); 
+    Route::get('/{batchId}', [ExpiryController::class, 'apiShow']);
+    Route::post('/mark-expired/{batchId}', [ExpiryController::class, 'apiMarkExpired']);
+    Route::post('/return-to-vendor/{batchId}', [ExpiryController::class, 'apiReturnToVendor']);
+    Route::post('/approve/{batchId}', [ExpiryController::class, 'apiApprove']);
+    Route::post('/complete/{batchId}', [ExpiryController::class, 'apiComplete']);
+    Route::get('/trash/list', [ExpiryController::class, 'apiTrash']);
+    Route::post('/restore/{id}', [ExpiryController::class, 'apiRestore']);        
+    Route::delete('/force-delete/{id}', [ExpiryController::class, 'apiForceDelete']); 
+});
