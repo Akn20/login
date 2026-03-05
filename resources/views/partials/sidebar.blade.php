@@ -428,7 +428,6 @@
                             </a>
                         </li>
 
-
                         {{-- Controlled Drug Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
