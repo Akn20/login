@@ -19,40 +19,45 @@ class StaffManagementController extends Controller
     }
     public function index()
     {
-        $staffManagements = Staff::latest()->paginate(10);
+        $staffManagement = Staff::latest()->paginate(10);
 
         if (request()->wantsJson()) {
-            $staffManagements = Staff::latest()->get();
+            $staffManagement = Staff::latest()->get();
 
-            return response()->json($staffManagements);
+            return response()->json($staffManagement);
         }
 
-        return view('hr.staff_management.index', compact('staffManagements'));
+        return view('hr.staff_management.index', compact('staffManagement'));
     }
 
-    public function create()
-    {
-        return view('hr.staff_management.create');
-    }
+   public function create()
+{
+    $staffManagement = null;   // important
+    return view('hr.staff_management.create', compact('staffManagement'));
+}
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'role' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
-            'joining_date' => 'required|date',
-            'status' => 'required',
-        ]);
-
-        Staff::create([
-            'employee_id' => $this->generateEmployeeId(),
-            'name' => $request->name,
-            'role' => $request->role,
-            'department' => $request->department,
-            'joining_date' => $request->joining_date,
-            'status' => $request->status,
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+       // 'employee_id' => 'required|unique:staff,employee_id',
+        'name' => 'required',
+        'department' => 'required|string|max:255',
+        'designation' => 'required',
+        'joining_date' => 'required|date',
+       // 'joining_date' => 'required',//changed
+        'status' => 'required',
+        'role'=>'required',
+        
+    ]);
+Staff::create([
+    'employee_id' => $this->generateEmployeeId(),
+    'name' => $request->name,
+    'role' => $request->role,
+    'department' => $request->department,
+    'designation' => $request->designation,   //  ADD THIS
+    'joining_date' => $request->joining_date,
+    'status' => $request->status,
+]);
 
     return redirect()->route('hr.staff-management.index')
         ->with('success', 'Staff added successfully.');
@@ -60,9 +65,9 @@ class StaffManagementController extends Controller
 
     public function edit($id)
     {
-        $staff = Staff::findOrFail($id);
+        $staffManagement = Staff::findOrFail($id);
 
-        return view('hr.staff_management.edit', compact('staff'));
+        return view('hr.staff_management.edit', compact('staffManagement'));
     }
 
    public function update(Request $request, $id)
@@ -71,10 +76,12 @@ class StaffManagementController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'role' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
+            'role' => 'required',
+            'department' => 'required|string|max:255',
             'joining_date' => 'required|date',
             'status' => 'required',
+            'designation' => 'required',
+            
         ]);
 
         $staff->update([
@@ -83,6 +90,7 @@ class StaffManagementController extends Controller
             'department' => $request->department,
             'joining_date' => $request->joining_date,
             'status' => $request->status,
+            'designation' => $request->designation,
         ]);
 
     return redirect()->route('hr.staff-management.index')
@@ -108,7 +116,7 @@ class StaffManagementController extends Controller
 
     public function deleted()
     {
-        $staffs = Staff::onlyTrashed()->latest()->paginate(10);
+        $staffManagement = Staff::onlyTrashed()->latest()->paginate(10);
 
         if (request()->wantsJson()) {
             $staffs = Staff::onlyTrashed()->latest()->get();
@@ -119,7 +127,7 @@ class StaffManagementController extends Controller
             ]);
         }
 
-        return view('hr.staff_management.deleted', compact('staffs'));
+        return view('hr.staff_management.deleted', compact('staffManagement'));
     }
 
     public function restore($id)
@@ -156,19 +164,12 @@ class StaffManagementController extends Controller
             ->route('hr.staff-management.deleted')
             ->with('success', 'Staff permanently deleted.');
     }
+public function show($id)
+{
+    $staffManagement = Staff::findOrFail($id);
 
-    public function toggleStatus(Request $request)
-    {
-        $staff = Staff::findOrFail($request->id);
-        $staff->status = $staff->status === 'active' ? 'inactive' : 'active';
-        $staff->save();
-
-        return response()->json([
-            'success' => true,
-            'status' => $staff->status,
-        ]);
-    }
-
+    return view('hr.staff_management.show', compact('staffManagement'));
+}
     // App API Endpoints
     public function apiIndex()
     {
@@ -187,6 +188,7 @@ class StaffManagementController extends Controller
             'role' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
+            'designation' => 'required|string|max:255',
             'joining_date' => 'nullable|date',  // default DOJ for app
         ]);
 
@@ -195,6 +197,7 @@ class StaffManagementController extends Controller
             'name' => $data['name'],
             'status' => $data['status'],
             'joining_date' => $data['joining_date'] ?? now(), // default DOJ for app
+            'designation' => $data['designation'],
             'role' => $data['role'] ?? null,
             'department' => $data['department'] ?? null,
         ]);
@@ -216,6 +219,7 @@ class StaffManagementController extends Controller
             'department' => 'sometimes|nullable|string|max:255',
             'status' => 'sometimes|required|in:active,inactive',
             'joining_date' => 'sometimes|nullable|date',
+            'designation' => 'sometimes|required|string|max:255',
         ]);
 
         $staff->update($data);
