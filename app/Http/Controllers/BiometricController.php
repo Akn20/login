@@ -25,7 +25,7 @@ class BiometricController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Already enrolled'], 400);
         }
         $request->validate([
-            'file' => 'required|string', // Base64 string from phone
+            'file' => 'required|image', // Base64 string from phone
         ]);
 
         try {

@@ -20,6 +20,8 @@ use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use App\Models\Staff;
@@ -27,7 +29,6 @@ use Illuminate\Support\Facades\Route;
 
 /* Login API */
 Route::post('/login', [SignInController::class, 'apiLogin']);
-use App\Http\Controllers\BedController;
 
 /* Login API */
 Route::post('login', [SignInController::class, 'apiLogin']);
