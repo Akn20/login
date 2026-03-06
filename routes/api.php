@@ -1,41 +1,51 @@
 <?php
 
-use App\Http\Controllers\Api\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 // Auth
-use App\Http\Controllers\Api\Inventory\GrnApiController;
+use App\Http\Controllers\Auth\SignInController;
+
 // API Dashboard
-use App\Http\Controllers\Api\Inventory\ItemApiController;
+use App\Http\Controllers\Api\DashboardController;
+
 // Inventory API
+use App\Http\Controllers\Api\Inventory\ItemApiController;
 use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\StockAuditApiController;
 use App\Http\Controllers\Api\Inventory\StockTransferApiController;
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\BedController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
+
 // Masters
-use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\StaffManagementController;
-// Org / Institution / Module
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-// HR
-use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
-// Pharmacy / Inventory shared
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\StockController;
-// Beds / Wards / Rooms
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+
+// HR
+use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
+
+// Beds / Wards / Rooms
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\WardController;
+use App\Http\Controllers\RoomController;
+
+// Pharmacy / Inventory shared
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\ExpiryController;
+
 // Biometric
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BiometricController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +53,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::prefix('auth')->group(function () {
-    // You had both /login and login – keep one canonical, but both if needed.
+    // keep both /login and login if mobile app already using both
     Route::post('/login', [SignInController::class, 'apiLogin']);
     Route::post('login', [SignInController::class, 'apiLogin']);
 });
@@ -149,7 +159,6 @@ Route::prefix('org')->group(function () {
     Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
     Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceDelete']);
 
-    // Extra helper
     Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 });
 
@@ -184,7 +193,7 @@ Route::prefix('calendar')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Staff / Employees
+| HR: Staff / Employees
 |--------------------------------------------------------------------------
 */
 Route::prefix('hr')->group(function () {
@@ -204,23 +213,84 @@ Route::prefix('hr')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Inventory & Pharmacy
+| Pharmacy Stock (mobile APIs)
 |--------------------------------------------------------------------------
 */
 Route::prefix('pharmacy')->group(function () {
-    // Pharmacy stock (you already had this prefix)
+
+    // Stock
     Route::get('/stock', [StockController::class, 'apiIndex']);
     Route::get('/stock/low', [StockController::class, 'apiLowStock']);
     Route::get('/stock/{id}', [StockController::class, 'apiShow']);
     Route::post('/stock', [StockController::class, 'apiStore']);
-    Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::put('/stock/{id}', [StockController::class, 'apiUpdate']);
     Route::delete('/stock/{id}', [StockController::class, 'apiDestroy']);
+
     Route::get('/stock-trash', [StockController::class, 'apiTrash']);
+    Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('/stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+
+    // GRN (PharmacyGrnController)
+    Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);
+    Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);
+    Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);
+    Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']);
+    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']);
+
+    Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']);
+    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']);
+    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
+
+    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
+    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
 });
 
-// Vendor API
+/*
+|--------------------------------------------------------------------------
+| Expiry Management API
+|--------------------------------------------------------------------------
+*/
+Route::prefix('expiry')->group(function () {
+    Route::get('/', [ExpiryController::class, 'apiIndex']);
+    Route::get('/{batchId}', [ExpiryController::class, 'apiShow']);
+    Route::post('/mark-expired/{batchId}', [ExpiryController::class, 'apiMarkExpired']);
+    Route::post('/return-to-vendor/{batchId}', [ExpiryController::class, 'apiReturnToVendor']);
+    Route::post('/approve/{batchId}', [ExpiryController::class, 'apiApprove']);
+    Route::post('/complete/{batchId}', [ExpiryController::class, 'apiComplete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Drugs API
+|--------------------------------------------------------------------------
+*/
+Route::prefix('controlled-drugs')->group(function () {
+
+    Route::get('/', [ControlledDrugController::class, 'apiIndex']);
+    Route::get('/{id}', [ControlledDrugController::class, 'apiShow']);
+    Route::post('/', [ControlledDrugController::class, 'apiStore']);
+    Route::put('/{id}', [ControlledDrugController::class, 'apiUpdate']);
+    Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
+
+    Route::get('/trash/list', [ControlledDrugController::class, 'apiTrash']);
+    Route::post('/restore/{id}', [ControlledDrugController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [ControlledDrugController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Controlled Drugs: Dispense & Logs
+|--------------------------------------------------------------------------
+*/
+Route::get('/controlled-drug-dispense', [ControlledDrugController::class, 'apiDispense']);
+Route::post('/controlled-drug-dispense', [ControlledDrugController::class, 'apiStoreDispense']);
+Route::get('/controlled-drug-log', [ControlledDrugController::class, 'apiDrugLog']);
+
+/*
+|--------------------------------------------------------------------------
+| Vendor API
+|--------------------------------------------------------------------------
+*/
 Route::prefix('vendors')->group(function () {
     Route::get('/', [VendorController::class, 'apiIndex']);
     Route::post('/', [VendorController::class, 'apiStore']);
@@ -232,12 +302,19 @@ Route::prefix('vendors')->group(function () {
     Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
 });
 
-// Helper vendor dropdown endpoint
+// Active vendors dropdown
+Route::get('/vendors-active', [VendorController::class, 'apiActiveVendors']);
+
+// Helper vendor dropdown (simple list)
 Route::get('/vendors', function () {
     return \App\Models\Vendor::select('id', 'vendor_name')->get();
 });
 
-// Inventory API
+/*
+|--------------------------------------------------------------------------
+| Inventory API
+|--------------------------------------------------------------------------
+*/
 Route::prefix('inventory')->group(function () {
 
     // Items
@@ -256,11 +333,11 @@ Route::prefix('inventory')->group(function () {
     Route::delete('/purchase-orders/{id}', [PurchaseOrderApiController::class, 'destroy']);
     Route::put('/purchase-orders/{id}/approve', [PurchaseOrderApiController::class, 'approve']);
 
-    // GRN
+    // GRNs
     Route::get('/grns', [GrnApiController::class, 'index']);
     Route::post('/grns', [GrnApiController::class, 'store']);
 
-    // If you use them:
+    // Optionally stock audits/transfers
     // Route::get('/stock-audits', [StockAuditApiController::class, 'index']);
     // Route::get('/stock-transfers', [StockTransferApiController::class, 'index']);
 });
@@ -270,7 +347,8 @@ Route::prefix('inventory')->group(function () {
 | Beds, Wards, Rooms
 |--------------------------------------------------------------------------
 */
-// Beds under /admin/beds in your original – keep that
+
+// Beds (admin/beds in original)
 Route::prefix('admin')->group(function () {
     Route::get('/beds', [BedController::class, 'apiIndex']);
     Route::post('/beds', [BedController::class, 'apiStore']);
@@ -311,13 +389,15 @@ Route::prefix('rooms')->group(function () {
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')->prefix('biometric')->group(function () {
-    Route::post('/enroll', [BiometricController::class, 'enroll']);
-    Route::post('/match', [BiometricController::class, 'match']);
-    Route::post('/check-in', [BiometricController::class, 'checkIn']);
-    Route::post('/check-out', [BiometricController::class, 'checkOut']);
-    Route::get('/check-status', [BiometricController::class, 'checkStatus']);
-});
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
 
 /*
 |--------------------------------------------------------------------------

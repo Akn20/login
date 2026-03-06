@@ -15,15 +15,19 @@ class Grn extends Model
         'grn_no',
         'grn_date',
         'vendor_name',
+        'vendor_id',
         'invoice_no',
         'invoice_date',
         'po_no',
         'status',
         'remarks',
+        'verify_remarks',
+        'reject_reason',
         'sub_total',
         'total_discount',
         'total_tax',
         'grand_total',
+        'invoice_file',
     ];
 
     public function items()
