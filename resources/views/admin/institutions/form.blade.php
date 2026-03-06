@@ -84,23 +84,27 @@
                             value="{{ old('pincode', $institution->pincode ?? '') }}">
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Timezone</label>
                         <input type="text" name="timezone" class="form-control" id="timezone"
                             value="{{ old('timezone', $institution->timezone ?? '') }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Latitude</label>
                         <input type="text" name="latitude" id="latitude" class="form-control"
                             value="{{ old('latitude', $institution->geofences->center_lat ?? '') }}" readonly>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Longitude</label>
                         <input type="text" name="longitude" id="longitude" class="form-control"
                             value="{{ old('longitude', $institution->geofences->center_lng ?? '') }}" readonly>
                     </div>
-
+                    <div class="col-md-3">
+                        <label>Radius for Geofence</label>
+                        <input type="number" name="radius" id="radius" class="form-control"
+                            value="{{ old('radius', $institution->geofences->radius ?? 100) }}" >
+                    </div>
                     <div class="col-md-12">
                         <label>Select Location</label>
                         <div id="map" style="height:400px;border-radius:8px;"></div>
@@ -428,13 +432,14 @@
 
 var map;
 var marker;
+var circle;
 
 document.addEventListener("DOMContentLoaded", function () {
 
     // Default or existing values
     var lat = parseFloat(document.getElementById("latitude").value) || 10.8505;
     var lng = parseFloat(document.getElementById("longitude").value) || 76.2711;
-
+    var radius = parseFloat(document.getElementById("radius").value) || 100;
     // Initialize map
     map = L.map('map').setView([lat, lng], 13);
 
@@ -444,7 +449,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Show marker if lat/lng already exists
     marker = L.marker([lat, lng]).addTo(map);
-
+     circle = L.circle([lat, lng], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.3,
+        radius: radius
+    }).addTo(map);
     // When map clicked
     map.on('click', function (e) {
 
@@ -455,6 +465,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("longitude").value = lng;
 
         marker.setLatLng([lat, lng]);
+         circle.setLatLng([lat, lng]);
 
         // Fetch address details
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en`)
@@ -499,7 +510,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
     });
+ document.getElementById("radius").addEventListener("input", function () {
 
+        var newRadius = parseInt(this.value);
+
+        circle.setRadius(newRadius);
+
+    });
 });
 
 </script>

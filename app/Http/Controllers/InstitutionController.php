@@ -93,6 +93,7 @@ class InstitutionController extends Controller
             'timezone' => 'nullable|string|max:100',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'radius'=>'nullable|numeric',
             // Branding
             'institution_url' => 'nullable|url|max:255',
             'login_template' => 'nullable|string|max:255',
@@ -159,7 +160,7 @@ class InstitutionController extends Controller
                 'name' => $institution->name . ' Geofence',
                 'center_lat' => $request->latitude,
                 'center_lng' => $request->longitude,
-                'radius' => 100,
+                'radius' => $request->radius,
                 'status' => true
             ]);
         }
@@ -186,7 +187,7 @@ class InstitutionController extends Controller
      */
     public function edit($id)
     {
-        $institution = Institution::with('modules','geofences')->findOrFail($id);
+        $institution = Institution::with('modules', 'geofences')->findOrFail($id);
         $organizations = Organization::where('status', 1)->get();
         $modules = Module::orderBy('priority')->get();
         Log::info($institution);
@@ -219,7 +220,7 @@ class InstitutionController extends Controller
             'timezone' => 'nullable|string|max:100',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-
+            'radius' => 'nullable|numeric',
             'institution_url' => 'nullable|url|max:255',
             'login_template' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -270,16 +271,18 @@ class InstitutionController extends Controller
         }
 
         $institution->update($validated);
-        if ($request->filled(['latitude','longitude'])) {
+        if ($request->filled(['latitude', 'longitude'])) {
 
             Geofence::updateOrCreate(
                 ['institution_id' => $institution->id],
-                ['name' => $institution->name . ' Geofence',
-                'center_lat' => $request->latitude,
-                'center_lng' => $request->longitude,
-                'radius' => 100,
-                'status' => true
-            ]);
+                [
+                    'name' => $institution->name . ' Geofence',
+                    'center_lat' => $request->latitude,
+                    'center_lng' => $request->longitude,
+                    'radius' => $request->radius,
+                    'status' => true
+                ]
+            );
 
         }
         $institution->modules()->sync($request->modules ?? []);
@@ -293,7 +296,7 @@ class InstitutionController extends Controller
      */
     public function show($id)
     {
-        $institution = Institution::with(['organization', 'modules'])
+        $institution = Institution::with(['organization', 'modules','geofences'])
             ->findOrFail($id);
 
         return view('admin.institutions.show', compact('institution'));

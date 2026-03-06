@@ -95,6 +95,38 @@
                 </div>
             </div>
 
+            {{-- =================  LOCATION ================= --}}
+<div class="col-12">
+    <div class="card stretch stretch-full">
+        <div class="card-header">
+            <h5 class="card-title">Location & Geofence</h5>
+        </div>
+
+        <div class="card-body row g-3">
+
+            <div class="col-md-4">
+                <label>Latitude</label>
+                <p>{{ $institution->geofences->center_lat ?? '-' }}</p>
+            </div>
+
+            <div class="col-md-4">
+                <label>Longitude</label>
+                <p>{{ $institution->geofences->center_lng ?? '-' }}</p>
+            </div>
+
+            <div class="col-md-4">
+                <label>Radius (meters)</label>
+                <p>{{ $institution->geofences->radius ?? '-' }}</p>
+            </div>
+
+            <div class="col-12">
+                <label>Location Map</label>
+                <div id="map" style="height:400px;border-radius:8px;"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
             {{-- ================= 2. ACCESS & BRANDING ================= --}}
             <div class="col-12">
@@ -169,10 +201,6 @@
                                 @endif
                             </p>
                         </div>
-
-
-
-
                     </div>
                 </div>
             </div>
@@ -295,4 +323,38 @@
         </div>
     </div>
 
+    <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    let lat = "{{ $institution->geofences->center_lat ?? '' }}";
+    let lng = "{{ $institution->geofences->center_lng ?? '' }}";
+    let radius = "{{ $institution->geofences->radius ?? 100 }}";
+
+    if(lat && lng){
+
+        var map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marker
+        var marker = L.marker([lat, lng]).addTo(map);
+
+        // Radius circle
+        var circle = L.circle([lat, lng], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.3,
+            radius: radius
+        }).addTo(map);
+
+        map.fitBounds(circle.getBounds());
+
+    }
+
+});
+
+</script>
 @endsection
