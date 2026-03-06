@@ -24,7 +24,11 @@
             </ul>
         </div>
 
-        
+        <div class="page-header-right ms-auto d-flex gap-2">
+            <a href="{{ route('admin.tokens.create') }}" class="btn btn-primary">
+                Generate Token
+            </a>
+        </div>
     </div>
 
     <!-- Main Content -->
