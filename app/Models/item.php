@@ -20,4 +20,5 @@ class Item extends Model
         'stock',
         'status'
     ];
+
 }

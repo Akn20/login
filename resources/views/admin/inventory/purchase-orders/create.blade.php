@@ -26,10 +26,10 @@
 
 <div class="row">
 
-    <!-- Vendor -->
+    <!-- Inventory Vendor -->
     <div class="col-md-4 mb-3">
         <label class="form-label">Vendor</label>
-        <select name="vendor_id" class="form-select" required>
+        <select name="inventory_vendor_id" class="form-select" required>
             <option value="">Select Vendor</option>
             @foreach($vendors as $vendor)
                 <option value="{{ $vendor->id }}">

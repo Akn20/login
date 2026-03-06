@@ -300,6 +300,19 @@
                             </a>
                         </li>
 
+                        {{-- Inventory Vendors --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.index') }}">
+                                Vendors
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.create') }}">
+                                Add Vendor
+                            </a>
+                        </li>
+
                         {{-- GRN --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.grns.index') }}">
@@ -493,23 +506,66 @@
                         <span class="nxl-mtext">Bed Management</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
+
                     <ul class="nxl-submenu">
+
+                        {{-- All Beds --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.beds.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-list"></i></span>
                                 <span class="nxl-mtext">All Beds</span>
                             </a>
                         </li>
+
+                        {{-- Add Bed --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.beds.create') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
                                 <span class="nxl-mtext">Add Bed</span>
                             </a>
                         </li>
+
                     </ul>
                 </li>
 
-                {{-- ACCOUNT --}}
+                {{-- ================Patient Management================== --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-users"></i></span>
+                        <span class="nxl-mtext">Patient Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                        {{-- All Patients --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patients.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Patients</span>
+                            </a>
+                        </li>
+
+                        {{-- Add Patient --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patients.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-user-plus"></i></span>
+                                <span class="nxl-mtext">Add Patient</span>
+                            </a>
+                        </li>
+
+                        {{-- Duplicate Patients --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patients.duplicates') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-copy"></i></span>
+                                <span class="nxl-mtext">Duplicate Patients</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                {{-- Section: Account --}}
                 <li class="nxl-item nxl-caption">
                     <label>Account</label>
                 </li>
@@ -531,6 +587,7 @@
                         @csrf
                     </form>
                 </li>
+
 
             </ul>
         </div>

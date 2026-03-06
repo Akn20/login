@@ -51,9 +51,9 @@
 
                     {{-- Total Beds --}}
                     <div class="col-md-6">
-                        <label>Total Beds *</label>
+                        <label>Total Beds</label>
                         <input type="number" name="total_beds" class="form-control"
-                            value="{{ old('total_beds', $ward->total_beds ?? '') }}" min="1" required>
+                            value="{{ isset($ward) ? $ward->beds()->count() : 0 }}" readonly>
                     </div>
 
                     {{-- Status --}}
