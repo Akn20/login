@@ -88,17 +88,35 @@
                                             </td>
 
                                             <td>₹ {{ number_format($batch->mrp, 2) }}</td>
+                                            @php
+                                                $exp = \Carbon\Carbon::parse($batch->expiry_date);
+                                                $log = $batch->latestExpiryLog ?? null;
+
+                                                if ($log) {
+                                                    $status = $log->status;
+                                                } else {
+                                                    $status = $exp->isPast() ? 'EXPIRED' : 'ACTIVE';
+                                                }
+                                            @endphp
 
                                             <td>
-                                                @if(\Carbon\Carbon::parse($batch->expiry_date)->isPast())
-                                                    <span class="badge bg-soft-dark text-dark">
-                                                        Expired
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-soft-success text-success">
-                                                        Active
-                                                    </span>
-                                                @endif
+
+                                            @if($status == 'COMPLETED')
+                                            <span class="badge bg-soft-success text-success">Returned</span>
+
+                                            @elseif($status == 'APPROVED')
+                                            <span class="badge bg-soft-info text-info">Return Approved</span>
+
+                                            @elseif($status == 'PENDING')
+                                            <span class="badge bg-soft-warning text-warning">Return Pending</span>
+
+                                            @elseif($status == 'EXPIRED')
+                                            <span class="badge bg-soft-danger text-danger">Expired</span>
+
+                                            @else
+                                            <span class="badge bg-soft-success text-success">Active</span>
+                                            @endif
+
                                             </td>
 
                                             <td class="text-end">

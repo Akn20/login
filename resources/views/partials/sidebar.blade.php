@@ -419,6 +419,44 @@
                                 <span class="nxl-mtext">All Beds</span>
                             </a>
                         </li>
+                        {{-- Expiry Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                                <span class="nxl-mtext">Expiry Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Controlled Drug Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-shield"></i>
+                                </span>
+                                <span class="nxl-mtext">
+                                    Controlled Drug Management
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Receptionist --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-users"></i></span>
+                        <span class="nxl-mtext">Receptionist</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.tokens.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">Token & Queue Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                         {{-- Add Bed --}}
                         <li class="nxl-item">

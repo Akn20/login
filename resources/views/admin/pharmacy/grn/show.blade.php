@@ -25,60 +25,44 @@
 
         <div class="d-flex gap-2">
 
-            <a href="{{ route('admin.grn.index') }}" class="btn btn-light">
+            <a href="{{ route('admin.grn.index') }}" class="btn btn-light action-btn">
                 <i class="feather-arrow-left"></i> Back
             </a>
 
             <a href="{{ route('admin.grn.print', $grn->id) }}" 
-            class="btn btn-dark">
+            class="btn btn-dark action-btn">
                 <i class="feather-printer"></i> Print PDF
             </a>
 
-            {{-- DRAFT --}}
+                    {{-- DRAFT --}}
             @if($grn->status === 'Draft')
-                <a href="{{ route('admin.grn.edit', $grn->id) }}" class="btn btn-primary">
-                    <i class="feather-edit"></i> Edit
-                </a>
 
-                <form action="{{ route('admin.grn.destroy', $grn->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger"
-                        onclick="return confirm('Move this GRN to Trash?')">
-                        <i class="feather-trash-2"></i> Delete
-                    </button>
-                </form>
+            <a href="{{ route('admin.grn.edit', $grn->id) }}" class="btn btn-primary action-btn">
+                <i class="feather-edit"></i> Edit
+            </a>
+
+            <form action="{{ route('admin.grn.destroy', $grn->id) }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+
+                <button type="submit" class="btn btn-danger action-btn"
+                    onclick="return confirm('Move this GRN to Trash?')">
+                    <i class="feather-trash"></i> Delete
+                </button>
+
+            </form>
+
             @endif
 
             {{-- SUBMITTED --}}
             @if($grn->status === 'Submitted')
-                <a href="{{ route('admin.grn.verify', $grn->id) }}" class="btn btn-success">
+                <a href="{{ route('admin.grn.verify', $grn->id) }}" class="btn btn-success action-btn">
                     <i class="feather-check-circle"></i> Verify
                 </a>
             @endif
 
-            {{-- VERIFIED --}}
-            @if($grn->status === 'Verified')
-                <form action="{{ route('admin.grn.destroy', $grn->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger"
-                        onclick="return confirm('Move this GRN to Trash?')">
-                        <i class="feather-trash-2"></i> Delete
-                    </button>
-                </form>
-            @endif
+           
 
-        </div>
-    </div>
-
-    {{-- STATUS CARD --}}
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="fw-semibold">GRN Status</div>
-            <span class="badge bg-{{ $badge }} status-badge">
-                {{ $grn->status }}
-            </span>
         </div>
     </div>
 
@@ -121,11 +105,18 @@
                     <div class="fw-semibold">{{ $grn->invoice_date }}</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <div class="text-muted small">Remarks</div>
                     <div class="fw-semibold">{{ $grn->remarks ?: '-' }}</div>
                 </div>
-
+                <div class="col-md-3">
+            <div class="text-muted small">GRN Status</div>
+            <div class="fw-semibold">
+            <span class="badge bg-{{ $badge }} status-badge">
+                {{ $grn->status }}
+            </span>
+            </div>
+        </div>
             </div>
         </div>
     </div>
@@ -243,5 +234,13 @@
     text-align:center;
     padding:6px 12px;
     font-weight:500;
+}
+.action-btn{
+    width:120px;
+    height:38px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
 }
 </style>
