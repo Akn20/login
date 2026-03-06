@@ -112,15 +112,6 @@
                class="form-control">
     </div>
 
-    {{-- Status only in CREATE --}}
-    @if(!isset($batch))
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-control">
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-            </select>
-        </div>
-    @endif
+   
 
 </div>

@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
+ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 class MedicineBatch extends Model
 {
     use HasUuids, SoftDeletes;
@@ -21,22 +21,8 @@ class MedicineBatch extends Model
         'mrp',
         'quantity',
         'reorder_level',
-        
-    ];
-
-    public function medicine()
-    {
-        return $this->belongsTo(Medicine::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->id = Str::uuid();
-        });
-    }
+   ];
+ 
     protected $casts = [
         'expiry_date' => 'date',
         'purchase_price' => 'decimal:2',
@@ -51,13 +37,24 @@ class MedicineBatch extends Model
     |--------------------------------------------------------------------------
     */
 
-    // One batch belongs to one medicine
+    public function medicine()
+    {
+        return $this->belongsTo(Medicine::class);
+    }
 
-
-    // One batch has many stock movements
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class, 'batch_id');
+    }
+
+    public function expiryLogs()
+    {
+        return $this->hasMany(Expiry::class, 'batch_id');
+    }
+
+    public function latestExpiryLog()
+    {
+        return $this->hasOne(Expiry::class, 'batch_id')->latestOfMany();
     }
 
     /*
@@ -65,16 +62,14 @@ class MedicineBatch extends Model
     | Helper Methods
     |--------------------------------------------------------------------------
     */
-
-    // Check if low stock
+ 
     public function isLowStock()
     {
-        return $this->quantity <= $this->reorder_level;
+        return $this->reorder_level && $this->quantity <= $this->reorder_level;
     }
-
-    // Check if expired
+ 
     public function isExpired()
     {
-        return now()->greaterThan($this->expiry_date);
+        return $this->expiry_date && now()->gt($this->expiry_date);
     }
 }

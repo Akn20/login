@@ -38,4 +38,9 @@ protected $keyType = 'string';
         return $this->hasMany(Bed::class);
     }
 
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
+
 }
