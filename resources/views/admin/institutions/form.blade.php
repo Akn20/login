@@ -56,40 +56,55 @@
 
                     <div class="col-md-12">
                         <label>Address</label>
-                        <textarea name="address"
+                        <textarea name="address" id="address"
                             class="form-control">{{ old('address', $institution->address ?? '') }}</textarea>
                     </div>
 
                     <div class="col-md-3">
                         <label>City</label>
-                        <input type="text" name="city" class="form-control"
+                        <input type="text" name="city" class="form-control" id="city"
                             value="{{ old('city', $institution->city ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>State</label>
-                        <input type="text" name="state" class="form-control"
+                        <input type="text" name="state" class="form-control" id="state"
                             value="{{ old('state', $institution->state ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>Country</label>
-                        <input type="text" name="country" class="form-control"
+                        <input type="text" name="country" class="form-control" id="country"
                             value="{{ old('country', $institution->country ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>Pincode</label>
-                        <input type="text" name="pincode" class="form-control"
+                        <input type="text" name="pincode" class="form-control" id="pincode"
                             value="{{ old('pincode', $institution->pincode ?? '') }}">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label>Timezone</label>
-                        <input type="text" name="timezone" class="form-control"
+                        <input type="text" name="timezone" class="form-control" id="timezone"
                             value="{{ old('timezone', $institution->timezone ?? '') }}">
                     </div>
+                    <div class="col-md-4">
+                        <label>Latitude</label>
+                        <input type="text" name="latitude" id="latitude" class="form-control"
+                            value="{{ old('latitude', $institution->geofences->center_lat ?? '') }}" readonly>
+                    </div>
 
+                    <div class="col-md-4">
+                        <label>Longitude</label>
+                        <input type="text" name="longitude" id="longitude" class="form-control"
+                            value="{{ old('longitude', $institution->geofences->center_lng ?? '') }}" readonly>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label>Select Location</label>
+                        <div id="map" style="height:400px;border-radius:8px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -407,3 +422,84 @@
 
     </div>
 </div>
+
+
+ <script>
+
+var map;
+var marker;
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Default or existing values
+    var lat = parseFloat(document.getElementById("latitude").value) || 10.8505;
+    var lng = parseFloat(document.getElementById("longitude").value) || 76.2711;
+
+    // Initialize map
+    map = L.map('map').setView([lat, lng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+       language: 'en',
+    }).addTo(map);
+
+    // Show marker if lat/lng already exists
+    marker = L.marker([lat, lng]).addTo(map);
+
+    // When map clicked
+    map.on('click', function (e) {
+
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+
+        marker.setLatLng([lat, lng]);
+
+        // Fetch address details
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en`)
+        .then(response => response.json())
+        .then(data => {
+
+    if(data.address){
+
+        const addr = data.address;
+
+        document.getElementById("city").value =
+            addr.city ||
+            addr.town ||
+            addr.village ||
+            addr.municipality ||
+            addr.suburb ||
+            addr.county ||
+            '';
+
+        document.getElementById("state").value =
+            addr.state ||
+            addr.state_district ||
+            '';
+
+        document.getElementById("country").value =
+            addr.country || '';
+
+        document.getElementById("address").value =
+            data.display_name || '';
+        document.getElementById("pincode").value=
+            addr.postcode || '';
+    }
+
+
+        });
+
+        // Fetch timezone
+       fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lng}`)
+.then(res => res.json())
+.then(data => {
+    document.getElementById("timezone").value = data.timeZone;
+});
+
+    });
+
+});
+
+</script>

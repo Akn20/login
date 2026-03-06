@@ -123,3 +123,60 @@
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
 </div>
+
+
+
+
+<div class="mb-4">
+    <label class="form-label">Basic Salary</label>
+
+    <input type="number"
+           name="basic_salary"
+           class="form-control @error('basic_salary') is-invalid @enderror"
+           value="{{ old('basic_salary', $staffManagement->basic_salary ?? '') }}"
+           placeholder="Enter Basic Salary">
+
+    @error('basic_salary')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+<div class="mb-4">
+    <label class="form-label">HRA</label>
+
+    <input type="number"
+           name="hra"
+           class="form-control @error('hra') is-invalid @enderror"
+           value="{{ old('hra', $staffManagement->hra ?? '') }}"
+           placeholder="Enter HRA">
+
+    @error('hra')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+<div class="mb-4">
+    <label class="form-label">Allowance</label>
+
+    <input type="number"
+           name="allowance"
+           class="form-control @error('allowance') is-invalid @enderror"
+           value="{{ old('allowance', $staffManagement->allowance ?? '') }}"
+           placeholder="Enter Allowance">
+
+    @error('allowance')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+@if(!empty($staffManagement->document_path))
+<div class="mb-3">
+    <label class="form-label">Current Document</label><br>
+
+    <a href="{{ asset('storage/'.$staffManagement->document_path) }}" target="_blank">
+        View Uploaded Document
+    </a>
+</div>
+@endif
+<div class="mb-4">
+    <label class="form-label">Upload Document</label>
+
+    <input type="file" name="document" class="form-control">
+</div>

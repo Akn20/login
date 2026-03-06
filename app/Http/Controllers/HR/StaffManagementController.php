@@ -78,6 +78,9 @@ public function create()
             'status' => 'required|in:Active,Inactive',
             'mobile' => 'required|digits:10|unique:users,mobile',
             'email' => 'nullable|email|unique:users,email',
+            'basic_salary' => 'nullable|numeric|min:0',
+'hra' => 'nullable|numeric|min:0',
+'allowance' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -91,7 +94,14 @@ public function create()
                     'role_id' => $request->role_id,
                     'status' => strtolower($request->status), // users table uses lowercase enum
                     'mpin' => null, 
+                    
                 ]);
+                //uplpoad document
+                $documentPath = null;
+
+if ($request->hasFile('document')) {
+    $documentPath = $request->file('document')->store('staff_documents', 'public');
+}
 
                 // 2. Create Staff linked to the User
                 Staff::create([
@@ -103,6 +113,10 @@ public function create()
                     'designation' => $request->designation,
                     'joining_date' => $request->joining_date,
                     'status' => $request->status,
+                    'document_path' => $documentPath,
+                    'basic_salary' =>$request->basic_salary,
+                    'hra' => $request->hra,
+                    'allowance'=>$request->allowance,
                 ]);
             });
 
@@ -160,11 +174,21 @@ public function create()
             // 'email' => 'nullable|email|unique:users,email,' . $staff->user_id,
             'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id . ',id',
             'email'  => 'nullable|email|unique:users,email,' . $staff->user_id . ',id',
+            'basic_salary' => 'nullable|numeric|min:0',
+'hra' => 'nullable|numeric|min:0',
+'allowance' => 'nullable|numeric|min:0',
 
         ]);
 
         try {
             DB::transaction(function () use ($request, $staff) {
+
+
+            $documentPath = $staff->document_path;
+
+if ($request->hasFile('document')) {
+    $documentPath = $request->file('document')->store('staff_documents', 'public');
+}
                 // Update Staff
                 $staff->update([
                     'name' => $request->name,
@@ -173,6 +197,10 @@ public function create()
                     'joining_date' => $request->joining_date,
                     'status' => $request->status,
                     'designation' => $request->designation,
+                    'document_path' => $documentPath,
+                    'basic_salary' => $request->basic_salary, 
+                    'hra' => $request->hra,
+                    'allowance' => $request->allowance,
                 ]);
 
                 // Update linked User if exists

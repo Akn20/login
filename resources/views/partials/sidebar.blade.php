@@ -308,36 +308,36 @@
                         </li>
 
                         {{-- Stock Transfers --}}
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
-                        Stock Transfers
-                    </a>
-                </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
+                                Stock Transfers
+                            </a>
+                        </li>
 
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
-                        Create Stock Transfer
-                    </a>
-                </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
+                                Create Stock Transfer
+                            </a>
+                        </li>
 
-                                {{-- Stock Audit --}}
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
-                        Stock Audits
-                    </a>
-                </li>
+                        {{-- Stock Audit --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
+                                Stock Audits
+                            </a>
+                        </li>
 
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
-                        New Stock Audit
-                    </a>
-                </li>
-                <li class="nxl-item">
-                    <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
-                             Reports Dashboard
-                     </a>
-                </li>
-                        
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
+                                New Stock Audit
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
+                                Reports Dashboard
+                            </a>
+                        </li>
+
 
                     </ul>
                 </li>
@@ -401,6 +401,23 @@
                             <a href="{{ route('admin.vendors.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-truck"></i></span>
                                 <span class="nxl-mtext">Vendor Management</span>
+                            </a>
+                        </li>
+                        {{-- Goods Receipt(GRN) --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.grn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+
+
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
                             </a>
                         </li>
                     </ul>

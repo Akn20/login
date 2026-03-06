@@ -48,11 +48,11 @@
 
         </form>
 
-        <a href="{{ route('admin.leave-type.create') }}" class="btn btn-primary btn-sm">
+        <a href="{{ route('admin.leave-type.create') }}" class="btn btn-primary">
             <i class="feather-plus me-1"></i> Add Leave Type
         </a>
 <a href="{{ route('admin.leave-type.deleted') }}" 
-   class="btn btn-danger btn-sm">
+   class="btn btn-danger">
     Deleted Leave Types
 </a>
 

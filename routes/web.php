@@ -19,10 +19,12 @@ use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
+// HR controllers
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
+// Module/Institution/Organization controllers
 use App\Http\Controllers\JobTypeController;
 // HR controllers
 use App\Http\Controllers\LeaveManagement\HolidayController;
@@ -32,6 +34,7 @@ use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
@@ -331,6 +334,61 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
+        // ============================
+        // PHARMACY -> GRN
+        // ============================
+
+        Route::prefix('pharmacy')->name('grn.')->group(function () {
+
+            Route::get('/grn', [GrnController::class, 'index'])->name('index');
+            Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
+            Route::post('/grn', [GrnController::class, 'store'])->name('store');
+
+            Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
+            Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
+            Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
+            Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
+            Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+
+            Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
+
+            Route::get('/grn/{id}/print', [GrnController::class, 'print'])
+                ->name('print');
+
+            Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
+            Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
+            Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
+            Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
+
+        });
+        /*
+        |----------------------------------------------------------------------
+        | Pharmacy: stock management
+        |----------------------------------------------------------------------
+        */
+
+        Route::prefix('stock')->name('stock.')->group(function () {
+
+            Route::get('/', [StockController::class, 'index'])->name('index');
+
+            Route::get('/create', [StockController::class, 'create'])->name('create');
+            Route::post('/store', [StockController::class, 'store'])->name('store');
+
+            Route::get('/show/{id}', [StockController::class, 'show'])->name('show');
+
+            Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
+
+            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
+
+            Route::get('/trash', [StockController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
+
+        });
+
         /*
         |----------------------------------------------------------------------
         | Modules
@@ -366,8 +424,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
 
             // PURCHASE ORDERS
+            Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
+                ->name('purchase-orders.index');
+            Route::get('purchase-orders/deleted', [PurchaseOrderController::class, 'deleted'])
+                ->name('purchase-orders.deleted');
+            Route::put('purchase-orders/{id}/restore', [PurchaseOrderController::class, 'restore'])
+                ->name('purchase-orders.restore');
+            Route::delete('purchase-orders/{id}/force-delete', [PurchaseOrderController::class, 'forceDelete'])
+                ->name('purchase-orders.forceDelete');
             Route::resource('purchase-orders', PurchaseOrderController::class);
 
+            // GRNS
             Route::resource('grns', GrnController::class);
             Route::resource('stock-transfers', StockTransferController::class);
             Route::resource('stock-audits', StockAuditController::class);
