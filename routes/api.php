@@ -1,51 +1,46 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Auth
-use App\Http\Controllers\Auth\SignInController;
-
-// API Dashboard
 use App\Http\Controllers\Api\DashboardController;
-
+// API Dashboard
+use App\Http\Controllers\Api\Inventory\GrnApiController;
 // Inventory API
 use App\Http\Controllers\Api\Inventory\ItemApiController;
 use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\StockAuditApiController;
 use App\Http\Controllers\Api\Inventory\StockTransferApiController;
-use App\Http\Controllers\Api\Inventory\GrnApiController;
-
+use App\Http\Controllers\Auth\SignInController;
 // Masters
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\StaffManagementController;
+// Leave management (masters)
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+// HR
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
+// Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\WorkStatusController;
-
-// HR
-use App\Http\Controllers\HR\EmployeeController;
-use App\Http\Controllers\HR\StaffManagementController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
-
-// Beds / Wards / Rooms
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\WardController;
-use App\Http\Controllers\RoomController;
-
 // Pharmacy / Inventory shared
-use App\Http\Controllers\VendorController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StockController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\ExpiryController;
-
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WardController;
+use App\Http\Controllers\WorkStatusController;
 // Biometric
-use App\Http\Controllers\BiometricController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,14 +48,13 @@ use App\Http\Controllers\BiometricController;
 |--------------------------------------------------------------------------
 */
 Route::prefix('auth')->group(function () {
-    // keep both /login and login if mobile app already using both
     Route::post('/login', [SignInController::class, 'apiLogin']);
     Route::post('login', [SignInController::class, 'apiLogin']);
 });
 
 /*
 |--------------------------------------------------------------------------
-| Masters (Religion / JobType / WorkStatus / BloodGroup / Department / Designation)
+| Masters (Religion / JobType / WorkStatus / BloodGroup / Department / Designation / Leave)
 |--------------------------------------------------------------------------
 */
 Route::prefix('masters')->group(function () {
@@ -124,6 +118,27 @@ Route::prefix('masters')->group(function () {
     Route::get('/designations/deleted', [DesignationController::class, 'apiDeleted']);
     Route::put('/designations/{id}/restore', [DesignationController::class, 'apiRestore']);
     Route::delete('/designations/{id}/force-delete', [DesignationController::class, 'apiForceDelete']);
+
+    // Leave Types
+    Route::get('/leave-types', [LeaveTypeController::class, 'apiIndex']);
+    Route::post('/leave-types', [LeaveTypeController::class, 'apiStore']);
+    Route::get('/leave-types/{id}', [LeaveTypeController::class, 'apiShow']);
+    Route::put('/leave-types/{id}', [LeaveTypeController::class, 'apiUpdate']);
+    Route::delete('/leave-types/{id}', [LeaveTypeController::class, 'apiDestroy']);
+
+    Route::get('/leave-types/deleted', [LeaveTypeController::class, 'apiDeleted']);
+    Route::post('/leave-types/{id}/restore', [LeaveTypeController::class, 'apiRestore']);
+    Route::delete('/leave-types/{id}/force-delete', [LeaveTypeController::class, 'apiForceDelete']);
+
+    // Leave Mappings
+    Route::get('/leave-mappings', [LeaveMappingController::class, 'apiIndex']);
+    Route::get('/leave-mappings/deleted', [LeaveMappingController::class, 'apiDeleted']);
+    Route::get('/leave-mappings/{id}', [LeaveMappingController::class, 'apiShow']);
+    Route::post('/leave-mappings', [LeaveMappingController::class, 'apiStore']);
+    Route::patch('/leave-mappings/{id}', [LeaveMappingController::class, 'apiUpdate']);
+    Route::delete('/leave-mappings/{id}', [LeaveMappingController::class, 'apiDestroy']);
+    Route::post('/leave-mappings/{id}/restore', [LeaveMappingController::class, 'apiRestore']);
+    Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
 });
 
 /*

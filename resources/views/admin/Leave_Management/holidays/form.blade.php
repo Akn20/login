@@ -15,11 +15,15 @@
 
     <div class="col-md-6 mb-3">
         <label class="form-label">End Date *</label>
-        <input type="date" name="end_date" class="form-control"
+        <input type="date" name="end_date" class="form-control @error('end_date') is-invalid @enderror"
                value="{{ old('end_date', isset($holiday) ? $holiday->end_date->format('Y-m-d') : '') }}"
                required>
+       @error('end_date')
+    <div class="invalid-feedback">{{ $message }}</div>
+@enderror
     </div>
 </div>
+
 
 {{-- Holiday Details --}}
 <div class="mb-3">

@@ -84,37 +84,42 @@
                             value="{{ old('pincode', $institution->pincode ?? '') }}">
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Timezone</label>
                         <input type="text" name="timezone" class="form-control" id="timezone"
                             value="{{ old('timezone', $institution->timezone ?? '') }}">
                     </div>
-                    <div class="col-md-4">
-                        <label>Latitude</label>
-                        <input type="text" name="latitude" id="latitude" class="form-control"
-                            value="{{ old('latitude', $institution->geofences->center_lat ?? '') }}" readonly>
-                    </div>
 
-                    <div class="col-md-4">
-                        <label>Longitude</label>
-                        <input type="text" name="longitude" id="longitude" class="form-control"
-                            value="{{ old('longitude', $institution->geofences->center_lng ?? '') }}" readonly>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label>Select Location</label>
-                        <div id="map" style="height:400px;border-radius:8px;"></div>
-                    </div>
                 </div>
             </div>
         </div>
 
-
-        {{-- ================= 2. BRANDING ================= --}}
+        {{-- ================= 2. GEOFENCES ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>2. Branding</h5>
+                    <h5>2. GeoFences</h5>
+                </div>
+                <div class="card-body row g-3">
+                    <div class="col-md-12">
+                        <label>Select Location</label>
+                        <div id="map" style="height:400px;border-radius:8px;"></div>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" id="addGeofence" class="btn btn-primary">
+                            Add Geofence
+                        </button>
+                    </div>
+                    <div id="geofenceInputs"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ================= 3. BRANDING ================= --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>3. Branding</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -146,11 +151,11 @@
         </div>
 
 
-        {{-- ================= 3. ADMIN ================= --}}
+        {{-- ================= 4. ADMIN ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>3. Admin</h5>
+                    <h5>4. Admin</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -203,11 +208,11 @@
         </div>
 
 
-        {{-- ================= 4. LEGAL & COMMERCIAL ================= --}}
+        {{-- ================= 5. LEGAL & COMMERCIAL ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>4. Legal & Commercial</h5>
+                    <h5>5. Legal & Commercial</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -274,11 +279,11 @@
         </div>
 
 
-        {{-- ================= 5. BILLING ================= --}}
+        {{-- ================= 6. BILLING ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>5. Billing</h5>
+                    <h5>6. Billing</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -384,11 +389,11 @@
         </div>
 
 
-        {{-- ================= 6. SUPPORT ================= --}}
+        {{-- ================= 7. SUPPORT ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>6. Support</h5>
+                    <h5>7. Support</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -423,83 +428,304 @@
     </div>
 </div>
 
+<script>
+    let existingGeofences = @json(isset($institution) ? $institution->geofences : []);
+</script>
 
- <script>
+<script>
 
-var map;
-var marker;
+    let map;
+    let geofenceIndex = 0;
+    let activeGeofence = null;
+    let geofences = [];
 
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        let lat = 10.8505;
+        let lng = 76.2711;
 
-    // Default or existing values
-    var lat = parseFloat(document.getElementById("latitude").value) || 10.8505;
-    var lng = parseFloat(document.getElementById("longitude").value) || 76.2711;
+        if (existingGeofences.length > 0) {
+            console.log(existingGeofences)
+            lat = existingGeofences[0].center_lat;
+            lng = existingGeofences[0].center_lng;
+        }
 
-    // Initialize map
-    map = L.map('map').setView([lat, lng], 13);
+        map = L.map('map').setView([lat, lng], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-       language: 'en',
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        // LOAD EXISTING GEOFENCES
+        if (existingGeofences?.length > 0) {
 
-    // Show marker if lat/lng already exists
-    marker = L.marker([lat, lng]).addTo(map);
+            existingGeofences?.forEach((geo, index) => {
 
-    // When map clicked
-    map.on('click', function (e) {
+                createExistingGeofence(
+                    geo.name,
+                    geo.center_lat,
+                    geo.center_lng,
+                    geo.radius,
+                    geo.status
+                );
 
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
+            });
 
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
+        }
+        // MAP CLICK EVENT
+        map.on("click", function (e) {
 
-        marker.setLatLng([lat, lng]);
+            if (activeGeofence === null) return;
 
-        // Fetch address details
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en`)
-        .then(response => response.json())
-        .then(data => {
+            let lat = e.latlng.lat;
+            let lng = e.latlng.lng;
 
-    if(data.address){
+            document.getElementById(`lat_${activeGeofence}`).value = lat;
+            document.getElementById(`lng_${activeGeofence}`).value = lng;
 
-        const addr = data.address;
-
-        document.getElementById("city").value =
-            addr.city ||
-            addr.town ||
-            addr.village ||
-            addr.municipality ||
-            addr.suburb ||
-            addr.county ||
-            '';
-
-        document.getElementById("state").value =
-            addr.state ||
-            addr.state_district ||
-            '';
-
-        document.getElementById("country").value =
-            addr.country || '';
-
-        document.getElementById("address").value =
-            data.display_name || '';
-        document.getElementById("pincode").value=
-            addr.postcode || '';
-    }
-
+            placeMarker(activeGeofence, lat, lng);
 
         });
 
-        // Fetch timezone
-       fetch(`https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lng}`)
-.then(res => res.json())
-.then(data => {
-    document.getElementById("timezone").value = data.timeZone;
-});
+    });
+
+    function createExistingGeofence(name, lat, lng, radius, status) {
+
+        let index = geofenceIndex++;
+
+        // Create marker
+        let marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        // Create circle
+        let circle = L.circle([lat, lng], {
+            radius: radius,
+            color: 'red',
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        geofences[index] = {
+            marker: marker,
+            circle: circle
+        };
+
+        // Add card
+        let html = `
+    <div class="card p-3 mt-3" id="geofence_card_${index}">
+
+        <h6>Geofence ${index + 1}</h6>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                Name
+                <input type="text"
+                       name="geofences[${index}][name]"
+                       value="${name}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Radius
+                <input type="number"
+                       name="geofences[${index}][radius]"
+                       value="${radius}"
+                       class="form-control"
+                       onchange="updateRadius(${index},this.value)">
+            </div>
+
+            <div class="col-md-2">
+                Latitude
+                <input type="text"
+                       name="geofences[${index}][lat]"
+                       id="lat_${index}"
+                       value="${lat}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Longitude
+                <input type="text"
+                       name="geofences[${index}][lng]"
+                       id="lng_${index}"
+                       value="${lng}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Status
+                <select name="geofences[${index}][status]" class="form-control">
+                    <option value="1" ${status == 1 ? 'selected' : ''}>Active</option>
+                    <option value="0" ${status == 0 ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+        <div class="col-md-1">
+            Action
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="removeGeofence(${index})">
+                        <i class="feather feather-trash-2"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+    `;
+
+        document.getElementById("geofenceInputs").insertAdjacentHTML("beforeend", html);
+
+        // Drag marker update
+        marker.on("drag", function () {
+
+            let pos = marker.getLatLng();
+
+            circle.setLatLng(pos);
+
+            document.getElementById(`lat_${index}`).value = pos.lat;
+            document.getElementById(`lng_${index}`).value = pos.lng;
+
+        });
+
+    }
+    /* ADD GEOFENCE CARD */
+
+    document.getElementById("addGeofence").addEventListener("click", function () {
+
+        let index = geofenceIndex++;
+
+        activeGeofence = index;
+
+        let html = `
+    <div class="card p-3 mt-3" id="geofence_card_${index}">
+        <h6>Geofence ${index + 1}</h6>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                Name*
+                <input type="text" name="geofences[${index}][name]" class="form-control" required>
+            </div>
+
+            <div class="col-md-2">
+                Radius
+                <input type="number"
+                       name="geofences[${index}][radius]"
+                       value="100"
+                       class="form-control"
+                       onchange="updateRadius(${index},this.value)">
+            </div>
+
+            <div class="col-md-2">
+                Latitude
+                <input type="text"
+                       name="geofences[${index}][lat]"
+                       id="lat_${index}"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="col-md-2">
+                Longitude
+                <input type="text"
+                       name="geofences[${index}][lng]"
+                       id="lng_${index}"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="col-md-2">
+                Status
+                <select name="geofences[${index}][status]" class="form-control">
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-md-1">
+            Action
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="removeGeofence(${index})">
+                        <i class="feather feather-trash-2"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <small class="text-muted">
+        Click on the map to select this geofence location
+        </small>
+
+    </div>
+    `;
+
+        document.getElementById("geofenceInputs").insertAdjacentHTML("beforeend", html);
 
     });
 
-});
+
+    /* PLACE MARKER */
+
+    function placeMarker(index, lat, lng) {
+
+        let radiusInput = document.querySelector(`[name="geofences[${index}][radius]"]`);
+        let radius = radiusInput.value || 100;
+
+        if (geofences[index]) {
+
+            map.removeLayer(geofences[index].marker);
+            map.removeLayer(geofences[index].circle);
+
+        }
+
+        let marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        let circle = L.circle([lat, lng], {
+            radius: radius,
+            color: 'red',
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        marker.on("drag", function () {
+
+            let pos = marker.getLatLng();
+
+            circle.setLatLng(pos);
+
+            document.getElementById(`lat_${index}`).value = pos.lat;
+            document.getElementById(`lng_${index}`).value = pos.lng;
+
+        });
+
+        geofences[index] = {
+            marker: marker,
+            circle: circle
+        };
+
+    }
+
+
+    /* UPDATE RADIUS */
+
+    function updateRadius(index, value) {
+
+        if (!geofences[index]) return;
+
+        geofences[index].circle.setRadius(value);
+
+    }
+
+
+    /* REMOVE GEOFENCE */
+
+    function removeGeofence(index) {
+
+        if (geofences[index]) {
+
+            map.removeLayer(geofences[index].marker);
+            map.removeLayer(geofences[index].circle);
+
+        }
+
+        document.getElementById(`geofence_card_${index}`).remove();
+
+    }
 
 </script>

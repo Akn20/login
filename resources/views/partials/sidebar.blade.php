@@ -396,6 +396,41 @@
                     </ul>
                 </li>
 
+                {{-- Pharmacy --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-shopping-bag"></i></span>
+                        <span class="nxl-mtext">Pharmacy</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.vendors.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Vendor Management</span>
+                            </a>
+                        </li>
+                        {{-- Goods Receipt(GRN) --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.grn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+
+
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- HR Management --}}
                 {{-- ================HR Management================== --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
@@ -406,7 +441,7 @@
 
                     <ul class="nxl-submenu">
 
-                        {{-- Staff (rename from Staff Management if you want) --}}
+                        {{-- Staff Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-user-check"></i></span>
@@ -436,6 +471,24 @@
                                     <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
                                         <span class="nxl-micon"><i class="feather-calendar"></i></span>
                                         <span class="nxl-mtext">Holidays</span>
+                                    </a>
+                                </li>
+
+                                {{-- Leave Type --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="feather-file-text"></i>
+                                        </span>
+                                        <span class="nxl-mtext">Leave Type</span>
+                                    </a>
+                                </li>
+
+                                {{-- Leave Mapping --}}
+                                <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-map"></i></span>
+                                        <span class="nxl-mtext">Leave Mapping</span>
                                     </a>
                                 </li>
                             </ul>

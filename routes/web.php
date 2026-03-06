@@ -38,6 +38,8 @@ use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 // Beds / Wards / Patients
@@ -559,6 +561,45 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
+        | Leave Types (Leave management master)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('leave-type')->name('leave-type.')->group(function () {
+            Route::get('/', [LeaveTypeController::class, 'index'])->name('index');
+            Route::get('/create', [LeaveTypeController::class, 'create'])->name('create');
+            Route::post('/store', [LeaveTypeController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [LeaveTypeController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy'])->name('delete');
+            Route::get('/deleted', [LeaveTypeController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [LeaveTypeController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [LeaveTypeController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Leave Mappings (Leave management master)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('leave-mappings')->name('leave-mappings.')->group(function () {
+            Route::get('/', [LeaveMappingController::class, 'index'])->name('index');
+            Route::get('/create', [LeaveMappingController::class, 'create'])->name('create');
+            Route::post('/store', [LeaveMappingController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [LeaveMappingController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [LeaveMappingController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [LeaveMappingController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [LeaveMappingController::class, 'destroy'])->name('delete');
+
+            Route::get('/deleted', [LeaveMappingController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [LeaveMappingController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
+            Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
         | Beds
         |--------------------------------------------------------------------------
         */
@@ -645,17 +686,6 @@ Route::middleware(['auth', 'role:hr,admin'])
 */
 
 Route::prefix('stock')->group(function () {
-
-    Route::get('stock', [StockController::class, 'apiIndex']);
-    Route::get('stock/low', [StockController::class, 'apiLowStock']);
-    Route::get('stock/{id}', [StockController::class, 'apiShow']);
-
-    Route::post('stock', [StockController::class, 'apiStore']);
-    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
-
-    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
-
-    Route::get('stock-trash', [StockController::class, 'apiTrash']);
-    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
-    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+    // (your existing stock API routes here if any; the commented
+    // temporary Leave Type UI routes have been removed to avoid conflicts)
 });
