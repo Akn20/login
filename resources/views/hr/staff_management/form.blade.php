@@ -51,20 +51,25 @@
         Department <span class="text-danger">*</span>
     </label>
 
-    <select name="department" class="form-select @error('department') is-invalid @enderror">
-        <option value="">Select Department</option>
+  <select name="department_id" class="form-select @error('department_id') is-invalid @enderror">
 
-        @foreach($departments as $dept)
-            <option value="{{ $dept->department_name }}"
-                {{ old('department', $staffManagement->department ?? '') == $dept->department_name ? 'selected' : '' }}>
-                {{ $dept->department_name }}
-            </option>
-        @endforeach
-    </select>
+<option value="">Select Department</option>
 
-    @error('department')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
+@foreach($departments as $dept)
+<option value="{{ $dept->id }}"
+{{ old('department_id', $staffManagement->department_id ?? '') == $dept->id ? 'selected' : '' }}>
+{{ $dept->department_name }}
+</option>
+@endforeach
+
+</select>
+
+@error('department_id')
+<div class="invalid-feedback">{{ $message }}</div>
+@enderror
+
+
+
 </div>
 
 
@@ -73,20 +78,22 @@
         Designation <span class="text-danger">*</span>
     </label>
 
-    <select name="designation" class="form-select @error('designation') is-invalid @enderror">
-        <option value="">Select Designation</option>
+    <select name="designation_id" class="form-select @error('designation_id') is-invalid @enderror">
 
-        @foreach($designations as $designation)
-            <option value="{{ $designation->designation_name }}"
-                {{ old('designation', $staffManagement->designation ?? '') == $designation->designation_name ? 'selected' : '' }}>
-                {{ $designation->designation_name }}
-            </option>
-        @endforeach
-    </select>
+<option value="">Select Designation</option>
 
-    @error('designation')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
+@foreach($designations as $designation)
+<option value="{{ $designation->id }}"
+{{ old('designation_id', $staffManagement->designation_id ?? '') == $designation->id ? 'selected' : '' }}>
+{{ $designation->designation_name }}
+</option>
+@endforeach
+
+</select>
+
+@error('designation_id')
+<div class="invalid-feedback">{{ $message }}</div>
+@enderror
 </div>
 
 

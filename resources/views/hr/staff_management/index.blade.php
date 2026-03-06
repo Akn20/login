@@ -57,11 +57,13 @@
                                                 <td>{{ $staffManagement->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
-                                                <td>{{ $staff->role->name ?? '-' }}</td>
-                                                <!-- <td>{{ $staff->department->name ?? '-' }}</td>
-                                                <td>{{ $staff->designation->name ?? '-' }}</td> -->
-                                                <td>{{ $staff->department }}</td>
-                                                <td>{{ $staff->designation }}</td>
+                                                <!-- <td>{{ $staff->role->name ?? '-' }}</td>
+                                              
+                                             <td>{{ $staff->department->department_name ?? '-' }}</td>
+                                            <td>{{ $staff->designation->designation_name ?? '-' }}</td> -->
+                                            <td>{{ optional($staff->role)->name ?? '-' }}</td>
+<td>{{ optional($staff->department)->department_name ?? '-' }}</td>
+<td>{{ optional($staff->designation)->designation_name ?? '-' }}</td>
                                                 <td>
                                                     @if($staff->status === 'Active')
                                                         <span class="badge bg-soft-success text-success">Active</span>

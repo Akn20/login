@@ -28,6 +28,7 @@
                                     <th>Employee ID</th>
                                     <th>Name</th>
                                     <th>Department</th>
+                                    <th>Designation</th>
                                     <th>Status</th>
                                     <th>Deleted At</th>
                                     <th class="text-end">Action</th>
@@ -39,7 +40,8 @@
                                         <td>{{ $staffManagement->firstItem() + $i }}</td>
                                         <td>{{ $staff->employee_id }}</td>
                                         <td>{{ $staff->name }}</td>
-                                       <td>{{ $staff->department ?? '-' }}</td>
+                                      <td>{{ $staff->department->department_name ?? '-' }}</td>
+                                      <td>{{ $staff->designation->designation_name ?? '-' }}</td>
                                         <td>
                                             @if($staff->status === 'Active')
                                                 <span class="badge bg-soft-success text-success">Active</span>

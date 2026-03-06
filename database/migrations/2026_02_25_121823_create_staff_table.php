@@ -21,8 +21,19 @@ return new class extends Migration {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
 
-            $table->string('department');
-            $table->string('designation');
+           $table->uuid('department_id')->nullable();
+            $table->uuid('designation_id')->nullable();
+
+            //foreign keys
+            $table->foreign('department_id')
+      ->references('id')
+      ->on('department_master')
+      ->onDelete('set null');
+
+$table->foreign('designation_id')
+      ->references('id')
+      ->on('designation_master')
+      ->onDelete('set null');
             $table->date('joining_date');
             $table->string('status')->default('Active');
             $table->softDeletes();
