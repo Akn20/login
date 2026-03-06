@@ -27,12 +27,13 @@
         </div>
 
         <div class="main-content">
-             @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card stretch stretch-full">
@@ -57,13 +58,11 @@
                                                 <td>{{ $staffManagement->firstItem() + $i }}</td>
                                                 <td class="fw-semibold">{{ $staff->employee_id }}</td>
                                                 <td>{{ $staff->name }}</td>
-                                                <!-- <td>{{ $staff->role->name ?? '-' }}</td>
-                                              
-                                             <td>{{ $staff->department->department_name ?? '-' }}</td>
-                                            <td>{{ $staff->designation->designation_name ?? '-' }}</td> -->
-                                            <td>{{ optional($staff->role)->name ?? '-' }}</td>
-<td>{{ optional($staff->department)->department_name ?? '-' }}</td>
-<td>{{ optional($staff->designation)->designation_name ?? '-' }}</td>
+
+                                                <td>{{ optional($staff->role)->name ?? '-' }}</td>
+                                                <td>{{ optional($staff->department)->department_name ?? '-' }}</td>
+                                                <td>{{ optional($staff->designation)->designation_name ?? '-' }}</td>
+
                                                 <td>
                                                     @if($staff->status === 'Active')
                                                         <span class="badge bg-soft-success text-success">Active</span>
@@ -71,22 +70,22 @@
                                                         <span class="badge bg-soft-danger text-danger">Inactive</span>
                                                     @endif
                                                 </td>
+
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
-                                                        <!-- View -->
-                                 <a href="{{ route('hr.staff-management.show', $staff->id) }}"
-                                         class="avatar-text avatar-md action-icon"
-                                            title="View">
-                                         <i class="feather-eye"></i>
-                                            </a>
+                                                        {{-- View --}}
+                                                        <a href="{{ route('hr.staff-management.show', $staff->id) }}"
+                                                            class="avatar-text avatar-md action-icon" title="View">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
 
-                                                        <!-- Edit -->
+                                                        {{-- Edit --}}
                                                         <a href="{{ route('hr.staff-management.edit', $staff->id) }}"
                                                             class="avatar-text avatar-md action-icon action-edit" title="Edit">
                                                             <i class="feather-edit"></i>
                                                         </a>
 
-                                                        <!-- Delete -->
+                                                        {{-- Delete --}}
                                                         <form action="{{ route('hr.staff-management.destroy', $staff->id) }}"
                                                             method="POST" class="d-inline"
                                                             onsubmit="return confirm('Are you sure you want to delete this staff?');">
@@ -99,13 +98,12 @@
                                                                 <i class="feather-trash-2"></i>
                                                             </button>
                                                         </form>
-
                                                     </div>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="text-center py-4">
+                                                <td colspan="8" class="text-center py-4">
                                                     No staff records found.
                                                 </td>
                                             </tr>

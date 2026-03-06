@@ -10,7 +10,7 @@ use App\Models\PurchaseOrder;
 class Vendor extends Model
 {
     use SoftDeletes;
-
+    protected $table = "vendors";
     public $incrementing = false;      // Because UUID
     protected $keyType = 'string';     // UUID is string
 

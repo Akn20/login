@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('page-title', 'Admin Dashboard')</title>
 
@@ -118,8 +118,59 @@
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script> 
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/js/tom-select.complete.min.js"></script>
 
+        {{-- Toggle Script --}}
+       <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.status-toggle-input').forEach(function (toggle) {
+
+                toggle.addEventListener('change', function () {
+
+                    const checkbox = this;
+                    const url = checkbox.dataset.url;
+                    const wrapper = checkbox.closest('.status-toggle-wrapper');
+                    const text = wrapper.querySelector('.status-toggle-text');
+                    const isVip = wrapper.dataset.type === 'vip';
+
+                    fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (!data.success) return;
+
+                       
+                        checkbox.checked = data.is_active;
+
+                        if (isVip) {
+                            text.innerText = data.is_active ? 'Yes' : 'No';
+                        } else {
+                            text.innerText = data.is_active ? 'Active' : 'Inactive';
+                        }
+                            
+                        location.reload();
+                        
+                    })
+                  
+                    .catch(() => {
+                        alert('Something went wrong!');
+                        checkbox.checked = !checkbox.checked;
+                    });
+
+                });
+
+            });
+
+        });
+        </script>
+                        
+      
 </body>
 
 </html>
