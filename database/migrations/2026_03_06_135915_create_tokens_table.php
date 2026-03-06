@@ -12,26 +12,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tokens', function (Blueprint $table) {
-            $table->id();
+            
+            $table->uuid('id')->primary();
 
             $table->integer('token_number');
             $table->date('token_date');
 
-            $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('department_id');
-            $table->unsignedBigInteger('doctor_id')->nullable();
+            $table->uuid('patient_id');
+            $table->uuid('doctor_id')->nullable();
 
-            $table->enum('status', ['WAITING','IN_PROGRESS','SKIPPED','COMPLETED' ])->default('WAITING');
+            $table->enum('status', [
+                'WAITING',
+                'IN_PROGRESS',
+                'SKIPPED',
+                'COMPLETED'
+            ])->default('WAITING');
 
-            $table->unsignedBigInteger('created_by')->nullable();
+            $table->uuid('created_by')->nullable();
+            $table->uuid('updated_by')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
 
-            // Foreign keys
-            $table->foreign('patient_id')->references('id')->on('patients');
-            $table->foreign('department_id')->references('id')->on('department_master');
-            $table->foreign('doctor_id')->references('id')->on('doctors');
-        
+            $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
+            $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('set null');
+
+            $table->unique(['token_date', 'token_number']);
         });
     }
 
