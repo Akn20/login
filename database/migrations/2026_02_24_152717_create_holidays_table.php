@@ -18,7 +18,7 @@ return new class extends Migration
         $table->date('end_date');
         $table->text('details')->nullable();
         $table->string('document')->nullable();
-        $table->boolean('status')->default(1);
+        $table->string('status')->default('active');
         $table->timestamps();
         $table->softDeletes();
     });

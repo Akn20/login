@@ -33,7 +33,7 @@
 
     <div class="col-md-4">
         <strong>Vendor:</strong><br>
-        {{ $purchaseOrder->vendor->name ?? '-' }}
+        {{ $purchaseOrder->inventoryVendor->name ?? '-' }}
     </div>
 
     <div class="col-md-4">

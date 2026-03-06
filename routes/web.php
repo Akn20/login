@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -8,47 +9,54 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 // Auth / Dashboard
-use App\Http\Controllers\Admin\FinancialYearController;
-use App\Http\Controllers\Admin\FinancialYearMappingController;
+use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\Admin\DashboardController;
+
 // Admin: users / roles / FY / hospitals
-use App\Http\Controllers\Admin\HospitalController;
-use App\Http\Controllers\Admin\Inventory\GrnController;
-use App\Http\Controllers\Admin\Inventory\ItemController;
-use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
-use App\Http\Controllers\Admin\Inventory\ReportController;
-// Masters
-use App\Http\Controllers\Admin\Inventory\StockAuditController;
-use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\BedController;
+use App\Http\Controllers\Admin\FinancialYearController;
+use App\Http\Controllers\Admin\FinancialYearMappingController;
+use App\Http\Controllers\Admin\HospitalController;
+
+// Masters
 use App\Http\Controllers\BloodGroupController;
-use App\Http\Controllers\ControlledDrugController;
-// Inventory (admin)
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\ExpiryController;
-use App\Http\Controllers\HR\HRDashboardController;
-use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
-// Pharmacy
 use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
-// Beds / Wards
 use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\StockController;
-// HR
-use App\Http\Controllers\TokenController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+
+// Inventory (admin)
+use App\Http\Controllers\Admin\Inventory\ItemController;
+use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
+use App\Http\Controllers\Admin\Inventory\GrnController;
+use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Admin\Inventory\StockAuditController;
+use App\Http\Controllers\Admin\Inventory\ReportController;
+
+// Pharmacy
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\ExpiryController;
+
+// Beds / Wards
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\WardController;
+
+// HR
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
+
 // Reception / Tokens
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TokenController;
 
 /*
 |--------------------------------------------------------------------------

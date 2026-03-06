@@ -49,9 +49,14 @@
     line-height: 1;
 }
 
-/* ON state */
+/* GREEN when ACTIVE */
 .status-toggle-input:checked + .status-toggle-slider {
-    background-color: #198754; /* green ON */
+    background-color: #198754;
+}
+
+/* RED when INACTIVE */
+.status-toggle-input:not(:checked) + .status-toggle-slider {
+    background-color: #dc3545;
 }
 
 /* 72 width - 22 knob - 2*2px margin ≈ 46 */
@@ -59,38 +64,31 @@
     transform: translateX(56px);
 }
 
-/* Hover */
-.status-toggle-wrapper:hover .status-toggle-slider {
-    background-color: #dc3545; /* red OFF */
-}
-.status-toggle-wrapper:hover .status-toggle-slider::before {
-    background-color: #fff;
-}
-.status-toggle-wrapper:hover .status-toggle-input:checked + .status-toggle-slider {
-    background-color: #198754; /* green ON */
-}</style>
 
-@props([
-    'id',
-    'url',
-    'checked' => false,
-])
+</style>
+
 
 @php
     $isActive = (bool) $checked;
+    $isVip = isset($type) && $type === 'vip';
 @endphp
 
-<label class="status-toggle-wrapper mb-0">
+<label class="status-toggle-wrapper mb-0" data-type="{{ $isVip ? 'vip' : 'status' }}">
     <input
-        type="checkbox"
-        class="form-check-input status-toggle-input"
-        data-id="{{ $id }}"
-        data-url="{{ $url }}"
-        {{ $isActive ? 'checked' : '' }}
-    >
+    type="checkbox"
+    class="status-toggle-input"
+    data-url="{{ $url }}"
+    data-type="{{ isset($type) ? $type : 'status' }}"
+    {{ $isActive ? 'checked' : '' }}
+>
+
     <span class="status-toggle-slider">
         <span class="status-toggle-text">
-            {{ $isActive ? 'Active' : 'Inactive' }}
+            @if($isVip)
+                {{ $isActive ? 'Yes' : 'No' }}
+            @else
+                {{ $isActive ? 'Active' : 'Inactive' }}
+            @endif
         </span>
     </span>
 </label>

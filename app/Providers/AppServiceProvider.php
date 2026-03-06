@@ -19,20 +19,22 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-        public function boot(): void
-        {
-            View::composer('*', function ($view) {
+    public function boot(): void
+    {
+        View::composer('*', function ($view) {
 
-                $modules = Module::whereNull('parent_module')
-                    ->where('status', 1)
-                    ->orderBy('priority')
-                    ->with(['children' => function ($q) {
+            $modules = Module::whereNull('parent_module')
+                ->where('status', 1)
+                ->orderBy('priority')
+                ->with([
+                    'children' => function ($q) {
                         $q->where('status', 1)->orderBy('priority');
-                    }])
-                    ->get();
+                    }
+                ])
+                ->get();
 
-                $view->with('sidebarModules', $modules);
-            });
-            Paginator::useBootstrap();
+            $view->with('sidebarModules', $modules);
+        });
+        Paginator::useBootstrap();
     }
 }

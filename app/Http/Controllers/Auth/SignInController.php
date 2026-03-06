@@ -324,6 +324,7 @@ class SignInController extends Controller
                 'name' => $user->name,
                 'mobile' => $user->mobile,
                 'role' => $user->role?->name,
+                'is_enrolled'=>$user->is_enrolled
             ],
         ]);
     }
