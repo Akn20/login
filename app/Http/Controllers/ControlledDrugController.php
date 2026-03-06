@@ -508,11 +508,23 @@ class ControlledDrugController extends Controller
             'controlled_drug_id' => 'required',
             'patient_id' => 'required',
             'prescription_id' => 'required',
-            'quantity_dispensed' => 'required|integer',
+            'quantity_dispensed' => 'required|integer|min:1',
             'dispense_date' => 'required|date',
             'pharmacist_id' => 'required'
         ]);
 
+        // Get drug
+        $drug = ControlledDrug::where('controlled_drug_id', $request->controlled_drug_id)->firstOrFail();
+
+        // Check stock
+        if ($request->quantity_dispensed > $drug->stock_quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dispense quantity exceeds available stock'
+            ], 400);
+        }
+
+        // 1️⃣ Create dispense record
         $dispense = ControlledDrugDispense::create([
             'dispense_id' => Str::uuid(),
             'controlled_drug_id' => $request->controlled_drug_id,
@@ -520,6 +532,20 @@ class ControlledDrugController extends Controller
             'prescription_id' => $request->prescription_id,
             'quantity_dispensed' => $request->quantity_dispensed,
             'dispense_date' => $request->dispense_date,
+            'pharmacist_id' => $request->pharmacist_id
+        ]);
+
+        // 2️⃣ Reduce stock
+        $drug->stock_quantity = $drug->stock_quantity - $request->quantity_dispensed;
+        $drug->save();
+
+        // 3️⃣ Insert log
+        ControlledDrugLog::create([
+            'log_id' => Str::uuid(),
+            'controlled_drug_id' => $request->controlled_drug_id,
+            'transaction_type' => 'Dispensed',
+            'quantity' => $request->quantity_dispensed,
+            'transaction_date' => $request->dispense_date,
             'pharmacist_id' => $request->pharmacist_id
         ]);
 
