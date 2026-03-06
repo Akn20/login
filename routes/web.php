@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
+use App\Http\Controllers\HR\StaffManagementController;
 
 /*
 |--------------------------------------------------------------------------
