@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -9,54 +8,49 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth / Dashboard
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\Admin\DashboardController;
-
-// Admin: users / roles / FY / hospitals
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
+// Admin: users / roles / FY / hospitals
 use App\Http\Controllers\Admin\HospitalController;
-
-// Masters
-use App\Http\Controllers\BloodGroupController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\InstitutionController;
-use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\ModuleController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\ReligionController;
-use App\Http\Controllers\WorkStatusController;
-
-// Inventory (admin)
+use App\Http\Controllers\Admin\Inventory\GrnController;
+use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
-use App\Http\Controllers\Admin\Inventory\GrnController;
-use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Admin\Inventory\StockAuditController;
+// Masters
 use App\Http\Controllers\Admin\Inventory\ReportController;
-
-// Pharmacy
+use App\Http\Controllers\Admin\Inventory\StockAuditController;
+use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\StockController;
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\ExpiryController;
-
-// Beds / Wards
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
-use App\Http\Controllers\WardController;
-
-// HR
+// Inventory (admin)
+use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
+// Pharmacy
+use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
-
-// Reception / Tokens
+use App\Http\Controllers\ModuleController;
+// Beds / Wards / Patients
+use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\StockController;
+// HR
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WardController;
+use App\Http\Controllers\WorkStatusController;
+// Reception / Tokens
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -242,7 +236,7 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('/delete/{id}', [DesignationController::class, 'destroy'])->name('delete');
             Route::get('/trash', [DesignationController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [DesignationController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [DesignationController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/force-delete/{id>', [DesignationController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
@@ -418,11 +412,11 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
 
-            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id>', [StockController::class, 'destroy'])->name('delete');
 
             Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/restore/{id>', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id>', [StockController::class, 'forceDelete'])->name('forceDelete');
 
             Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
         });
@@ -485,6 +479,7 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/edit/{id}', [ItemController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
+            Route::patch('/toggle-status/{id}', [ItemController::class, 'toggleStatus'])->name('toggleStatus');
 
             // Purchase Orders
             Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
@@ -501,6 +496,25 @@ Route::middleware(['auth', 'role:admin'])
             Route::resource('grns', GrnController::class);
             Route::resource('stock-transfers', StockTransferController::class);
             Route::resource('stock-audits', StockAuditController::class);
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory Vendors (for sidebar Vendors under Inventory)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('inventory-vendors')->name('inventory-vendors.')->group(function () {
+            Route::get('/', [InventoryVendorController::class, 'index'])->name('index');
+            Route::get('/create', [InventoryVendorController::class, 'create'])->name('create');
+            Route::post('/store', [InventoryVendorController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [InventoryVendorController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [InventoryVendorController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [InventoryVendorController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [InventoryVendorController::class, 'delete'])->name('delete');
+            Route::get('/trash', [InventoryVendorController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [InventoryVendorController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [InventoryVendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
@@ -562,6 +576,29 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
+        | Patients (admin web)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('patients/duplicates', [PatientController::class, 'duplicates'])
+            ->name('patients.duplicates');
+        Route::post('patients/merge', [PatientController::class, 'merge'])
+            ->name('patients.merge');
+        Route::get('patients/deleted', [PatientController::class, 'deleted'])
+            ->name('patients.deleted');
+        Route::put('patients/{id}/restore', [PatientController::class, 'restore'])
+            ->name('patients.restore');
+        Route::delete('patients/{id}/force-delete', [PatientController::class, 'forceDelete'])
+            ->name('patients.forceDelete');
+        Route::patch('patients/{id}/toggle-status', [PatientController::class, 'toggleStatus'])
+            ->name('patients.toggleStatus');
+        Route::patch('patients/{id}/toggle-vip', [PatientController::class, 'toggleVip'])
+            ->name('patients.toggleVip');
+
+        Route::resource('patients', PatientController::class);
+
+        /*
+        |--------------------------------------------------------------------------
         | Reception: Tokens / Queue
         |--------------------------------------------------------------------------
         */
@@ -584,11 +621,11 @@ Route::middleware(['auth', 'role:hr,admin'])
     ->name('hr.')
     ->group(function () {
 
-        // HR Dashboard
         Route::get('/dashboard', [HRDashboardController::class, 'index'])
             ->name('dashboard');
 
-        // Staff management
+        Route::get('staff-management', [StaffManagementController::class, 'index'])
+            ->name('staff-management.index');
         Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
             ->name('staff-management.deleted');
         Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
