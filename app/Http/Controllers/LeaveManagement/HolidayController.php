@@ -48,6 +48,9 @@ class HolidayController extends Controller
         'details'    => 'nullable|string',
         'document'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         'status'     => 'required|in:active,inactive', // Matches Weekend style
+    ],[
+        // Custom error message for the user
+        'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
     ]);
 
     if ($request->hasFile('document')) {
@@ -100,6 +103,9 @@ class HolidayController extends Controller
         'end_date'   => 'sometimes|date|after_or_equal:start_date',
         'status'     => 'sometimes|in:active,inactive',
         
+    ],[
+        // Custom error message for the user
+        'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
     ]);
 
     // Update the database fields
