@@ -621,5 +621,7 @@ Route::prefix('stock')->group(function () {
 */
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/tokens', [TokenController::class, 'index'])->name('tokens.index');
-    
+    Route::get('/create',[TokenController::class,'create'])->name('tokens.create');
+    Route::post('/store',[TokenController::class,'store'])->name('tokens.store');
+
 });

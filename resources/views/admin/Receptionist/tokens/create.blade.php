@@ -58,19 +58,7 @@
                                     </select>
                                 </div>
 
-                                <!-- Department -->
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Department</label>
-                                    <select name="department_id" class="form-control" required>
-                                        <option value="">Select Department</option>
-
-                                        @foreach($departments as $department)
-                                            <option value="{{ $department->id }}">
-                                                {{ $department->department_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                
 
                                 <!-- Doctor -->
                                 <div class="col-md-6 mb-3">
@@ -89,12 +77,12 @@
                             </div>
 
                             <!-- Buttons -->
-                            <div class="mt-3">
+                            <div class="d-flex gap-2 mt-3">
                                 <button type="submit" class="btn btn-primary">
                                     Generate Token
                                 </button>
 
-                                <a href="{{ route('admin.tokens.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.tokens.index') }}" class="btn btn-light">
                                     Cancel
                                 </a>
                             </div>
