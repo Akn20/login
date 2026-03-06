@@ -94,6 +94,6 @@ class Institution extends Model
     }
      public function geofences()
     {
-        return $this->hasOne(Geofence::class);
+        return $this->hasMany(Geofence::class);
     }
 }
