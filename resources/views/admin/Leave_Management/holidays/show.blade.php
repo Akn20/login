@@ -48,7 +48,7 @@
             <dt class="col-md-3">Attached Circular</dt>
             <dd class="col-md-9">
                 @if($holiday->document)
-                    <a href="{{ asset('storage/' . $holiday->document) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                    <a href="{{ asset('storage/' . $holiday->document) }}" target="_blank" class="btn btn-sm btn-outline-info" style="width: 100px;">
                         <i class="feather-download me-1"></i> View Document
                     </a>
                 @else

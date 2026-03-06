@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('staff', function (Blueprint $table) {
+            $table->dropColumn('role');
         });
     }
 
     public function down(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+        Schema::table('staff', function (Blueprint $table) {
+            $table->string('role')->nullable();
         });
     }
 };

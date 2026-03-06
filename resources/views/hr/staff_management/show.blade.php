@@ -37,12 +37,39 @@
 
             <dt class="col-md-3">Name</dt>
             <dd class="col-md-9">{{ $staffManagement->name }}</dd>
+            <dt class="col-md-3">Mobile Number</dt>
+<dd class="col-md-9">
+    {{ optional($staffManagement->user)->mobile ?? 'N/A' }}
+</dd>
 
-            <dt class="col-md-3">Department</dt>
-            <dd class="col-md-9">{{ $staffManagement->department }}</dd>
+<dt class="col-md-3">Email</dt>
+<dd class="col-md-9">
+    {{ optional($staffManagement->user)->email ?? 'N/A' }}
+</dd>
 
-            <dt class="col-md-3">Designation</dt>
-            <dd class="col-md-9">{{ $staffManagement->designation }}</dd>
+           <dt class="col-md-3">Department</dt>
+<dd class="col-md-9">
+    {{ $staffManagement->department->department_name ?? '-' }}
+</dd>
+
+<dt class="col-md-3">Designation</dt>
+<dd class="col-md-9">
+    {{ $staffManagement->designation->designation_name ?? '-' }}
+</dd>
+          <dt class="col-md-3">Basic Salary</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->basic_salary ? number_format($staffManagement->basic_salary,2) : 'Not Set' }}
+</dd>
+
+<dt class="col-md-3">HRA</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->hra ? number_format($staffManagement->hra,2) : 'Not Set' }}
+</dd>
+
+<dt class="col-md-3">Allowance</dt>
+<dd class="col-md-9">
+    ₹{{ $staffManagement->allowance ? number_format($staffManagement->allowance,2) : 'Not Set' }}
+</dd>
 
             <dt class="col-md-3">Joining Date</dt>
             <dd class="col-md-9">
@@ -56,6 +83,17 @@
                 </span>
             </dd>   
 
+            
+    <dt class="col-md-3">Document</dt>
+<dd class="col-md-9">
+@if($staffManagement->document_path)
+<a href="{{ asset('storage/'.$staffManagement->document_path) }}" target="_blank">
+    View Document
+</a>
+@else
+No Document Uploaded
+@endif
+</dd>
         </dl>
     </div>
 </div>
