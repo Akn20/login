@@ -8,9 +8,10 @@ use Illuminate\Support\Str;
 
 class UserBiometrics extends Model
 {
-     use SoftDeletes;
+    use SoftDeletes;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected static function boot()
@@ -18,15 +19,15 @@ class UserBiometrics extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->getKey()) {
+            if (! $model->getKey()) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
     }
-        protected $fillable = [
+
+    protected $fillable = [
         'id',
         'user_id',
-        'face_embeddings',   
+        'face_embeddings',
     ];
-    
 }

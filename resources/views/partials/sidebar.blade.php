@@ -91,6 +91,12 @@
                                 <span class="nxl-mtext">Add User</span>
                             </a>
                         </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.users.biometrics') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                                <span class="nxl-mtext">Enroll User Biometrics</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
