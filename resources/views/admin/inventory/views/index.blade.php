@@ -4,11 +4,11 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Inventory Items</h3>
-    <a href="{{ route('admin.inventory.views.create') }}" class="btn btn-primary">+ Add Item</a>
+    <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary">+ Add Item</a>
 </div>
 
 <!-- Search & Filter -->
-<form method="GET" action="{{ route('admin.inventory.views.index') }}" class="row mb-3">
+<form method="GET" action="{{ route('admin.inventory.index') }}" class="row mb-3">
     <div class="col-md-4">
         <input type="text" name="search" value="{{ request('search') }}" 
                 class="form-control" placeholder="Search by name or code">
