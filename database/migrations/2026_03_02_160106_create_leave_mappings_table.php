@@ -31,8 +31,8 @@ return new class extends Migration
         $table->integer('carry_forward_limit')->nullable();
         $table->integer('carry_forward_expiry_days')->nullable();
         // Encashment Rules
-$table->boolean('encashment_allowed')->default(false); //
-$table->string('encashment_trigger')->nullable(); // Year-end / Exit / Specific Date
+        $table->boolean('encashment_allowed')->default(false); //
+        $table->string('encashment_trigger')->nullable(); // Year-end / Exit / Specific Date
 
         // Application Controls
         $table->integer('min_leave_per_application')->default(1);
