@@ -33,13 +33,15 @@
     <label class="form-label">Target Designations (Multi-select) *</label>
     <select name="designations[]" class="form-control select2" multiple required>
         @foreach($designations as $designation)
-            <option value="{{ $designation }}" 
-                {{ (isset($mapping) && in_array($designation, $mapping->designations ?? [])) ? 'selected' : '' }}>
-                {{ ucfirst($designation) }}
+            <option value="{{ $designation->id }}" 
+                {{ (isset($mapping) && in_array($designation->id, $mapping->designations ?? [])) ? 'selected' : '' }}>
+                {{ $designation->designation_name }}
             </option>
         @endforeach
     </select>
-    <small class="text-muted">Designations are pulled from current Staff Management records.</small>
+    @error('designations')
+        <div class="text-danger small">{{ $message }}</div>
+    @enderror
 </div>
 
 {{-- Section 3: Accrual Rules ---}}
@@ -94,19 +96,48 @@
         </div>
     </div>
 </div>
-
-{{-- Section 7: Application Controls  --}}
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Min Leave Per Application</label>
-        <input type="number" name="min_leave_per_application" class="form-control" value="{{ old('min_leave_per_application', $mapping->min_leave_per_application ?? 1) }}">
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="form-check form-switch mt-4">
+            <input class="form-check-input" type="checkbox" name="encashment_allowed" id="encashment_allowed" value="1" 
+                {{ old('encashment_allowed', $mapping->encashment_allowed ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label" for="encashment_allowed">Encashment Allowed</label>
+        </div>
     </div>
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Max Leave Per Application</label>
-        <input type="number" name="max_leave_per_application" class="form-control" value="{{ old('max_leave_per_application', $mapping->max_leave_per_application ?? '') }}">
+    
+    <div id="encashment_trigger_section" class="col-md-6" style="display: {{ old('encashment_allowed', $mapping->encashment_allowed ?? false) ? 'block' : 'none' }};">
+        <label class="form-label">Encashment Trigger</label>
+        <select name="encashment_trigger" class="form-control">
+            <option value="">Select Trigger</option>
+            <option value="Year-end" {{ old('encashment_trigger', $mapping->encashment_trigger ?? '') == 'Year-end' ? 'selected' : '' }}>Year-end</option>
+            <option value="Exit" {{ old('encashment_trigger', $mapping->encashment_trigger ?? '') == 'Exit' ? 'selected' : '' }}>Exit</option>
+            <option value="Specific Date" {{ old('encashment_trigger', $mapping->encashment_trigger ?? '') == 'Specific Date' ? 'selected' : '' }}>Specific Date</option>
+        </select>
     </div>
 </div>
 
+{{-- Section 7: Application Controls  --}}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label class="form-label">Min Leave Per Application *</label>
+        <input type="number" name="min_leave_per_application" 
+               class="form-control @error('min_leave_per_application') is-invalid @enderror" 
+               value="{{ old('min_leave_per_application', $mapping->min_leave_per_application ?? 1) }}" min="1">
+        @error('min_leave_per_application')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">Max Leave Per Application</label>
+        <input type="number" name="max_leave_per_application" 
+               class="form-control @error('max_leave_per_application') is-invalid @enderror" 
+               value="{{ old('max_leave_per_application', $mapping->max_leave_per_application ?? '') }}">
+        @error('max_leave_per_application')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
 {{-- Form Actions  --}}
 <div class="mt-4 d-flex justify-content-end gap-2">
     <button type="submit" class="btn btn-primary btn-sm px-4">
@@ -127,5 +158,14 @@
                 cfFields.style.display = this.checked ? 'block' : 'none';
             });
         }
+        document.getElementById('encashment_allowed').addEventListener('change', function() {
+    const triggerSection = document.getElementById('encashment_trigger_section');
+    if (this.checked) {
+        triggerSection.style.display = 'block';
+    } else {
+        triggerSection.style.display = 'none';
+        // Optional: Clear the value if hidden
+        triggerSection.querySelector('select').value = '';
+    }
     });
 </script>

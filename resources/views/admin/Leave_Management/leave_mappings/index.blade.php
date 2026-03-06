@@ -58,11 +58,18 @@
                                                 <span class="text-danger">No</span> {{-- Red for No [cite: 157] --}}
                                             @endif
                                         </td>
-                                        <td>
-                                        @foreach($mapping->designations ?? [] as $role)
-                                        <span class="badge bg-soft-info text-info">{{ ucfirst($role) }}</span>
-                                        @endforeach
-                                        </td>
+                                        {{-- Locate the Designation/Category <td> in your index table and replace it with this --}}
+<td>
+    @if(isset($designationMap) && !empty($mapping->designations))
+        @foreach($mapping->designations as $id)
+            <span class="badge bg-soft-info text-info me-1">
+                {{ $designationMap[$id] ?? 'Unknown' }}
+            </span>
+        @endforeach
+    @else
+        <span class="text-muted small">No Designations</span>
+    @endif
+</td>
                                         <td class="text-end">
                                             <div class="d-flex gap-2 justify-content-end">
                                         {{-- New View Button --}}

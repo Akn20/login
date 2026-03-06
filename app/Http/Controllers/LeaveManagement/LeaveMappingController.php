@@ -6,76 +6,122 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveMapping;
 use App\Models\LeaveType; 
 use Illuminate\Http\Request;
+use App\Models\Designation; 
 
 class LeaveMappingController extends Controller
 {
-    public function index()
+ 
+     public function index()
     {
-        $mappings = LeaveMapping::with('leaveType')->get();
-        return view('admin.Leave_Management.leave_mappings.index', compact('mappings'));
-    }
+        // 1. Fetch mappings with eager loading for Leave Type names
+        // Note: Using 'mappings' as the variable name to match your existing index file
+        $mappings = LeaveMapping::with('leaveType')->latest()->paginate(10);
+        
+        // 2. Fetch the map of ID => Name from the Designation Master table
+        // This converts the UUIDs in your database into names like 'anaesthetist'
+        $designationMap = Designation::pluck('designation_name', 'id');
 
-   public function create()
+        return view('admin.Leave_Management.leave_mappings.index', compact('mappings', 'designationMap'));
+    }
+ public function create()
 {
     $leaveTypes = \App\Models\LeaveType::all();
-    // Fetch unique designation strings currently assigned to staff
-    $designations = \App\Models\Staff::distinct()->pluck('designation'); 
+    
+    // Updated to use 'designation_name' instead of 'name'
+    $designations = \App\Models\Designation::orderBy('designation_name', 'asc')->get(); 
     
     return view('admin.Leave_Management.leave_mappings.create', compact('leaveTypes', 'designations'));
 }
 
 public function store(Request $request)
 {
+    // Sync checkboxes to boolean values
     $request->merge([
         'status' => $request->has('status') ? 'active' : 'inactive',
         'carry_forward_allowed' => $request->has('carry_forward_allowed'),
+        'encashment_allowed' => $request->has('encashment_allowed'), // New
     ]);
 
     $data = $request->validate([
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
         'employee_status' => 'required|array', 
-        'designations' => 'required|array', // New validation
+        'designations' => 'required|array', // Now handles IDs from Designation Master
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based', 
         'accrual_value' => 'required|integer',
         'leave_nature' => 'required|in:Paid,Unpaid',
         'status' => 'required|in:active,inactive',
-    ]);
+        // Encashment Validation
+        'encashment_allowed' => 'boolean',
+        'encashment_trigger' => 'nullable|string|in:Year-end,Exit,Specific Date',
+        // Carry Forward Validation
+        'carry_forward_allowed' => 'boolean',
+        'carry_forward_limit' => 'nullable|integer',
+        'carry_forward_expiry_days' => 'nullable|integer',
+        'min_leave_per_application' => 'required|integer|min:1', 
+    'max_leave_per_application' => 'nullable|integer|gte:min_leave_per_application',
+    ],[ 
+        // Fixed: added a comma between the two arrays
+        'max_leave_per_application.gte' => 'The maximum leave must be greater than or equal to the minimum leave per application.',
+    ]
+    );
 
     \App\Models\LeaveMapping::create($data);
 
-    return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created!');
+    return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created successfully!');
 }
     public function edit($id)
     {
         $mapping = LeaveMapping::findOrFail($id);
-        $leaveTypes = LeaveType::all(); 
-        return view('admin.Leave_Management.leave_mappings.edit', compact('mapping', 'leaveTypes'));
+        $leaveTypes = LeaveType::all();
+        
+        // Fix: Fetch the designations here as well so the edit form doesn't crash
+        $designations = Designation::orderBy('designation_name', 'asc')->get();
+        
+        return view('admin.Leave_Management.leave_mappings.edit', compact('mapping', 'leaveTypes', 'designations'));
     }
 public function show($id)
-{
-    // Eager load leaveType to show the name in the view
-    $mapping = LeaveMapping::with('leaveType')->findOrFail($id);
-    return view('admin.Leave_Management.leave_mappings.show', compact('mapping'));
-}
+    {
+        // Eager load for the detail view to prevent blank fields
+        $mapping = LeaveMapping::with('leaveType')->findOrFail($id);
+        
+        // Fetch designation map to show names in show.blade.php
+        $designationMap = Designation::pluck('designation_name', 'id');
+        
+        return view('admin.Leave_Management.leave_mappings.show', compact('mapping', 'designationMap'));
+    }
+
+
    public function update(Request $request, $id)
 {
-    $mapping = LeaveMapping::findOrFail($id);
-    
-    // Sync checkboxes
+    $mapping = \App\Models\LeaveMapping::findOrFail($id);
+
     $request->merge([
         'status' => $request->has('status') ? 'active' : 'inactive',
         'carry_forward_allowed' => $request->has('carry_forward_allowed'),
+        'encashment_allowed' => $request->has('encashment_allowed'),
     ]);
 
     $data = $request->validate([
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
         'employee_status' => 'required|array', 
+        'designations' => 'required|array', 
+        // Fixed: removed the space in 'accrual_frequency'
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based', 
         'accrual_value' => 'required|integer',
         'leave_nature' => 'required|in:Paid,Unpaid',
         'status' => 'required|in:active,inactive',
+        'encashment_allowed' => 'boolean',
+        'encashment_trigger' => 'nullable|string',
+        'carry_forward_allowed' => 'boolean',
+        'carry_forward_limit' => 'nullable|integer',
+        'min_leave_per_application' => 'required|integer|min:1', 
+        // Fixed: added the comma at the end of this line
+        'max_leave_per_application' => 'nullable|integer|gte:min_leave_per_application',
+    ], [ 
+        // Fixed: added a comma between the two arrays
+        'max_leave_per_application.gte' => 'The maximum leave must be greater than or equal to the minimum leave per application.',
     ]);
 
     $mapping->update($data);
