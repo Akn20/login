@@ -20,6 +20,7 @@ return new class extends Migration
             $table->char('hospital_id', 36);
             $table->uuid('receptionist_user_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('patient_id')->references('id')->on('patients')->cascadeOnDelete();
             $table->foreign('department_id')->references('id')->on('department_master')->cascadeOnDelete();
