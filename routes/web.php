@@ -42,6 +42,8 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+//Receptionist controllers
+use App\Http\Controllers\TokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -611,3 +613,13 @@ Route::prefix('stock')->group(function () {
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
  });
+
+/*
+|----------------------------------------------------------------------
+| Receptionist: Token and Queue Management
+|----------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/tokens', [TokenController::class, 'index'])->name('tokens.index');
+    
+});
