@@ -30,11 +30,14 @@
     </select>
 </div>
 <div class="mb-3">
-    <label class="form-label">Target Designations (Multi-select) *</label>
-    <select name="designations[]" class="form-control select2" multiple required>
+    <label class="form-label">Target Designation *</label>
+    {{-- Removed 'multiple' and changed 'designations[]' to 'designations' --}}
+    <select name="designations" class="form-control select2" required>
+        <option value="">-- Select Designation --</option>
         @foreach($designations as $designation)
             <option value="{{ $designation->id }}" 
-                {{ (isset($mapping) && in_array($designation->id, $mapping->designations ?? [])) ? 'selected' : '' }}>
+                {{-- Changed in_array to a simple equality check --}}
+                {{ (isset($mapping) && $mapping->designations == $designation->id) ? 'selected' : '' }}>
                 {{ $designation->designation_name }}
             </option>
         @endforeach
