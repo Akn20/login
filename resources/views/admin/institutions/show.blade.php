@@ -95,6 +95,19 @@
                 </div>
             </div>
 
+            {{-- ================= LOCATION ================= --}}
+            <div class="col-12">
+                <div class="card stretch stretch-full">
+                    <div class="card-header">
+                        <h5 class="card-title">Location & Geofence</h5>
+                    </div>
+                        <div class="col-12">
+                            <div id="map" style="height:400px;border-radius:8px;"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 
             {{-- ================= 2. ACCESS & BRANDING ================= --}}
             <div class="col-12">
@@ -169,10 +182,6 @@
                                 @endif
                             </p>
                         </div>
-
-
-
-
                     </div>
                 </div>
             </div>
@@ -294,5 +303,50 @@
 
         </div>
     </div>
+    <script>
+        let geofences = {!! $institution->geofences->toJson() !!};
+    </script>
 
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            if (!geofences || geofences.length === 0) return;
+
+            let first = geofences[0];
+
+            var map = L.map('map').setView([first.center_lat, first.center_lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            let bounds = [];
+
+            geofences.forEach(function (geo) {
+
+                let lat = geo.center_lat;
+                let lng = geo.center_lng;
+                let radius = geo.radius;
+
+                // Marker
+                let marker = L.marker([lat, lng]).addTo(map);
+
+                // Circle
+                let circle = L.circle([lat, lng], {
+                    color: geo.status ? 'green' : 'red',
+                    fillColor: geo.status ? '#0f0' : '#f03',
+                    fillOpacity: 0.25,
+                    radius: radius
+                }).addTo(map);
+
+                bounds.push([lat, lng]);
+
+            });
+
+            map.fitBounds(bounds);
+
+        });
+
+    </script>
 @endsection

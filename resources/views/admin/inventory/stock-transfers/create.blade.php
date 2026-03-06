@@ -35,19 +35,29 @@
 <script>
 let items = @json($items);
 
+function updateStock(selectEl) {
+    const id = selectEl.value;
+    const item = items.find(i => i.id == id);
+    const cell = selectEl.closest('tr').querySelector('.available-stock');
+    cell.textContent = item ? item.stock : '';
+}
+
 function addRow() {
+    // build options with stock data as data attribute (optional)
+    let options = items.map(item =>
+        `<option value="${item.id}" data-stock="${item.stock}">${item.name}</option>`
+    ).join('');
+
+    let initialStock = items.length ? items[0].stock : '';
+
     let row = `
         <tr>
             <td>
-                <select name="items[][item_id]" class="form-control">
-                    ${items.map(item =>
-                        `<option value="${item.id}">
-                            ${item.name}
-                        </option>`
-                    ).join('')}
+                <select name="items[][item_id]" class="form-control" onchange="updateStock(this)">
+                    ${options}
                 </select>
             </td>
-            <td>Auto</td>
+            <td class="available-stock">${initialStock}</td>
             <td>
                 <input type="number" name="items[][quantity]" 
                        class="form-control" min="1">

@@ -131,7 +131,7 @@ class VendorController extends Controller
     {
         $vendors = Vendor::latest()->get();
 
-        return ApiResponse::success($vendors, 'Vendor list retrieved successfully');
+        return response()->json($vendors);
     }
 
 
@@ -253,6 +253,18 @@ class VendorController extends Controller
         $vendor->forceDelete();
 
         return ApiResponse::success(null, 'Vendor permanently deleted');
+    }
+
+    public function apiActiveVendors()
+    {
+        $vendors = Vendor::where('status', 'Active')
+            ->orderBy('vendor_name')
+            ->get(['id', 'vendor_name']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $vendors
+        ]);
     }
 
 }

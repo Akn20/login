@@ -1,43 +1,57 @@
 <?php
 
-// Auth
 use App\Http\Controllers\Admin\DashboardController;
-// Admin controllers
+/*
+|--------------------------------------------------------------------------
+| Controller Imports
+|--------------------------------------------------------------------------
+*/
+
+// Auth / Dashboard
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
+// Admin: users / roles / FY / hospitals
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
+use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
-// Masters controllers
+// Masters
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
+// Inventory (admin)
 use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
-// HR controllers
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
+// Pharmacy
 use App\Http\Controllers\InstitutionController;
-// Module/Institution/Organization controllers
 use App\Http\Controllers\JobTypeController;
-// HR controllers
 use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
-use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
+// Beds / Wards / Patients
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
+// HR
+use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+// Reception / Tokens
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,33 +82,31 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN-ONLY routes  (role = admin)
-|--------------------------------------------------------------------------
-|
-| Admin = Superuser: system setup, masters, institutions, hospitals,
-| financial year, modules, etc.
+| ADMIN AREA (auth + role:admin, prefix admin, name admin.)
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-
-    Route::post('/logout', [SignInController::class, 'logout'])->name('logout');
-
-    Route::prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
         /*
-        |----------------------------------------------------------------------
-        | Dashboard
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Dashboard + Logout
+        |--------------------------------------------------------------------------
         */
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        Route::post('/logout', [SignInController::class, 'logout'])
+            ->name('logout');
+
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Roles
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('roles/deleted', [RoleController::class, 'displayDeletedRoles'])
@@ -109,9 +121,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('roles', RoleController::class)->except(['show']);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Users
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('users/deleted', [UserController::class, 'displayDeletedUser'])
@@ -126,9 +138,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Financial Years & Mapping
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('financial-years/mapping', [FinancialYearMappingController::class, 'index'])
@@ -141,9 +153,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('financial-years', FinancialYearController::class)->except(['show']);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Religion
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('religion')->name('religion.')->group(function () {
@@ -159,9 +171,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Job Type
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('job-type')->name('job-type.')->group(function () {
@@ -177,9 +189,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Work Status
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('work-status')->name('work-status.')->group(function () {
@@ -195,9 +207,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Blood Group
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('blood-groups/deleted/history', [BloodGroupController::class, 'deletedHistory'])
@@ -212,9 +224,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Designation
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('designation')->name('designation.')->group(function () {
@@ -226,13 +238,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::delete('/delete/{id}', [DesignationController::class, 'destroy'])->name('delete');
             Route::get('/trash', [DesignationController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [DesignationController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [DesignationController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/force-delete/{id>', [DesignationController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Masters: Department
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('departments/deleted/history', [DepartmentController::class, 'deletedHistory'])
@@ -245,9 +257,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('departments', DepartmentController::class);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Organization
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('organization/deleted', [OrganizationController::class, 'deleted'])
@@ -262,29 +274,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('organization', OrganizationController::class);
 
         /*
-|--------------------------------------------------------------------------
-| Wards
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Wards
+        |--------------------------------------------------------------------------
+        */
 
         Route::get('ward/deleted', [WardController::class, 'deleted'])
             ->name('ward.deleted');
-
         Route::put('ward/{id}/restore', [WardController::class, 'restore'])
             ->name('ward.restore');
-
         Route::delete('ward/{id}/force-delete', [WardController::class, 'forceDelete'])
             ->name('ward.forceDelete');
-
         Route::patch('ward/{id}/toggle-status', [WardController::class, 'toggleStatus'])
             ->name('ward.toggleStatus');
 
         Route::resource('ward', WardController::class);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Institutions
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('institutions/deleted', [InstitutionController::class, 'deleted'])
@@ -299,9 +308,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('institutions', InstitutionController::class);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Hospitals
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('hospitals/deleted', [HospitalController::class, 'deleted'])
@@ -316,9 +325,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('hospitals', HospitalController::class)->except(['show']);
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Pharmacy: Vendor Management
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('vendors')->name('vendors.')->group(function () {
@@ -334,41 +343,67 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/force-delete/{id}', [VendorController::class, 'forceDelete'])->name('forceDelete');
         });
 
-        // ============================
-        // PHARMACY -> GRN
-        // ============================
+        /*
+        |--------------------------------------------------------------------------
+        | Pharmacy: GRN (PharmacyGrnController only)
+        |--------------------------------------------------------------------------
+        */
 
         Route::prefix('pharmacy')->name('grn.')->group(function () {
+            Route::get('/grn', [PharmacyGrnController::class, 'index'])->name('index');
+            Route::get('/grn/create', [PharmacyGrnController::class, 'create'])->name('create');
+            Route::post('/grn', [PharmacyGrnController::class, 'store'])->name('store');
 
-            Route::get('/grn', [GrnController::class, 'index'])->name('index');
-            Route::get('/grn/create', [GrnController::class, 'create'])->name('create');
-            Route::post('/grn', [GrnController::class, 'store'])->name('store');
+            Route::get('/grn/{id}', [PharmacyGrnController::class, 'show'])->name('show');
+            Route::get('/grn/{id}/edit', [PharmacyGrnController::class, 'edit'])->name('edit');
+            Route::put('/grn/{id}', [PharmacyGrnController::class, 'update'])->name('update');
+            Route::get('/grn/{id}/verify', [PharmacyGrnController::class, 'verify'])->name('verify');
+            Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'verifyStore'])->name('verify.store');
 
-            Route::get('/grn/{id}', [GrnController::class, 'show'])->name('show');
-            Route::get('/grn/{id}/edit', [GrnController::class, 'edit'])->name('edit');
-            Route::put('/grn/{id}', [GrnController::class, 'update'])->name('update');
-            Route::get('/grn/{id}/verify', [GrnController::class, 'verify'])->name('verify');
-            Route::post('/grn/{id}/verify', [GrnController::class, 'verifyStore'])->name('verify.store');
+            Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'rejectStore'])->name('reject.store');
+            Route::get('/grn/{id}/print', [PharmacyGrnController::class, 'print'])->name('print');
 
-            Route::post('/grn/{id}/reject', [GrnController::class, 'rejectStore'])->name('reject.store');
-
-            Route::get('/grn/{id}/print', [GrnController::class, 'print'])
-                ->name('print');
-
-            Route::get('/grn-trash', [GrnController::class, 'trash'])->name('trash');
-            Route::delete('/grn/{id}', [GrnController::class, 'destroy'])->name('destroy');
-            Route::put('/grn-trash/{id}/restore', [GrnController::class, 'restore'])->name('restore');
-            Route::delete('/grn-trash/{id}/force-delete', [GrnController::class, 'forceDelete'])->name('forceDelete');
-
+            Route::get('/grn-trash', [PharmacyGrnController::class, 'trash'])->name('trash');
+            Route::delete('/grn/{id}', [PharmacyGrnController::class, 'destroy'])->name('destroy');
+            Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'restore'])->name('restore');
+            Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'forceDelete'])->name('forceDelete');
         });
+
         /*
-        |----------------------------------------------------------------------
-        | Pharmacy: stock management
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Pharmacy: Controlled Drug Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('controlledDrug')->name('controlledDrug.')->group(function () {
+            Route::get('/', [ControlledDrugController::class, 'index'])->name('index');
+
+            Route::get('/create', [ControlledDrugController::class, 'create'])->name('create');
+            Route::post('/store', [ControlledDrugController::class, 'store'])->name('store');
+
+            Route::get('/edit/{id}', [ControlledDrugController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [ControlledDrugController::class, 'update'])->name('update');
+
+            Route::get('/show/{id}', [ControlledDrugController::class, 'show'])->name('show');
+            Route::delete('/delete/{id}', [ControlledDrugController::class, 'destroy'])->name('delete');
+            Route::get('/trash', [ControlledDrugController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [ControlledDrugController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [ControlledDrugController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::get('/log', [ControlledDrugController::class, 'log'])->name('log');
+
+            Route::get('/dispense', [ControlledDrugController::class, 'dispenseIndex'])->name('dispenseIndex');
+            Route::get('/dispense/create', [ControlledDrugController::class, 'dispenseCreate'])->name('dispenseCreate');
+            Route::post('/dispense/store', [ControlledDrugController::class, 'dispenseStore'])->name('dispenseStore');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pharmacy: Stock Management
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('stock')->name('stock.')->group(function () {
-
             Route::get('/', [StockController::class, 'index'])->name('index');
 
             Route::get('/create', [StockController::class, 'create'])->name('create');
@@ -379,20 +414,39 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
 
-            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id>', [StockController::class, 'destroy'])->name('delete');
 
             Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/restore/{id>', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id>', [StockController::class, 'forceDelete'])->name('forceDelete');
 
             Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
-
         });
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Pharmacy: Expiry
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('expiry')->name('expiry.')->group(function () {
+            Route::get('/', [ExpiryController::class, 'index'])->name('index');
+            Route::get('/show/{id}', [ExpiryController::class, 'show'])->name('show');
+            Route::delete('/delete/{id}', [ExpiryController::class, 'destroy'])->name('delete');
+            Route::get('/trash', [ExpiryController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [ExpiryController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [ExpiryController::class, 'forceDelete'])->name('forceDelete');
+
+            Route::post('/mark-expired/{id}', [ExpiryController::class, 'markExpired'])->name('markExpired');
+            Route::post('/return-to-vendor/{id}', [ExpiryController::class, 'returnToVendor'])->name('returnToVendor');
+            Route::post('/approve/{id}', [ExpiryController::class, 'approve'])->name('approve');
+            Route::post('/complete/{id}', [ExpiryController::class, 'complete'])->name('complete');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
         | Modules
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('modules')->name('modules.')->group(function () {
@@ -409,21 +463,27 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::patch('/toggle-status/{id}', [ModuleController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
-        Route::get('inventory/reports',
-            [ReportController::class, 'index']
-        )->name('inventory.reports');
+        /*
+        |--------------------------------------------------------------------------
+        | Inventory (admin web)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('inventory/reports', [ReportController::class, 'index'])
+            ->name('inventory.reports');
 
         Route::prefix('inventory')->name('inventory.')->group(function () {
 
-            // ITEMS
+            // Items
             Route::get('/', [ItemController::class, 'index'])->name('index');
             Route::get('/create', [ItemController::class, 'create'])->name('create');
             Route::post('/store', [ItemController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [ItemController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('delete');
+            Route::patch('/toggle-status/{id}', [ItemController::class, 'toggleStatus'])->name('toggleStatus');
 
-            // PURCHASE ORDERS
+            // Purchase Orders
             Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])
                 ->name('purchase-orders.index');
             Route::get('purchase-orders/deleted', [PurchaseOrderController::class, 'deleted'])
@@ -434,18 +494,35 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
                 ->name('purchase-orders.forceDelete');
             Route::resource('purchase-orders', PurchaseOrderController::class);
 
-            // GRNS
+            // GRNs, transfers, audits
             Route::resource('grns', GrnController::class);
             Route::resource('stock-transfers', StockTransferController::class);
             Route::resource('stock-audits', StockAuditController::class);
-
-            // Route::get('reports', [ReportController::class, 'index'])->name('inventory.reports');
-
         });
+
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Inventory Vendors (for sidebar Vendors under Inventory)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('inventory-vendors')->name('inventory-vendors.')->group(function () {
+            Route::get('/', [InventoryVendorController::class, 'index'])->name('index');
+            Route::get('/create', [InventoryVendorController::class, 'create'])->name('create');
+            Route::post('/store', [InventoryVendorController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [InventoryVendorController::class, 'show'])->name('show');
+            Route::get('/edit/{id}', [InventoryVendorController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [InventoryVendorController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [InventoryVendorController::class, 'delete'])->name('delete');
+            Route::get('/trash', [InventoryVendorController::class, 'trash'])->name('trash');
+            Route::get('/restore/{id}', [InventoryVendorController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [InventoryVendorController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
         | Weekends (Leave management master)
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::prefix('weekends')->name('weekends.')->group(function () {
@@ -458,12 +535,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/deleted', [WeekendController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [WeekendController::class, 'restore'])->name('restore');
             Route::delete('/force-delete/{id}', [WeekendController::class, 'forceDelete'])->name('forceDelete');
-
             Route::patch('/toggle-status/{id}', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
-        Route::prefix('holidays')->name('holidays.')->group(function () {
+        /*
+        |--------------------------------------------------------------------------
+        | Holidays (Leave management master)
+        |--------------------------------------------------------------------------
+        */
 
+        Route::prefix('holidays')->name('holidays.')->group(function () {
             Route::get('/', [HolidayController::class, 'index'])->name('index');
             Route::get('/create', [HolidayController::class, 'create'])->name('create');
             Route::post('/store', [HolidayController::class, 'store'])->name('store');
@@ -475,48 +556,33 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/deleted', [HolidayController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [HolidayController::class, 'restore'])->name('restore');
             Route::delete('/force-delete/{id}', [HolidayController::class, 'forceDelete'])->name('forceDelete');
-
             Route::patch('/toggle-status/{id}', [HolidayController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
-
-
         /*
-/*
-|--------------------------------------------------------------------------
-| Leave Types (Leave management master)
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('leave-type')->name('leave-type.')->group(function () {
-
-    Route::get('/', [LeaveTypeController::class, 'index'])->name('index');
-    
-
-    Route::get('/create', [LeaveTypeController::class, 'create'])->name('create');
-
-    Route::post('/store', [LeaveTypeController::class, 'store'])->name('store');
-
-    Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('edit');
-
-    Route::put('/update/{id}', [LeaveTypeController::class, 'update'])->name('update');
-
-    Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy'])->name('delete');
-
-    Route::get('/deleted', [LeaveTypeController::class, 'deleted'])->name('deleted');
-
-     Route::post('/restore/{id}', [LeaveTypeController::class, 'restore'])->name('restore');
-     
-    Route::delete('/force-delete/{id}', [LeaveTypeController::class, 'forceDelete'])->name('forceDelete');
-});
-         /*
-=======
-        /*
-
-        |----------------------------------------------------------------------
-        | Leave Mappings
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Leave Types (Leave management master)
+        |--------------------------------------------------------------------------
         */
+
+        Route::prefix('leave-type')->name('leave-type.')->group(function () {
+            Route::get('/', [LeaveTypeController::class, 'index'])->name('index');
+            Route::get('/create', [LeaveTypeController::class, 'create'])->name('create');
+            Route::post('/store', [LeaveTypeController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [LeaveTypeController::class, 'edit'])->name('edit');
+            Route::put('/update/{id}', [LeaveTypeController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [LeaveTypeController::class, 'destroy'])->name('delete');
+            Route::get('/deleted', [LeaveTypeController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [LeaveTypeController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [LeaveTypeController::class, 'forceDelete'])->name('forceDelete');
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Leave Mappings (Leave management master)
+        |--------------------------------------------------------------------------
+        */
+
         Route::prefix('leave-mappings')->name('leave-mappings.')->group(function () {
             Route::get('/', [LeaveMappingController::class, 'index'])->name('index');
             Route::get('/create', [LeaveMappingController::class, 'create'])->name('create');
@@ -525,42 +591,69 @@ Route::prefix('leave-type')->name('leave-type.')->group(function () {
             Route::get('/edit/{id}', [LeaveMappingController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [LeaveMappingController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [LeaveMappingController::class, 'destroy'])->name('delete');
-            
-            // Soft Delete & Status Toggle
+
             Route::get('/deleted', [LeaveMappingController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [LeaveMappingController::class, 'restore'])->name('restore');
             Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
+
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Beds
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         Route::get('beds/deleted', [BedController::class, 'deleted'])
             ->name('beds.deleted');
-
         Route::put('beds/{id}/restore', [BedController::class, 'restore'])
             ->name('beds.restore');
-
         Route::delete('beds/{id}/force-delete', [BedController::class, 'forceDelete'])
             ->name('beds.forceDelete');
-
         Route::get('beds/generate-code/{ward}', [BedController::class, 'generateCode'])
             ->name('beds.generateCode');
+
         Route::resource('beds', BedController::class);
 
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | Patients (admin web)
+        |--------------------------------------------------------------------------
+        */
 
-});
+        Route::get('patients/duplicates', [PatientController::class, 'duplicates'])
+            ->name('patients.duplicates');
+        Route::post('patients/merge', [PatientController::class, 'merge'])
+            ->name('patients.merge');
+        Route::get('patients/deleted', [PatientController::class, 'deleted'])
+            ->name('patients.deleted');
+        Route::put('patients/{id}/restore', [PatientController::class, 'restore'])
+            ->name('patients.restore');
+        Route::delete('patients/{id}/force-delete', [PatientController::class, 'forceDelete'])
+            ->name('patients.forceDelete');
+        Route::patch('patients/{id}/toggle-status', [PatientController::class, 'toggleStatus'])
+            ->name('patients.toggleStatus');
+        Route::patch('patients/{id}/toggle-vip', [PatientController::class, 'toggleVip'])
+            ->name('patients.toggleVip');
+
+        Route::resource('patients', PatientController::class);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reception: Tokens / Queue
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('tokens')->name('tokens.')->group(function () {
+            Route::get('/', [TokenController::class, 'index'])->name('index');
+            Route::get('/create', [TokenController::class, 'create'])->name('create');
+            Route::post('/store', [TokenController::class, 'store'])->name('store');
+        });
+    });
 
 /*
 |--------------------------------------------------------------------------
-| HR MODULE routes  (role = hr OR admin)
-|--------------------------------------------------------------------------
-|
-| HR = staff management. Admin can also access (superuser).
+| HR MODULE routes (role = hr OR admin)
 |--------------------------------------------------------------------------
 */
 
@@ -569,49 +662,30 @@ Route::middleware(['auth', 'role:hr,admin'])
     ->name('hr.')
     ->group(function () {
 
-        // HR Dashboard (create later)
         Route::get('/dashboard', [HRDashboardController::class, 'index'])
             ->name('dashboard');
 
-        // Staff management (employee master) – moved here for HR
+        Route::get('staff-management', [StaffManagementController::class, 'index'])
+            ->name('staff-management.index');
         Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])
             ->name('staff-management.deleted');
-
         Route::put('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])
             ->name('staff-management.restore');
-
         Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
             ->name('staff-management.forceDelete');
-
         Route::patch('staff-management/{id}/toggleStatus', [StaffManagementController::class, 'toggleStatus'])
             ->name('staff-management.toggleStatus');
 
         Route::resource('staff-management', StaffManagementController::class);
     });
 
-/*// Leave Type UI (temporary UI routes)
+/*
+|--------------------------------------------------------------------------
+| Stock API routes (no auth middleware)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/leave-type', function () {
-    return view('admin.Leave_Management.leave_type.index');
-})->name('admin.leave-type.index');
-
-Route::get('/leave-type/create', function () {
-    return view('admin.Leave_Management.leave_type.form');
-})->name('admin.leave-type.create');
-
-Route::get('/leave-type/deleted', function () {
-    return view('admin.Leave_Management.leave_type.deleted');
-})->name('admin.leave-type.deleted');
-Route::get('/leave-type/edit/{id}', function ($id) {
-
-    // temporary dummy data
-    $leave = (object)[
-        'name' => 'Casual Leave',
-        'description' => 'Sample leave',
-        'allow_half_day' => true,
-        'approval_required' => true
-    ];
-
-    return view('admin.Leave_Management.leave_type.edit', compact('leave'));
-
-})->name('admin.leave-type.edit');*/
+Route::prefix('stock')->group(function () {
+    // (your existing stock API routes here if any; the commented
+    // temporary Leave Type UI routes have been removed to avoid conflicts)
+});

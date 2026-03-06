@@ -11,7 +11,10 @@ class StockAuditController extends Controller
 {
     public function index()
     {
-        $audits = StockAudit::with('item')->latest()->paginate(10);
+        // include soft-deleted items so that past audits still show their names
+        $audits = StockAudit::with(['item' => function($q) {
+            $q->withTrashed();
+        }])->latest()->paginate(10);
         return view('admin.inventory.stock-audits.index', compact('audits'));
     }
 

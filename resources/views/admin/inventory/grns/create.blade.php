@@ -25,7 +25,7 @@
 
     <div class="col-md-4">
         <strong>Vendor:</strong><br>
-        {{ $po->vendor->name ?? '-' }}
+        {{ $po->inventoryVendor->name ?? '-' }}
     </div>
 
     <div class="col-md-4">

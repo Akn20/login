@@ -35,12 +35,18 @@
 
     <div class="col-md-4 mb-3">
         <label>Category</label>
-        <select name="category" class="form-control" required>
+        <select name="category" id="category-select" class="form-control" required>
             <option value="">Select</option>
-            <option>Medicine</option>
-            <option>Equipment</option>
-            <option>Consumable</option>
+            @foreach($categories ?? [] as $cat)
+                <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+            @endforeach
+            <option value="other" {{ old('category') == 'other' ? 'selected' : '' }}>Other</option>
         </select>
+        <div class="mt-2" id="category-other-container" style="display: none;">
+            <input type="text" name="category_other" id="category-other"
+                   class="form-control" placeholder="Enter new category"
+                   value="{{ old('category_other') }}">
+        </div>
     </div>
 
     <div class="col-md-4 mb-3">
@@ -85,8 +91,15 @@
 
 </div>
 
-<button class="btn btn-success mt-3">Save Item</button>
-<a href="{{ route('admin.inventory.index') }}" class="btn btn-secondary mt-3">Cancel</a>
+<div class="text-end mt-3">
+    <button type="submit" class="btn btn-primary">
+        <i class="feather-save me-3"></i> Save Item
+    </button>
+
+    <button type="button" class="btn btn-secondary ms" onclick="window.location='{{ route('admin.inventory.index') }}'">
+        <i class="feather-x me-4"></i> Cancel
+    </button>
+</div>
 
 @if(session('success'))
     <div class="alert alert-success">
@@ -99,3 +112,30 @@
 </form>
 
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const select = document.getElementById('category-select');
+        const otherContainer = document.getElementById('category-other-container');
+        const otherInput = document.getElementById('category-other');
+
+        function toggleOther() {
+            if (select.value === 'other') {
+                otherContainer.style.display = '';
+                otherInput.setAttribute('required', 'required');
+            } else {
+                otherContainer.style.display = 'none';
+                otherInput.removeAttribute('required');
+                otherInput.value = '';
+            }
+        }
+
+        if (select) {
+            select.addEventListener('change', toggleOther);
+            // run on load in case old value is 'other'
+            toggleOther();
+        }
+    });
+</script>
+@endpush

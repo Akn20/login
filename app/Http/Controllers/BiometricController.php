@@ -27,7 +27,7 @@ class BiometricController extends Controller
         $request->validate([
             'file' => 'required|image', // Base64 string from phone
         ]);
-
+       
         try {
             $file = $request->file('file');
 
@@ -55,7 +55,6 @@ class BiometricController extends Controller
                 // Set is_enrolled to true
                 $user->is_enrolled = true;
                 $user->save();
-
                 return response()->json(['status' => 'success', 'message' => 'Biometric enrolled successfully']);
             }
 
@@ -91,7 +90,6 @@ class BiometricController extends Controller
         if ($already) {
             return response()->json(['message' => 'Already checked in today'], 400);
         }
-        Log::info("After Attendance check");
         // 2. Geofence Check
         $geofence = Geofence::where('status', true)->first();
         if (!$geofence) {
@@ -122,8 +120,6 @@ class BiometricController extends Controller
             $storedEmbedding = Crypt::decryptString($biometricData->face_embeddings);
            
             $bioResult = $this->verifyFace($user->id, $storedEmbedding, $request->file('file'));
-Log::info('Verification time: '.(microtime(true) - $start));
-            Log::info($bioResult);
 
             if (($bioResult['status']) !== 'success') {
                 return response()->json([

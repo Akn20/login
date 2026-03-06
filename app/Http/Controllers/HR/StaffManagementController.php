@@ -14,26 +14,31 @@ use App\Models\Designation;
 
 class StaffManagementController extends Controller
 {
-    private function generateEmployeeId()
-    {
-        $last = Staff::orderBy('id', 'desc')->first();
-        $nextNumber = $last ? ($last->id + 1) : 1;
-        
-        // Format as EMP-0001, EMP-0002, etc.
-        return 'EMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
-    }
+    
+private function generateEmployeeId()
+{
+    $lastId = Staff::withTrashed()->max('id');
+    $nextNumber = $lastId ? $lastId + 1 : 1;
 
+    return 'EMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+}
     public function index()
-    {
-        // Use Eager Loading with('role', 'user') to prevent N+1 query issues in the view
-        $staffManagement = Staff::with(['role', 'user'])->latest()->paginate(10);
+{
+    $staffManagement = Staff::with([
+        'role',
+        'user',
+        'department',
+        'designation'
+    ])->latest()->paginate(10);
 
-        if (request()->wantsJson()) {
-            return response()->json(Staff::with(['role', 'user'])->latest()->get());
-        }
-
-        return view('hr.staff_management.index', compact('staffManagement'));
+    if (request()->wantsJson()) {
+        return response()->json(
+            Staff::with(['role','user','department','designation'])->latest()->get()
+        );
     }
+
+    return view('hr.staff_management.index', compact('staffManagement'));
+}
 
     // public function create()
     // {
@@ -72,8 +77,11 @@ public function create()
         $request->validate([
             'name' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
-            'department' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
+            // 'department' => 'required|string|max:255',
+            // 'designation' => 'required|string|max:255',
+
+            'department_id' => 'required|exists:department_master,id',
+'designation_id' => 'required|exists:designation_master,id',
             'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
             'mobile' => 'required|digits:10|unique:users,mobile',
@@ -109,8 +117,10 @@ if ($request->hasFile('document')) {
                     'employee_id' => $this->generateEmployeeId(),
                     'name' => $request->name,
                     'role_id' => $request->role_id,
-                    'department' => $request->department,
-                    'designation' => $request->designation,
+                    // 'department' => $request->department,
+                    // 'designation' => $request->designation,
+                    'department_id' => $request->department_id,
+'designation_id' => $request->designation_id,
                     'joining_date' => $request->joining_date,
                     'status' => $request->status,
                     'document_path' => $documentPath,
@@ -166,8 +176,10 @@ if ($request->hasFile('document')) {
         $request->validate([
             'name' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
-            'department' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
+            // 'department' => 'required|string|max:255',
+            // 'designation' => 'required|string|max:255',
+            'department_id' => 'required|exists:department_master,id',
+'designation_id' => 'required|exists:designation_master,id',
             'joining_date' => 'required|date|before_or_equal:today',
             'status' => 'required|in:Active,Inactive',
             // 'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id,
@@ -193,10 +205,11 @@ if ($request->hasFile('document')) {
                 $staff->update([
                     'name' => $request->name,
                     'role_id' => $request->role_id,
-                    'department' => $request->department,
+                  
                     'joining_date' => $request->joining_date,
                     'status' => $request->status,
-                    'designation' => $request->designation,
+                'department_id' => $request->department_id,
+'designation_id' => $request->designation_id,
                     'document_path' => $documentPath,
                     'basic_salary' => $request->basic_salary, 
                     'hra' => $request->hra,
@@ -244,12 +257,19 @@ if ($request->hasFile('document')) {
 
     // --- Soft Delete Management Methods ---
 
-    public function deleted()
-    {
-        $staffManagement = Staff::onlyTrashed()->latest()->paginate(10);
-        return view('hr.staff_management.deleted', compact('staffManagement'));
-    }
+   public function deleted()
+{
+    $staffManagement = Staff::with([
+        'department',
+        'designation',
+        'role'
+    ])
+    ->onlyTrashed()
+    ->latest()
+    ->paginate(10);
 
+    return view('hr.staff_management.deleted', compact('staffManagement'));
+}
     public function restore($id)
     {
         $staff = Staff::onlyTrashed()->findOrFail($id);
@@ -277,13 +297,17 @@ if ($request->hasFile('document')) {
 
         return redirect()->route('hr.staff-management.deleted')->with('success', 'Staff permanently deleted.');
     }
+public function show($id)
+{
+    $staffManagement = Staff::with([
+        'role',
+        'user',
+        'department',
+        'designation'
+    ])->findOrFail($id);
 
-    public function show($id)
-    {
-        $staffManagement = Staff::with(['role', 'user'])->findOrFail($id);
-        return view('hr.staff_management.show', compact('staffManagement'));
-    }
-
+    return view('hr.staff_management.show', compact('staffManagement'));
+}
     // App API Endpoints
     public function apiIndex()
     {
