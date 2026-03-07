@@ -3,7 +3,6 @@
 @section('content')
 <div class="nxl-content">
 
-    <!-- Success / Error Messages -->
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -20,7 +19,7 @@
             </div>
             <ul class="breadcrumb">
                 <li class="breadcrumb-item">Receptionist</li>
-                <li class="breadcrumb-item">Tokens</li>
+                <li class="breadcrumb-item">Token & Queue Management</li>
             </ul>
         </div>
 
@@ -43,9 +42,10 @@
                                     <tr>
                                         <th>Sl.No.</th>
                                         <th>Token No.</th>
+                                        <th>Appointment id</th>
                                         <th>Patient</th>
-                                        <th>Department</th>
                                         <th>Doctor</th>
+                                        <th>Department</th>
                                         <th>Status</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
@@ -55,25 +55,30 @@
                                     @forelse($tokens as $index => $token)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $token->token_number }}</td>
+                                            <td>{{ $token->token_number ?? '-' }}</td>
+                                            <td>{{ $token->appointment->id ?? '-' }}</td>
                                             <td>
-                                                {{ $token->patient->first_name ?? '' }}
-                                                {{ $token->patient->last_name ?? '' }}
+                                                {{ $token->appointment->patient->first_name ?? '-' }}
+                                                {{ $token->appointment->patient->last_name ?? '' }}
                                             </td>
-                                            <td>{{ $token->department->department_name ?? '-' }}</td>
-                                            <td>{{ $token->doctor->doctor_name ?? '-' }}</td>
-
                                             <td>
-                                                @if($token->status == 'WAITING')
+                                                {{ $token->appointment->doctor->first_name ?? '-' }}
+                                                {{ $token->appointment->doctor->last_name ?? '' }}
+                                            </td>
+                                            <td>
+                                                {{ $token->appointment->department->department_name ?? '-' }}
+                                            </td>
+                                            <td>
+                                                @if(($token->status ?? '') == 'WAITING')
                                                     <span class="badge bg-soft-warning text-warning">Waiting</span>
-                                                @elseif($token->status == 'IN_PROGRESS')
-                                                    <span class="badge bg-soft-info text-info">In Progress</span>
-                                                @elseif($token->status == 'SKIPPED')
+                                                @elseif(($token->status ?? '') == 'SKIPPED')
                                                     <span class="badge bg-soft-danger text-danger">Skipped</span>
-                                                @elseif($token->status == 'COMPLETED')
+                                                @elseif(($token->status ?? '') == 'COMPLETED')
                                                     <span class="badge bg-soft-success text-success">Completed</span>
                                                 @else
-                                                    <span class="badge bg-soft-secondary text-secondary">{{ $token->status }}</span>
+                                                    <span class="badge bg-soft-secondary text-secondary">
+                                                        {{ $token->status ?? 'N/A' }}
+                                                    </span>
                                                 @endif
                                             </td>
 
@@ -93,7 +98,7 @@
                                                     </a>
 
                                                     <!-- Skip -->
-                                                    @if($token->status == 'WAITING')
+                                                    @if(($token->status ?? '') == 'WAITING')
                                                         <form action="{{ route('admin.tokens.skip', $token->id) }}"
                                                               method="POST"
                                                               onsubmit="return confirm('Are you sure you want to skip this token?')">
@@ -107,7 +112,7 @@
                                                     @endif
 
                                                     <!-- Complete -->
-                                                    @if($token->status != 'COMPLETED')
+                                                    @if(($token->status ?? '') != 'COMPLETED')
                                                         <form action="{{ route('admin.tokens.complete', $token->id) }}"
                                                               method="POST"
                                                               onsubmit="return confirm('Are you sure you want to complete this token?')">
@@ -119,28 +124,23 @@
                                                             </button>
                                                         </form>
                                                     @endif
-
                                                 </div>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">
+                                            <td colspan="8" class="text-center text-muted">
                                                 No token records found.
                                             </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-
                             </table>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-
 </div>
 @endsection
