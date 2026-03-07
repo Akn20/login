@@ -11,7 +11,9 @@ class StockAudit extends Model
         'item_id',
         'system_stock',
         'physical_stock',
-        'difference'
+        'difference',
+        //added by sushan
+        'audit_date'
     ];
 
     public function item()
