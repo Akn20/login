@@ -14,6 +14,10 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->where('deleted_at', null)->latest()->paginate(10);
+        if(request()->wantsJson()){
+            $users = User::with('role')->where('deleted_at', null)->latest()->get();
+            return response()->json($users);
+        }
         return view('admin.users.index', compact('users'));
     }
 
@@ -125,8 +129,11 @@ class UserController extends Controller
         ]);
     }
 
-    
-
+    //Get USERS Not Enrolled
+    public function notEnrolled(){
+        $users = User::where('is_enrolled', false)->get();
+        return response()->json($users);
+    }
 }
 
 

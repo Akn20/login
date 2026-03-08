@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Geofence;
+use App\Models\User;
 use App\Models\UserBiometrics;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,62 +15,84 @@ use Illuminate\Support\Facades\Log;
 class BiometricController extends Controller
 {
     // ENORLL USER BIOMETRICS
-    public function enroll(Request $request)
-    {
-        $user = auth('sanctum')->user();
+  public function enroll(Request $request)
+{
+    $admin = auth('sanctum')->user();
 
-        if (! $user) {
-            return response()->json(['status' => 'error', 'message' => 'User is not authenticated.'], 401);
-        }
+    if (!$admin) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'User not authenticated'
+        ], 401);
+    }
+
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'file' => 'required|image'
+    ]);
+
+    try {
+
+        // Target user to enroll
+        $user = User::findOrFail($request->user_id);
+
         if ($user->is_enrolled) {
-            return response()->json(['status' => 'error', 'message' => 'Already enrolled'], 400);
-        }
-        $request->validate([
-            'file' => 'required|image', // Base64 string from phone
-        ]);
-
-        try {
-            $file = $request->file('file');
-
-            // Send to Python AI service
-            $response = Http::attach(
-                'file',
-                fopen($file->getRealPath(), 'r'),
-                $file->getClientOriginalName()
-            )
-                ->post('http://localhost:8099/enroll', [
-                    'user_id' => $user->id,
-                ]);
-
-            $result = $response->json();
-
-            if ($response->successful() && ($result['status'] ?? '') === 'success') {
-                // Encrypt the 128D array and store
-                $encryptedEmbedding = Crypt::encryptString(json_encode($result['embedding']));
-
-                UserBiometrics::updateOrCreate(
-                    ['user_id' => $user->id],
-                    ['face_embeddings' => $encryptedEmbedding]
-                );
-
-                // Set is_enrolled to true
-                $user->is_enrolled = true;
-                $user->save();
-
-                return response()->json(['status' => 'success', 'message' => 'Biometric enrolled successfully']);
-            }
-
             return response()->json([
                 'status' => 'error',
-                'message' => $result['message'] ?? 'Face not detected. Please try again with better lighting.',
+                'message' => 'User already enrolled'
             ], 400);
-
-        } catch (\Exception $e) {
-            Log::error('Enrollment Error: '.$e->getMessage());
-
-            return response()->json(['status' => 'error', 'message' => 'Internal Server Error during enrollment'], 500);
         }
+
+        $file = $request->file('file');
+
+        // Send to Python AI service
+        $response = Http::attach(
+            'file',
+            fopen($file->getRealPath(), 'r'),
+            $file->getClientOriginalName()
+        )->post('http://localhost:8099/enroll', [
+            'user_id' => $user->id
+        ]);
+
+        $result = $response->json();
+
+        if ($response->successful() && ($result['status'] ?? '') === 'success') {
+
+            // Encrypt embedding
+            $encryptedEmbedding = Crypt::encryptString(
+                json_encode($result['embedding'])
+            );
+
+            UserBiometrics::updateOrCreate(
+                ['user_id' => $user->id],
+                ['face_embeddings' => $encryptedEmbedding]
+            );
+
+            // Mark user enrolled
+            $user->is_enrolled = true;
+            $user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Biometric enrolled successfully'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => $result['message'] ?? 'Face not detected. Try again with better lighting.'
+        ], 400);
+
+    } catch (\Exception $e) {
+
+        Log::error('Enrollment Error: ' . $e->getMessage());
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Internal Server Error during enrollment'
+        ], 500);
     }
+}
 
     // CHECK IN USER
     public function checkIn(Request $request)

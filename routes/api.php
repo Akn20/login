@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Auth
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 // Biometric
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,6 +53,11 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [SignInController::class, 'apiLogin']);
 });
 
+
+Route::prefix('/users')->middleware('auth:sanctum')->group(function () {
+
+        Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);
+});
 /*
 |--------------------------------------------------------------------------
 | Masters (Religion / JobType / WorkStatus / BloodGroup / Department / Designation / Leave)
