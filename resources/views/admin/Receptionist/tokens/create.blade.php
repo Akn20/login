@@ -94,7 +94,7 @@
                                     Generate Token
                                 </button>
 
-                                <a href="{{ route('admin.tokens.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('admin.tokens.index') }}" class="btn btn-light">
                                     Cancel
                                 </a>
                             </div>

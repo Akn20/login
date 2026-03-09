@@ -648,6 +648,11 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/', [TokenController::class, 'index'])->name('index');
             Route::get('/create', [TokenController::class, 'create'])->name('create');
             Route::post('/store', [TokenController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [TokenController::class,'show'])->name('admin.tokens.show');
+            Route::patch('/{id}/skip', [TokenController::class,'skip'])->name('admin.tokens.skip');
+            Route::patch('/{id}/complete', [TokenController::class,'complete'])->name('admin.tokens.complete');
+
+
         });
     });
 
