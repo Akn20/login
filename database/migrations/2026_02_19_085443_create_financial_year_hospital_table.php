@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->boolean('locked')->default(false);
 
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('hospital_id')
                 ->references('id')->on('hospitals')

@@ -34,4 +34,9 @@ class Grn extends Model
     {
         return $this->hasMany(GrnItem::class, 'grn_id');
     }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+    }
 }

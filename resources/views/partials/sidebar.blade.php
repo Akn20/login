@@ -218,53 +218,63 @@
                 </li>
 
                 {{-- Module Management --}}
-                <li class="nxl-item">
-                    <a href="{{ route('admin.modules.index') }}" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-grid"></i></span>
-                        <span class="nxl-mtext">Module Management</span>
-                    </a>
-                </li>
 
                 {{-- Dynamic Modules --}}
                 <li class="nxl-item nxl-caption">
                     <label>Modules</label>
                 </li>
 
-                @foreach($sidebarModules as $module)
-                    @if($module->children->count() > 0)
-                        <li class="nxl-item nxl-hasmenu">
-                            <a href="javascript:void(0);" class="nxl-link">
-                                <span class="nxl-micon">
-                                    <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
-                                </span>
-                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
-                                <span class="nxl-arrow">
-                                    <i class="feather-chevron-right"></i>
-                                </span>
-                            </a>
-                            <ul class="nxl-submenu">
-                                @foreach($module->children as $child)
-                                    <li class="nxl-item">
-                                        <a href="{{ url($child->file_url) }}" class="nxl-link">
-                                            {{ $child->module_display_name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @else
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-grid"></i></span>
+                        <span class="nxl-mtext">Modules</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
                         <li class="nxl-item">
-                            <a href="{{ url($module->file_url) }}" class="nxl-link">
-                                <span class="nxl-micon">
-                                    <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
-                                </span>
-                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                            <a href="{{ route('admin.modules.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Add Module</span>
                             </a>
                         </li>
-                    @endif
-                @endforeach
 
-                {{-- ================= INVENTORY ================= --}}
+                        @foreach($sidebarModules as $module)
+                            @if($module->children->count() > 0)
+                                <li class="nxl-item nxl-hasmenu">
+                                    <a href="javascript:void(0);" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                        <span class="nxl-arrow">
+                                            <i class="feather-chevron-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="nxl-submenu">
+                                        @foreach($module->children as $child)
+                                            <li class="nxl-item">
+                                                <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                                    {{ $child->module_display_name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nxl-item">
+                                    <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </li>
+                
+                    {{-- ================= INVENTORY ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-package"></i></span>
