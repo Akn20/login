@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('vendor_name');                      // for now keep name (later vendor_id)
             $table->string('invoice_no');
             $table->date('invoice_date');
+            $table->string('invoice_file')->nullable();
 
             $table->string('po_no')->nullable();
             $table->string('status')->default('Draft');         // Draft/Submitted/Verified/Completed/Cancelled

@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class BiometricController extends Controller
 {
-    //ENORLL USER BIOMETRICS
+    // ENORLL USER BIOMETRICS
     public function enroll(Request $request)
     {
         $user = auth('sanctum')->user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['status' => 'error', 'message' => 'User is not authenticated.'], 401);
         }
         if ($user->is_enrolled) {
@@ -27,7 +27,7 @@ class BiometricController extends Controller
         $request->validate([
             'file' => 'required|image', // Base64 string from phone
         ]);
-       
+
         try {
             $file = $request->file('file');
 
@@ -55,6 +55,7 @@ class BiometricController extends Controller
                 // Set is_enrolled to true
                 $user->is_enrolled = true;
                 $user->save();
+
                 return response()->json(['status' => 'success', 'message' => 'Biometric enrolled successfully']);
             }
 
@@ -64,14 +65,13 @@ class BiometricController extends Controller
             ], 400);
 
         } catch (\Exception $e) {
-            Log::error('Enrollment Error: ' . $e->getMessage());
+            Log::error('Enrollment Error: '.$e->getMessage());
 
             return response()->json(['status' => 'error', 'message' => 'Internal Server Error during enrollment'], 500);
         }
     }
 
-
-    //CHECK IN USER
+    // CHECK IN USER
     public function checkIn(Request $request)
     {
         $request->validate([
@@ -92,10 +92,9 @@ class BiometricController extends Controller
         }
         // 2. Geofence Check
         $geofence = Geofence::where('status', true)->first();
-        if (!$geofence) {
+        if (! $geofence) {
             return response()->json(['message' => 'Geofence not configured'], 500);
         }
-
 
         $distance = $this->calculateDistance(
             $request->latitude,
@@ -104,21 +103,21 @@ class BiometricController extends Controller
             $geofence->center_lng
         );
 
-        Log::info("distance:" . $distance);
+        Log::info('distance:'.$distance);
         if ($distance > $geofence->radius) {
             return response()->json(['message' => 'Outside hospital geofence'], 403);
         }
 
         // 3. Biometric Verification
         $biometricData = UserBiometrics::where('user_id', $user->id)->first();
-        if (!$biometricData) {
+        if (! $biometricData) {
             return response()->json(['message' => 'Biometrics not found. Please enroll first.'], 404);
         }
 
         try {
             $start = microtime(true);
             $storedEmbedding = Crypt::decryptString($biometricData->face_embeddings);
-           
+
             $bioResult = $this->verifyFace($user->id, $storedEmbedding, $request->file('file'));
 
             if (($bioResult['status']) !== 'success') {
@@ -139,19 +138,18 @@ class BiometricController extends Controller
                     'checkin_lng' => $request->longitude,
                     'status' => 'present',
                 ]);
+
                 return response()->json(['status' => 'success', 'message' => 'Check-in successful']);
             }
 
-
         } catch (\Exception $e) {
-            Log::error('Check-in Error: ' . $e->getMessage());
+            Log::error('Check-in Error: '.$e->getMessage());
 
             return response()->json(['status' => 'error', 'message' => 'Server error during verification'], 500);
         }
     }
 
-
-    //CHECK OUT USER
+    // CHECK OUT USER
     public function checkOut(Request $request)
     {
         $request->validate([
@@ -165,7 +163,7 @@ class BiometricController extends Controller
             ->where('date', Carbon::today())
             ->first();
 
-        if (!$attendance) {
+        if (! $attendance) {
             return response()->json(['status' => 'error', 'message' => 'No check-in found for today'], 400);
         }
         if ($attendance->checkout_time) {
@@ -174,7 +172,7 @@ class BiometricController extends Controller
 
         // 2. Geofence Check
         $geofence = Geofence::where('status', true)->first();
-        if (!$geofence) {
+        if (! $geofence) {
             return response()->json(['status' => 'error', 'message' => 'Geofence not configured'], 500);
         }
 
@@ -184,14 +182,14 @@ class BiometricController extends Controller
             $geofence->center_lat,
             $geofence->center_lng
         );
-        Log::info("distance:" . $distance);
+        Log::info('distance:'.$distance);
         if ($distance > $geofence->radius) {
             return response()->json(['status' => 'error', 'message' => 'Outside hospital geofence'], 403);
         }
 
         // 3. Biometric Verification
         $biometricData = UserBiometrics::where('user_id', $user->id)->first();
-        if (!$biometricData) {
+        if (! $biometricData) {
             return response()->json(['status' => 'error', 'message' => 'Biometrics not found. Please enroll first.'], 404);
         }
 
@@ -200,7 +198,6 @@ class BiometricController extends Controller
             $fileResource = $request->file('file');
 
             $bioResult = $this->verifyFace($user->id, $storedEmbedding, $fileResource);
-
 
             Log::info($bioResult);
 
@@ -218,14 +215,13 @@ class BiometricController extends Controller
 
             return response()->json(['status' => 'success', 'message' => 'Check-out successful']);
         } catch (\Exception $e) {
-            Log::error('Check-in Error: ' . $e->getMessage());
+            Log::error('Check-in Error: '.$e->getMessage());
 
             return response()->json(['status' => 'error', 'message' => 'Server error during verification'], 500);
         }
     }
 
-
-    //CHECK IF USER IS CHECKED IN
+    // CHECK IF USER IS CHECKED IN
     public function checkstatus(Request $request)
     {
         $user = auth()->user();
@@ -234,7 +230,7 @@ class BiometricController extends Controller
             ->whereDate('date', Carbon::today())
             ->first();
 
-        if (!$attendance || $attendance->checkin_time === null) {
+        if (! $attendance || $attendance->checkin_time === null) {
             return response()->json(['status' => 'check-in']);
         }
 
@@ -246,10 +242,7 @@ class BiometricController extends Controller
 
     }
 
-
-
-
-        //CALUCULATE DISTANCE
+    // CALUCULATE DISTANCE
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
         $earthRadius = 6371000; // meters
@@ -271,7 +264,7 @@ class BiometricController extends Controller
         return $angle * $earthRadius;
     }
 
-    //VERIFY FACE
+    // VERIFY FACE
     public function verifyFace($user_id, $storedEmbedding, $file)
     {
         $response = Http::attach(

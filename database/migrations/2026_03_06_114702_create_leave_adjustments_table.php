@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('leave_adjustments', function (Blueprint $table) {
-    $table->id();
+    Schema::create('leave_adjustments', function (Blueprint $table) {
+    $table->char('id',36)->primary();   // UUID primary key
     $table->char('staff_id',36);
     $table->char('leave_type_id',36);
+
     $table->integer('credit')->default(0);
     $table->integer('debit')->default(0);
+
     $table->text('remarks');
     $table->year('year');
-    $table->timestamps();
 
-        });
+    $table->timestamps();
+});
     }
 
     /**
