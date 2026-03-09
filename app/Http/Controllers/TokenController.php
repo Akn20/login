@@ -31,15 +31,21 @@ class TokenController extends Controller
     /**
      * Show Generate Token Form
      */
-    public function create()
+    public function create(Request $request)
     {
-        $appointments = Appointment::with([
-            'patient',
-            'doctor',
-            'department'
-        ])->get();
+        $appointments = Appointment::with(['patient','doctor','department'])->get();
 
-        return view('admin.Receptionist.tokens.create', compact('appointments'));
+        $selectedAppointment = null;
+
+        if ($request->appointment_id) {
+            $selectedAppointment = Appointment::with(['patient','doctor','department'])
+                ->find($request->appointment_id);
+        }
+
+        return view('admin.receptionist.tokens.create', compact(
+            'appointments',
+            'selectedAppointment'
+        ));
     }
 
 
