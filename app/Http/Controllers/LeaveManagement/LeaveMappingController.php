@@ -7,6 +7,7 @@ use App\Models\LeaveMapping;
 use App\Models\LeaveType; 
 use Illuminate\Http\Request;
 use App\Models\Designation; 
+use Illuminate\Support\Facades\DB;
 
 class LeaveMappingController extends Controller
 {
@@ -35,6 +36,43 @@ class LeaveMappingController extends Controller
 
 public function store(Request $request)
 {
+    // Normalize input arrays for comparison
+    $inputDesignations = is_array($request->designations)
+        ? $request->designations
+        : [$request->designations];
+    $inputStatus = is_array($request->employee_status)
+        ? $request->employee_status
+        : [$request->employee_status];
+
+    sort($inputDesignations);
+    sort($inputStatus);
+
+    // Fetch all non-deleted mappings for the same leave_type_id
+    // then compare JSON-decoded designations and employee_status in PHP
+    $existingMappings = DB::table('leave_mappings')
+        ->where('leave_type_id', $request->leave_type_id)
+        ->whereNull('deleted_at')
+        ->get();
+
+    foreach ($existingMappings as $mapping) {
+        $dbDesignations = json_decode($mapping->designations, true) ?? [];
+        $dbStatus       = json_decode($mapping->employee_status, true) ?? [];
+
+        sort($dbDesignations);
+        sort($dbStatus);
+
+        if ($dbDesignations === $inputDesignations && $dbStatus === $inputStatus) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error_message', 'A mapping for this Leave Type, Employee Status, and Designation combination already exists!');
+        }
+    }
+
+
+  
+
+    // ... continue to validation and LeaveMapping::create($data) ...
+
     // Sync checkboxes to boolean values
     $request->merge([
         'status' => $request->has('status') ? 'active' : 'inactive',
@@ -100,6 +138,37 @@ public function show($id)
 {
     $mapping = \App\Models\LeaveMapping::findOrFail($id);
 
+    // Duplicate check — same logic as store(), but exclude the current record
+    $inputDesignations = is_array($request->designations)
+        ? $request->designations
+        : [$request->designations];
+    $inputStatus = is_array($request->employee_status)
+        ? $request->employee_status
+        : [$request->employee_status];
+
+    sort($inputDesignations);
+    sort($inputStatus);
+
+    $existingMappings = DB::table('leave_mappings')
+        ->where('leave_type_id', $request->leave_type_id)
+        ->where('id', '!=', $id)          // exclude current record
+        ->whereNull('deleted_at')
+        ->get();
+
+    foreach ($existingMappings as $existing) {
+        $dbDesignations = json_decode($existing->designations, true) ?? [];
+        $dbStatus       = json_decode($existing->employee_status, true) ?? [];
+
+        sort($dbDesignations);
+        sort($dbStatus);
+
+        if ($dbDesignations === $inputDesignations && $dbStatus === $inputStatus) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error_message', 'A mapping for this Leave Type, Employee Status, and Designation combination already exists!');
+        }
+    }
+
     $request->merge([
         'status' => $request->has('status') ? 'active' : 'inactive',
         'carry_forward_allowed' => $request->has('carry_forward_allowed'),
@@ -146,6 +215,13 @@ public function show($id)
         $mappings = LeaveMapping::onlyTrashed()->with('leaveType')->get(); 
         return view('admin.Leave_Management.leave_mappings.deleted', compact('mappings'));
     }
+    public function forceDelete($id)
+{
+    // Finds the record even if it is in the trash and deletes it forever
+    LeaveMapping::withTrashed()->findOrFail($id)->forceDelete();
+    
+    return redirect()->back()->with('success', 'Mapping permanently deleted');
+}
 
     public function restore($id) {
         LeaveMapping::withTrashed()->findOrFail($id)->restore();
