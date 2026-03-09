@@ -28,18 +28,20 @@
                                     <th>Employee ID</th>
                                     <th>Name</th>
                                     <th>Department</th>
+                                    <th>Designation</th>
                                     <th>Status</th>
                                     <th>Deleted At</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($staffs as $i => $staff)
+                                @forelse($staffManagement as $i => $staff)
                                     <tr>
-                                        <td>{{ $staffs->firstItem() + $i }}</td>
+                                        <td>{{ $staffManagement->firstItem() + $i }}</td>
                                         <td>{{ $staff->employee_id }}</td>
                                         <td>{{ $staff->name }}</td>
-                                        <td>{{ $staff->department->name ?? '-' }}</td>
+                                      <td>{{ $staff->department->department_name ?? '-' }}</td>
+                                      <td>{{ $staff->designation->designation_name ?? '-' }}</td>
                                         <td>
                                             @if($staff->status === 'Active')
                                                 <span class="badge bg-soft-success text-success">Active</span>
@@ -93,7 +95,7 @@
 
                     {{-- Pagination --}}
                     <div class="p-3">
-                        {{ $staffs->links() }}
+                        {{ $staffManagement->links() }}
                     </div>
 
                 </div>

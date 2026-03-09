@@ -11,20 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grns', function (Blueprint $table) {
+        Schema::create('returns', function (Blueprint $table) {
             $table->id();
 
-            $table->string('grn_number')->unique();
-
-            $table->foreignId('purchase_order_id')
-                ->constrained()
-                ->onDelete('cascade');
-
-            $table->date('received_date');
-
-            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->string('medicine_name');
+            $table->date('return_date');
+            $table->integer('quantity');
+            $table->text('reason')->nullable();
 
             $table->timestamps();
+            $table->softDeletes(); // deleted_at
         });
     }
 
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grns');
+        Schema::dropIfExists('returns');
     }
 };

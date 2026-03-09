@@ -11,7 +11,7 @@
 <form method="GET" action="{{ route('admin.inventory.index') }}" class="row mb-3">
     <div class="col-md-4">
         <input type="text" name="search" value="{{ request('search') }}" 
-               class="form-control" placeholder="Search by name or code">
+                class="form-control" placeholder="Search by name or code">
     </div>
 
     <div class="col-md-3">

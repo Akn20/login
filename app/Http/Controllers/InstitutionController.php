@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Geofence;
 use App\Models\Institution;
 use App\Models\Organization;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class InstitutionController extends Controller
 {
@@ -90,6 +92,14 @@ class InstitutionController extends Controller
             'email' => 'nullable|email|max:255',
             'timezone' => 'nullable|string|max:100',
 
+            //Geofences
+            'geofences' => 'nullable|array',
+            'geofences.*.name' => 'nullable|string|max:255',
+            'geofences.*.lat' => 'nullable|numeric',
+            'geofences.*.lng' => 'nullable|numeric',
+            'geofences.*.radius' => 'nullable|numeric',
+            'geofences.*.status' => 'nullable|boolean',
+
             // Branding
             'institution_url' => 'nullable|url|max:255',
             'login_template' => 'nullable|string|max:255',
@@ -149,6 +159,30 @@ class InstitutionController extends Controller
 
         $institution = Institution::create($validated);
 
+        if ($request->has('geofences')) {
+
+            // delete old geofences
+            Geofence::where('institution_id', $institution->id)->delete();
+
+            foreach ($request->geofences as $geo) {
+
+                if (!empty($geo['lat']) && !empty($geo['lng'])) {
+
+                    Geofence::create([
+                        'institution_id' => $institution->id,
+                        'name' => $geo['name'] ?? 'Geofence',
+                        'center_lat' => $geo['lat'],
+                        'center_lng' => $geo['lng'],
+                        'radius' => $geo['radius'] ?? 100,
+                        'status' => $geo['status'] ?? 1
+                    ]);
+
+                }
+
+            }
+
+        }
+
         if ($request->filled('modules')) {
             $institution->modules()->sync($request->modules);
         }
@@ -171,10 +205,10 @@ class InstitutionController extends Controller
      */
     public function edit($id)
     {
-        $institution = Institution::with('modules')->findOrFail($id);
+        $institution = Institution::with('modules', 'geofences')->findOrFail($id);
         $organizations = Organization::where('status', 1)->get();
         $modules = Module::orderBy('priority')->get();
-
+        Log::info($institution);
         return view('admin.institutions.edit', compact(
             'institution',
             'organizations',
@@ -202,6 +236,13 @@ class InstitutionController extends Controller
             'contact_number' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'timezone' => 'nullable|string|max:100',
+            'geofences' => 'nullable|array',
+            'geofences.*.name' => 'nullable|string|max:255',
+            'geofences.*.lat' => 'nullable|numeric',
+            'geofences.*.lng' => 'nullable|numeric',
+            'geofences.*.radius' => 'nullable|numeric',
+            'geofences.*.status' => 'nullable|boolean',
+
 
             'institution_url' => 'nullable|url|max:255',
             'login_template' => 'nullable|string|max:255',
@@ -253,6 +294,29 @@ class InstitutionController extends Controller
         }
 
         $institution->update($validated);
+     if ($request->has('geofences')) {
+
+    // delete old geofences
+    Geofence::where('institution_id', $institution->id)->delete();
+
+    foreach ($request->geofences as $geo) {
+
+        if (!empty($geo['lat']) && !empty($geo['lng'])) {
+
+            Geofence::create([
+                'institution_id' => $institution->id,
+                'name' => $geo['name'] ?? 'Geofence',
+                'center_lat' => $geo['lat'],
+                'center_lng' => $geo['lng'],
+                'radius' => $geo['radius'] ?? 100,
+                'status' => $geo['status'] ?? 1
+            ]);
+
+        }
+
+    }
+
+}
         $institution->modules()->sync($request->modules ?? []);
 
         return redirect()->route('admin.institutions.index')
@@ -264,10 +328,10 @@ class InstitutionController extends Controller
      */
     public function show($id)
     {
-        $institution = Institution::with(['organization', 'modules'])
+        $institution = Institution::with(['organization', 'modules', 'geofences'])
             ->findOrFail($id);
 
-        return view('admin.institutions.show', compact('institutions'));
+        return view('admin.institutions.show', compact('institution'));
     }
 
     /**

@@ -56,37 +56,37 @@
 
                     <div class="col-md-12">
                         <label>Address</label>
-                        <textarea name="address"
+                        <textarea name="address" id="address"
                             class="form-control">{{ old('address', $institution->address ?? '') }}</textarea>
                     </div>
 
                     <div class="col-md-3">
                         <label>City</label>
-                        <input type="text" name="city" class="form-control"
+                        <input type="text" name="city" class="form-control" id="city"
                             value="{{ old('city', $institution->city ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>State</label>
-                        <input type="text" name="state" class="form-control"
+                        <input type="text" name="state" class="form-control" id="state"
                             value="{{ old('state', $institution->state ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>Country</label>
-                        <input type="text" name="country" class="form-control"
+                        <input type="text" name="country" class="form-control" id="country"
                             value="{{ old('country', $institution->country ?? '') }}">
                     </div>
 
                     <div class="col-md-3">
                         <label>Pincode</label>
-                        <input type="text" name="pincode" class="form-control"
+                        <input type="text" name="pincode" class="form-control" id="pincode"
                             value="{{ old('pincode', $institution->pincode ?? '') }}">
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <label>Timezone</label>
-                        <input type="text" name="timezone" class="form-control"
+                        <input type="text" name="timezone" class="form-control" id="timezone"
                             value="{{ old('timezone', $institution->timezone ?? '') }}">
                     </div>
 
@@ -94,12 +94,32 @@
             </div>
         </div>
 
-
-        {{-- ================= 2. BRANDING ================= --}}
+        {{-- ================= 2. GEOFENCES ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>2. Branding</h5>
+                    <h5>2. GeoFences</h5>
+                </div>
+                <div class="card-body row g-3">
+                    <div class="col-md-12">
+                        <label>Select Location</label>
+                        <div id="map" style="height:400px;border-radius:8px;"></div>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" id="addGeofence" class="btn btn-primary">
+                            Add Geofence
+                        </button>
+                    </div>
+                    <div id="geofenceInputs"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ================= 3. BRANDING ================= --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>3. Branding</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -131,11 +151,11 @@
         </div>
 
 
-        {{-- ================= 3. ADMIN ================= --}}
+        {{-- ================= 4. ADMIN ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>3. Admin</h5>
+                    <h5>4. Admin</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -188,11 +208,11 @@
         </div>
 
 
-        {{-- ================= 4. LEGAL & COMMERCIAL ================= --}}
+        {{-- ================= 5. LEGAL & COMMERCIAL ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>4. Legal & Commercial</h5>
+                    <h5>5. Legal & Commercial</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -259,11 +279,11 @@
         </div>
 
 
-        {{-- ================= 5. BILLING ================= --}}
+        {{-- ================= 6. BILLING ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>5. Billing</h5>
+                    <h5>6. Billing</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -369,11 +389,11 @@
         </div>
 
 
-        {{-- ================= 6. SUPPORT ================= --}}
+        {{-- ================= 7. SUPPORT ================= --}}
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5>6. Support</h5>
+                    <h5>7. Support</h5>
                 </div>
                 <div class="card-body row g-3">
 
@@ -407,3 +427,305 @@
 
     </div>
 </div>
+
+<script>
+    let existingGeofences = @json(isset($institution) ? $institution->geofences : []);
+</script>
+
+<script>
+
+    let map;
+    let geofenceIndex = 0;
+    let activeGeofence = null;
+    let geofences = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let lat = 10.8505;
+        let lng = 76.2711;
+
+        if (existingGeofences.length > 0) {
+            console.log(existingGeofences)
+            lat = existingGeofences[0].center_lat;
+            lng = existingGeofences[0].center_lng;
+        }
+
+        map = L.map('map').setView([lat, lng], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        // LOAD EXISTING GEOFENCES
+        if (existingGeofences?.length > 0) {
+
+            existingGeofences?.forEach((geo, index) => {
+
+                createExistingGeofence(
+                    geo.name,
+                    geo.center_lat,
+                    geo.center_lng,
+                    geo.radius,
+                    geo.status
+                );
+
+            });
+
+        }
+        // MAP CLICK EVENT
+        map.on("click", function (e) {
+
+            if (activeGeofence === null) return;
+
+            let lat = e.latlng.lat;
+            let lng = e.latlng.lng;
+
+            document.getElementById(`lat_${activeGeofence}`).value = lat;
+            document.getElementById(`lng_${activeGeofence}`).value = lng;
+
+            placeMarker(activeGeofence, lat, lng);
+
+        });
+
+    });
+
+    function createExistingGeofence(name, lat, lng, radius, status) {
+
+        let index = geofenceIndex++;
+
+        // Create marker
+        let marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        // Create circle
+        let circle = L.circle([lat, lng], {
+            radius: radius,
+            color: 'red',
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        geofences[index] = {
+            marker: marker,
+            circle: circle
+        };
+
+        // Add card
+        let html = `
+    <div class="card p-3 mt-3" id="geofence_card_${index}">
+
+        <h6>Geofence ${index + 1}</h6>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                Name
+                <input type="text"
+                       name="geofences[${index}][name]"
+                       value="${name}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Radius
+                <input type="number"
+                       name="geofences[${index}][radius]"
+                       value="${radius}"
+                       class="form-control"
+                       onchange="updateRadius(${index},this.value)">
+            </div>
+
+            <div class="col-md-2">
+                Latitude
+                <input type="text"
+                       name="geofences[${index}][lat]"
+                       id="lat_${index}"
+                       value="${lat}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Longitude
+                <input type="text"
+                       name="geofences[${index}][lng]"
+                       id="lng_${index}"
+                       value="${lng}"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                Status
+                <select name="geofences[${index}][status]" class="form-control">
+                    <option value="1" ${status == 1 ? 'selected' : ''}>Active</option>
+                    <option value="0" ${status == 0 ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+        <div class="col-md-1">
+            Action
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="removeGeofence(${index})">
+                        <i class="feather feather-trash-2"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+    `;
+
+        document.getElementById("geofenceInputs").insertAdjacentHTML("beforeend", html);
+
+        // Drag marker update
+        marker.on("drag", function () {
+
+            let pos = marker.getLatLng();
+
+            circle.setLatLng(pos);
+
+            document.getElementById(`lat_${index}`).value = pos.lat;
+            document.getElementById(`lng_${index}`).value = pos.lng;
+
+        });
+
+    }
+    /* ADD GEOFENCE CARD */
+
+    document.getElementById("addGeofence").addEventListener("click", function () {
+
+        let index = geofenceIndex++;
+
+        activeGeofence = index;
+
+        let html = `
+    <div class="card p-3 mt-3" id="geofence_card_${index}">
+        <h6>Geofence ${index + 1}</h6>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                Name*
+                <input type="text" name="geofences[${index}][name]" class="form-control" required>
+            </div>
+
+            <div class="col-md-2">
+                Radius
+                <input type="number"
+                       name="geofences[${index}][radius]"
+                       value="100"
+                       class="form-control"
+                       onchange="updateRadius(${index},this.value)">
+            </div>
+
+            <div class="col-md-2">
+                Latitude
+                <input type="text"
+                       name="geofences[${index}][lat]"
+                       id="lat_${index}"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="col-md-2">
+                Longitude
+                <input type="text"
+                       name="geofences[${index}][lng]"
+                       id="lng_${index}"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="col-md-2">
+                Status
+                <select name="geofences[${index}][status]" class="form-control">
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-md-1">
+            Action
+                <button type="button"
+                        class="btn btn-danger"
+                        onclick="removeGeofence(${index})">
+                        <i class="feather feather-trash-2"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <small class="text-muted">
+        Click on the map to select this geofence location
+        </small>
+
+    </div>
+    `;
+
+        document.getElementById("geofenceInputs").insertAdjacentHTML("beforeend", html);
+
+    });
+
+
+    /* PLACE MARKER */
+
+    function placeMarker(index, lat, lng) {
+
+        let radiusInput = document.querySelector(`[name="geofences[${index}][radius]"]`);
+        let radius = radiusInput.value || 100;
+
+        if (geofences[index]) {
+
+            map.removeLayer(geofences[index].marker);
+            map.removeLayer(geofences[index].circle);
+
+        }
+
+        let marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+        let circle = L.circle([lat, lng], {
+            radius: radius,
+            color: 'red',
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        marker.on("drag", function () {
+
+            let pos = marker.getLatLng();
+
+            circle.setLatLng(pos);
+
+            document.getElementById(`lat_${index}`).value = pos.lat;
+            document.getElementById(`lng_${index}`).value = pos.lng;
+
+        });
+
+        geofences[index] = {
+            marker: marker,
+            circle: circle
+        };
+
+    }
+
+
+    /* UPDATE RADIUS */
+
+    function updateRadius(index, value) {
+
+        if (!geofences[index]) return;
+
+        geofences[index].circle.setRadius(value);
+
+    }
+
+
+    /* REMOVE GEOFENCE */
+
+    function removeGeofence(index) {
+
+        if (geofences[index]) {
+
+            map.removeLayer(geofences[index].marker);
+            map.removeLayer(geofences[index].circle);
+
+        }
+
+        document.getElementById(`geofence_card_${index}`).remove();
+
+    }
+
+</script>

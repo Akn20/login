@@ -31,7 +31,13 @@ class Patient extends Model
         'status',
         'merged_to',
         'created_by',
-        'updated_by'
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'is_vip' => 'boolean',
+        'status' => 'boolean',
     ];
 
     protected static function boot()
@@ -39,7 +45,14 @@ class Patient extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            if (! $model->getKey()) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+            }
         });
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }
