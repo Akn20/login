@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -8,15 +8,16 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 // Auth / Dashboard
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
-use App\Http\Controllers\Admin\FinancialYearMappingController;
 // Admin: users / roles / FY / hospitals
+use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
-use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 // Masters
+use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
@@ -167,6 +169,20 @@ Route::middleware(['auth', 'role:admin'])
             ->name('users.toggle-status');
 
         Route::resource('users', UserController::class)->except(['show']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | User Biometrics Enrollment
+        |--------------------------------------------------------------------------
+        */
+        Route::get('users/biometrics', [AdminBiometricEnrollController::class, 'biometrics'])
+            ->name('users.biometrics');
+
+        Route::post('users/{user}/biometrics/upload', [AdminBiometricEnrollController::class, 'upload'])
+            ->name('users.biometrics.upload');
+
+        Route::delete('users/biometrics/images/{imageId}', [AdminBiometricEnrollController::class, 'delete'])
+            ->name('users.biometrics.delete');
 
         /*
         |--------------------------------------------------------------------------
@@ -628,6 +644,24 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
+
+
+
+        // |----------------------------------------------------------------------
+        // | Leave Adjustment
+        // |----------------------------------------------------------------------
+Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
+
+    Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+
+    Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
+    Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
+    ->name('show');
+});
 
         /*
         |--------------------------------------------------------------------------
