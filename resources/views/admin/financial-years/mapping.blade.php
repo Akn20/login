@@ -99,11 +99,7 @@
                                                 {{ $pivot && $pivot->is_current ? 'checked' : '' }}
                                                 {{ ! $pivot ? 'disabled' : '' }}
                                             >
-<<<<<<< HEAD
-                                            <label class="form-check-label small" for="fy-current-{{ $fy->id }}">
-=======
                                             <label class="form-check-label medium" for="fy-current-{{ $fy->id }}">
->>>>>>> 5f0bf02b24999c4ebcafa7ae518a1d664ac37388
                                                 {{ $pivot && $pivot->is_current ? 'Current' : 'Set' }}
                                             </label>
                                         </div>

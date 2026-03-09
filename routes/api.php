@@ -26,6 +26,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 // HR
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
@@ -184,6 +185,14 @@ Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 Route::get('/test-api', function () {
     return 'API working';
 });
+/*
+|--------------------------------------------------------------------------
+| Public auth APIs (no sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('auth')->group(function () {
+    Route::post('login', [SignInController::class, 'apiLogin']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -272,6 +281,23 @@ Route::prefix('masters')->group(function () {
     Route::delete('/leave-mappings/{id}', [LeaveMappingController::class, 'apiDestroy']);
     Route::post('/leave-mappings/{id}/restore', [LeaveMappingController::class, 'apiRestore']);
     Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
+
+    /*
+|--------------------------------------------------------------------------
+| Leave Adjustments API
+|--------------------------------------------------------------------------
+*/
+Route::prefix('leave-management')->group(function () {
+    
+    // Main Adjustment Routes
+    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+    
+    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+    
+});
 });
 
 /*
@@ -446,8 +472,3 @@ Route::prefix('controlled-drugs')->group(function () {
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
-
-
-
-
-
