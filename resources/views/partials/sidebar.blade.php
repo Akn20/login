@@ -501,6 +501,17 @@
                                         <span class="nxl-mtext">Leave Mapping</span>
                                     </a>
                                 </li>
+
+
+                                <!-- Leave adjustment -->
+                                 <li class="nxl-item {{ request()->routeIs('admin.leave-adjustments.*') ? 'active' : '' }}">
+    <a href="{{ route('admin.leave-adjustments.index') }}" class="nxl-link">
+        <span class="nxl-micon"><i class="feather-edit"></i></span>
+        <span class="nxl-mtext">Leave Adjustment</span>
+    </a>
+</li>
+
+
                             </ul>
                         </li>
                     </ul>
