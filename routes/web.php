@@ -54,6 +54,11 @@ use App\Http\Controllers\WorkStatusController;
 // Reception / Tokens
 use Illuminate\Support\Facades\Route;
 
+//surgery
+use App\Http\Controllers\doctor\surgery\SurgeryController;
+use App\Http\Controllers\doctor\surgery\OTController;
+use App\Http\Controllers\doctor\surgery\PostOperativeController;
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -689,3 +694,54 @@ Route::prefix('stock')->group(function () {
     // (your existing stock API routes here if any; the commented
     // temporary Leave Type UI routes have been removed to avoid conflicts)
 });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| surgery routes (doctor)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('doctor')->group(function(){
+
+    Route::get('/surgery', [SurgeryController::class,'index'])->name('surgery.index');
+
+    Route::get('/surgery/create', [SurgeryController::class,'create'])->name('surgery.create');
+
+    Route::post('/surgery/store', [SurgeryController::class,'store'])->name('surgery.store');
+
+    Route::get('/surgery/{id}/edit',[SurgeryController::class,'edit'])->name('surgery.edit');
+
+    Route::delete('/surgery/{id}', [SurgeryController::class,'destroy'])->name('surgery.destroy');
+    
+    Route::put('/surgery/{id}',[SurgeryController::class,'update'])->name('surgery.update');
+
+    Route::get('/ot', [OTController::class,'index'])->name('ot.index');
+
+    Route::get('/ot/create',[OTController::class,'create'])->name('ot.create');
+
+    Route::post('/ot/store',[OTController::class,'store'])->name('ot.store');
+
+    Route::get('/ot/{id}/edit',[OTController::class,'edit'])->name('ot.edit');
+
+    Route::put('/ot/{id}',[OTController::class,'update'])->name('ot.update');
+
+    Route::delete('/ot/{id}',[OTController::class,'destroy'])->name('ot.destroy');
+
+    Route::post('/ot/{id}/toggle-status',[OTController::class,'toggleStatus'])->name('ot.toggle-status');
+    
+    Route::get('/postoperative', [PostOperativeController::class,'index'])->name('post.index');
+
+    Route::get('/surgery/{id}/postoperative',[PostOperativeController::class,'create'])->name('post.create');
+
+    Route::post('/post/store',[PostOperativeController::class,'store'])->name('post.store');
+
+    Route::get('/postoperative/{id}/edit',[PostOperativeController::class,'edit'])->name('post.edit');
+
+    Route::put('/postoperative/{id}',[PostOperativeController::class,'update'])->name('post.update');
+
+    Route::delete('/postoperative/{id}',[PostOperativeController::class,'destroy'])->name('post.destroy');
+
+
+   });
