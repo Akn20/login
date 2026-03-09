@@ -24,17 +24,26 @@ return new class extends Migration
 
             $table->uuid('department_id')->nullable();
             $table->uuid('designation_id')->nullable();
-
+            
             // foreign keys
             $table->foreign('department_id')
-                ->references('id')
-                ->on('department_master')
-                ->onDelete('set null');
-
+            ->references('id')
+            ->on('department_master')
+            ->onDelete('set null');
+            
             $table->foreign('designation_id')
-                ->references('id')
-                ->on('designation_master')
-                ->onDelete('set null');
+            ->references('id')
+            ->on('designation_master')
+            ->onDelete('set null');
+
+            $table->unsignedBigInteger('level1_supervisor_id')->nullable();
+            $table->unsignedBigInteger('level2_supervisor_id')->nullable();
+            $table->unsignedBigInteger('level3_supervisor_id')->nullable();
+
+            $table->foreign('level1_supervisor_id')->references('id')->on('staff')->onDelete('set null');
+            $table->foreign('level2_supervisor_id')->references('id')->on('staff')->onDelete('set null');
+            $table->foreign('level3_supervisor_id')->references('id')->on('staff')->onDelete('set null');
+
             $table->date('joining_date');
             $table->string('status')->default('Active');
             $table->softDeletes();
