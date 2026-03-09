@@ -65,6 +65,9 @@ class AppointmentController extends Controller
                 ->with('error', 'Doctor already has an appointment at this time.');
         }
 
+        // Fetch institution automatically
+        $institution = \App\Models\Institution::first();
+
         Appointment::create([
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
@@ -73,7 +76,7 @@ class AppointmentController extends Controller
             'appointment_time' => $request->appointment_time,
             'consultation_fee' => $request->consultation_fee,
             'appointment_status' => $request->appointment_status,
-            'hospital_id' => auth()->user()->hospital_id,
+            'institution_id' => $institution->id,   // FIX HERE
             'receptionist_user_id' => auth()->id(),
         ]);
 

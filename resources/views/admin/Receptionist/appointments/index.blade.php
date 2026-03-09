@@ -103,7 +103,7 @@
                                                         </a>
 
                                                         <form
-                                                            action="{{ route('admin.appointments.destroy', $appointment->id) }}"
+                                                            action="{{ route('admin.appointments.delete', $appointment->id) }}"
                                                             method="POST" onsubmit="return confirm('Delete this appointment?')">
 
                                                             @csrf
