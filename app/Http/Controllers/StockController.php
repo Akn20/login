@@ -34,7 +34,7 @@ class StockController extends Controller
             
             'medicine_name' => 'required',
             'batch_number'  => 'required',
-            'expiry_date' => 'required|date ', |after:today,
+            'expiry_date' => 'required|date ', 
             'quantity'      => 'required|integer|min:1'
         ]);
 
@@ -163,7 +163,9 @@ class StockController extends Controller
     //API
     public function apiIndex()
     {
-        $batches = MedicineBatch::with('medicine')->latest()->get();
+         $batches = MedicineBatch::with(['medicine','latestExpiryLog'])
+            ->latest()
+            ->get();
         return ApiResponse::success($batches, 'Stock list retrieved successfully');
     }
 

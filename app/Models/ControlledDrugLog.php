@@ -39,4 +39,12 @@ class ControlledDrugLog extends Model
         );
     }
 
+    public function controlledDrug()
+    {
+        return $this->belongsTo(
+            ControlledDrug::class,
+            'controlled_drug_id',
+            'controlled_drug_id'
+        );
+    }
 }

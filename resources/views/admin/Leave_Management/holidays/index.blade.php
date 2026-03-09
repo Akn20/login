@@ -57,14 +57,15 @@
                                             <div class="fw-bold">{{ $holiday->name }}</div>
                                             <small class="text-muted">Ref: {{ $holiday->id }}</small>
                                         </td>
-                                        <td>{{ $holiday->start_date->format('d M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($holiday->start_date)->format('d M Y') }}</td>
                                         <td>
-                                            @if ($holiday->status ===1)
+                                            @if ($holiday->status === 'active')
                                                 <span class="badge bg-soft-success text-success">Active</span>
                                             @else
                                                 <span class="badge bg-soft-danger text-danger">Inactive</span>
                                             @endif
                                         </td>
+
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
                                                 {{-- View Button --}}
@@ -89,18 +90,19 @@
                                                         <i class="feather feather-trash-2"></i>
                                                     </button>
                                                 </form>
+                                                {{-- Update the status check to use strings --}}
                                                 <form action="{{ route('admin.holidays.toggleStatus', $holiday->id) }}"
-                                                method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit"
+                                                        class="status-toggle {{ $holiday->status === 'active' ? 'active' : 'inactive' }}">
+                                                        <span>
+                                                            {{ $holiday->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                        </span>
+                                                    </button>
+                                                </form>
 
-                                                <button type="submit"
-                                                    class="status-toggle {{ $holiday->status === 1 ? 'inactive' : 'active' }}">
-                                                    <span>
-                                                        {{ $holiday->status === 1 ? 'Deactivate' : 'Activate' }}
-                                                    </span>
-                                                </button>
-                                            </form>
                                             </div>
                                         </td>
                                     </tr>
