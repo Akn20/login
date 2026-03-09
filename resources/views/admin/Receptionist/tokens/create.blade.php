@@ -89,7 +89,7 @@
 
                             </div>
 
-                            <div class="mt-3">
+                            <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     Generate Token
                                 </button>
