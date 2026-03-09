@@ -46,22 +46,24 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'department_id' => 'required',
+            'appointment_date' => 'required',
+            'appointment_time' => 'required',
+        ]);
 
-        $request->validate(
-            [
-                'patient_id' => 'required',
-                'doctor_id' => 'required',
-                'department_id' => 'required',
-                'appointment_date' => 'required|date',
-                'appointment_time' => 'required',
-                'appointment_status' => 'required|in:Scheduled,Cancelled,Completed'
-            ],
-            [
-                'patient_id.required' => 'Please select patient',
-                'doctor_id.required' => 'Please select doctor',
-                'department_id.required' => 'Please select department'
-            ]
-        );
+        $exists = Appointment::where('doctor_id', $request->doctor_id)
+            ->where('appointment_date', $request->appointment_date)
+            ->where('appointment_time', $request->appointment_time)
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if ($exists) {
+            return back()->withInput()
+                ->with('error', 'Doctor already has an appointment at this time.');
+        }
 
         Appointment::create([
             'patient_id' => $request->patient_id,
@@ -71,8 +73,8 @@ class AppointmentController extends Controller
             'appointment_time' => $request->appointment_time,
             'consultation_fee' => $request->consultation_fee,
             'appointment_status' => $request->appointment_status,
-            'hospital_id' => 1,
-            'receptionist_user_id' => 1
+            'hospital_id' => auth()->user()->hospital_id,
+            'receptionist_user_id' => auth()->id(),
         ]);
 
         return redirect()->route('admin.appointments.index')
@@ -171,7 +173,16 @@ class AppointmentController extends Controller
         return redirect()->route('admin.appointments.trash')
             ->with('success', 'Appointment permanently deleted');
     }
+    public function getDoctors($department_id)
+    {
+        $doctors = \App\Models\Staff::where('department_id', $department_id)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Doctor');
+            })
+            ->get(['id', 'name']);
 
+        return response()->json($doctors);
+    }
 
 
     /* ================= API FUNCTIONS ================= */

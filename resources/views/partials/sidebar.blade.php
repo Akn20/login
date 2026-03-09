@@ -537,7 +537,7 @@
                                 <span class="nxl-mtext">Controlled Drug Management</span>
                             </a>
                         </li>
-                         {{-- Sales Return Management --}}
+                        {{-- Sales Return Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
@@ -554,6 +554,18 @@
                         <span class="nxl-mtext">Receptionist</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.appointments.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">
+                                    Appointment Management
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a href="{{ route('admin.tokens.index') }}" class="nxl-link">
