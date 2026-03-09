@@ -77,59 +77,61 @@
 
                             @foreach ($leaveRequests as $index => $leave)
 
-<tr>
+                                <tr>
 
-<td>{{  $index }}</td>
+                                    <td>{{  $index }}</td>
 
-<td>{{ $leave['employee'] }}</td>
+                                    <td>{{ $leave['employee'] }}</td>
 
-<td>{{ $leave['leave_type'] }}</td>
+                                    <td>{{ $leave['leave_type'] }}</td>
 
-<td>
-{{ $leave['from_date'] }} → {{ $leave['to_date'] }}
-</td>
+                                    <td>
+                                        {{ $leave['from_date'] }} → {{ $leave['to_date'] }}
+                                    </td>
 
-<td>{{ $leave['total_days'] }}</td>
+                                    <td>{{ $leave['total_days'] }}</td>
 
-<td>{{ \Carbon\Carbon::parse($leave['created_at'])->format('d-m-Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($leave['created_at'])->format('d-m-Y') }}</td>
 
-<td>
-@if ($leave['status'] === 'pending')
-<span class="badge bg-soft-warning text-warning">Pending</span>
-@elseif ($leave['status'] === 'approved')
-<span class="badge bg-soft-success text-success">Approved</span>
-@else
-<span class="badge bg-soft-danger text-danger">Rejected</span>
-@endif
-</td>
+                                    <td>
+                                        @if ($leave['status'] === 'pending')
+                                            <span class="badge bg-soft-warning text-warning">Pending</span>
+                                        @elseif ($leave['status'] === 'approved')
+                                            <span class="badge bg-soft-success text-success">Approved</span>
+                                        @else
+                                            <span class="badge bg-soft-danger text-danger">Rejected</span>
+                                        @endif
+                                    </td>
 
-<td class="text-end">
+                                    <td class="text-end">
 
-<div class="d-flex justify-content-end gap-2">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <form method="get" action="{{ route('admin.leave-approvals.show', $leave['id']) }}">
+                                                @csrf
+                                            <button class="btn btn-outline-primary btn-icon rounded-circle">
+                                                <i class="feather-eye"></i>
+                                            </button>
+                                            </form>
 
-<button class="btn btn-outline-primary btn-icon rounded-circle">
-<i class="feather-eye"></i>
-</button>
+                                            @if ($leave['status'] === 'pending')
 
-@if ($leave['status'] === 'pending')
+                                                <button class="btn btn-outline-success btn-icon rounded-circle">
+                                                    <i class="feather-check"></i>
+                                                </button>
 
-<button class="btn btn-outline-success btn-icon rounded-circle">
-<i class="feather-check"></i>
-</button>
+                                                <button class="btn btn-outline-danger btn-icon rounded-circle">
+                                                    <i class="feather-x"></i>
+                                                </button>
 
-<button class="btn btn-outline-danger btn-icon rounded-circle">
-<i class="feather-x"></i>
-</button>
+                                            @endif
 
-@endif
+                                        </div>
 
-</div>
+                                    </td>
 
-</td>
+                                </tr>
 
-</tr>
-
-@endforeach
+                            @endforeach
                         @else
 
                             <tr>
@@ -146,7 +148,7 @@
 
             </div>
 
-            
+
 
         </div>
     </div>

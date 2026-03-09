@@ -626,15 +626,15 @@ Route::get('/',
 
 Route::get('/{id}',
 [LeaveApprovalController::class,'show'])
-->name('leave-approvals.show');
+->name('show');
 
 Route::post('/{id}/approve',
 [LeaveApprovalController::class,'approve'])
-->name('leave-approvals.approve');
+->name('approve');
 
 Route::post('/{id}/reject',
 [LeaveApprovalController::class,'reject'])
-->name('leave-approvals.reject');
+->name('reject');
 
 });
         /*

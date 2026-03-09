@@ -503,17 +503,20 @@
 
                 <ul class="nxl-submenu">
 
-                    {{-- Staff Management --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-user-check"></i></span>
-                            <span class="nxl-mtext">Staff Management</span>
-                        </a>
-                    </li>
+                        {{-- Staff Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                                <span class="nxl-mtext">Staff Management</span>
+                            </a>
+                        </li>
+
+                       
+                    </ul>
+                </li>
 
 
-                </ul>
-            </li>
+              
 
 
             {{-- ================Bed Management================== --}}

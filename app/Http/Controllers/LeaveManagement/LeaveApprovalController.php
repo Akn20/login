@@ -7,10 +7,9 @@ use Illuminate\Http\Request;
 
 class LeaveApprovalController extends Controller
 {
-
-public function index()
-{
-$data = [
+        private function dummyData()
+    {
+        return collect([
             [
                 'id' => 1,
                 'employee' => 'John Doe',
@@ -18,6 +17,7 @@ $data = [
                 'from_date' => '2026-03-12',
                 'to_date' => '2026-03-13',
                 'total_days' => 2,
+                'purpose' => 'Family function',
                 'status' => 'pending',
                 'created_at' => '2026-03-09',
             ],
@@ -28,6 +28,7 @@ $data = [
                 'from_date' => '2026-03-15',
                 'to_date' => '2026-03-15',
                 'total_days' => 1,
+                'purpose' => 'Fever',
                 'status' => 'approved',
                 'created_at' => '2026-03-08',
             ],
@@ -38,23 +39,28 @@ $data = [
                 'from_date' => '2026-03-20',
                 'to_date' => '2026-03-22',
                 'total_days' => 3,
+                'purpose' => 'Vacation',
                 'status' => 'rejected',
                 'created_at' => '2026-03-07',
-            ],
-        ];
+            ]
+        ]);
+    }
 
-        $leaveRequests = collect($data);
+public function index()
+{
+        $leaveRequests = $this->dummyData();
 
-
-return view('admin.Leave_Management.leave_request_approval.index', compact('leaveRequests'));
+        return view('admin.Leave_Management.leave_request_approval.index', compact('leaveRequests'));
 }
 
 
 public function show($id)
 {
-$leave = LeaveRequest::findOrFail($id);
+$leave = $this->dummyData()->firstWhere('id', $id);
 
-return view('admin.leave-approvals.show',compact('leave'));
+        abort_if(!$leave, 404);
+
+        return view('admin.leave-approvals.show', compact('leave'));
 }
 
 
