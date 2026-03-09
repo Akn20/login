@@ -39,12 +39,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
-<<<<<<< HEAD
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-=======
-use App\Http\Controllers\LeaveManagement\LeaveTypeController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
->>>>>>> 0d37d3e80c5f6082c240b3c5bcabe120ece53503
 use App\Http\Controllers\ModuleController;
 // Beds / Wards / Patients
 use App\Http\Controllers\OrganizationController;
