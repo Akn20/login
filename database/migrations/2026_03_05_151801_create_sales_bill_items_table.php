@@ -31,8 +31,8 @@ return new class extends Migration
                   ->cascadeOnDelete();
 
             $table->integer('quantity');
-            $table->decimal('unit_price',10,2);
-            $table->decimal('total_price',10,2);
+            $table->decimal('unit_price', 10, 2);
+            $table->decimal('total_price', 10, 2);
 
             $table->timestamps();
         });

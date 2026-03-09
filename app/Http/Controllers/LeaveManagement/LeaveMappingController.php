@@ -46,7 +46,7 @@ public function store(Request $request)
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
         'employee_status' => 'required|array', 
-        'designations' => 'required|array', // Now handles IDs from Designation Master
+        'designations' => 'required', // Now handles IDs from Designation Master
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based', 
         'accrual_value' => 'required|integer',
         'leave_nature' => 'required|in:Paid,Unpaid',
@@ -65,11 +65,15 @@ public function store(Request $request)
         'max_leave_per_application.gte' => 'The maximum leave must be greater than or equal to the minimum leave per application.',
     ]
     );
+     if (isset($data['designations']) && !is_array($data['designations'])) {
+            $data['designations'] = [$data['designations']];
+        }
 
-    \App\Models\LeaveMapping::create($data);
+        LeaveMapping::create($data);
 
-    return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created successfully!');
-}
+        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created successfully!');
+    }
+
     public function edit($id)
     {
         $mapping = LeaveMapping::findOrFail($id);
@@ -106,7 +110,7 @@ public function show($id)
         'leave_type_id' => 'required|uuid',
         'priority' => 'required|integer',
         'employee_status' => 'required|array', 
-        'designations' => 'required|array', 
+        'designations' => 'required', 
         // Fixed: removed the space in 'accrual_frequency'
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based', 
         'accrual_value' => 'required|integer',
@@ -123,11 +127,15 @@ public function show($id)
         // Fixed: added a comma between the two arrays
         'max_leave_per_application.gte' => 'The maximum leave must be greater than or equal to the minimum leave per application.',
     ]);
+   if (isset($data['designations']) && !is_array($data['designations'])) {
+            $data['designations'] = [$data['designations']];
+        }
 
-    $mapping->update($data);
+        $mapping->update($data);
 
-    return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping updated successfully!');
-}
+        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping updated successfully!');
+    }
+   
     public function destroy($id)
     {
         LeaveMapping::findOrFail($id)->delete();
@@ -181,7 +189,7 @@ public function apiStore(Request $request)
         'priority' => 'required|integer',
 
         'employee_status' => 'required|array',
-        'designations' => 'required|array',
+        'designations' => 'required',
 
         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
         'accrual_value' => 'required|integer',

@@ -15,27 +15,27 @@ return new class extends Migration
             // Sales Return reference
             $table->uuid('sales_return_id');
             $table->foreign('sales_return_id')
-                  ->references('id')
-                  ->on('sales_returns')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('sales_returns')
+                ->cascadeOnDelete();
 
             // Medicine reference
             $table->uuid('medicine_id');
             $table->foreign('medicine_id')
-                  ->references('id')
-                  ->on('medicines')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('medicines')
+                ->cascadeOnDelete();
 
             // Batch reference
             $table->uuid('batch_id');
             $table->foreign('batch_id')
-                  ->references('id')
-                  ->on('medicine_batches')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('medicine_batches')
+                ->cascadeOnDelete();
 
             $table->integer('quantity');
 
-            $table->decimal('refund_amount',10,2);
+            $table->decimal('refund_amount', 10, 2);
 
             $table->string('reason')->nullable();
 

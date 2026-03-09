@@ -11,31 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('sales_returns', function (Blueprint $table) {
+        Schema::create('sales_returns', function (Blueprint $table) {
 
-    $table->uuid('id')->primary();
+            $table->uuid('id')->primary();
+            $table->string('return_number')->unique();
+            
+            $table->uuid('bill_id');
+            $table->foreign('bill_id')->references('bill_id')->on('sales_bills')->cascadeOnDelete();
 
     $table->string('return_number')->unique();
     $table->uuid('bill_id');
      $table->foreign('bill_id')->references('id')->on('sales_bills')->onDelete('cascade');
     $table->uuid('patient_id')->nullable();
 
-    $table->decimal('total_refund', 12, 2)->default(0);
+            $table->text('remarks')->nullable();
 
-    $table->enum('status', [
-        'Draft',
-        'Submitted',
-        'Approved',
-        'Rejected',
-        'Completed'
-    ])->default('Draft');
+            $table->uuid('created_by');
 
-    $table->text('remarks')->nullable();
-
-    $table->uuid('created_by');
-
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**
