@@ -413,7 +413,7 @@
                         {{-- Goods Receipt(GRN) --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.grn.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-micon"><i class="fa-solid fa-file-invoice"></i></span>
                                 <span class="nxl-mtext">Goods Receipt(GRN)</span>
                             </a>
                         </li>
@@ -425,6 +425,37 @@
                                 <span class="nxl-micon"><i class="feather-package"></i>
                                 </span>
                                 <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
+                         {{-- Expiry Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                                <span class="nxl-mtext">Expiry Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Controlled Drug Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-shield"></i></span>
+                                <span class="nxl-mtext">Controlled Drug Management</span>
+                            </a>
+                        </li>
+                         {{-- Prescription Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fa-solid fa-file-medical"></i></span>
+                                <span class="nxl-mtext">Prescription Management</span>
+                            </a>
+                        </li>
+
+
+                         {{-- Sales Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Sales Return Management</span>
                             </a>
                         </li>
                     </ul>
@@ -522,28 +553,6 @@
                             </a>
                         </li>
 
-                        {{-- Expiry Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
-                                <span class="nxl-mtext">Expiry Management</span>
-                            </a>
-                        </li>
-
-                        {{-- Controlled Drug Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-shield"></i></span>
-                                <span class="nxl-mtext">Controlled Drug Management</span>
-                            </a>
-                        </li>
-                         {{-- Sales Return Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
-                                <span class="nxl-mtext">Sales Return Management</span>
-                            </a>
-                        </li>
                     </ul>
                 </li>
 

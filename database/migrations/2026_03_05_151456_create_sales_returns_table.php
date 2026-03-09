@@ -16,9 +16,8 @@ return new class extends Migration
     $table->uuid('id')->primary();
 
     $table->string('return_number')->unique();
-
-    $table->foreignId('bill_id')->constrained('sales_bills')->cascadeOnDelete();
-
+    $table->uuid('bill_id');
+     $table->foreign('bill_id')->references('id')->on('sales_bills')->onDelete('cascade');
     $table->uuid('patient_id')->nullable();
 
     $table->decimal('total_refund', 12, 2)->default(0);
