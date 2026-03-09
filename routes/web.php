@@ -714,17 +714,15 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
         | Reception: Tokens / Queue
         |--------------------------------------------------------------------------
         */
+        Route::resource('tokens', TokenController::class);
+        Route::get('/', [TokenController::class, 'index'])->name('index');
 
-        Route::prefix('tokens')->name('tokens.')->group(function () {
-            Route::get('/', [TokenController::class, 'index'])->name('index');
-            Route::get('/create', [TokenController::class, 'create'])->name('create');
-            Route::post('/store', [TokenController::class, 'store'])->name('store');
-            Route::get('/show/{id}', [TokenController::class, 'show'])->name('admin.tokens.show');
-            Route::patch('/{id}/skip', [TokenController::class, 'skip'])->name('admin.tokens.skip');
-            Route::patch('/{id}/complete', [TokenController::class, 'complete'])->name('admin.tokens.complete');
+        Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])
+            ->name('tokens.skip');
 
-
-        });
+        Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
+            ->name('tokens.complete');
+ 
     });
 
 /*
