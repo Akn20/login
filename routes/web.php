@@ -40,8 +40,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
-use App\Http\Controllers\LeaveManagement\LeaveTypeController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\ModuleController;
 // Beds / Wards / Patients
 use App\Http\Controllers\OrganizationController;
@@ -612,6 +611,24 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
+
+
+
+        // |----------------------------------------------------------------------
+        // | Leave Adjustment
+        // |----------------------------------------------------------------------
+Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
+
+    Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+
+    Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
+    Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
+    ->name('show');
+});
 
         /*
         |--------------------------------------------------------------------------
