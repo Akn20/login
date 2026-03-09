@@ -705,6 +705,16 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
 
         /*
         |--------------------------------------------------------------------------
+        | Reception: Appointments
+        |--------------------------------------------------------------------------
+        */
+
+    
+
+
+
+        /*
+        |--------------------------------------------------------------------------
         | Reception: Tokens / Queue
         |--------------------------------------------------------------------------
         */
@@ -718,6 +728,40 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
             ->name('tokens.complete');
  
     });
+
+
+    //Appointments routes 
+
+    
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('appointments')->name('appointments.')->group(function () {
+
+        Route::get('/', [AppointmentController::class, 'index'])->name('index');
+
+        Route::get('/create', [AppointmentController::class, 'create'])->name('create');
+
+        Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+
+        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+
+        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
+
+        Route::post('/update/{id}', [AppointmentController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
+
+        Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
+
+        Route::get('/restore/{id}', [AppointmentController::class, 'restore'])->name('restore');
+
+        Route::get('/force-delete/{id}', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
+
+        Route::get('/get-doctors/{department_id}', [AppointmentController::class, 'getDoctors'])
+            ->name('getDoctors');
+
+
+    });
+});
 
 /*
 |--------------------------------------------------------------------------
