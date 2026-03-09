@@ -184,7 +184,7 @@ class ModuleController extends Controller
         }
 
         return back()->with('success', 'Status updated successfully');
-    }
+    }   
 
     /* ===================== API ===================== */
 

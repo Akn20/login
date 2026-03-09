@@ -172,21 +172,6 @@
                                     </a>
                                 @endif
 
-                                {{-- REJECTED -> Delete only (View already exists) --}}
-                                @if($status === 'Rejected')
-                                    <form action="{{ route('admin.grn.destroy', $g->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="btn btn-light btn-icon rounded-circle grn-icon-btn"
-                                                title="Delete"
-                                                onclick="return confirm('Move this GRN to Trash?')">
-                                            <i class="feather-trash text-danger"></i>
-                                        </button>
-                                    </form>
-                                @endif
-
-                                {{-- VERIFIED & COMPLETED -> View only (no buttons) --}}
 
                             </div>
                             </div>
@@ -225,36 +210,14 @@
     font-weight:500;
 }
 
-.grn-icon-btn{
-    width: 46px !important;
-    height: 46px !important;
-    padding: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 50% !important;
-    vertical-align: middle !important;
-}
 
-.grn-icon-btn i{
-    font-size: 18px;
-    line-height: 1 !important;
-    display: inline-block;
-    position: relative;
-    top: 0; /* force no shift */
-}
+
+
 
 /* fix icon alignment */
 .action-wrap{ white-space:nowrap; }
 
-.action-btn {
-    width: 42px;
-    height: 42px;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
-}
+
 .grn-action {
     display: inline-flex;
     align-items: center;
@@ -262,5 +225,28 @@
     white-space: nowrap;
 }
 
-.action-btn i{ line-height:1 !important; }
+
+
+.action-btn,
+.grn-icon-btn{
+    width:36px;
+    height:36px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+}
+
+.action-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.action-wrap form{
+    margin:0;
+    display:flex;
+    align-items:center;
+}
 </style>

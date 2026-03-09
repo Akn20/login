@@ -34,4 +34,9 @@ class Bed extends Model
     {
         return $this->belongsTo(Ward::class);
     }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_number', 'room_number');
+    }
 }

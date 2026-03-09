@@ -34,12 +34,13 @@ class WardController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'ward_name' => 'required|string|max:255',
+            'ward_name' => 'required|string|max:255|unique:wards,ward_name',
             'ward_type' => 'required|string|max:100',
             'floor_number' => 'required|integer|min:0',
-            'total_beds' => 'required|integer|min:1',
             'status' => 'required|boolean',
         ]);
+
+        $validated['total_beds'] = 0; // system controlled
 
         Ward::create($validated);
 
@@ -73,10 +74,9 @@ class WardController extends Controller
         $ward = Ward::findOrFail($id);
 
         $validated = $request->validate([
-            'ward_name' => 'required|string|max:255',
+            'ward_name' => 'required|string|max:255|unique:wards,ward_name',
             'ward_type' => 'required|string|max:100',
             'floor_number' => 'required|integer|min:0',
-            'total_beds' => 'required|integer|min:1',
             'status' => 'required|boolean',
         ]);
 
@@ -295,6 +295,41 @@ class WardController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Status updated successfully',
+            'data' => $ward
+        ]);
+    }
+    /* ============================================================
+API Trash List
+============================================================ */
+    public function apiTrash()
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Deleted wards fetched successfully',
+            'data' => Ward::onlyTrashed()->latest()->get()
+        ]);
+    }
+
+    /* ============================================================
+       API Restore
+    ============================================================ */
+
+    public function apiRestore($id)
+    {
+        $ward = Ward::withTrashed()->find($id);
+
+        if (!$ward) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Ward not found'
+            ], 404);
+        }
+
+        $ward->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ward restored successfully',
             'data' => $ward
         ]);
     }

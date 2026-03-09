@@ -38,11 +38,23 @@
 
     <div class="col-md-4 mb-3">
         <label>Category</label>
-        <select name="category" class="form-control">
-            <option {{ $item->category=='Medicine'?'selected':'' }}>Medicine</option>
-            <option {{ $item->category=='Equipment'?'selected':'' }}>Equipment</option>
-            <option {{ $item->category=='Consumable'?'selected':'' }}>Consumable</option>
+        <select name="category" id="category-select" class="form-control">
+            <option value="">Select</option>
+            @php
+                $existingCategories = $categories ?? collect();
+                $selectedCategory = old('category', $item->category);
+                $isOther = $selectedCategory && !$existingCategories->contains($selectedCategory);
+            @endphp
+            @foreach($existingCategories as $cat)
+                <option value="{{ $cat }}" {{ $selectedCategory == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+            @endforeach
+            <option value="other" {{ $isOther ? 'selected' : '' }}>Other</option>
         </select>
+        <div class="mt-2" id="category-other-container" style="display: none;">
+            <input type="text" name="category_other" id="category-other"
+                   class="form-control" placeholder="Enter new category"
+                   value="{{ $isOther ? $selectedCategory : old('category_other') }}">
+        </div>
     </div>
 
     <div class="col-md-4 mb-3">
@@ -93,11 +105,67 @@
 
 </div>
 
-<button class="btn btn-success mt-3">Update Item</button>
-<a href="{{ route('admin.inventory.index') }}" class="btn btn-secondary mt-3">Cancel</a>
+<div class="text-end mt-3">
+    <button type="submit" class="btn btn-primary">
+        <i class="feather-save me-3"></i> Update Item
+    </button>
+
+    <button type="button" class="btn btn-secondary ms" onclick="window.location='{{ route('admin.inventory.index') }}'">
+        <i class="feather-x me-4"></i> Cancel
+    </button>
+</div>
 
 </div>
 
 </form>
 
 @endsection
+
+@push('scripts')
+<script>
+// listen for status changes from other pages/tabs
+window.addEventListener('storage', function (e) {
+    if (!e.key || !e.key.startsWith('item-status-')) return;
+    const id = e.key.replace('item-status-', '');
+    // only act if it matches the current item being edited
+    if (id == '{{ $item->id }}') {
+        const select = document.querySelector('select[name="status"]');
+        if (select) {
+            select.value = e.newValue;
+        }
+    }
+});
+
+// when select changes here, broadcast to anyone else viewing index
+const statusSelect = document.querySelector('select[name="status"]');
+if (statusSelect) {
+    statusSelect.addEventListener('change', function () {
+        const newVal = this.value;
+        localStorage.setItem('item-status-{{ $item->id }}', newVal);
+    });
+}
+
+// category-other toggle
+(function () {
+    const select = document.getElementById('category-select');
+    const otherContainer = document.getElementById('category-other-container');
+    const otherInput = document.getElementById('category-other');
+
+    function toggleOther() {
+        if (select && select.value === 'other') {
+            otherContainer.style.display = '';
+            otherInput.setAttribute('required', 'required');
+        } else if (otherContainer) {
+            otherContainer.style.display = 'none';
+            otherInput.removeAttribute('required');
+            otherInput.value = '';
+        }
+    }
+
+    if (select) {
+        select.addEventListener('change', toggleOther);
+        toggleOther();
+    }
+})();
+</script>
+@endpush

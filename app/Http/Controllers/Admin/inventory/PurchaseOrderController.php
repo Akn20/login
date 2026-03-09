@@ -7,14 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Item;
-use App\Models\Vendor;
+use App\Models\InventoryVendor as Vendor;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        $purchaseOrders = PurchaseOrder::with('vendor')
+        $purchaseOrders = PurchaseOrder::with('inventoryVendor')
             ->latest()
             ->paginate(10);
 
@@ -23,7 +23,7 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
-        $vendors = Vendor::all();
+        $vendors = Vendor::all(); // inventory vendors
         $items = Item::where('status', 'active')->get();
 
         return view('admin.inventory.purchase-orders.create', compact('vendors', 'items'));
@@ -32,7 +32,7 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'vendor_id' => 'required',
+            'inventory_vendor_id' => 'required',
             'order_date' => 'required|date',
             'items' => 'required|array'
         ]);
@@ -41,7 +41,7 @@ class PurchaseOrderController extends Controller
 
             $po = PurchaseOrder::create([
                 'po_number' => 'PO-' . time(),
-                'vendor_id' => $request->vendor_id,
+                'inventory_vendor_id' => $request->inventory_vendor_id,
                 'order_date' => $request->order_date,
                 'expected_date' => $request->expected_date,
                 'total_amount' => 0,
@@ -78,7 +78,7 @@ class PurchaseOrderController extends Controller
     }
         public function show($id)
     {
-        $purchaseOrder = PurchaseOrder::with(['vendor', 'items.item'])
+        $purchaseOrder = PurchaseOrder::with(['inventoryVendor', 'items.item'])
             ->findOrFail($id);
 
         return view(
@@ -89,9 +89,11 @@ class PurchaseOrderController extends Controller
 
             public function edit($id)
         {
-            $purchaseOrder = \App\Models\PurchaseOrder::findOrFail($id);
+            $purchaseOrder = PurchaseOrder::findOrFail($id);
+            $vendors = Vendor::all();
+            // items could also be passed if editing line items is required
 
-            return view('admin.inventory.purchase-orders.edit', compact('purchaseOrder'));
+            return view('admin.inventory.purchase-orders.edit', compact('purchaseOrder', 'vendors'));
         }
 
 

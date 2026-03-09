@@ -29,7 +29,7 @@
         @forelse($audits as $audit)
         <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $audit->item->name }}</td>
+            <td>{{ optional($audit->item)->name ?? '*** item deleted ***' }}</td>
             <td>{{ $audit->system_stock }}</td>
             <td>{{ $audit->physical_stock }}</td>
             <td>
