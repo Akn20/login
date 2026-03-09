@@ -218,53 +218,63 @@
                 </li>
 
                 {{-- Module Management --}}
-                <li class="nxl-item">
-                    <a href="{{ route('admin.modules.index') }}" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-grid"></i></span>
-                        <span class="nxl-mtext">Module Management</span>
-                    </a>
-                </li>
 
                 {{-- Dynamic Modules --}}
                 <li class="nxl-item nxl-caption">
                     <label>Modules</label>
                 </li>
 
-                @foreach($sidebarModules as $module)
-                    @if($module->children->count() > 0)
-                        <li class="nxl-item nxl-hasmenu">
-                            <a href="javascript:void(0);" class="nxl-link">
-                                <span class="nxl-micon">
-                                    <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
-                                </span>
-                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
-                                <span class="nxl-arrow">
-                                    <i class="feather-chevron-right"></i>
-                                </span>
-                            </a>
-                            <ul class="nxl-submenu">
-                                @foreach($module->children as $child)
-                                    <li class="nxl-item">
-                                        <a href="{{ url($child->file_url) }}" class="nxl-link">
-                                            {{ $child->module_display_name }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @else
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-grid"></i></span>
+                        <span class="nxl-mtext">Modules</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
                         <li class="nxl-item">
-                            <a href="{{ url($module->file_url) }}" class="nxl-link">
-                                <span class="nxl-micon">
-                                    <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
-                                </span>
-                                <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                            <a href="{{ route('admin.modules.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Add Module</span>
                             </a>
                         </li>
-                    @endif
-                @endforeach
 
-                {{-- ================= INVENTORY ================= --}}
+                        @foreach($sidebarModules as $module)
+                            @if($module->children->count() > 0)
+                                <li class="nxl-item nxl-hasmenu">
+                                    <a href="javascript:void(0);" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                        <span class="nxl-arrow">
+                                            <i class="feather-chevron-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="nxl-submenu">
+                                        @foreach($module->children as $child)
+                                            <li class="nxl-item">
+                                                <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                                    {{ $child->module_display_name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nxl-item">
+                                    <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </li>
+                
+                    {{-- ================= INVENTORY ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-package"></i></span>
@@ -430,60 +440,6 @@
                     </ul>
                 </li>
 
-                {{-- Leave Management --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-clock"></i></span>
-                        <span class="nxl-mtext">Leave Management</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-sun"></i></span>
-                                <span class="nxl-mtext">Weekend Holiday</span>
-                            </a>
-                        </li>
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
-                                <span class="nxl-mtext">Holidays</span>
-                            </a>
-                        </li>
-                         {{-- ✅ Leave Type (ADDED ONLY THIS PART) --}}
-            <li class="nxl-item">
-            <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
-                <span class="nxl-micon">
-                    <i class="feather-file-text"></i>
-                </span>
-                <span class="nxl-mtext">Leave Type</span>
-            </a>
-        </li>
-                        {{-- Leave Mapping  --}}
-                     <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-map"></i></span>
-                            <span class="nxl-mtext">Leave Mapping</span>
-                        </a>
-                     </li>
-
-                        {{-- Leave Adjustment --}}
-<li class="nxl-item {{ request()->routeIs('admin.leave-adjustments.*') ? 'active' : '' }}">
-    <a href="{{ route('admin.leave-adjustments.index') }}" class="nxl-link">
-        <span class="nxl-micon">
-            <i class="feather-repeat"></i>
-        </span>
-        <span class="nxl-mtext">Leave Adjustment</span>
-    </a>
-</li>
-
-
-
-                    </ul>
-                </li>
-    </ul>
-</li>
-
                 {{-- HR Management --}}
                 {{-- ================HR Management================== --}}
                 <li class="nxl-item nxl-hasmenu">
@@ -503,7 +459,50 @@
                             </a>
                         </li>
 
-                       
+                        {{-- Leave Management --}}
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-clock"></i></span>
+                                <span class="nxl-mtext">Leave Management</span>
+                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+
+                            <ul class="nxl-submenu">
+                                {{-- Weekend Holiday --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-sun"></i></span>
+                                        <span class="nxl-mtext">Weekend Holiday</span>
+                                    </a>
+                                </li>
+
+                                {{-- Holidays --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                        <span class="nxl-mtext">Holidays</span>
+                                    </a>
+                                </li>
+
+                                {{-- Leave Type --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="feather-file-text"></i>
+                                        </span>
+                                        <span class="nxl-mtext">Leave Type</span>
+                                    </a>
+                                </li>
+
+                                {{-- Leave Mapping --}}
+                                <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
+                                        <span class="nxl-micon"><i class="feather-map"></i></span>
+                                        <span class="nxl-mtext">Leave Mapping</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
 
@@ -546,6 +545,13 @@
                             <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-shield"></i></span>
                                 <span class="nxl-mtext">Controlled Drug Management</span>
+                            </a>
+                        </li>
+                        {{-- Sales Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Sales Return Management</span>
                             </a>
                         </li>
                     </ul>

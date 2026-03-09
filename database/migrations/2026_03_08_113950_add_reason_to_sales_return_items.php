@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('staff', function (Blueprint $table) {
-            $table->dropColumn('role');
+        Schema::table('sales_return_items', function (Blueprint $table) {
+            $table->string('reason')->nullable()->after('refund_amount');
         });
     }
 
     public function down(): void
     {
-        Schema::table('staff', function (Blueprint $table) {
-            $table->string('role')->nullable();
+        Schema::table('sales_return_items', function (Blueprint $table) {
+            $table->dropColumn('reason');
         });
     }
 };
