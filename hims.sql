@@ -26,9 +26,6 @@ VALUES
   NOW(), NOW(), NULL
 );
 
--- Capture org id for later (only in docs; MySQL itself won’t store this variable across imports in phpMyAdmin UI)
--- But we can just look it up via subqueries in later inserts.
-
 -- ===================== INSTITUTIONS (UUID, FK via subquery) =====================
 INSERT INTO `institutions` (
   `id`, `organization_id`, `code`, `name`,
@@ -43,8 +40,37 @@ VALUES
   'Demo Health HQ',
   'Main Road, Someshwara',
   'Mangalore', 'Karnataka', 'India', '575001',
-  '9876543210',
-  'hq@demohealth.com',
+  '9876543210', 'hq@demohealth.com',
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  (SELECT id FROM organizations LIMIT 1),
+  'INST-CLINIC',
+  'Demo Health Clinic',
+  'Near Bus Stand, Mangalore',
+  'Mangalore', 'Karnataka', 'India', '575001',
+  '9876543210', 'clinic@demohealth.com',
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  (SELECT id FROM organizations LIMIT 1),
+  'INST-DIAG',
+  'Demo Diagnostics Center',
+  'City Center, Mangalore',
+  'Mangalore', 'Karnataka', 'India', '575002',
+  '9876543211', 'diagnostics@demohealth.com',
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  (SELECT id FROM organizations LIMIT 1),
+  'INST-REHAB',
+  'Demo Rehabilitation Center',
+  'Beach Road, Mangalore',
+  'Mangalore', 'Karnataka', 'India', '575003',
+  '9876543212', 'rehab@demohealth.com',
   NOW(), NOW(), NULL
 );
 
@@ -56,11 +82,51 @@ INSERT INTO `hospitals` (
 VALUES
 (
   UUID(),
-  'Demo General Hospital',
+  'General Hospital',
   'HOSP-DH1',
-  'Near Bus Stand, Someshwara',
+  'Near Bus Stand, Mangalore',
   '9876543210',
   (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
+  1,
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  'Critical Care Hospital',
+  'HOSP-DH2',
+  'City Center, Mangalore',
+  '9876543211',
+  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
+  1,
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  'Specialty Clinic',
+  'HOSP-DH3',
+  'Beach Road, Mangalore',
+  '9876543212',
+  (SELECT id FROM institutions WHERE code = 'INST-CLINIC' LIMIT 1),
+  1,
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  'Women & Children Hospital',
+  'HOSP-DH4',
+  'Market Road, Mangalore',
+  '9876543213',
+  (SELECT id FROM institutions WHERE code = 'INST-DIAG' LIMIT 1),
+  1,
+  NOW(), NOW(), NULL
+),
+(
+  UUID(),
+  'Rehabilitation Hospital',
+  'HOSP-DH5',
+  'Hilltop, Mangalore',
+  '9876543214',
+  (SELECT id FROM institutions WHERE code = 'INST-REHAB' LIMIT 1),
   1,
   NOW(), NOW(), NULL
 );

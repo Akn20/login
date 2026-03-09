@@ -30,21 +30,35 @@
     </select>
 </div>
 <div class="mb-3">
-    <label class="form-label">Target Designation *</label>
-    {{-- Removed 'multiple' and changed 'designations[]' to 'designations' --}}
-    <select name="designations" class="form-control select2" required>
-        <option value="">-- Select Designation --</option>
-        @foreach($designations as $designation)
-            <option value="{{ $designation->id }}" 
-                {{-- Changed in_array to a simple equality check --}}
-                {{ (isset($mapping) && $mapping->designations == $designation->id) ? 'selected' : '' }}>
-                {{ $designation->designation_name }}
-            </option>
-        @endforeach
-    </select>
-    @error('designations')
-        <div class="text-danger small">{{ $message }}</div>
-    @enderror
+<label class="form-label">Target Designation </label>
+{{--
+CHANGE: Removed 'multiple' and name is now 'designations' (single)
+This prevents the "must be an array" validation error on the frontend.
+--}}
+<select name="designations" class="form-control select2" required>
+<option value="">-- Select Designation --</option>
+@foreach($designations as $designation)
+@php
+// Logic to handle 'selected' state whether database has a string or an array
+$selectedDesignations = old('designations', $mapping->designations ?? []);
+$isSelected = false;
+
+            if (is_array($selectedDesignations)) {
+                $isSelected = in_array($designation->id, $selectedDesignations);
+            } else {
+                $isSelected = ($selectedDesignations == $designation->id);
+            }
+        @endphp
+        <option value="{{ $designation->id }}" {{ $isSelected ? 'selected' : '' }}>
+            {{ $designation->designation_name }}
+        </option>
+    @endforeach
+</select>
+@error('designations')
+    <div class="text-danger small">{{ $message }}</div>
+@enderror
+
+
 </div>
 
 {{-- Section 3: Accrual Rules ---}}

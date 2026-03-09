@@ -72,6 +72,7 @@
                     <label>Access Control</label>
                 </li>
 
+                {{-- Users --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0)" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-users"></i></span>
@@ -100,6 +101,7 @@
                     </ul>
                 </li>
 
+                {{-- Roles & Permissions --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0)" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-shield"></i></span>
@@ -240,7 +242,6 @@
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
-                        {{-- Staff Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-user-check"></i></span>
@@ -393,7 +394,7 @@
                         </li>
                         <li class="nxl-item">
                             <a href="{{ route('admin.grn.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-micon"><i class="feather-file-plus"></i></span>
                                 <span class="nxl-mtext">Goods Receipt (GRN)</span>
                             </a>
                         </li>
@@ -418,78 +419,89 @@
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
-
                         {{-- Items --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.index') }}">
-                                All Items
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">All Items</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.create') }}">
-                                Add Item
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Item</span>
                             </a>
                         </li>
 
                         {{-- Purchase Orders --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.index') }}">
-                                Purchase Orders
+                                <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                                <span class="nxl-mtext">Purchase Orders</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.create') }}">
-                                Create Purchase Order
+                                <span class="nxl-micon"><i class="feather-file-plus"></i></span>
+                                <span class="nxl-mtext">Create Purchase Order</span>
                             </a>
                         </li>
 
                         {{-- Inventory Vendors --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory-vendors.index') }}">
-                                Vendors
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Vendors</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory-vendors.create') }}">
-                                Add Vendor
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Add Vendor</span>
                             </a>
                         </li>
 
                         {{-- GRN --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.grns.index') }}">
-                                GRN List
+                                <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                                <span class="nxl-mtext">GRN List</span>
                             </a>
                         </li>
 
                         {{-- Stock Transfers --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
-                                Stock Transfers
+                                <span class="nxl-micon"><i class="feather-repeat"></i></span>
+                                <span class="nxl-mtext">Stock Transfers</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
-                                Create Stock Transfer
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Create Stock Transfer</span>
                             </a>
                         </li>
 
                         {{-- Stock Audit --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
-                                Stock Audits
+                                <span class="nxl-micon"><i class="feather-check-circle"></i></span>
+                                <span class="nxl-mtext">Stock Audits</span>
                             </a>
                         </li>
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
-                                New Stock Audit
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">New Stock Audit</span>
                             </a>
                         </li>
 
                         {{-- Reports --}}
                         <li class="nxl-item">
                             <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
-                                Reports Dashboard
+                                <span class="nxl-micon"><i class="feather-bar-chart-2"></i></span>
+                                <span class="nxl-mtext">Reports Dashboard</span>
                             </a>
                         </li>
                     </ul>
@@ -567,7 +579,10 @@
                                 @foreach($module->children as $child)
                                     <li class="nxl-item">
                                         <a href="{{ url($child->file_url) }}" class="nxl-link">
-                                            {{ $child->module_display_name }}
+                                            <span class="nxl-micon">
+                                                <i class="{{ $child->icon ?? 'feather-circle' }}"></i>
+                                            </span>
+                                            <span class="nxl-mtext">{{ $child->module_display_name }}</span>
                                         </a>
                                     </li>
                                 @endforeach
