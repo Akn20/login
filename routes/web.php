@@ -21,14 +21,14 @@ use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
 use App\Http\Controllers\Admin\PatientController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+//use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 // Inventory (admin)
 use App\Http\Controllers\BloodGroupController;
-use App\Http\Controllers\ControlledDrugController;
+//use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\ExpiryController;
@@ -53,7 +53,11 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 // Reception / Tokens
 use Illuminate\Support\Facades\Route;
-
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -691,6 +695,55 @@ Route::middleware(['auth', 'role:hr,admin'])
 */
 
 Route::prefix('stock')->group(function () {
-    // (your existing stock API routes here if any; the commented
-    // temporary Leave Type UI routes have been removed to avoid conflicts)
+
+    Route::get('stock', [StockController::class, 'apiIndex']);
+    Route::get('stock/low', [StockController::class, 'apiLowStock']);
+    Route::get('stock/{id}', [StockController::class, 'apiShow']);
+
+    Route::post('stock', [StockController::class, 'apiStore']);
+    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
+
+    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
+
+    Route::get('stock-trash', [StockController::class, 'apiTrash']);
+    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
+    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+});
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
+         /*
+        |--------------------------------------------------------------------------
+        | Sales Return Module
+        |--------------------------------------------------------------------------
+        */
+
+        // Main CRUD routes
+        Route::resource('salesReturn', SalesReturnController::class);
+
+        // Print Sales Return
+        Route::get(
+            'salesReturn/{id}/print',
+            [SalesReturnController::class, 'print']
+        )->name('salesReturn.print');
+
+        // Approve Sales Return
+        Route::post(
+            'salesReturn/{id}/approve',
+            [SalesReturnController::class, 'approve']
+        )->name('salesReturn.approve');
+
+     Route::get('admin/salesReturn/{id}/approve',[SalesReturnController::class,'approve'])
+    ->name('admin.salesReturn.approve');
+
+
+        // Reject Sales Return
+        Route::post(
+            'salesReturn/{id}/reject',
+            [SalesReturnController::class, 'reject']
+        )->name('salesReturn.reject');
+
 });
