@@ -62,13 +62,7 @@ use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-
-
-//Doctor controllers
-use App\Http\Controllers\Doctor\ViewPatientController;
-use App\Http\Controllers\Doctor\ViewAppointmentController;
-
-
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -811,35 +805,72 @@ Route::prefix('admin')
             [SalesReturnController::class, 'reject']
         )->name('salesReturn.reject');
 
-    });
+});
 
-//Appointments routes 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('appointments')->name('appointments.')->group(function () {
 
-        Route::get('/', [AppointmentController::class, 'index'])->name('index');
+Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
 
-        Route::get('/create', [AppointmentController::class, 'create'])->name('create');
+    // Prescription List
+    Route::get('/', [PrescriptionController::class, 'index'])
+        ->name('index');
 
-        Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+    /*
+    |-----------------------------------
+    | Offline Prescription
+    |-----------------------------------
+    */
 
-        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+    // Create Offline Prescription Page
+    Route::get('/create', [PrescriptionController::class, 'createOffline'])
+        ->name('offline.create');
 
-        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
-
-        Route::post('/update/{id}', [AppointmentController::class, 'update'])->name('update');
-
-        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
-
-        Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
-
-        Route::get('/restore/{id}', [AppointmentController::class, 'restore'])->name('restore');
-
-        Route::get('/force-delete/{id}', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
-
-        Route::get('/get-doctors/{department_id}', [AppointmentController::class, 'getDoctors'])
-            ->name('getDoctors');
+    // Store Offline Prescription
+    Route::post('/store', [PrescriptionController::class, 'storeOffline'])
+        ->name('offline.store');
 
 
-    });
+    /*
+    |-----------------------------------
+    | Dispense Medicines
+    |-----------------------------------
+    */
+
+    Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
+        ->name('dispense');
+
+    Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
+        ->name('dispense.store');
+
+
+    /*
+    |-----------------------------------
+    | Verify Prescription
+    |-----------------------------------
+    */
+
+    Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
+        ->name('verify');
+
+
+    /*
+    |-----------------------------------
+    | Bill Page
+    |-----------------------------------
+    */
+
+    Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
+        ->name('bill');
+
+
+    /*
+    |-----------------------------------
+    | View Prescription (KEEP LAST)
+    |-----------------------------------
+    */
+
+    Route::get('/{id}', [PrescriptionController::class, 'show'])
+        ->name('show');
+
+});
 });

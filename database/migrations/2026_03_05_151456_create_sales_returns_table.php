@@ -19,17 +19,10 @@ return new class extends Migration
             $table->uuid('bill_id');
             $table->foreign('bill_id')->references('bill_id')->on('sales_bills')->cascadeOnDelete();
 
-            $table->uuid('patient_id')->nullable();
-
-            $table->decimal('total_refund', 12, 2)->default(0);
-
-            $table->enum('status', [
-                'Draft',
-                'Submitted',
-                'Approved',
-                'Rejected',
-                'Completed',
-            ])->default('Draft');
+    $table->string('return_number')->unique();
+    $table->uuid('bill_id');
+     $table->foreign('bill_id')->references('id')->on('sales_bills')->onDelete('cascade');
+    $table->uuid('patient_id')->nullable();
 
             $table->text('remarks')->nullable();
 
