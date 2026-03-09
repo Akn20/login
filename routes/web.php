@@ -38,8 +38,11 @@ use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 // Beds / Wards / Patients
 use App\Http\Controllers\OrganizationController;
@@ -615,6 +618,25 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
     ->name('show');
 });
 
+Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
+
+Route::get('/',
+[LeaveApprovalController::class,'index'])
+->name('index');
+
+Route::get('/{id}',
+[LeaveApprovalController::class,'show'])
+->name('leave-approvals.show');
+
+Route::post('/{id}/approve',
+[LeaveApprovalController::class,'approve'])
+->name('leave-approvals.approve');
+
+Route::post('/{id}/reject',
+[LeaveApprovalController::class,'reject'])
+->name('leave-approvals.reject');
+
+});
         /*
         |--------------------------------------------------------------------------
         | Beds
