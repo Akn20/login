@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
@@ -40,6 +41,12 @@ use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\HRDashboardController;
 
+
+//Doctor controllers
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -66,6 +73,30 @@ Route::post('/resend-otp', [SignInController::class, 'resendOtp'])->name('otp.re
 Route::post('/verify-otp', [SignInController::class, 'verifyOtp'])->name('otp.verify');
 Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store');
 
+
+/*
+|--------------------------------------------------------------------------
+| Doctor routes 
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/doctor/view-patient/{id}', [ViewPatientController::class, 'viewPatientProfile'])
+    ->name('doctor.view-patient-profile');
+
+Route::get('/doctor/consultation-summary', [ConsultationController::class, 'summary'])
+    ->name('doctor.consultation-summary');
+
+Route::get('/appointments', 
+        [ViewAppointmentController::class, 'index']
+    )->name('doctor.view-appointment');
+
+
+    // Consultation Page
+    Route::get('/consultation/{id}', 
+        [ConsultationController::class, 'index']
+    )->name('doctor.consultation');
+
+   
 /*
 |--------------------------------------------------------------------------
 | ADMIN-ONLY routes  (role = admin)
@@ -262,10 +293,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::resource('organization', OrganizationController::class);
 
         /*
-|--------------------------------------------------------------------------
-| Wards
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Wards
+        |--------------------------------------------------------------------------
+        */
 
         Route::get('ward/deleted', [WardController::class, 'deleted'])
             ->name('ward.deleted');

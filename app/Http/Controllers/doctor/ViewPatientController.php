@@ -11,4 +11,7 @@ class ViewPatientController extends Controller
     {
         return view('doctor.opd.view-patient-profile');
     }
+
+  
+    
 }

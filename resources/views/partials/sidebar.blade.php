@@ -467,6 +467,29 @@
                     </ul>
                 </li>
 
+              {{-- ================Doctor Module================== --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-activity"></i></span>
+                        <span class="nxl-mtext">Doctor</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                         {{-- Appointments --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('doctor.view-appointment') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Appointments</span>
+                            </a>
+                        </li>
+
+                      
+
+                    </ul>
+                </li>
+
 
                 {{-- Section: Account --}}
                 <li class="nxl-item nxl-caption">
