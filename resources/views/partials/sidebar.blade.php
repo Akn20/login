@@ -446,6 +446,13 @@
                                 </span>
                             </a>
                         </li>
+                         {{-- Sales Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Sales Return Management</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

@@ -26,7 +26,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-
+use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -230,4 +230,22 @@ Route::prefix('pharmacy')->group(function () {
 
     Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']); // verify
     Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']); // reject
+
+
+
+    // SALES RETURN APIs
+    Route::get('/sales-returns', [SalesReturnController::class, 'apiIndex']);                 // list + filters
+    Route::get('/sales-returns/{id}', [SalesReturnController::class, 'apiShow']);            // single view
+    Route::post('/sales-returns', [SalesReturnController::class, 'apiStore']);               // create
+    Route::put('/sales-returns/{id}', [SalesReturnController::class, 'apiUpdate']);          // update
+    Route::post('/sales-returns/{id}/approve', [SalesReturnController::class, 'apiApprove']); // approve
+    Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);   // reject
+
+    // Helper for create screen: search bill by bill number
+    Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
+
+
+
+
+

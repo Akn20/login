@@ -42,7 +42,7 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-
+use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -626,4 +626,42 @@ Route::prefix('stock')->group(function () {
     Route::get('stock-trash', [StockController::class, 'apiTrash']);
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+});
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
+         /*
+        |--------------------------------------------------------------------------
+        | Sales Return Module
+        |--------------------------------------------------------------------------
+        */
+
+        // Main CRUD routes
+        Route::resource('salesReturn', SalesReturnController::class);
+
+        // Print Sales Return
+        Route::get(
+            'salesReturn/{id}/print',
+            [SalesReturnController::class, 'print']
+        )->name('salesReturn.print');
+
+        // Approve Sales Return
+        Route::post(
+            'salesReturn/{id}/approve',
+            [SalesReturnController::class, 'approve']
+        )->name('salesReturn.approve');
+
+     Route::get('admin/salesReturn/{id}/approve',[SalesReturnController::class,'approve'])
+    ->name('admin.salesReturn.approve');
+
+
+        // Reject Sales Return
+        Route::post(
+            'salesReturn/{id}/reject',
+            [SalesReturnController::class, 'reject']
+        )->name('salesReturn.reject');
+
 });
