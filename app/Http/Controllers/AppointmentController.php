@@ -300,6 +300,18 @@ class AppointmentController extends Controller
         return ApiResponse::success($doctors, 'Doctors retrieved successfully');
     }
 
+    public function apiGetPatients()
+    {
+        $patients = Patient::select('id', 'first_name', 'last_name')->get();
+        return ApiResponse::success($patients, 'Patients retrieved successfully');
+    }
+
+    public function apiGetDepartments()
+    {
+        $departments = Department::select('id', 'department_name as name')->get();
+        return ApiResponse::success($departments, 'Departments retrieved successfully');
+    }
+
     public function apiTrash()
     {
         $appointments = Appointment::onlyTrashed()

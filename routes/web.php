@@ -33,6 +33,8 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
