@@ -112,6 +112,9 @@ Route::get('/appointments',
     [ViewAppointmentController::class, 'index']
 )->name('doctor.view-appointment');
 
+Route::post('/consultation/save', [ConsultationController::class, 'store'])
+    ->name('doctor.save-consultation');
+
 // Consultation Page
 Route::get('/consultation/{id}',
     [ConsultationController::class, 'index']

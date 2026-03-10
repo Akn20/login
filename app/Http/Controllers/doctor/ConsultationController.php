@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Patient;
-
+use App\Models\Appointment;
+use App\Models\Consultation;
 class ConsultationController extends Controller
 {
 
@@ -15,11 +16,18 @@ class ConsultationController extends Controller
     ==========================*/
     public function index($id)
     {
+        // Fetch patient
         $patient = Patient::findOrFail($id);
 
+        // Fetch today's appointment for this patient
+        $appointment = Appointment::where('patient_id', $id)
+                        ->whereDate('appointment_date', today())
+                        ->first();
+
+        // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
 
-        return view('doctor.opd.consultation', compact('patient','medicines'));
+        return view('doctor.opd.consultation', compact('patient','medicines','appointment'));
     }
 
 
@@ -28,26 +36,24 @@ class ConsultationController extends Controller
     ==========================*/
     public function store(Request $request)
     {
-
-        // Validate doctor input
         $request->validate([
             'symptoms' => 'required',
             'diagnosis' => 'required'
         ]);
 
-        // For now we only store in array (since DB not ready)
-        $consultation = [
+        $appointment = Appointment::find($request->appointment_id);
+
+        $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
-            'doctor_id' => 1,
+            'doctor_id' => $appointment->doctor_id,
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
-            'prescription' => $request->medicine,
             'tests' => $request->tests,
             'consultation_date' => now()
-        ];
+        ]);
 
-        return redirect()->route('doctor.opd.summary')
-                         ->with('consultation', $consultation);
+        return redirect()->route('doctor.consultation-summary')
+            ->with('consultation', $consultation);
     }
 
 
