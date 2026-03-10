@@ -40,6 +40,13 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\WorkStatusController;
+
+//surgery
+use App\Http\Controllers\Api\Surgery\OTApiController;
+use App\Http\Controllers\Api\Surgery\SurgeryApiController;
+use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -471,4 +478,57 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Surgery Management APIs
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('surgery')->group(function () {
+
+    // Main Surgery CRUD
+    Route::get('/', [SurgeryApiController::class, 'index']);                    // List all surgeries with filters
+    Route::post('/', [SurgeryApiController::class, 'store']);                   // Create new surgery
+    Route::get('/{id}', [SurgeryApiController::class, 'show']);                 // Get single surgery with details
+    Route::put('/{id}', [SurgeryApiController::class, 'update']);               // Update surgery
+    Route::delete('/{id}', [SurgeryApiController::class, 'destroy']);           // Delete surgery
+
+    // Additional endpoints
+    Route::get('/patient/{patientId}', [SurgeryApiController::class, 'getByPatient']); // Get surgeries by patient
+    Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);     // Get surgeries by date
+});
+
+Route::prefix('ot')->group(function () {
+
+    Route::get('/', [OTApiController::class, 'index']);
+
+    Route::post('/', [OTApiController::class, 'store']);
+
+    Route::get('/{id}', [OTApiController::class, 'show']);
+
+    Route::put('/{id}', [OTApiController::class, 'update']);
+
+    Route::delete('/{id}', [OTApiController::class, 'destroy']);
+
+    Route::post('/{id}/toggle-status', [OTApiController::class, 'toggleStatus']);
+
+});
+
+Route::prefix('post-operative')->group(function () {
+
+    Route::get('/', [PostOperativeApiController::class, 'index']);
+
+    Route::post('/', [PostOperativeApiController::class, 'store']);
+
+    Route::get('/{id}', [PostOperativeApiController::class, 'show']);
+
+    Route::put('/{id}', [PostOperativeApiController::class, 'update']);
+
+    Route::delete('/{id}', [PostOperativeApiController::class, 'destroy']);
+
+    Route::get('/surgery/{surgeryId}', [PostOperativeApiController::class, 'getBySurgery']);
+
 });
