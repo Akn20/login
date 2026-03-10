@@ -12,7 +12,9 @@
         </div>
     @endif
 
+
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+
         <div class="page-header-title">
             <h5 class="m-b-10 mb-1">
                 <i class="feather-check-circle me-2"></i>Leave Approvals
@@ -22,10 +24,10 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 </li>
-
                 <li class="breadcrumb-item">Leave Approvals</li>
             </ul>
         </div>
+
 
         <div class="d-flex gap-2 align-items-center">
 
@@ -33,12 +35,21 @@
 
                 <select name="status" class="form-control form-control-sm me-2">
                     <option value="">All Status</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
+                        Pending
+                    </option>
+
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>
+                        Approved
+                    </option>
+
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                        Rejected
+                    </option>
                 </select>
 
-                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee"
+                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee ID"
                     value="{{ request('search') }}">
 
                 <button class="btn btn-light-brand btn-sm">
@@ -48,10 +59,13 @@
             </form>
 
         </div>
+
     </div>
 
 
+
     <div class="card stretch stretch-full">
+
         <div class="card-body p-0">
 
             <div class="table-responsive">
@@ -75,53 +89,98 @@
 
                         @if($leaveRequests->count())
 
-                            @foreach ($leaveRequests as $index => $leave)
+                            @foreach($leaveRequests as $index => $leave)
 
                                 <tr>
 
-                                    <td>{{  $index }}</td>
-
-                                    <td>{{ $leave['employee'] }}</td>
-
-                                    <td>{{ $leave['leave_type'] }}</td>
-
                                     <td>
-                                        {{ $leave['from_date'] }} → {{ $leave['to_date'] }}
+                                        {{ $leaveRequests->firstItem() + $index }}
                                     </td>
 
-                                    <td>{{ $leave['total_days'] }}</td>
-
-                                    <td>{{ \Carbon\Carbon::parse($leave['created_at'])->format('d-m-Y') }}</td>
 
                                     <td>
-                                        @if ($leave['status'] === 'pending')
-                                            <span class="badge bg-soft-warning text-warning">Pending</span>
-                                        @elseif ($leave['status'] === 'approved')
-                                            <span class="badge bg-soft-success text-success">Approved</span>
+                                        {{ $leave->staff->name }}
+                                    </td>
+
+
+                                    <td>
+                                        {{ $leave->leaveType->display_name }}
+                                    </td>
+
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($leave->from_date)->format('d-m-Y') }}
+                                        →
+                                        {{ \Carbon\Carbon::parse($leave->to_date)->format('d-m-Y') }}
+                                    </td>
+
+
+                                    <td>
+                                        {{ $leave->total_leave_days }}
+                                    </td>
+
+
+                                    <td>
+                                        {{ $leave->created_at->format('d-m-Y') }}
+                                    </td>
+
+
+                                    <td>
+
+                                        @if($leave->status == 'pending')
+
+                                            <span class="badge bg-soft-warning text-warning">
+                                                Pending
+                                            </span>
+
+                                        @elseif($leave->status == 'approved')
+
+                                            <span class="badge bg-soft-success text-success">
+                                                Approved
+                                            </span>
+
                                         @else
-                                            <span class="badge bg-soft-danger text-danger">Rejected</span>
+
+                                            <span class="badge bg-soft-danger text-danger">
+                                                Rejected
+                                            </span>
+
                                         @endif
+
                                     </td>
+
+
 
                                     <td class="text-end">
 
                                         <div class="d-flex justify-content-end gap-2">
-                                            <form method="get" action="{{ route('admin.leave-approvals.show', $leave['id']) }}">
-                                                @csrf
-                                            <button class="btn btn-outline-primary btn-icon rounded-circle">
+
+                                            <a href="{{ route('admin.leave-approvals.show', $leave->id) }}"
+                                                class="btn btn-outline-primary btn-icon rounded-circle" title="View">
                                                 <i class="feather-eye"></i>
-                                            </button>
-                                            </form>
+                                            </a>
 
-                                            @if ($leave['status'] === 'pending')
 
-                                                <button class="btn btn-outline-success btn-icon rounded-circle">
-                                                    <i class="feather-check"></i>
-                                                </button>
+                                            @if($leave->status == 'pending')
 
-                                                <button class="btn btn-outline-danger btn-icon rounded-circle">
-                                                    <i class="feather-x"></i>
-                                                </button>
+                                                <form action="{{ route('admin.leave-approvals.approve', $leave->id) }}" method="POST">
+                                                    @csrf
+
+                                                    <button class="btn btn-outline-success btn-icon rounded-circle" title="Approve">
+                                                        <i class="feather-check"></i>
+                                                    </button>
+
+                                                </form>
+
+
+                                                <form action="{{ route('admin.leave-approvals.reject', $leave->id) }}" method="POST">
+                                                    @csrf
+
+                                                    <button class="btn btn-outline-danger btn-icon rounded-circle" title="Reject">
+                                                        <i class="feather-x"></i>
+                                                    </button>
+
+                                                </form>
 
                                             @endif
 
@@ -132,6 +191,8 @@
                                 </tr>
 
                             @endforeach
+
+
                         @else
 
                             <tr>
@@ -150,7 +211,17 @@
 
 
 
+            @if($leaveRequests->hasPages())
+
+                <div class="mt-3 px-3 pb-3">
+                    {{ $leaveRequests->links() }}
+                </div>
+
+            @endif
+
+
         </div>
+
     </div>
 
 @endsection

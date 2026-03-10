@@ -1,4 +1,4 @@
-USE `hims`;
+USE `hims_main`;
 
 -- Helpful: disable FK checks while seeding
 SET FOREIGN_KEY_CHECKS = 0;
@@ -245,7 +245,7 @@ INSERT INTO `roles` (
 )
 VALUES
 (UUID(), 'super_admin', 'Super administrator with full access', 'active', NOW(), NOW(), NULL),
-(UUID(), 'admin',       'Hospital / institution admin',        'active', NOW(), NOW(), NULL),
+
 (UUID(), 'doctor',      'Doctor role',                          'active', NOW(), NOW(), NULL),
 (UUID(), 'nurse',       'Nurse role',                           'active', NOW(), NOW(), NULL),
 (UUID(), 'receptionist','Reception / front desk',               'active', NOW(), NOW(), NULL);

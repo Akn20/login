@@ -4,87 +4,86 @@ namespace App\Http\Controllers\LeaveManagement;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\LeaveRequests;
+use Log;
 
 class LeaveApprovalController extends Controller
 {
-        private function dummyData()
-    {
-        return collect([
-            [
-                'id' => 1,
-                'employee' => 'John Doe',
-                'leave_type' => 'Casual Leave',
-                'from_date' => '2026-03-12',
-                'to_date' => '2026-03-13',
-                'total_days' => 2,
-                'purpose' => 'Family function',
-                'status' => 'pending',
-                'created_at' => '2026-03-09',
-            ],
-            [
-                'id' => 2,
-                'employee' => 'Jane Smith',
-                'leave_type' => 'Sick Leave',
-                'from_date' => '2026-03-15',
-                'to_date' => '2026-03-15',
-                'total_days' => 1,
-                'purpose' => 'Fever',
-                'status' => 'approved',
-                'created_at' => '2026-03-08',
-            ],
-            [
-                'id' => 3,
-                'employee' => 'Michael Brown',
-                'leave_type' => 'Privilege Leave',
-                'from_date' => '2026-03-20',
-                'to_date' => '2026-03-22',
-                'total_days' => 3,
-                'purpose' => 'Vacation',
-                'status' => 'rejected',
-                'created_at' => '2026-03-07',
-            ]
-        ]);
-    }
 
-public function index()
-{
-        $leaveRequests = $this->dummyData();
+    /**
+     * Display leave requests
+     */
+    public function index(Request $request)
+    {
+        $query = LeaveRequests::query()->with(['staff','leaveType']);
+
+        // search employee id
+        if ($request->search) {
+            $query->where('employee_id', $request->search);
+        }
+
+        // filter status
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $leaveRequests = $query->latest()->paginate(10);
 
         return view('admin.Leave_Management.leave_request_approval.index', compact('leaveRequests'));
-}
+    }
 
 
-public function show($id)
-{
-$leave = $this->dummyData()->firstWhere('id', $id);
-
-        abort_if(!$leave, 404);
-
-        return view('admin.leave-approvals.show', compact('leave'));
-}
-
-
-public function approve($id)
-{
-$leave = LeaveRequest::findOrFail($id);
-
-$leave->update([
-'status' => 'approved'
-]);
-
-return back()->with('success','Leave approved');
-}
+    /**
+     * Show leave request details
+     */
+    public function show($id)
+    {
+        $leave = LeaveRequests::with(['staff','leaveType'])->findOrFail($id);
+      
+        return view('admin.Leave_Management.leave_request_approval.show', compact('leave'));
+    }
 
 
-public function reject($id)
-{
-$leave = LeaveRequest::findOrFail($id);
+    /**
+     * Approve leave request
+     */
+    public function approve(Request $request, $id)
+    {
+        $leave = LeaveRequests::findOrFail($id);
 
-$leave->update([
-'status' => 'rejected'
-]);
+        if ($leave->status !== 'pending') {
+            return back()->with('error', 'This request is already processed.');
+        }
 
-return back()->with('success','Leave rejected');
-}
+        $leave->update([
+            'status' => 'approved',
+            'current_approval_level' => $leave->current_approval_level + 1
+        ]);
+
+        return redirect()
+            ->route('admin.leave_approvals.index')
+            ->with('success', 'Leave request approved successfully.');
+    }
+
+
+    /**
+     * Reject leave request
+     */
+    public function reject(Request $request, $id)
+    {
+        $leave = LeaveRequests::findOrFail($id);
+
+        if ($leave->status !== 'pending') {
+            return back()->with('error', 'This request is already processed.');
+        }
+
+        $leave->update([
+            'status' => 'rejected'
+        ]);
+
+        return redirect()
+            ->route('admin.leave_approvals.index')
+            ->with('success', 'Leave request rejected.');
+    }
 
 }
