@@ -134,9 +134,7 @@
                             Save Consultations
                         </a>
 
-                        <a href="{{ route('doctor.consultation-summary') }}" class="btn btn-primary">
-                            Generate Summary
-                        </a>
+                
 
                     </div>
 

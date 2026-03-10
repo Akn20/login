@@ -34,5 +34,16 @@ class Medicine extends Model
         });
     }
     // One medicine has many batches
+
+    
+    public function consultations()
+    {
+        return $this->belongsToMany(
+            Consultation::class,
+            'consultation_medicines',
+            'medicine_id',
+            'consultation_id'
+        );
+    }
     
 }
