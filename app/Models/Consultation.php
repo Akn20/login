@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\Patient;
+use App\Models\Staff;
+use App\Models\Medicine;            
 
 class Consultation extends Model
 {
@@ -28,5 +31,20 @@ class Consultation extends Model
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
+    }
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Staff::class,'doctor_id');
+    }
+
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class,'consultation_medicines')
+                    ->withPivot('dosage','frequency','duration');
     }
 }

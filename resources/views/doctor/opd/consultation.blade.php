@@ -150,9 +150,7 @@ function showSuccess() {
                             Save Consultation
                         </button>
 
-                       <a href="{{ route('doctor.consultation-summary') }}" class="btn btn-primary">
-                            Generate Summary
-                        </a>
+                
 
                     </div>
 

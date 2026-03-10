@@ -51,6 +51,14 @@ class ConsultationController extends Controller
             'tests' => $request->tests,
             'consultation_date' => now()
         ]);
+        $consultation->medicines()->attach([
+            $request->medicine => [
+                'dosage' => $request->dosage,
+                'frequency' => $request->frequency,
+                'duration' => $request->duration,
+                'instructions' => $request->instructions
+            ]
+        ]);
 
         return redirect()->route('doctor.consultation-summary')
             ->with('consultation', $consultation);
