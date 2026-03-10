@@ -47,6 +47,8 @@ use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 
+//DOCTOR(OPD)
+use App\Http\Controllers\Doctor\ConsultationController;
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -294,17 +296,17 @@ Route::prefix('masters')->group(function () {
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
-Route::prefix('leave-management')->group(function () {
-    
-    // Main Adjustment Routes
-    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
-    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
-    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
-    
-    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
-    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
-    
-});
+    Route::prefix('leave-management')->group(function () {
+
+        // Main Adjustment Routes
+        Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+        Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+        Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+
+        // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+        Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+
+    });
 });
 
 /*
@@ -530,5 +532,17 @@ Route::prefix('post-operative')->group(function () {
     Route::delete('/{id}', [PostOperativeApiController::class, 'destroy']);
 
     Route::get('/surgery/{surgeryId}', [PostOperativeApiController::class, 'getBySurgery']);
+
+});
+
+// DOCTOR(OPD) API
+Route::prefix('consultations')->group(function () {
+
+    Route::get('/', [ConsultationController::class, 'apiIndex']);
+    Route::get('/{id}', [ConsultationController::class, 'apiShow']);
+    Route::post('/', [ConsultationController::class, 'apiStore']);
+    Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
+    Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
 
 });
