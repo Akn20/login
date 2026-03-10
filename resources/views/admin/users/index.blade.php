@@ -52,6 +52,7 @@
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Role</th>
+                                <th>Mobile</th>
                                 <th>Status</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -62,6 +63,7 @@
                                     <td>{{ $users->firstItem() ? $users->firstItem() + $index : $index + 1 }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ optional($user->role)->name ?? '-' }}</td>
+                                    <td>{{ $user->mobile ?? '-' }}</td>
                                     <td>
                                         @include('partials.status-toggle', [
                                             'id'      => $user->id,
