@@ -55,7 +55,7 @@ class DepartmentController extends Controller
     public function edit(string $id)
     {
         $department = Department::findOrFail($id);
-        return view('masters.departments.edit', compact('department'));
+        return view('admin.masters.departments.edit', compact('department'));
     }
 
 

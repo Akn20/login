@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -8,27 +8,28 @@ use App\Http\Controllers\Admin\DashboardController;
 */
 
 // Auth / Dashboard
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
-use App\Http\Controllers\Admin\FinancialYearMappingController;
 // Admin: users / roles / FY / hospitals
+use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
-use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 // Masters
+use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
 use App\Http\Controllers\Admin\PatientController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+//use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 // Inventory (admin)
 use App\Http\Controllers\BloodGroupController;
-use App\Http\Controllers\ControlledDrugController;
+//use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
@@ -54,12 +56,22 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 // Reception / Tokens
 use Illuminate\Support\Facades\Route;
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 
 
 //Doctor controllers
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 
+
+//surgery
+use App\Http\Controllers\doctor\surgery\SurgeryController;
+use App\Http\Controllers\doctor\surgery\OTController;
+use App\Http\Controllers\doctor\surgery\PostOperativeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -167,6 +179,20 @@ Route::middleware(['auth', 'role:admin'])
             ->name('users.toggle-status');
 
         Route::resource('users', UserController::class)->except(['show']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | User Biometrics Enrollment
+        |--------------------------------------------------------------------------
+        */
+        Route::get('users/biometrics', [AdminBiometricEnrollController::class, 'biometrics'])
+            ->name('users.biometrics');
+
+        Route::post('users/{user}/biometrics/upload', [AdminBiometricEnrollController::class, 'upload'])
+            ->name('users.biometrics.upload');
+
+        Route::delete('users/biometrics/images/{imageId}', [AdminBiometricEnrollController::class, 'delete'])
+            ->name('users.biometrics.delete');
 
         /*
         |--------------------------------------------------------------------------
@@ -629,6 +655,24 @@ Route::middleware(['auth', 'role:admin'])
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
+
+
+        // |----------------------------------------------------------------------
+        // | Leave Adjustment
+        // |----------------------------------------------------------------------
+Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
+
+    Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+
+    Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
+    Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
+    ->name('show');
+});
+
         /*
         |--------------------------------------------------------------------------
         | Beds
@@ -679,6 +723,11 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/', [TokenController::class, 'index'])->name('index');
             Route::get('/create', [TokenController::class, 'create'])->name('create');
             Route::post('/store', [TokenController::class, 'store'])->name('store');
+            Route::get('/show/{id}', [TokenController::class,'show'])->name('admin.tokens.show');
+            Route::patch('/{id}/skip', [TokenController::class,'skip'])->name('admin.tokens.skip');
+            Route::patch('/{id}/complete', [TokenController::class,'complete'])->name('admin.tokens.complete');
+
+
         });
     });
 
@@ -717,6 +766,106 @@ Route::middleware(['auth', 'role:hr,admin'])
 */
 
 Route::prefix('stock')->group(function () {
-    // (your existing stock API routes here if any; the commented
-    // temporary Leave Type UI routes have been removed to avoid conflicts)
+
+    Route::get('stock', [StockController::class, 'apiIndex']);
+    Route::get('stock/low', [StockController::class, 'apiLowStock']);
+    Route::get('stock/{id}', [StockController::class, 'apiShow']);
+
+    Route::post('stock', [StockController::class, 'apiStore']);
+    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
+
+    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
+
+    Route::get('stock-trash', [StockController::class, 'apiTrash']);
+    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
+    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 });
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+
+         /*
+        |--------------------------------------------------------------------------
+        | Sales Return Module
+        |--------------------------------------------------------------------------
+        */
+
+        // Main CRUD routes
+        Route::resource('salesReturn', SalesReturnController::class);
+
+        // Print Sales Return
+        Route::get(
+            'salesReturn/{id}/print',
+            [SalesReturnController::class, 'print']
+        )->name('salesReturn.print');
+
+        // Approve Sales Return
+        Route::post(
+            'salesReturn/{id}/approve',
+            [SalesReturnController::class, 'approve']
+        )->name('salesReturn.approve');
+
+     Route::get('admin/salesReturn/{id}/approve',[SalesReturnController::class,'approve'])
+    ->name('admin.salesReturn.approve');
+
+
+        // Reject Sales Return
+        Route::post(
+            'salesReturn/{id}/reject',
+            [SalesReturnController::class, 'reject']
+        )->name('salesReturn.reject');
+
+});
+
+
+
+/*
+|--------------------------------------------------------------------------
+| surgery routes (doctor)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('doctor')->group(function(){
+
+    Route::get('/surgery', [SurgeryController::class,'index'])->name('surgery.index');
+
+    Route::get('/surgery/create', [SurgeryController::class,'create'])->name('surgery.create');
+
+    Route::post('/surgery/store', [SurgeryController::class,'store'])->name('surgery.store');
+
+    Route::get('/surgery/{id}/edit',[SurgeryController::class,'edit'])->name('surgery.edit');
+
+    Route::delete('/surgery/{id}', [SurgeryController::class,'destroy'])->name('surgery.destroy');
+    
+    Route::put('/surgery/{id}',[SurgeryController::class,'update'])->name('surgery.update');
+
+    Route::get('/ot', [OTController::class,'index'])->name('ot.index');
+
+    Route::get('/ot/create',[OTController::class,'create'])->name('ot.create');
+
+    Route::post('/ot/store',[OTController::class,'store'])->name('ot.store');
+
+    Route::get('/ot/{id}/edit',[OTController::class,'edit'])->name('ot.edit');
+
+    Route::put('/ot/{id}',[OTController::class,'update'])->name('ot.update');
+
+    Route::delete('/ot/{id}',[OTController::class,'destroy'])->name('ot.destroy');
+
+    Route::post('/ot/{id}/toggle-status',[OTController::class,'toggleStatus'])->name('ot.toggle-status');
+    
+    Route::get('/postoperative', [PostOperativeController::class,'index'])->name('post.index');
+
+    Route::get('/surgery/{id}/postoperative',[PostOperativeController::class,'create'])->name('post.create');
+
+    Route::post('/post/store',[PostOperativeController::class,'store'])->name('post.store');
+
+    Route::get('/postoperative/{id}/edit',[PostOperativeController::class,'edit'])->name('post.edit');
+
+    Route::put('/postoperative/{id}',[PostOperativeController::class,'update'])->name('post.update');
+
+    Route::delete('/postoperative/{id}',[PostOperativeController::class,'destroy'])->name('post.destroy');
+
+
+   });
