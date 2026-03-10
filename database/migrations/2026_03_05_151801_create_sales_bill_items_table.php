@@ -14,7 +14,7 @@ return new class extends Migration
 
             $table->uuid('sales_bill_id');
             $table->foreign('sales_bill_id')
-                  ->references('id')
+                  ->references('bill_id')
                   ->on('sales_bills')
                   ->cascadeOnDelete();
 

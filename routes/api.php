@@ -18,6 +18,8 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\WorkStatusController;
+
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -40,6 +42,10 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\AppointmentController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -287,17 +293,17 @@ Route::prefix('masters')->group(function () {
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
-Route::prefix('leave-management')->group(function () {
-    
-    // Main Adjustment Routes
-    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
-    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
-    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
-    
-    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
-    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
-    
-});
+    Route::prefix('leave-management')->group(function () {
+
+        // Main Adjustment Routes
+        Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+        Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+        Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+
+        // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+        Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+
+    });
 });
 
 /*
@@ -471,4 +477,21 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+});
+
+//Apportionment APIs
+
+
+Route::prefix('appointments')->group(function () {
+    Route::get('/', [AppointmentController::class, 'apiIndex']);
+    Route::get('/trash', [AppointmentController::class, 'apiTrash']);
+    Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
+    Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
+    Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiDoctors']);
+    Route::get('/{id}', [AppointmentController::class, 'apiShow']);
+    Route::post('/', [AppointmentController::class, 'apiStore']);
+    Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
+    Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
