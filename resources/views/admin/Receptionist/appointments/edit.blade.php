@@ -36,17 +36,15 @@
 
                                 @include('admin.receptionist.appointments.form')
 
-                                <div class="mt-3">
+                                <div class="d-flex gap-2 mt-3">
 
-                                    <button class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary">
                                         Update Appointment
                                     </button>
 
                                     <a href="{{ route('admin.appointments.index') }}" class="btn btn-light">
                                         Cancel
                                     </a>
-
-                                </div>
 
                             </form>
 
