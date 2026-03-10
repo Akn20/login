@@ -227,7 +227,7 @@
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-grid"></i></span>
-                        <span class="nxl-mtext">Modules</span>
+                        <span class="nxl-mtext">Modules Management</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
                     <ul class="nxl-submenu">
@@ -237,55 +237,7 @@
                                 <span class="nxl-mtext">Add Module</span>
                             </a>
                         </li>
-                        </ul>
-                </li>
-
-                {{-- ================= Surgery Management ================= --}}
-<li class="nxl-item nxl-hasmenu">
-    <a href="javascript:void(0);" class="nxl-link">
-        <span class="nxl-micon"><i class="feather-activity"></i></span>
-        <span class="nxl-mtext">Surgery Management</span>
-        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-    </a>
-
-    <ul class="nxl-submenu">
-
-        {{-- Surgery List --}}
-        <li class="nxl-item">
-            <a href="{{ route('surgery.index') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-list"></i></span>
-                <span class="nxl-mtext">Surgery List</span>
-            </a>
-        </li>
-
-        {{-- Schedule Surgery --}}
-        <li class="nxl-item">
-            <a href="{{ route('surgery.create') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
-                <span class="nxl-mtext">Schedule Surgery</span>
-            </a>
-        </li>
-
-        {{-- OT Management --}}
-        <li class="nxl-item">
-            <a href="{{ route('ot.index') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-settings"></i></span>
-                <span class="nxl-mtext">OT Management</span>
-            </a>
-        </li>
-
-        {{-- Post Operative Notes --}}
-        <li class="nxl-item">
-            <a href="{{ route('post.index') }}" class="nxl-link">
-                <span class="nxl-micon"><i class="feather-file-text"></i></span>
-                <span class="nxl-mtext">Post Operative Notes</span>
-            </a>
-        </li>
-
-    </ul>
-</li>
-
-                {{-- ================= INVENTORY ================= --}}
+                        {{-- ================= INVENTORY ================= --}}
                         @foreach($sidebarModules as $module)
                             @if($module->children->count() > 0)
                                 <li class="nxl-item nxl-hasmenu">
@@ -321,8 +273,12 @@
                         @endforeach
                     </ul>
                 </li>
-                
-                    {{-- ================= INVENTORY ================= --}}
+
+                <li class="nxl-item nxl-caption">
+                    <label>Clinical Management</label>
+                </li>
+
+                {{-- ================= INVENTORY ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-package"></i></span>
@@ -471,7 +427,7 @@
                         {{-- Goods Receipt(GRN) --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.grn.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-micon"><i class="fa-solid fa-file-invoice"></i></span>
                                 <span class="nxl-mtext">Goods Receipt(GRN)</span>
                             </a>
                         </li>
@@ -483,6 +439,37 @@
                                 <span class="nxl-micon"><i class="feather-package"></i>
                                 </span>
                                 <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
+                         {{-- Expiry Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                                <span class="nxl-mtext">Expiry Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Controlled Drug Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-shield"></i></span>
+                                <span class="nxl-mtext">Controlled Drug Management</span>
+                            </a>
+                        </li>
+                         {{-- Prescription Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fa-solid fa-file-medical"></i></span>
+                                <span class="nxl-mtext">Prescription Management</span>
+                            </a>
+                        </li>
+
+
+                         {{-- Sales Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Sales Return Management</span>
                             </a>
                         </li>
                     </ul>
@@ -580,28 +567,6 @@
                             </a>
                         </li>
 
-                        {{-- Expiry Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
-                                <span class="nxl-mtext">Expiry Management</span>
-                            </a>
-                        </li>
-
-                        {{-- Controlled Drug Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-shield"></i></span>
-                                <span class="nxl-mtext">Controlled Drug Management</span>
-                            </a>
-                        </li>
-                        {{-- Sales Return Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
-                                <span class="nxl-mtext">Sales Return Management</span>
-                            </a>
-                        </li>
                     </ul>
                 </li>
 
@@ -612,6 +577,18 @@
                         <span class="nxl-mtext">Receptionist</span>
                         <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                     </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.appointments.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">
+                                    Appointment Management
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a href="{{ route('admin.tokens.index') }}" class="nxl-link">
@@ -654,6 +631,50 @@
                                 <span class="nxl-mtext">Duplicate Patients</span>
                             </a>
                         </li>
+                    </ul>
+                </li>
+                {{-- ================= Surgery Management ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-activity"></i></span>
+                        <span class="nxl-mtext">Surgery Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                        {{-- Surgery List --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('surgery.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">Surgery List</span>
+                            </a>
+                        </li>
+
+                        {{-- Schedule Surgery --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('surgery.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Schedule Surgery</span>
+                            </a>
+                        </li>
+
+                        {{-- OT Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('ot.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-settings"></i></span>
+                                <span class="nxl-mtext">OT Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Post Operative Notes --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('post.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                                <span class="nxl-mtext">Post Operative Notes</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </li>
 

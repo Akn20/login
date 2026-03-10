@@ -26,7 +26,11 @@
 
                     <div class="card stretch stretch-full">
                         <div class="card-body">
-
+                            @if(session('error'))
+                                <div class="alert alert-danger">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
                             <form action="{{ route('admin.vendors.update', $vendor->id) }}" method="POST">
                                 @csrf
 

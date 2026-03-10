@@ -11,12 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales_bills', function (Blueprint $table) {
-            $table->uuid('bill_id')->primary();
-            $table->string('bill_number');
-            $table->decimal('total_amount', 10, 2)->default(0);
-            $table->timestamps();
-        });
+        //
     }
 
     /**
@@ -24,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales_bills');
+        //
     }
 };

@@ -6,39 +6,36 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('sales_return_items', function (Blueprint $table) {
 
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Sales Return reference
             $table->uuid('sales_return_id');
             $table->foreign('sales_return_id')
-                  ->references('id')
-                  ->on('sales_returns')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('sales_returns')
+                ->cascadeOnDelete();
 
             // Medicine reference
             $table->uuid('medicine_id');
             $table->foreign('medicine_id')
-                  ->references('id')
-                  ->on('medicines')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('medicines')
+                ->cascadeOnDelete();
 
             // Batch reference
             $table->uuid('batch_id');
             $table->foreign('batch_id')
-                  ->references('id')
-                  ->on('medicine_batches')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('medicine_batches')
+                ->cascadeOnDelete();
 
             $table->integer('quantity');
 
-            $table->decimal('refund_amount',10,2);
+            $table->decimal('refund_amount', 10, 2);
 
             $table->string('reason')->nullable();
 
@@ -46,9 +43,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('sales_return_items');
