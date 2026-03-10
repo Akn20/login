@@ -190,18 +190,19 @@ class AppointmentController extends Controller
 
     /* ================= API FUNCTIONS ================= */
 
-
     public function apiIndex()
     {
-        $appointments = Appointment::with(['patient', 'doctor', 'department'])->get();
+        $appointments = Appointment::with(['patient', 'doctor', 'department'])
+            ->latest()
+            ->get();
 
-        return response()->json($appointments);
+        return ApiResponse::success($appointments, 'Appointments retrieved successfully');
     }
-
 
     public function apiShow($id)
     {
-        $appointment = Appointment::with(['patient', 'doctor', 'department'])->find($id);
+        $appointment = Appointment::with(['patient', 'doctor', 'department'])
+            ->find($id);
 
         if (!$appointment) {
             return ApiResponse::error('Appointment not found');
@@ -209,7 +210,6 @@ class AppointmentController extends Controller
 
         return ApiResponse::success($appointment, 'Appointment details retrieved successfully');
     }
-
 
     public function apiStore(Request $request)
     {
@@ -228,7 +228,7 @@ class AppointmentController extends Controller
             ->exists();
 
         if ($exists) {
-            return ApiResponse::error('Doctor already has an appointment at this time.');
+            return ApiResponse::error('Doctor already has an appointment at this time');
         }
 
         $institution = \App\Models\Institution::first();
@@ -239,17 +239,22 @@ class AppointmentController extends Controller
             'department_id' => $request->department_id,
             'appointment_date' => $request->appointment_date,
             'appointment_time' => $request->appointment_time,
-            'consultation_fee' => $request->consultation_fee ?? 0,
-            'appointment_status' => $request->appointment_status ?? 'Scheduled',
-            'institution_id' => $institution->id,
+            'consultation_fee' => $request->consultation_fee,
+            'appointment_status' => 'Scheduled',
+            'institution_id' => $institution->id
         ]);
 
-        return ApiResponse::success($appointment->load(['patient', 'doctor', 'department']), 'Appointment created successfully');
+        return ApiResponse::success($appointment, 'Appointment created successfully');
     }
-
 
     public function apiUpdate(Request $request, $id)
     {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return ApiResponse::error('Appointment not found');
+        }
+
         $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
@@ -258,25 +263,18 @@ class AppointmentController extends Controller
             'appointment_time' => 'required'
         ]);
 
-        $appointment = Appointment::find($id);
-
-        if (!$appointment) {
-            return ApiResponse::error('Appointment not found');
-        }
-
         $appointment->update([
             'patient_id' => $request->patient_id,
             'doctor_id' => $request->doctor_id,
             'department_id' => $request->department_id,
             'appointment_date' => $request->appointment_date,
             'appointment_time' => $request->appointment_time,
-            'consultation_fee' => $request->consultation_fee ?? $appointment->consultation_fee,
-            'appointment_status' => $request->appointment_status ?? $appointment->appointment_status,
+            'consultation_fee' => $request->consultation_fee,
+            'appointment_status' => $request->appointment_status
         ]);
 
-        return ApiResponse::success($appointment->load(['patient', 'doctor', 'department']), 'Appointment updated successfully');
+        return ApiResponse::success($appointment, 'Appointment updated successfully');
     }
-
 
     public function apiDestroy($id)
     {
@@ -291,6 +289,16 @@ class AppointmentController extends Controller
         return ApiResponse::success(null, 'Appointment deleted successfully');
     }
 
+    public function apiDoctors($department_id)
+    {
+        $doctors = Staff::where('department_id', $department_id)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Doctor');
+            })
+            ->get(['id', 'name']);
+
+        return ApiResponse::success($doctors, 'Doctors retrieved successfully');
+    }
 
     public function apiTrash()
     {
@@ -298,9 +306,8 @@ class AppointmentController extends Controller
             ->with(['patient', 'doctor', 'department'])
             ->get();
 
-        return ApiResponse::success($appointments, 'Deleted appointments retrieved');
+        return ApiResponse::success($appointments, 'Deleted appointments retrieved successfully');
     }
-
 
     public function apiRestore($id)
     {
@@ -312,9 +319,8 @@ class AppointmentController extends Controller
 
         $appointment->restore();
 
-        return ApiResponse::success($appointment->load(['patient', 'doctor', 'department']), 'Appointment restored successfully');
+        return ApiResponse::success($appointment, 'Appointment restored successfully');
     }
-
 
     public function apiForceDelete($id)
     {
@@ -329,32 +335,5 @@ class AppointmentController extends Controller
         return ApiResponse::success(null, 'Appointment permanently deleted');
     }
 
-
-    public function apiGetDoctors($department_id)
-    {
-        $doctors = Staff::where('department_id', $department_id)
-            ->whereHas('role', function ($query) {
-                $query->where('name', 'Doctor');
-            })
-            ->get(['id', 'name']);
-
-        return response()->json($doctors);
-    }
-
-
-    public function apiGetPatients()
-    {
-        $patients = Patient::whereNull('deleted_at')->get(['id', 'first_name', 'last_name', 'mobile']);
-
-        return ApiResponse::success($patients, 'Patients retrieved');
-    }
-
-
-    public function apiGetDepartments()
-    {
-        $departments = Department::whereNull('deleted_at')->get(['id', 'department_name']);
-
-        return ApiResponse::success($departments, 'Departments retrieved');
-    }
 
 }

@@ -63,6 +63,7 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -102,17 +103,19 @@ Route::get('/doctor/view-patient/{id}', [ViewPatientController::class, 'viewPati
 Route::get('/doctor/consultation-summary', [ConsultationController::class, 'summary'])
     ->name('doctor.consultation-summary');
 
-Route::get('/appointments', 
-        [ViewAppointmentController::class, 'index']
-    )->name('doctor.view-appointment');
+Route::get(
+    '/appointments',
+    [ViewAppointmentController::class, 'index']
+)->name('doctor.view-appointment');
 
 
-    // Consultation Page
-    Route::get('/consultation/{id}', 
-        [ConsultationController::class, 'index']
-    )->name('doctor.consultation');
+// Consultation Page
+Route::get(
+    '/consultation/{id}',
+    [ConsultationController::class, 'index']
+)->name('doctor.consultation');
 
-   
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA (auth + role:admin, prefix admin, name admin.)
@@ -650,18 +653,18 @@ Route::middleware(['auth', 'role:admin'])
         // |----------------------------------------------------------------------
         // | Leave Adjustment
         // |----------------------------------------------------------------------
-Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
+        Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
 
-    Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+            Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
 
-    Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
+            Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
 
-    Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+            Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
 
-    Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
-    Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
-    ->name('show');
-});
+            Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
+            Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
+                ->name('show');
+        });
 
         /*
         |--------------------------------------------------------------------------
@@ -709,7 +712,7 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
         |--------------------------------------------------------------------------
         */
 
-    
+
 
 
 
@@ -726,13 +729,13 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
 
         Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
             ->name('tokens.complete');
- 
+
     });
 
 
-    //Appointments routes 
+//Appointments routes 
 
-    
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('appointments')->name('appointments.')->group(function () {
 
@@ -746,8 +749,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
 
-        Route::post('/update/{id}', [AppointmentController::class, 'update'])->name('update');
-
+        Route::put('/update/{id}', [AppointmentController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
 
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
@@ -849,72 +851,72 @@ Route::prefix('admin')
             [SalesReturnController::class, 'reject']
         )->name('salesReturn.reject');
 
-});
+    });
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+    Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
 
-    // Prescription List
-    Route::get('/', [PrescriptionController::class, 'index'])
-        ->name('index');
+        // Prescription List
+        Route::get('/', [PrescriptionController::class, 'index'])
+            ->name('index');
 
-    /*
-    |-----------------------------------
-    | Offline Prescription
-    |-----------------------------------
-    */
+        /*
+        |-----------------------------------
+        | Offline Prescription
+        |-----------------------------------
+        */
 
-    // Create Offline Prescription Page
-    Route::get('/create', [PrescriptionController::class, 'createOffline'])
-        ->name('offline.create');
+        // Create Offline Prescription Page
+        Route::get('/create', [PrescriptionController::class, 'createOffline'])
+            ->name('offline.create');
 
-    // Store Offline Prescription
-    Route::post('/store', [PrescriptionController::class, 'storeOffline'])
-        ->name('offline.store');
-
-
-    /*
-    |-----------------------------------
-    | Dispense Medicines
-    |-----------------------------------
-    */
-
-    Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
-        ->name('dispense');
-
-    Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
-        ->name('dispense.store');
+        // Store Offline Prescription
+        Route::post('/store', [PrescriptionController::class, 'storeOffline'])
+            ->name('offline.store');
 
 
-    /*
-    |-----------------------------------
-    | Verify Prescription
-    |-----------------------------------
-    */
+        /*
+        |-----------------------------------
+        | Dispense Medicines
+        |-----------------------------------
+        */
 
-    Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
-        ->name('verify');
+        Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
+            ->name('dispense');
 
-
-    /*
-    |-----------------------------------
-    | Bill Page
-    |-----------------------------------
-    */
-
-    Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
-        ->name('bill');
+        Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
+            ->name('dispense.store');
 
 
-    /*
-    |-----------------------------------
-    | View Prescription (KEEP LAST)
-    |-----------------------------------
-    */
+        /*
+        |-----------------------------------
+        | Verify Prescription
+        |-----------------------------------
+        */
 
-    Route::get('/{id}', [PrescriptionController::class, 'show'])
-        ->name('show');
+        Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
+            ->name('verify');
 
-});
+
+        /*
+        |-----------------------------------
+        | Bill Page
+        |-----------------------------------
+        */
+
+        Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
+            ->name('bill');
+
+
+        /*
+        |-----------------------------------
+        | View Prescription (KEEP LAST)
+        |-----------------------------------
+        */
+
+        Route::get('/{id}', [PrescriptionController::class, 'show'])
+            ->name('show');
+
+    });
 });

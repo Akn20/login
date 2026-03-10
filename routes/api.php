@@ -18,6 +18,8 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\WorkStatusController;
+
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -38,9 +40,12 @@ use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\AppointmentController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -288,17 +293,17 @@ Route::prefix('masters')->group(function () {
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
-Route::prefix('leave-management')->group(function () {
-    
-    // Main Adjustment Routes
-    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
-    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
-    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
-    
-    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
-    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
-    
-});
+    Route::prefix('leave-management')->group(function () {
+
+        // Main Adjustment Routes
+        Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+        Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+        Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+
+        // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+        Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+
+    });
 });
 
 /*
@@ -442,15 +447,10 @@ Route::prefix('expiry')->group(function () {
 Route::prefix('controlled-drugs')->group(function () {
 
     Route::get('/', [ControlledDrugController::class, 'apiIndex']);
-    Route::get('/deleted', [ControlledDrugController::class, 'apiTrash']);
-    Route::post('/', [ControlledDrugController::class, 'apiStore']);
     Route::get('/{id}', [ControlledDrugController::class, 'apiShow']);
+    Route::post('/', [ControlledDrugController::class, 'apiStore']);
     Route::put('/{id}', [ControlledDrugController::class, 'apiUpdate']);
     Route::delete('/{id}', [ControlledDrugController::class, 'apiDestroy']);
-
-    // Restore / Force Delete
-    Route::put('/{id}/restore', [ControlledDrugController::class, 'apiRestore']);
-    Route::delete('/{id}/force-delete', [ControlledDrugController::class, 'apiForceDelete']);
 
     Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);      // list
     Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);     // create
@@ -479,47 +479,27 @@ Route::prefix('controlled-drugs')->group(function () {
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Controlled Drug Log & Dispense (standalone routes for mobile app)
-|--------------------------------------------------------------------------
-*/
-Route::get('/controlled-drugs-deleted', [ControlledDrugController::class, 'apiTrash']);
-Route::get('/controlled-drug-log', [ControlledDrugController::class, 'apiDrugLog']);
-Route::get('/controlled-drug-dispense', [ControlledDrugController::class, 'apiDispense']);
-Route::post('/controlled-drug-dispense', [ControlledDrugController::class, 'apiStoreDispense']);
+//Apportionment APIs
 
-/*
-|--------------------------------------------------------------------------
-| Vendors API
-|--------------------------------------------------------------------------
-*/
-Route::get('/vendors', [VendorController::class, 'apiIndex']);
-Route::get('/vendors/deleted', [VendorController::class, 'apiTrash']);
-Route::post('/vendors', [VendorController::class, 'apiStore']);
-Route::get('/vendors/{id}', [VendorController::class, 'apiShow']);
-Route::put('/vendors/{id}', [VendorController::class, 'apiUpdate']);
-Route::delete('/vendors/{id}', [VendorController::class, 'apiDestroy']);
-Route::put('/vendors/{id}/restore', [VendorController::class, 'apiRestore']);
-Route::delete('/vendors/{id}/force-delete', [VendorController::class, 'apiForceDelete']);
-
-/*
-|--------------------------------------------------------------------------
-| Appointments API
-|--------------------------------------------------------------------------
-*/
-use App\Http\Controllers\AppointmentController;
 
 Route::prefix('appointments')->group(function () {
+
     Route::get('/', [AppointmentController::class, 'apiIndex']);
-    Route::get('/trash', [AppointmentController::class, 'apiTrash']);
-    Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
-    Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
-    Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiGetDoctors']);
+
     Route::get('/{id}', [AppointmentController::class, 'apiShow']);
-    Route::post('/', [AppointmentController::class, 'apiStore']);
-    Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
-    Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
-    Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
-    Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
+
+    Route::post('/store', [AppointmentController::class, 'apiStore']);
+
+    Route::put('/update/{id}', [AppointmentController::class, 'apiUpdate']);
+
+    Route::delete('/delete/{id}', [AppointmentController::class, 'apiDestroy']);
+
+    Route::get('/trash', [AppointmentController::class, 'apiTrash']);
+
+    Route::post('/restore/{id}', [AppointmentController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [AppointmentController::class, 'apiForceDelete']);
+
+    Route::get('/department/{department_id}/doctors', [AppointmentController::class, 'apiDoctors']);
+
 });
