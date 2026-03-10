@@ -705,21 +705,63 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
 
         /*
         |--------------------------------------------------------------------------
-        | Reception: Tokens / Queue
+        | Reception: Appointments
         |--------------------------------------------------------------------------
         */
 
-        Route::prefix('tokens')->name('tokens.')->group(function () {
-            Route::get('/', [TokenController::class, 'index'])->name('index');
-            Route::get('/create', [TokenController::class, 'create'])->name('create');
-            Route::post('/store', [TokenController::class, 'store'])->name('store');
-            Route::get('/show/{id}', [TokenController::class, 'show'])->name('admin.tokens.show');
-            Route::patch('/{id}/skip', [TokenController::class, 'skip'])->name('admin.tokens.skip');
-            Route::patch('/{id}/complete', [TokenController::class, 'complete'])->name('admin.tokens.complete');
+    
 
 
-        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reception: Tokens / Queue
+        |--------------------------------------------------------------------------
+        */
+        Route::resource('tokens', TokenController::class);
+        Route::get('/', [TokenController::class, 'index'])->name('index');
+
+        Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])
+            ->name('tokens.skip');
+
+        Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
+            ->name('tokens.complete');
+ 
     });
+
+
+    //Appointments routes 
+
+    
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('appointments')->name('appointments.')->group(function () {
+
+        Route::get('/', [AppointmentController::class, 'index'])->name('index');
+
+        Route::get('/create', [AppointmentController::class, 'create'])->name('create');
+
+        Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+
+        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+
+        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
+
+        Route::post('/update/{id}', [AppointmentController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
+
+        Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
+
+        Route::get('/restore/{id}', [AppointmentController::class, 'restore'])->name('restore');
+
+        Route::get('/force-delete/{id}', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
+
+        Route::get('/get-doctors/{department_id}', [AppointmentController::class, 'getDoctors'])
+            ->name('getDoctors');
+
+
+    });
+});
 
 /*
 |--------------------------------------------------------------------------
