@@ -12,6 +12,12 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            {{ session('error') }}
+            <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
@@ -159,30 +165,6 @@
                                                 class="btn btn-outline-primary btn-icon rounded-circle" title="View">
                                                 <i class="feather-eye"></i>
                                             </a>
-
-
-                                            @if($leave->status == 'pending')
-
-                                                <form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
-                                                    @csrf
-
-                                                    <button class="btn btn-outline-success btn-icon rounded-circle" title="Approve">
-                                                        <i class="feather-check"></i>
-                                                    </button>
-
-                                                </form>
-
-
-                                                <form action="{{ route('hr.leave-approvals.reject', $leave->id) }}" method="POST">
-                                                    @csrf
-
-                                                    <button class="btn btn-outline-danger btn-icon rounded-circle" title="Reject">
-                                                        <i class="feather-x"></i>
-                                                    </button>
-
-                                                </form>
-
-                                            @endif
 
                                         </div>
 

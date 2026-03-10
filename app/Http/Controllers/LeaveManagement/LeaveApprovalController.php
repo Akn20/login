@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\LeaveManagement;
 
 use App\Http\Controllers\Controller;
+use App\Models\Leave_Request_Approval;
+use App\Models\LeaveAdjustment;
+use DB;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequests;
 use Log;
@@ -38,7 +41,7 @@ class LeaveApprovalController extends Controller
      */
     public function show($id)
     {
-        $leave = LeaveRequests::with(['staff','leaveType'])->findOrFail($id);
+        $leave = LeaveRequests::with(['staff','leaveType','approvals'])->findOrFail($id);
       
         return view('admin.Leave_Management.leave_request_approval.show', compact('leave'));
     }
@@ -47,43 +50,99 @@ class LeaveApprovalController extends Controller
     /**
      * Approve leave request
      */
-    public function approve(Request $request, $id)
-    {
-        $leave = LeaveRequests::findOrFail($id);
+public function approve(Request $request, $id)
+{
+    $leave = LeaveRequests::with('staff')->findOrFail($id);
 
-        if ($leave->status !== 'pending') {
-            return back()->with('error', 'This request is already processed.');
-        }
+    if ($leave->status !== 'pending') {
+        return back()->with('error','Leave already processed');
+    }
 
-        $leave->update([
+    $userId = auth()->id();
+    $staff = $leave->staff;
+
+    // determine correct approver
+    if($leave->current_approval_level == 1 && $staff->level1_supervisor_id != $userId){
+        return back()->with('error','You are not authorized for Level 1 approval');
+    }
+
+    if($leave->current_approval_level == 2 && $staff->level2_supervisor_id != $userId){
+        return back()->with('error','You are not authorized for Level 2 approval');
+    }
+
+    if($leave->current_approval_level == 3 && $staff->level3_supervisor_id != $userId){
+        return back()->with('error','You are not authorized for Level 3 approval');
+    }
+
+    // check if already approved by this user
+    $alreadyApproved = Leave_Request_Approval::where('leave_request_id',$leave->id)
+        ->where('approver_id',$userId)
+        ->exists();
+
+    if($alreadyApproved){
+        return back()->with('error','You already approved this request');
+    }
+
+    DB::transaction(function () use ($leave,$request,$userId){
+
+        Leave_Request_Approval::create([
+            'leave_request_id' => $leave->id,
+            'approver_id' => $userId,
+            'level' => $leave->current_approval_level,
             'status' => 'approved',
-            'current_approval_level' => $leave->current_approval_level + 1
+            'remarks' => $request->remarks
         ]);
 
-        return redirect()
-            ->route('hr.leave_approvals.index')
-            ->with('success', 'Leave request approved successfully.');
-    }
+        $nextLevel = $leave->current_approval_level + 1;
+
+        if($nextLevel > 3){
+
+            // final approval
+            $leave->update([
+                'status' => 'approved'
+            ]);
+
+            // deduct leave
+            LeaveAdjustment::where('staff_id',$leave->employee_id)
+                ->increment('debit',$leave->total_leave_days);
+
+        }else{
+
+            // move to next approval level
+            $leave->update([
+                'current_approval_level' => $nextLevel
+            ]);
+
+        }
+
+    });
+
+    return back()->with('success','Approval recorded');
+}
 
 
     /**
      * Reject leave request
      */
-    public function reject(Request $request, $id)
-    {
-        $leave = LeaveRequests::findOrFail($id);
+   public function reject(Request $request,$id)
+{
+    $leave = LeaveRequests::findOrFail($id);
 
-        if ($leave->status !== 'pending') {
-            return back()->with('error', 'This request is already processed.');
-        }
+    DB::transaction(function () use ($leave,$request){
+
+        Leave_Request_Approval::create([
+            'leave_request_id' => $leave->id,
+            'approver_id' => auth()->id(),
+            'level' => $leave->current_approval_level,
+            'status' => 'rejected',
+            'remarks' => $request->remarks
+        ]);
 
         $leave->update([
             'status' => 'rejected'
         ]);
+    });
 
-        return redirect()
-            ->route('hr.leave_approvals.index')
-            ->with('success', 'Leave request rejected.');
-    }
-
+    return back()->with('success','Leave rejected');
+}
 }

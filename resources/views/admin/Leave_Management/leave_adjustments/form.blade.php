@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
 }
 
-        fetch("/admin/leave-adjustments/mapping/" + staffId)
+        fetch("/hr/leave-adjustments/mapping/" + staffId)
         .then(res => res.json())
         .then(data => {
 

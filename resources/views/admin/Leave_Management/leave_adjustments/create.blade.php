@@ -1,7 +1,15 @@
 @extends('layouts.admin')
 
 @section('content')
-
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 <div class="page-header mb-4 d-flex align-items-center justify-content-between">
     <div class="page-header-title">
         <h5 class="m-b-10 mb-1"><i class="feather-plus me-2"></i>Create Leave Adjustment</h5>
