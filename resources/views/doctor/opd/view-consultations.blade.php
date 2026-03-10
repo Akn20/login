@@ -55,11 +55,9 @@
                                 <td>
                                     <div class="d-flex gap-2 justify-content-center">
 
-                                        <a href="{{ route('doctor.consultation-summary', $consultation->id) }}"
+                                        <a href="{{ route('doctor.consultation-summary', ['id' => $consultation->id]) }}"
                                             class="btn btn-primary btn-sm">
-
                                             Generate Consultation Summary
-
                                         </a>
 
                                     </div>

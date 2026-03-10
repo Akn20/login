@@ -105,7 +105,7 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 Route::get('/doctor/view-patient/{id}', [ViewPatientController::class, 'viewPatientProfile'])
     ->name('doctor.view-patient-profile');
 
-Route::get('/doctor/consultation-summary', [ConsultationController::class, 'summary'])
+Route::get('/doctor/consultation-summary/{id}', [ConsultationController::class, 'summary'])
     ->name('doctor.consultation-summary');
 
 Route::get(
@@ -126,6 +126,11 @@ Route::get(
     '/doctor/view-consultations',
     [ConsultationController::class, 'viewConsultations']
 )->name('doctor.view-consultations');
+
+Route::post(
+    '/doctor/consultation/store',
+    [ConsultationController::class, 'store']
+)->name('doctor.consultation.store');
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA (auth + role:admin, prefix admin, name admin.)

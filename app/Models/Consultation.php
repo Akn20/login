@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Models\Patient;
 use App\Models\Staff;
-use App\Models\Medicine;            
+use App\Models\Medicine;
 
 
 class Consultation extends Model
@@ -40,12 +40,16 @@ class Consultation extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(Staff::class,'doctor_id');
+        return $this->belongsTo(Staff::class, 'doctor_id');
     }
 
     public function medicines()
     {
-        return $this->belongsToMany(Medicine::class,'consultation_medicines')
-                    ->withPivot('dosage','frequency','duration');
+        return $this->belongsToMany(
+            Medicine::class,
+            'consultation_medicines',
+            'consultation_id',
+            'medicine_id'
+        )->withPivot('dosage', 'frequency', 'duration', 'instructions');
     }
 }

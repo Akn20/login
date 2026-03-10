@@ -34,7 +34,8 @@
 
                             <div class="col-md-2">
                                 <label>Age</label>
-                                <input type="text" class="form-control" value={{ $patient->age }} readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ \Carbon\Carbon::parse($patient->date_of_birth)->age }}" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -53,8 +54,10 @@
                 </div>
 
 
-                <form method="POST" action="#">
+                <form method="POST" action="{{ route('doctor.save-consultation') }}">
                     @csrf
+                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                    <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
 
 
                     <!-- Symptoms -->
@@ -62,8 +65,7 @@
 
                         <label><strong>Symptoms</strong></label>
 
-                        <textarea class="form-control" rows="3" placeholder="Enter symptoms (Fever, Headache, Cough etc)">
-                                    </textarea>
+                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"></textarea>
 
                     </div>
 
@@ -73,8 +75,8 @@
 
                         <label><strong>Diagnosis</strong></label>
 
-                        <textarea class="form-control" rows="3" placeholder="Enter diagnosis">
-                                    </textarea>
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
+                                                                </textarea>
 
                     </div>
 
@@ -102,11 +104,19 @@
                                 <tbody>
 
                                     <tr>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
+                                        <td>
+                                            <select name="medicine" class="form-control">
+                                                @foreach($medicines as $medicine)
+                                                    <option value="{{ $medicine->id }}">
+                                                        {{ $medicine->medicine_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="dosage"></td>
+                                        <td><input type="text" class="form-control" name="frequency"></td>
+                                        <td><input type="text" class="form-control" name="duration"></td>
+                                        <td><input type="text" class="form-control" name="instructions"></td>
                                     </tr>
 
                                 </tbody>
@@ -122,7 +132,7 @@
 
                         <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+                        <input type="text" name="tests" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>
 
@@ -130,11 +140,13 @@
                     <!-- Buttons -->
                     <div class="text-center mt-4 d-flex gap-2">
 
-                        <a href="{{ route('doctor.view-consultations') }}" class="btn btn-primary">
-                            Save Consultations
-                        </a>
+                        <button type="submit" class="btn btn-success" onclick="showSuccess()">
+                            Save Consultation
+                        </button>
 
-                
+
+
+
 
                     </div>
 

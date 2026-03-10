@@ -35,7 +35,7 @@ class Medicine extends Model
     }
     // One medicine has many batches
 
-    
+
     public function consultations()
     {
         return $this->belongsToMany(
@@ -43,7 +43,7 @@ class Medicine extends Model
             'consultation_medicines',
             'medicine_id',
             'consultation_id'
-        );
+        )->withPivot('dosage', 'frequency', 'duration', 'instructions');
     }
-    
+
 }

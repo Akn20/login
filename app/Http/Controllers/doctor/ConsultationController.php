@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Doctor;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
@@ -60,17 +59,18 @@ class ConsultationController extends Controller
             ]
         ]);
 
-        return redirect()->route('doctor.consultation-summary')
-            ->with('consultation', $consultation);
+        return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
+
     }
 
 
     /* =========================
        Consultation Summary
     ==========================*/
-    public function summary()
+    public function summary($id)
     {
-        $consultation = session('consultation');
+        $consultation = Consultation::with(['patient', 'medicines'])
+            ->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
     }

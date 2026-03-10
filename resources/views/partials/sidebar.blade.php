@@ -441,7 +441,7 @@
                                 <span class="nxl-mtext">Stock Management</span>
                             </a>
                         </li>
-                         {{-- Expiry Management --}}
+                        {{-- Expiry Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
@@ -456,7 +456,7 @@
                                 <span class="nxl-mtext">Controlled Drug Management</span>
                             </a>
                         </li>
-                         {{-- Prescription Management --}}
+                        {{-- Prescription Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="fa-solid fa-file-medical"></i></span>
@@ -465,7 +465,7 @@
                         </li>
 
 
-                         {{-- Sales Return Management --}}
+                        {{-- Sales Return Management --}}
                         <li class="nxl-item">
                             <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
@@ -700,6 +700,14 @@
                                     <i class="feather-calendar"></i>
                                 </span>
                                 <span class="nxl-mtext">OPD Appointments</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('doctor.view-consultations') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Consultations</span>
                             </a>
                         </li>
                     </ul>
