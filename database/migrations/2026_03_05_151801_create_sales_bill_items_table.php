@@ -9,24 +9,30 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sales_bill_items', function (Blueprint $table) {
-            $table->id();
 
-            $table->foreignId('sales_bill_id')
-                  ->constrained('sales_bills')
+            $table->uuid('id')->primary();
+
+            $table->uuid('sales_bill_id');
+            $table->foreign('sales_bill_id')
+                  ->references('id')
+                  ->on('sales_bills')
                   ->cascadeOnDelete();
 
             $table->uuid('medicine_id');
-$table->foreign('medicine_id')->references('id')->on('medicines')->cascadeOnDelete();
+            $table->foreign('medicine_id')
+                  ->references('id')
+                  ->on('medicines')
+                  ->cascadeOnDelete();
 
             $table->uuid('batch_id');
-    $table->foreign('batch_id')
-          ->references('id')
-          ->on('medicine_batches')
-          ->cascadeOnDelete();
+            $table->foreign('batch_id')
+                  ->references('id')
+                  ->on('medicine_batches')
+                  ->cascadeOnDelete();
 
             $table->integer('quantity');
-            $table->decimal('unit_price',10,2);
-            $table->decimal('total_price',10,2);
+            $table->decimal('unit_price', 10, 2);
+            $table->decimal('total_price', 10, 2);
 
             $table->timestamps();
         });

@@ -26,7 +26,7 @@ class Appointment extends Model
         'appointment_time',
         'appointment_status',
         'consultation_fee',
-        'hospital_id',
+        'institution_id',
         'receptionist_user_id'
     ];
 
