@@ -18,6 +18,11 @@
             <form action="{{ route('admin.leave-mappings.store') }}" method="POST">
                 @csrf
                 @include('admin.Leave_Management.leave_mappings.form')
+      @if(session('error_message'))
+    <div class="alert alert-danger" style="color: white; background-color: #f44336; padding: 10px; margin-bottom: 15px;">
+        {{ session('error_message') }}
+    </div>
+@endif
             </form>
         </div>
     </div>

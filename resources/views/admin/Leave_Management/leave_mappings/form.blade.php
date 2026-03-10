@@ -185,4 +185,5 @@ $isSelected = false;
         triggerSection.querySelector('select').value = '';
     }
     });
+})
 </script>

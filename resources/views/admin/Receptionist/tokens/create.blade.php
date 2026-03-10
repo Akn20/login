@@ -1,96 +1,130 @@
 @extends('layouts.admin')
 
 @section('content')
+
 <div class="nxl-content">
 
-    <!-- Success / Error Messages -->
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+<div class="main-content">
+<div class="row">
+<div class="col-lg-12">
 
-    @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
+<div class="card stretch stretch-full">
+<div class="card-body">
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-header-left d-flex align-items-center">
-            <div class="page-header-title">
-                <h5 class="m-b-10">Generate Token</h5>
-            </div>
+{{-- Appointment Select Form --}}
+<form method="GET" action="{{ route('admin.tokens.create') }}">
 
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item">Receptionist</li>
-                <li class="breadcrumb-item">Token & Queue</li>
-                <li class="breadcrumb-item">Generate Token</li>
-            </ul>
-        </div>
+<div class="row">
 
-        <div class="page-header-right ms-auto">
-            <a href="{{ route('admin.tokens.index') }}" class="btn btn-neutral">
-                Back
-            </a>
-        </div>
-    </div>
+<div class="col-md-6 mb-3">
+<label class="form-label">Appointment</label>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card stretch stretch-full">
-                    <div class="card-body">
+<select name="appointment_id"
+        class="form-control"
+        onchange="this.form.submit()">
 
-                        <form action="{{ route('admin.tokens.store') }}" method="POST">
-                            @csrf
+<option value="">Select Appointment</option>
 
-                            <div class="row">
-                                <!-- Patient -->
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Patient</label>
-                                    <select name="patient_id" class="form-control" required>
-                                        <option value="">Select Patient</option>
+@foreach($appointments as $appointment)
 
-                                        @foreach($patients as $patient)
-                                            <option value="{{ $patient->id }}">
-                                                {{ $patient->first_name }} {{ $patient->last_name }} ({{ $patient->uhid }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+<option value="{{ $appointment->id }}"
+    {{ request('appointment_id') == $appointment->id ? 'selected' : '' }}>
 
-                                
+{{ $appointment->patient->patient_code }} -
+{{ $appointment->patient->first_name }}
+{{ $appointment->patient->last_name }}
+|
+{{ $appointment->appointment_date }}
+{{ $appointment->appointment_time }}
 
-                                <!-- Doctor -->
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Doctor</label>
+</option>
 
-                                    <select name="doctor_id" class="form-control">
-                                        <option value="">Select Doctor</option>
+@endforeach
 
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->id }}">
-                                                {{ $doctor->doctor_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+</select>
 
-                            <!-- Buttons -->
-                            <div class="d-flex gap-2 mt-3">
-                                <button type="submit" class="btn btn-primary">
-                                    Generate Token
-                                </button>
-
-                                <a href="{{ route('admin.tokens.index') }}" class="btn btn-light">
-                                    Cancel
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+
+</div>
+
+</form>
+
+
+{{-- Token Create Form --}}
+<form action="{{ route('admin.tokens.store') }}" method="POST">
+
+@csrf
+
+<input type="hidden" name="appointment_id" value="{{ $selectedAppointment->id ?? '' }}">
+
+<div class="row">
+
+{{-- Patient --}}
+<div class="col-md-6 mb-3">
+<label class="form-label">Patient</label>
+
+<input type="text"
+class="form-control"
+value="{{ $selectedAppointment->patient->first_name ?? '' }} {{ $selectedAppointment->patient->last_name ?? '' }}"
+readonly>
+</div>
+
+
+{{-- Doctor --}}
+<div class="col-md-6 mb-3">
+<label class="form-label">Doctor</label>
+
+<input type="text"
+class="form-control"
+value="{{ $selectedAppointment->doctor->first_name ?? '' }} {{ $selectedAppointment->doctor->last_name ?? '' }}"
+readonly>
+</div>
+
+
+{{-- Department --}}
+<div class="col-md-6 mb-3">
+<label class="form-label">Department</label>
+
+<input type="text"
+class="form-control"
+value="{{ $selectedAppointment->department->department_name ?? '' }}"
+readonly>
+</div>
+
+
+{{-- Status --}}
+<div class="col-md-6 mb-3">
+<label class="form-label">Status</label>
+
+<input type="text"
+class="form-control"
+value="WAITING"
+readonly>
+</div>
+
+</div>
+
+<div class="d-flex gap-2 mt-3">
+
+<button type="submit" class="btn btn-primary">
+Generate Token
+</button>
+
+<a href="{{ route('admin.tokens.index') }}" class="btn btn-light">
+Cancel
+</a>
+
+</div>
+
+</form>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+
 @endsection

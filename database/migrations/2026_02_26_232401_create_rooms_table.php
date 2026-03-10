@@ -15,11 +15,12 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('room_number')->unique();
             $table->uuid('ward_id');
-            $table->string('room_type'); 
+            $table->string('room_type');
             $table->integer('total_beds')->default(0);
             $table->enum('status', ['available', 'occupied', 'maintenance', 'cleaning'])
                 ->default('available');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('ward_id')
                 ->references('id')

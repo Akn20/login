@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveAdjustment;
 use App\Models\Staff;
 use App\Models\LeaveType;
-use App\Models\LeaveMapping;//add this
+use App\Models\LeaveMapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 class LeaveAdjustmentController extends Controller

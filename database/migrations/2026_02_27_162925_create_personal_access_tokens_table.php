@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
+        if (!Schema::hasTable('personal_access_tokens')) {
+    Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
 
             $table->uuidMorphs('tokenable');
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
+    }
     /**
      * Reverse the migrations.
      */
