@@ -103,8 +103,16 @@ function showSuccess() {
                                 <tbody>
 
                                     <tr>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
+                                        <select class="form-control">
+                                            <option value="">Select Medicine</option>
+
+                                            @foreach($medicines as $medicine)
+                                                <option value="{{ $medicine->id }}">
+                                                    {{ $medicine->medicine_name }}
+                                                </option>
+                                            @endforeach
+
+                                        </select>                                        <td><input type="text" class="form-control"></td>
                                         <td><input type="text" class="form-control"></td>
                                         <td><input type="text" class="form-control"></td>
                                         <td><input type="text" class="form-control"></td>

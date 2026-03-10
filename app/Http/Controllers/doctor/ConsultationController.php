@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Medicine;
+use App\Models\Patient;
 
 class ConsultationController extends Controller
 {
@@ -13,17 +15,11 @@ class ConsultationController extends Controller
     ==========================*/
     public function index($id)
     {
-        // Dummy patient data (until patient module integration)
-        $patient = (object)[
-            'id' => $id,
-            'name' => 'Ramesh Kumar',
-            'age' => 35,
-            'gender' => 'Male',
-            'blood_group' => 'O+',
-            'phone' => '9876543210'
-        ];
+        $patient = Patient::findOrFail($id);
 
-        return view('doctor.opd.consultation', compact('patient'));
+        $medicines = Medicine::where('status', 1)->get();
+
+        return view('doctor.opd.consultation', compact('patient','medicines'));
     }
 
 
