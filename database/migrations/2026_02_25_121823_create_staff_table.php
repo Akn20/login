@@ -45,6 +45,11 @@ return new class extends Migration
             $table->foreign('level3_supervisor_id')->references('id')->on('users')->onDelete('set null');
 
             $table->date('joining_date');
+
+            $table->decimal('basic_salary', 15, 2)->nullable();
+            $table->decimal('hra', 15, 2)->nullable();
+            $table->decimal('allowance', 15, 2)->nullable();
+            $table->string('document_path')->nullable();
             $table->string('status')->default('Active');
             $table->softDeletes();
             $table->timestamps();

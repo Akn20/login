@@ -1,4 +1,4 @@
-USE `hims_main`;
+USE `hims`;
 
 -- Helpful: disable FK checks while seeding
 SET FOREIGN_KEY_CHECKS = 0;
@@ -245,10 +245,94 @@ INSERT INTO `roles` (
 )
 VALUES
 (UUID(), 'super_admin', 'Super administrator with full access', 'active', NOW(), NOW(), NULL),
-
+(UUID(), 'hr',          'Human resource',                       'active', NOW(), NOW(), NULL),
+(UUID(), 'manager',     'Manager role',                         'active', NOW(), NOW(), NULL),
+(UUID(), 'hod',         'Head of Department',                   'active', NOW(), NOW(), NULL),
 (UUID(), 'doctor',      'Doctor role',                          'active', NOW(), NOW(), NULL),
 (UUID(), 'nurse',       'Nurse role',                           'active', NOW(), NOW(), NULL),
 (UUID(), 'receptionist','Reception / front desk',               'active', NOW(), NOW(), NULL);
+
+-- ===================== USER_ROLES (UUID FKs via subquery) =====================
+INSERT INTO `users` (
+  `id`, `name`, `mobile`, `email`, `role_id`, `mpin`, `is_enrolled`, `status`, `failed_attempts`, `locked_until`, `created_at`, `updated_at`, `deleted_at`, `biometric_updated_at`  
+)
+VALUES
+(
+  UUID(),
+  'Super Admin',
+  '9000000001',
+  'superadmin@example.com',
+  (SELECT id FROM roles WHERE name = 'super_admin' LIMIT 1),
+  NULL,
+  0,
+  'active',
+  0,
+  NULL,
+  NOW(),
+  NOW(),
+  NULL, NULL
+),
+(
+  UUID(),
+  'HR Manager',
+  '9000000002',
+  'hr@example.com',
+  (SELECT id FROM roles WHERE name = 'hr' LIMIT 1),
+  NULL,
+  0,
+  'active',
+  0,
+  NULL,
+  NOW(),
+  NOW(),
+  NULL, NULL
+),
+(
+  UUID(),
+  'General Manager',
+  '9000000003',
+  'manager@example.com',
+  (SELECT id FROM roles WHERE name = 'manager' LIMIT 1),
+  NULL,
+  0,
+  'active',
+  0,
+  NULL,
+  NOW(),
+  NOW(),
+  NULL, NULL
+),
+(
+  UUID(),
+  'OPD HOD',
+  '9000000004',
+  'hod@example.com',
+  (SELECT id FROM roles WHERE name = 'hod' LIMIT 1),
+  NULL,
+  0,
+  'active',
+  0,
+  NULL,
+  NOW(),
+  NOW(),
+  NULL, NULL
+),
+(
+  UUID(),
+  'Front Desk',
+  '9000000005',
+  'reception@example.com',
+  (SELECT id FROM roles WHERE name = 'receptionist' LIMIT 1),
+  NULL,
+  0,
+  'active',
+  0,
+  NULL,
+  NOW(),
+  NOW(),
+  NULL, NULL
+);
+
 
 -- ===================== FINANCIAL_YEARS (UUID) =====================
 INSERT INTO `financial_years` (
@@ -292,100 +376,5 @@ VALUES
 (UUID(), 'New Year', '2026-01-01', '2026-01-01', 'New Year public holiday', NULL, 'active',   NOW(), NOW(), NULL),
 (UUID(), 'Independence Day', '2026-08-15', '2026-08-15', 'National holiday', NULL, 'active', NOW(), NOW(), NULL),
 (UUID(), 'Annual Maintenance Break', '2026-05-01', '2026-05-03', 'Planned hospital maintenance shutdown', NULL, 'inactive', NOW(), NOW(), NULL);
-
--- ===================== EMPLOYEES (UUID + FKs via subquery) =====================
-INSERT INTO `employees` (
-  `id`,
-  `hospital_id`,
-  `institution_id`,
-  `department_id`,
-  `designation_id`,
-  `employee_id`,
-  `first_name`,
-  `middle_name`,
-  `last_name`,
-  `email`,
-  `phone`,
-  `emergency_contact`,
-  `date_of_birth`,
-  `gender`,
-  `address`,
-  `joining_date`,
-  `confirmation_date`,
-  `contract_end_date`,
-  `employment_type`,
-  `basic_salary`,
-  `gross_salary`,
-  `is_active`,
-  `is_confirmed`,
-  `status_reason`,
-  `exit_date`,
-  `created_by`,
-  `updated_by`,
-  `created_at`,
-  `updated_at`,
-  `deleted_at`
-)
-VALUES
-(
-  UUID(),
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  (SELECT id FROM designation_master WHERE designation_code = 'ADMIN' LIMIT 1),
-  'EMP-001',
-  'Hospital', NULL, 'Admin',
-  'admin@example.com',
-  '9000000002',
-  NULL,
-  '1990-01-01',
-  'Male',
-  'Someshwara',
-  '2024-01-01',
-  NULL,
-  NULL,
-  'Full-time',
-  50000.00,
-  60000.00,
-  1,
-  1,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW(),
-  NULL
-),
-(
-  UUID(),
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  (SELECT id FROM designation_master WHERE designation_code = 'REC' LIMIT 1),
-  'EMP-002',
-  'Front', NULL, 'Desk',
-  'reception@example.com',
-  '9000000003',
-  NULL,
-  '1995-01-01',
-  'Female',
-  'Someshwara',
-  '2024-02-01',
-  NULL,
-  NULL,
-  'Full-time',
-  25000.00,
-  30000.00,
-  1,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW(),
-  NULL
-);
 
 SET FOREIGN_KEY_CHECKS = 1;
