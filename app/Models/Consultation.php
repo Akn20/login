@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Staff;
 use App\Models\Medicine;            
 
+
 class Consultation extends Model
 {
     protected $table = 'consultations';
