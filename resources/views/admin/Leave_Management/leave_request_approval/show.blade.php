@@ -26,7 +26,7 @@
                 </li>
 
                 <li class="breadcrumb-item">
-                    <a href="{{ route('admin.leave-approvals.index') }}">
+                    <a href="{{ route('hr.leave-approvals.index') }}">
                         Leave Approvals
                     </a>
                 </li>
@@ -172,7 +172,7 @@
 
                 <div class="mt-4 d-flex gap-2">
 
-                    <form action="{{ route('admin.leave-approvals.approve', $leave->id) }}" method="POST">
+                    <form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
                         @csrf
 
                         <button class="btn btn-success">
@@ -182,7 +182,7 @@
                     </form>
 
 
-                    <form action="{{ route('admin.leave-approvals.reject', $leave->id) }}" method="POST">
+                    <form action="{{ route('hr.leave-approvals.reject', $leave->id) }}" method="POST">
                         @csrf
 
                         <button class="btn btn-danger">

@@ -68,7 +68,7 @@ public function create()
 //     LeaveAdjustment::create($data);
 
 //     return redirect()
-//         ->route('admin.leave-adjustments.index')
+//         ->route('hr.leave-adjustments.index')
 //         ->with('success','Leave adjustment created successfully');
 // }
 
@@ -116,7 +116,7 @@ public function store(Request $request)
     }
 
     return redirect()
-        ->route('admin.leave-adjustments.index')
+        ->route('hr.leave-adjustments.index')
         ->with('success','Leave adjustment created successfully');
 }
 /*public function getLeaveMapping($staffId)

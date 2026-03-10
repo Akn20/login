@@ -109,7 +109,7 @@ public function store(Request $request)
 
         LeaveMapping::create($data);
 
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created successfully!');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Mapping created successfully!');
     }
 
     public function edit($id)
@@ -202,7 +202,7 @@ public function show($id)
 
         $mapping->update($data);
 
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping updated successfully!');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Mapping updated successfully!');
     }
    
     public function destroy($id)
@@ -225,7 +225,7 @@ public function show($id)
 
     public function restore($id) {
         LeaveMapping::withTrashed()->findOrFail($id)->restore();
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Restored');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Restored');
     }
 
 

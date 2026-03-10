@@ -160,7 +160,7 @@ $isSelected = false;
     <button type="submit" class="btn btn-primary btn-sm px-4">
         <i class="feather-save me-1"></i> {{ isset($mapping) ? 'Update' : 'Save' }}
     </button>
-    <a href="{{ route('admin.leave-mappings.index') }}" class="btn btn-light btn-sm px-4">
+    <a href="{{ route('hr.leave-mappings.index') }}" class="btn btn-light btn-sm px-4">
         Cancel
     </a>
 </div>

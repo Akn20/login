@@ -31,7 +31,7 @@
 
         <div class="d-flex gap-2 align-items-center">
 
-            <form method="GET" action="{{ route('admin.leave-approvals.index') }}" class="d-flex">
+            <form method="GET" action="{{ route('hr.leave-approvals.index') }}" class="d-flex">
 
                 <select name="status" class="form-control form-control-sm me-2">
                     <option value="">All Status</option>
@@ -155,7 +155,7 @@
 
                                         <div class="d-flex justify-content-end gap-2">
 
-                                            <a href="{{ route('admin.leave-approvals.show', $leave->id) }}"
+                                            <a href="{{ route('hr.leave-approvals.show', $leave->id) }}"
                                                 class="btn btn-outline-primary btn-icon rounded-circle" title="View">
                                                 <i class="feather-eye"></i>
                                             </a>
@@ -163,7 +163,7 @@
 
                                             @if($leave->status == 'pending')
 
-                                                <form action="{{ route('admin.leave-approvals.approve', $leave->id) }}" method="POST">
+                                                <form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
                                                     @csrf
 
                                                     <button class="btn btn-outline-success btn-icon rounded-circle" title="Approve">
@@ -173,7 +173,7 @@
                                                 </form>
 
 
-                                                <form action="{{ route('admin.leave-approvals.reject', $leave->id) }}" method="POST">
+                                                <form action="{{ route('hr.leave-approvals.reject', $leave->id) }}" method="POST">
                                                     @csrf
 
                                                     <button class="btn btn-outline-danger btn-icon rounded-circle" title="Reject">

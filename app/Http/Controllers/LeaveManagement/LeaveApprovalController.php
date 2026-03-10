@@ -61,7 +61,7 @@ class LeaveApprovalController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.leave_approvals.index')
+            ->route('hr.leave_approvals.index')
             ->with('success', 'Leave request approved successfully.');
     }
 
@@ -82,7 +82,7 @@ class LeaveApprovalController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.leave_approvals.index')
+            ->route('hr.leave_approvals.index')
             ->with('success', 'Leave request rejected.');
     }
 
