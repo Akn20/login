@@ -60,7 +60,7 @@
 
         <input type="text"
                class="form-control"
-               value="{{ $selectedAppointment->doctor->name??'' }} "
+               value="{{ $selectedAppointment->doctor->name?? }} "
                readonly>
     </div>
 

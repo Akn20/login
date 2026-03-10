@@ -293,7 +293,161 @@ VALUES
 (UUID(), 'Independence Day', '2026-08-15', '2026-08-15', 'National holiday', NULL, 'active', NOW(), NOW(), NULL),
 (UUID(), 'Annual Maintenance Break', '2026-05-01', '2026-05-03', 'Planned hospital maintenance shutdown', NULL, 'inactive', NOW(), NOW(), NULL);
 
+-- ===================== person (UUID) =====================
+
+INSERT INTO patients 
+(id, patient_code, first_name, last_name, gender, date_of_birth, mobile, email, blood_group, address, emergency_contact, is_vip, status, merged_to, created_by, updated_by, created_at, updated_at)
+VALUES
+
+(UUID(), 'PAT001', 'Rahul', 'Sharma', 'Male', '1990-05-10', '9876543210', 'rahul@example.com', 'B+', 'Delhi', '9876500001', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT002', 'Anita', 'Verma', 'Female', '1988-03-22', '9876543211', 'anita@example.com', 'O+', 'Mumbai', '9876500002', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT003', 'Ravi', 'Kumar', 'Male', '1995-11-15', '9876543212', 'ravi@example.com', 'A+', 'Bangalore', '9876500003', 1, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT004', 'Sneha', 'Nair', 'Female', '1992-07-08', '9876543213', 'sneha@example.com', 'AB+', 'Kochi', '9876500004', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT005', 'Arjun', 'Reddy', 'Male', '1987-01-19', '9876543214', 'arjun@example.com', 'O-', 'Hyderabad', '9876500005', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+
+(UUID(), 'PAT006', 'Meera', 'Joshi', 'Female', '1993-06-30', '9876543215', 'meera@example.com', 'A-', 'Pune', '9876500006', 1, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT007', 'Kiran', 'Patel', 'Male', '1985-09-14', '9876543216', 'kiran@example.com', 'B-', 'Ahmedabad', '9876500007', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT008', 'Lakshmi', 'Iyer', 'Female', '1991-12-02', '9876543217', 'lakshmi@example.com', 'O+', 'Chennai', '9876500008', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT009', 'Vikram', 'Singh', 'Male', '1989-04-11', '9876543218', 'vikram@example.com', 'B+', 'Jaipur', '9876500009', 1, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT010', 'Pooja', 'Kapoor', 'Female', '1996-08-21', '9876543219', 'pooja@example.com', 'AB-', 'Chandigarh', '9876500010', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+
+(UUID(), 'PAT011', 'Suresh', 'Menon', 'Male', '1978-10-05', '9876543220', 'suresh@example.com', 'A+', 'Trivandrum', '9876500011', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT012', 'Divya', 'Shetty', 'Female', '1994-02-17', '9876543221', 'divya@example.com', 'O-', 'Mangalore', '9876500012', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT013', 'Manoj', 'Das', 'Male', '1983-05-28', '9876543222', 'manoj@example.com', 'B+', 'Kolkata', '9876500013', 1, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT014', 'Neha', 'Agarwal', 'Female', '1997-07-13', '9876543223', 'neha@example.com', 'A+', 'Lucknow', '9876500014', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT015', 'Aditya', 'Gupta', 'Male', '1986-11-09', '9876543224', 'aditya@example.com', 'O+', 'Kanpur', '9876500015', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+
+(UUID(), 'PAT016', 'Ritu', 'Malhotra', 'Female', '1990-03-03', '9876543225', 'ritu@example.com', 'B-', 'Delhi', '9876500016', 1, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT017', 'Naveen', 'Bhat', 'Male', '1982-06-18', '9876543226', 'naveen@example.com', 'AB+', 'Udupi', '9876500017', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT018', 'Priya', 'Kulkarni', 'Female', '1995-09-27', '9876543227', 'priya@example.com', 'A-', 'Nagpur', '9876500018', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT019', 'Deepak', 'Yadav', 'Male', '1984-12-25', '9876543228', 'deepak@example.com', 'O+', 'Patna', '9876500019', 0, 1, NULL, NULL, NULL, NOW(), NOW()),
+(UUID(), 'PAT020', 'Kavya', 'Rao', 'Female', '1998-01-14', '9876543229', 'kavya@example.com', 'B+', 'Mysore', '9876500020', 0, 1, NULL, NULL, NULL, NOW(), NOW());
+
+-- ===================== medicine (UUID) =====================
+
+INSERT INTO medicines 
+(id, medicine_name, generic_name, category, manufacturer, status, created_at, updated_at)
+VALUES
+(UUID(),'Paracetamol 500mg','Paracetamol','Tablet','Sun Pharma',1,NOW(),NOW()),
+(UUID(),'Amoxicillin 250mg','Amoxicillin','Capsule','Cipla',1,NOW(),NOW()),
+(UUID(),'Ibuprofen 400mg','Ibuprofen','Tablet','Dr Reddys',1,NOW(),NOW()),
+(UUID(),'Azithromycin 500mg','Azithromycin','Tablet','Aurobindo',1,NOW(),NOW()),
+(UUID(),'Cetirizine 10mg','Cetirizine','Tablet','Sun Pharma',1,NOW(),NOW()),
+(UUID(),'Metformin 500mg','Metformin','Tablet','Lupin',1,NOW(),NOW()),
+(UUID(),'Pantoprazole 40mg','Pantoprazole','Tablet','Cipla',1,NOW(),NOW()),
+(UUID(),'Omeprazole 20mg','Omeprazole','Capsule','Sun Pharma',1,NOW(),NOW()),
+(UUID(),'Atorvastatin 10mg','Atorvastatin','Tablet','Zydus',1,NOW(),NOW()),
+(UUID(),'Aspirin 75mg','Aspirin','Tablet','Bayer',1,NOW(),NOW()),
+
+(UUID(),'Diclofenac 50mg','Diclofenac','Tablet','Novartis',1,NOW(),NOW()),
+(UUID(),'Dolo 650','Paracetamol','Tablet','Micro Labs',1,NOW(),NOW()),
+(UUID(),'Augmentin 625','Amoxicillin + Clavulanic','Tablet','GSK',1,NOW(),NOW()),
+(UUID(),'Cough Syrup DX','Dextromethorphan','Syrup','Benadryl',1,NOW(),NOW()),
+(UUID(),'Insulin Injection','Insulin','Injection','Novo Nordisk',1,NOW(),NOW()),
+(UUID(),'Vitamin C 500mg','Ascorbic Acid','Tablet','Himalaya',1,NOW(),NOW()),
+(UUID(),'Calcium Tablet','Calcium Carbonate','Tablet','Shelcal',1,NOW(),NOW()),
+(UUID(),'ORS Sachet','Oral Rehydration Salt','Powder','Cipla',1,NOW(),NOW()),
+(UUID(),'Ranitidine 150mg','Ranitidine','Tablet','Sun Pharma',1,NOW(),NOW()),
+(UUID(),'Levocetirizine 5mg','Levocetirizine','Tablet','Dr Reddys',1,NOW(),NOW()),
+
+(UUID(),'Montelukast 10mg','Montelukast','Tablet','Cipla',1,NOW(),NOW()),
+(UUID(),'Clopidogrel 75mg','Clopidogrel','Tablet','Zydus',1,NOW(),NOW()),
+(UUID(),'Hydroxychloroquine','Hydroxychloroquine','Tablet','Ipca',1,NOW(),NOW()),
+(UUID(),'Folic Acid 5mg','Folic Acid','Tablet','Lupin',1,NOW(),NOW()),
+(UUID(),'Iron Tablet','Ferrous Sulphate','Tablet','Ranbaxy',1,NOW(),NOW()),
+(UUID(),'Amikacin Injection','Amikacin','Injection','Cipla',1,NOW(),NOW()),
+(UUID(),'Salbutamol Inhaler','Salbutamol','Inhaler','GSK',1,NOW(),NOW()),
+(UUID(),'Betadine Ointment','Povidone Iodine','Ointment','Win Medicare',1,NOW(),NOW()),
+(UUID(),'Loperamide 2mg','Loperamide','Capsule','Sun Pharma',1,NOW(),NOW()),
+(UUID(),'Domperidone 10mg','Domperidone','Tablet','Cipla',1,NOW(),NOW());
+
+
+-- ===================== medicine batches (UUID) =====================
+
+INSERT INTO medicine_batches
+(id, medicine_id, batch_number, expiry_date, purchase_price, mrp, quantity, reorder_level, created_at, updated_at)
+VALUES
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH001', '2027-01-10', 12.50, 18.00, 150, 40, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH002', '2026-11-20', 8.20, 12.00, 200, 50, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH003', '2027-03-15', 22.00, 30.00, 120, 30, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH004', '2026-09-01', 5.50, 10.00, 80, 25, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH005', '2027-04-25', 15.00, 22.00, 140, 35, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH006', '2027-06-30', 9.50, 14.00, 160, 40, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH007', '2026-12-18', 11.00, 17.00, 90, 30, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH008', '2027-08-14', 18.00, 25.00, 110, 35, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH009', '2027-05-05', 6.50, 11.00, 210, 60, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH010', '2026-10-12', 14.00, 20.00, 70, 25, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH011', '2027-07-01', 7.20, 12.50, 95, 30, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH012', '2026-08-22', 16.00, 24.00, 130, 40, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH013', '2027-02-17', 13.50, 19.00, 145, 35, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH014', '2027-09-10', 10.00, 15.00, 170, 45, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH015', '2026-07-30', 4.80, 9.00, 220, 60, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH016', '2027-03-03', 21.00, 28.00, 60, 20, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH017', '2027-11-11', 8.80, 13.50, 175, 50, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH018', '2026-06-15', 19.00, 26.00, 85, 30, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH019', '2027-01-25', 17.00, 23.00, 125, 35, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH020', '2026-09-29', 6.20, 10.50, 200, 55, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH021', '2027-12-01', 12.80, 18.90, 140, 40, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH022', '2027-04-04', 7.70, 12.30, 190, 50, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH023', '2026-10-05', 9.90, 14.50, 100, 35, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH024', '2027-02-02', 11.50, 16.80, 130, 40, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH025', '2027-05-20', 20.00, 27.00, 75, 25, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH026', '2026-11-09', 14.20, 21.00, 160, 45, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH027', '2027-06-12', 5.90, 10.20, 210, 60, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH028', '2027-03-19', 18.60, 26.00, 120, 35, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH029', '2026-08-08', 16.40, 22.00, 95, 30, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), 'BATCH030', '2027-09-21', 13.00, 19.50, 155, 40, NOW(), NOW());
+
+
+-- ===================== stock movements (UUID) =====================
+
+INSERT INTO stock_movements 
+(id, medicine_id, batch_id, movement_type, quantity, reference_id, created_at, updated_at)
+VALUES
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 100, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 20, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 150, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 30, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 80, NULL, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 15, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 200, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 50, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 120, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 25, NULL, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 90, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 40, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 60, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 35, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 110, NULL, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 22, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 140, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 18, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 170, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 45, NULL, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 75, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 28, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 160, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 33, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 95, NULL, NOW(), NOW()),
+
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 19, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 130, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 41, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'IN', 180, NULL, NOW(), NOW()),
+(UUID(), (SELECT id FROM medicines ORDER BY RAND() LIMIT 1), (SELECT id FROM medicine_batches ORDER BY RAND() LIMIT 1), 'OUT', 26, NULL, NOW(), NOW());
+
+
 -- ===================== EMPLOYEES (UUID + FKs via subquery) =====================
+
 INSERT INTO `employees` (
   `id`,
   `hospital_id`,
