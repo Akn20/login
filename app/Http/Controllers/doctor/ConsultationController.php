@@ -21,13 +21,13 @@ class ConsultationController extends Controller
 
         // Fetch today's appointment for this patient
         $appointment = Appointment::where('patient_id', $id)
-                        ->whereDate('appointment_date', today())
-                        ->first();
+            ->whereDate('appointment_date', today())
+            ->first();
 
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
 
-        return view('doctor.opd.consultation', compact('patient','medicines','appointment'));
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment'));
     }
 
 
@@ -67,4 +67,10 @@ class ConsultationController extends Controller
         return view('doctor.opd.consultation-summary', compact('consultation'));
     }
 
+    public function viewConsultations()
+    {
+        $consultations = Consultation::with('patient')->latest()->get();
+
+        return view('doctor.opd.view-consultations', compact('consultations'));
+    }
 }

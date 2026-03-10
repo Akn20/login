@@ -2,12 +2,11 @@
 
 @section('content')
 
-<script>
-function showSuccess() {
-    alert("Consultation saved successfully!");
-}
-</script>
-
+    <script>
+        function showSuccess() {
+            alert("Consultation saved successfully!");
+        }
+    </script>
     <div class="container-fluid">
 
         <div class="card">
@@ -30,21 +29,22 @@ function showSuccess() {
 
                             <div class="col-md-3">
                                 <label>Name</label>
-                                <input type="text" class="form-control" value="{{ $patient->first_name }} {{ $patient->last_name }}" readonly>                            </div>
+                                <input type="text" class="form-control" value={{ $patient->first_name }} readonly>
+                            </div>
 
                             <div class="col-md-2">
                                 <label>Age</label>
-                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($patient->date_of_birth)->age }}" readonly>
+                                <input type="text" class="form-control" value={{ $patient->age }} readonly>
                             </div>
 
                             <div class="col-md-2">
                                 <label>Gender</label>
-                                <input type="text" class="form-control" value="{{ $patient->gender }}" readonly>
+                                <input type="text" class="form-control" value={{ $patient->gender }} readonly>
                             </div>
 
                             <div class="col-md-3">
                                 <label>Blood Group</label>
-                                <input type="text" class="form-control" value="{{ $patient->blood_group }}" readonly>
+                                <input type="text" class="form-control" value={{ $patient->blood_group }} readonly>
                             </div>
 
                         </div>
@@ -53,21 +53,17 @@ function showSuccess() {
                 </div>
 
 
-            <form method="POST" action="{{ route('doctor.save-consultation') }}">
-                @csrf
+                <form method="POST" action="#">
+                    @csrf
 
-
-                 <!-- Hidden Fields -->
-                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
 
                     <!-- Symptoms -->
                     <div class="mb-3">
 
                         <label><strong>Symptoms</strong></label>
 
-                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms (Fever, Headache, Cough etc)">
-                        </textarea>
+                        <textarea class="form-control" rows="3" placeholder="Enter symptoms (Fever, Headache, Cough etc)">
+                                    </textarea>
 
                     </div>
 
@@ -77,8 +73,8 @@ function showSuccess() {
 
                         <label><strong>Diagnosis</strong></label>
 
-                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
-                        </textarea>
+                        <textarea class="form-control" rows="3" placeholder="Enter diagnosis">
+                                    </textarea>
 
                     </div>
 
@@ -91,7 +87,6 @@ function showSuccess() {
                         </div>
 
                         <div class="card-body">
-
                             <table class="table table-bordered">
 
                                 <thead>
@@ -107,22 +102,11 @@ function showSuccess() {
                                 <tbody>
 
                                     <tr>
-                                        <td>
-                                            <select name="medicine" class="form-control">
-                                                <option value="">Select Medicine</option>
-
-                                                @foreach($medicines as $medicine)
-                                                    <option value="{{ $medicine->id }}">
-                                                        {{ $medicine->medicine_name }}
-                                                    </option>
-                                                @endforeach
-
-                                            </select>    
-                                        </td>                                    
-                                        <td><input type="text" name="dosage" class="form-control"></td>
-                                        <td><input type="text" name="frequency" class="form-control"></td>
-                                        <td><input type="text" name="duration" class="form-control"></td>
-                                        <td><input type="text" name="instructions" class="form-control"></td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td><input type="text" class="form-control"></td>
+                                        <td><input type="text" class="form-control"></td>
                                     </tr>
 
                                 </tbody>
@@ -138,7 +122,7 @@ function showSuccess() {
 
                         <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" name="tests" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+                        <input type="text" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>
 
@@ -146,11 +130,11 @@ function showSuccess() {
                     <!-- Buttons -->
                     <div class="text-center mt-4 d-flex gap-2">
 
-                        <button  type="submit" class="btn btn-success me-2" onclick="showSuccess()">
-                            Save Consultation
-                        </button>
+                        <a href="{{ route('doctor.view-consultations') }}" class="btn btn-primary">
+                            Save Consultations
+                        </a>
 
-                       <a href="{{ route('doctor.consultation-summary') }}" class="btn btn-primary">
+                        <a href="{{ route('doctor.consultation-summary') }}" class="btn btn-primary">
                             Generate Summary
                         </a>
 

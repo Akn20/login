@@ -108,7 +108,8 @@ Route::get('/doctor/view-patient/{id}', [ViewPatientController::class, 'viewPati
 Route::get('/doctor/consultation-summary', [ConsultationController::class, 'summary'])
     ->name('doctor.consultation-summary');
 
-Route::get('/appointments',
+Route::get(
+    '/appointments',
     [ViewAppointmentController::class, 'index']
 )->name('doctor.view-appointment');
 
@@ -116,10 +117,15 @@ Route::post('/consultation/save', [ConsultationController::class, 'store'])
     ->name('doctor.save-consultation');
 
 // Consultation Page
-Route::get('/consultation/{id}',
+Route::get(
+    '/consultation/{id}',
     [ConsultationController::class, 'index']
 )->name('doctor.consultation');
 
+Route::get(
+    '/doctor/view-consultations',
+    [ConsultationController::class, 'viewConsultations']
+)->name('doctor.view-consultations');
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA (auth + role:admin, prefix admin, name admin.)
