@@ -549,7 +549,7 @@ Route::prefix('consultations')->group(function () {
     Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
     Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
     Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
-
+});
 //Apportionment APIs
 
 
