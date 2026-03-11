@@ -116,6 +116,9 @@ Route::get(
 Route::post('/consultation/save', [ConsultationController::class, 'store'])
     ->name('doctor.save-consultation');
 
+Route::get('/doctor/print-prescription/{id}', [ConsultationController::class, 'printPrescription'])
+    ->name('doctor.print-prescription');
+
 // Consultation Page
 Route::get(
     '/consultation/{id}',

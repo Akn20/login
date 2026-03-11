@@ -60,6 +60,11 @@
                                             Generate Consultation Summary
                                         </a>
 
+                                        <a href="{{ route('doctor.print-prescription',$consultation->id) }}"
+                                            class="btn btn-primary btn-sm">
+                                            Print Prescription
+                                        </a>
+
                                     </div>
                                 </td>
 

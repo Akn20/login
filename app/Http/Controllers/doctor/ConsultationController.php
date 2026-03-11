@@ -50,14 +50,15 @@ class ConsultationController extends Controller
             'tests' => $request->tests,
             'consultation_date' => now()
         ]);
-        $consultation->medicines()->attach([
-            $request->medicine => [
-                'dosage' => $request->dosage,
-                'frequency' => $request->frequency,
-                'duration' => $request->duration,
-                'instructions' => $request->instructions
-            ]
-        ]);
+       foreach ($request->medicine as $index => $medicineId) {
+            $consultation->medicines()->attach($medicineId, [
+                'dosage' => $request->dosage[$index],
+                'frequency' => $request->frequency[$index],
+                'duration' => $request->duration[$index],
+                'instructions' => $request->instructions[$index]
+            ]);
+
+        }
 
         return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
 
@@ -80,6 +81,17 @@ class ConsultationController extends Controller
         $consultations = Consultation::with('patient')->latest()->get();
 
         return view('doctor.opd.view-consultations', compact('consultations'));
+    }
+    /* =========================
+       Print Prescription
+    ==========================*/
+
+    public function printPrescription($id)
+    {
+        $consultation = Consultation::with(['patient', 'medicines', 'doctor'])
+            ->findOrFail($id);
+
+        return view('doctor.opd.print-prescription', compact('consultation'));
     }
 
 

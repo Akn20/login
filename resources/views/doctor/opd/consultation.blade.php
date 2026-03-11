@@ -2,11 +2,52 @@
 
 @section('content')
 
-    <script>
-        function showSuccess() {
-            alert("Consultation saved successfully!");
-        }
-    </script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const addBtn = document.getElementById("addMedicine");
+    const table = document.querySelector("#medicineTable tbody");
+
+    addBtn.addEventListener("click", function(){
+
+        let newRow = `
+        <tr>
+
+        <td>
+            <select name="medicine[]" class="form-control">
+                <option value="">Select</option>
+                @foreach($medicines as $medicine)
+                <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                @endforeach
+            </select>
+        </td>
+
+        <td><input type="text" class="form-control" name="dosage[]"></td>
+        <td><input type="text" class="form-control" name="frequency[]"></td>
+        <td><input type="text" class="form-control" name="duration[]"></td>
+        <td><input type="text" class="form-control" name="instructions[]"></td>
+
+        <td>
+            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                <i class="feather-trash-2"></i> Remove
+            </button>
+        </td>
+
+        </tr>
+        `;
+
+        table.insertAdjacentHTML("beforeend", newRow);
+
+    });
+
+});
+
+function removeMedicine(btn){
+    btn.closest("tr").remove();
+}
+
+</script>
     <div class="container-fluid">
 
         <div class="card">
@@ -76,7 +117,7 @@
                         <label><strong>Diagnosis</strong></label>
 
                         <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
-                                                                </textarea>
+                            </textarea>
 
                     </div>
 
@@ -86,10 +127,15 @@
 
                         <div class="card-header">
                             <strong>Prescription</strong>
+                            <button type="button" class="btn btn-primary" id="addMedicine">
+                        + Add Medicine
+                        </button>
                         </div>
 
+                        
+
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" id="medicineTable">
 
                                 <thead>
                                     <tr>
@@ -98,6 +144,7 @@
                                         <th>Frequency</th>
                                         <th>Duration</th>
                                         <th>Instructions</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
 
@@ -105,7 +152,9 @@
 
                                     <tr>
                                         <td>
-                                            <select name="medicine" class="form-control">
+                                            <select name="medicine[]" class="form-control" required>
+                                                                            <option value="">Select</option>
+
                                                 @foreach($medicines as $medicine)
                                                     <option value="{{ $medicine->id }}">
                                                         {{ $medicine->medicine_name }}
@@ -113,10 +162,15 @@
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><input type="text" class="form-control" name="dosage"></td>
-                                        <td><input type="text" class="form-control" name="frequency"></td>
-                                        <td><input type="text" class="form-control" name="duration"></td>
-                                        <td><input type="text" class="form-control" name="instructions"></td>
+                                        <td><input type="text" class="form-control" name="dosage[]" required></td>
+                                        <td><input type="text" class="form-control" name="frequency[]" required></td>
+                                        <td><input type="text" class="form-control" name="duration[]" required></td>
+                                        <td><input type="text" class="form-control" name="instructions[]" required></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                                                <i class="feather-trash-2"></i> Remove
+                                            </button>
+                                        </td>
                                     </tr>
 
                                 </tbody>
