@@ -41,7 +41,7 @@
         }
 
     @endphp
-    
+
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
         <div class="page-header-title">
@@ -248,13 +248,13 @@
 
                 <tbody>
 
-                    @forelse($leave->approvals as $approval)
+                    @forelse($approvals as $approval)
 
                         <tr>
 
                             <td>Level {{ $approval->level }}</td>
 
-                            <td>{{ $approval->approver->name }}</td>
+                            <td>{{ $approval->user->name  ?? 'N/A' }}</td>
 
                             <td>
 
@@ -271,7 +271,7 @@
                             <td>{{ $approval->created_at->format('d-m-Y H:i') }}</td>
 
                         </tr>
-                        @empty
+                    @empty
                         <tr>
                             <td colspan="5" class="text-center py-4">No approval history found.</td>
                         </tr>

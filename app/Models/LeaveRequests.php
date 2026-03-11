@@ -10,7 +10,7 @@ class LeaveRequests extends Model
     protected $table = 'leave_requests';
     public $incrementing = false;
     protected $keyType = 'string'; 
-     protected static function boot()
+    protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
@@ -48,6 +48,6 @@ class LeaveRequests extends Model
     }
      public function approvals()
 {
-    return $this->hasMany(Leave_Request_Approval::class,'leave_request_id');
+    return $this->hasMany(LeaveRequestApprovals::class,'leave_request_id');
 }
 }

@@ -580,8 +580,10 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])
         */
         Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
             Route::get('/', [LeaveApprovalController::class, 'index'])->name('index');
+            Route::get('/approved', [LeaveApprovalController::class, 'approvedIndex'])->name('approved');
             Route::get('/{id}', [LeaveApprovalController::class, 'show'])->name('show');
             Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
+            Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
         });
 
     });
