@@ -258,6 +258,38 @@ public function apiShow($id)
     ]);
 }
 
+// public function apiStore(Request $request)
+// {
+//     $data = $request->validate([
+//         'leave_type_id' => 'required|uuid',
+//         'priority' => 'required|integer',
+
+//         'employee_status' => 'required|array',
+//         'designations' => 'required',
+
+//         'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
+//         'accrual_value' => 'required|integer',
+
+//         'leave_nature' => 'required|in:Paid,Unpaid',
+
+//         'carry_forward_allowed' => 'nullable|boolean',
+//         'carry_forward_limit' => 'nullable|integer',
+//         'carry_forward_expiry_days' => 'nullable|integer',
+
+//         'min_leave_per_application' => 'nullable|integer',
+//         'max_leave_per_application' => 'nullable|integer',
+
+//         'status' => 'required|in:active,inactive',
+//     ]);
+
+//     $mapping = LeaveMapping::create($data);
+
+//     return response()->json([
+//         'status' => true,
+//         'message' => 'Mapping created successfully',
+//         'data' => $mapping
+//     ]);
+// }
 public function apiStore(Request $request)
 {
     $data = $request->validate([
@@ -281,6 +313,45 @@ public function apiStore(Request $request)
 
         'status' => 'required|in:active,inactive',
     ]);
+
+    // Convert to arrays for comparison
+    $inputDesignations = is_array($request->designations)
+        ? $request->designations
+        : [$request->designations];
+
+    $inputStatus = is_array($request->employee_status)
+        ? $request->employee_status
+        : [$request->employee_status];
+
+    sort($inputDesignations);
+    sort($inputStatus);
+
+    $existingMappings = \DB::table('leave_mappings')
+        ->where('leave_type_id', $request->leave_type_id)
+        ->whereNull('deleted_at')
+        ->get();
+
+    foreach ($existingMappings as $mapping) {
+
+        $dbDesignations = json_decode($mapping->designations, true) ?? [];
+        $dbStatus = json_decode($mapping->employee_status, true) ?? [];
+
+        sort($dbDesignations);
+        sort($dbStatus);
+
+        if ($dbDesignations === $inputDesignations && $dbStatus === $inputStatus) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'A mapping with this Leave Type, Employee Status and Designation already exists.'
+            ], 422);
+        }
+    }
+
+    // convert single designation to array if needed
+    if (!is_array($data['designations'])) {
+        $data['designations'] = [$data['designations']];
+    }
 
     $mapping = LeaveMapping::create($data);
 
