@@ -4,8 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-    public function up(): void
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+     public function up(): void
     {
         Schema::create('sales_returns', function (Blueprint $table) {
 
@@ -13,12 +17,14 @@ return new class extends Migration {
 
             $table->string('return_number')->unique();
 
+            // Reference to sales bill
             $table->uuid('bill_id');
             $table->foreign('bill_id')
-                ->references('bill_id')
-                ->on('sales_bills')
-                ->onDelete('cascade');
+                  ->references('bill_id')
+                  ->on('sales_bills')
+                  ->cascadeOnDelete();
 
+            // Patient reference
             $table->uuid('patient_id')->nullable();
 
             $table->text('remarks')->nullable();
@@ -29,6 +35,10 @@ return new class extends Migration {
         });
     }
 
+
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('sales_returns');
