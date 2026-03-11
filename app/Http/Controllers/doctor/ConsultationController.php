@@ -7,6 +7,8 @@ use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Appointment;
 use App\Models\Consultation;
+use App\Models\Staff;
+use App\Models\Roles;
 class ConsultationController extends Controller
 {
 
@@ -26,7 +28,11 @@ class ConsultationController extends Controller
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
 
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment'));
+        $doctorRole = Roles::where('name', 'doctor')->first();
+
+        $doctors = Staff::where('role_id', $doctorRole->id)->get();
+
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors'));
     }
 
 
@@ -36,8 +42,13 @@ class ConsultationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'symptoms' => 'required',
-            'diagnosis' => 'required'
+            'symptoms' => 'required|string',
+            'diagnosis' => 'required|string',
+            'medicine' => 'required',
+            'dosage' => 'required|string',
+            'frequency' => 'required|string',
+            'duration' => 'required|string',
+            'instructions' => 'required|string'
         ]);
 
         $appointment = Appointment::find($request->appointment_id);
@@ -45,6 +56,7 @@ class ConsultationController extends Controller
         $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
             'doctor_id' => $appointment->doctor_id,
+            'referral_doctor_id' => $request->referral_doctor_id,
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
             'tests' => $request->tests,

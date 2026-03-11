@@ -19,6 +19,7 @@ class Consultation extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
+        'referral_doctor_id',
         'symptoms',
         'diagnosis',
         'tests',
@@ -51,5 +52,9 @@ class Consultation extends Model
             'consultation_id',
             'medicine_id'
         )->withPivot('dosage', 'frequency', 'duration', 'instructions');
+    }
+    public function referralDoctor()
+    {
+        return $this->belongsTo(Staff::class, 'referral_doctor_id');
     }
 }

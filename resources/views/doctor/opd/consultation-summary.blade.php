@@ -72,6 +72,11 @@
                     </div>
 
                     <div class="col-md-4">
+                        <strong>Referred To:</strong>
+                        {{ $consultation->referralDoctor->name ?? 'None' }}
+                    </div>
+
+                    <div class="col-md-4">
                         <strong>Date:</strong>
                         {{ \Carbon\Carbon::parse($consultation->consultation_date)->format('d F Y') }}
                     </div>

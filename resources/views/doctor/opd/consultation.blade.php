@@ -2,12 +2,13 @@
 
 @section('content')
 
-    <script>
-        function showSuccess() {
-            alert("Consultation saved successfully!");
-        }
-    </script>
+
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="card">
 
@@ -65,7 +66,8 @@
 
                         <label><strong>Symptoms</strong></label>
 
-                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"></textarea>
+                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"
+                            required></textarea>
 
                     </div>
 
@@ -75,8 +77,8 @@
 
                         <label><strong>Diagnosis</strong></label>
 
-                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
-                                                                </textarea>
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis"
+                            required></textarea>
 
                     </div>
 
@@ -105,7 +107,9 @@
 
                                     <tr>
                                         <td>
-                                            <select name="medicine" class="form-control">
+                                            <select name="medicine" class="form-control" required>
+                                                <option value="">Select Medicine</option>
+
                                                 @foreach($medicines as $medicine)
                                                     <option value="{{ $medicine->id }}">
                                                         {{ $medicine->medicine_name }}
@@ -113,10 +117,10 @@
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><input type="text" class="form-control" name="dosage"></td>
-                                        <td><input type="text" class="form-control" name="frequency"></td>
-                                        <td><input type="text" class="form-control" name="duration"></td>
-                                        <td><input type="text" class="form-control" name="instructions"></td>
+                                        <td><input type="text" class="form-control" name="dosage" required></td>
+                                        <td><input type="text" class="form-control" name="frequency" required></td>
+                                        <td><input type="text" class="form-control" name="duration" required></td>
+                                        <td><input type="text" class="form-control" name="instructions" required></td>
                                     </tr>
 
                                 </tbody>
@@ -135,12 +139,26 @@
                         <input type="text" name="tests" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>
+                    <div class="mb-3">
+                        <label><strong>Referral Doctor</strong></label>
+
+                        <select name="referral_doctor_id" class="form-control">
+                            <option value="">Select Doctor</option>
+
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}">
+                                    {{ $doctor->name }}
+                                </option>
+                            @endforeach
+
+                        </select>
+                    </div>
 
 
                     <!-- Buttons -->
                     <div class="text-center mt-4 d-flex gap-2">
 
-                        <button type="submit" class="btn btn-success" onclick="showSuccess()">
+                        <button type="submit" class="btn btn-success">
                             Save Consultation
                         </button>
 
