@@ -566,3 +566,5 @@ Route::prefix('appointments')->group(function () {
     Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
+
+

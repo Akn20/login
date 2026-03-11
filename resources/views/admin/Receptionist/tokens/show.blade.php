@@ -106,7 +106,7 @@
 
                             <tr>
                                 <th style="width:200px;">Appointment ID</th>
-                                <td>{{ $token->appointment->id }}</td>
+                                <td>{{ $token->appointment->patient->id }}</td>
                             </tr>
 
                             <tr>
