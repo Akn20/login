@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 class Leave_Request_Approval extends Model
 {
     protected $table = 'leave_request_approvals';
+    protected $keyType = 'string';
       protected $fillable = [
         'leave_request_id',
         'approver_id',

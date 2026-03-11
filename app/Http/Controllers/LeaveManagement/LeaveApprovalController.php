@@ -49,7 +49,14 @@ class LeaveApprovalController extends Controller
      */
     public function show($id)
     {
+        
         $leave = LeaveRequests::with(['staff', 'leaveType', 'approvals'])->findOrFail($id);
+        Log::info('Leave ID: '.$leave->id);
+
+$approvals = Leave_Request_Approval::where('leave_request_id', $leave->id)->get();
+
+Log::info($approvals->toArray());
+        Log::info($leave);
         $leave->approvals = $leave->approvals->sortBy('level');
         return view('admin.Leave_Management.leave_request_approval.show', compact('leave'));
     }
