@@ -24,12 +24,13 @@ use App\Http\Controllers\HR\StaffManagementController;
 // Leave management (masters)
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+// HR
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-// HR
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -298,6 +299,19 @@ Route::prefix('leave-management')->group(function () {
     // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
     Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
     
+});
+
+/*
+|--------------------------------------------------------------------------
+| Leave Approval API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('leave-approvals')->group(function () {
+    Route::get('/', [LeaveApprovalController::class, 'apiIndex']);
+    Route::get('/{id}', [LeaveApprovalController::class, 'apiShow']);
+    Route::post('/{id}/approve', [LeaveApprovalController::class, 'apiApprove']);
+    Route::post('/{id}/reject', [LeaveApprovalController::class, 'apiReject']);
 });
 
 /*
