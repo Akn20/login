@@ -62,7 +62,7 @@ class ConsultationController extends Controller
             'tests' => $request->tests,
             'consultation_date' => now()
         ]);
-       foreach ($request->medicine as $index => $medicineId) {
+        foreach ($request->medicine as $index => $medicineId) {
             $consultation->medicines()->attach($medicineId, [
                 'dosage' => $request->dosage[$index],
                 'frequency' => $request->frequency[$index],
@@ -74,6 +74,72 @@ class ConsultationController extends Controller
 
         return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
 
+    }
+    // =========================
+// Edit Consultation
+// =========================
+    public function edit($id)
+    {
+        $consultation = Consultation::with(['medicines'])->findOrFail($id);
+
+        $patient = Patient::find($consultation->patient_id);
+
+        $medicines = Medicine::all();
+
+        $doctorRole = Roles::where('name', 'doctor')->first();
+
+        $doctors = Staff::where('role_id', $doctorRole->id)->get();
+
+        return view(
+            'doctor.opd.edit-consultation',
+            compact('consultation', 'patient', 'medicines', 'doctors')
+        );
+    }
+    // =========================
+// Update Consultation
+// =========================
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'symptoms' => 'required',
+            'diagnosis' => 'required',
+            'medicine.*' => 'required',
+            'dosage.*' => 'required',
+            'frequency.*' => 'required',
+            'duration.*' => 'required',
+            'instructions.*' => 'required'
+        ]);
+
+        $consultation = Consultation::findOrFail($id);
+
+        $consultation->update([
+            'symptoms' => $request->symptoms,
+            'diagnosis' => $request->diagnosis,
+            'tests' => $request->tests,
+            'referral_doctor_id' => $request->referral_doctor_id
+        ]);
+
+        // update prescription
+        $consultation->medicines()->detach();
+
+        foreach ($request->medicine as $index => $medicine) {
+
+            if ($medicine) {
+
+                $consultation->medicines()->attach($medicine, [
+                    'dosage' => $request->dosage[$index],
+                    'frequency' => $request->frequency[$index],
+                    'duration' => $request->duration[$index],
+                    'instructions' => $request->instructions[$index]
+                ]);
+
+            }
+
+        }
+
+        return redirect()
+            ->route('doctor.view-consultations')
+            ->with('success', 'Consultation updated successfully');
     }
 
 
