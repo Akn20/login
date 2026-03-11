@@ -7,7 +7,7 @@
 
 <title>Duralux || Dashboard</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.co') }}" />
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.ico') }}" />
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap.min.css')  }}" />
 
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/css/vendors.min.css') }}" />

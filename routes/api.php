@@ -24,12 +24,13 @@ use App\Http\Controllers\HR\StaffManagementController;
 // Leave management (masters)
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+// HR
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-// HR
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\WorkStatusController;
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -282,7 +284,8 @@ Route::prefix('masters')->group(function () {
     Route::post('/leave-mappings/{id}/restore', [LeaveMappingController::class, 'apiRestore']);
     Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
 
-    /*
+});
+ /*
 |--------------------------------------------------------------------------
 | Leave Adjustments API
 |--------------------------------------------------------------------------
@@ -298,6 +301,18 @@ Route::prefix('leave-management')->group(function () {
     Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
     
 });
+
+/*
+|--------------------------------------------------------------------------
+| Leave Approval API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('leave-approvals')->group(function () {
+    Route::get('/', [LeaveApprovalController::class, 'apiIndex']);
+    Route::get('/{id}', [LeaveApprovalController::class, 'apiShow']);
+    Route::post('/{id}/approve', [LeaveApprovalController::class, 'apiApprove']);
+    Route::post('/{id}/reject', [LeaveApprovalController::class, 'apiReject']);
 });
 
 /*

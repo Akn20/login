@@ -3,146 +3,166 @@
 namespace App\Http\Controllers\LeaveManagement;
 
 use App\Http\Controllers\Controller;
-use App\Models\Leave_Request_Approval;
-use App\Models\LeaveAdjustment;
-use DB;
-use Illuminate\Http\Request;
+use App\Models\LeaveRequestApprovals;
 use App\Models\LeaveRequests;
-use Log;
+use Illuminate\Http\Request;
 
 class LeaveApprovalController extends Controller
 {
-
-    /**
-     * Display leave requests
-     */
     public function index(Request $request)
     {
-        $query = LeaveRequests::query()->with(['staff','leaveType']);
+        $user = auth()->user();
+        $query = LeaveRequests::query()->with(['staff', 'leaveType']);
+        $query = $this->applyHierarchyFilter($query, $user);
 
-        // search employee id
         if ($request->search) {
-            $query->where('employee_id', $request->search);
+            $query->whereHas('staff', function ($q) use ($request) {
+                $q->where('employee_id', 'like', "%{$request->search}%")
+                    ->orWhere('name', 'like', "%{$request->search}%");
+            });
         }
 
-        // filter status
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
-
-        $leaveRequests = $query->latest()->paginate(10);
+        $status = $request->status ?? 'pending';
+        $leaveRequests = $query->where('status', $status)->latest()->paginate(10);
 
         return view('admin.Leave_Management.leave_request_approval.index', compact('leaveRequests'));
     }
 
-
-    /**
-     * Show leave request details
-     */
     public function show($id)
     {
-        $leave = LeaveRequests::with(['staff','leaveType','approvals'])->findOrFail($id);
-      
-        return view('admin.Leave_Management.leave_request_approval.show', compact('leave'));
+        $leave = LeaveRequests::with(['staff', 'leaveType', 'approvals.user'])->findOrFail($id);
+
+        // Pass sorted approvals separately to avoid the "readonly" error
+        $approvals = $leave->approvals->sortBy('level');
+
+        return view('admin.Leave_Management.leave_request_approval.show', compact('leave', 'approvals'));
     }
 
+    public function approve(Request $request, $id)
+    {
+        $leave = LeaveRequests::with('staff')->findOrFail($id);
+        $user = auth()->user();
+        $staff = $leave->staff;
+        $action = $request->action; // 'approve' or 'reject'
+        $remarks = $request->remarks ?? 'No remarks provided.';
 
-    /**
-     * Approve leave request
-     */
-public function approve(Request $request, $id)
-{
-    $leave = LeaveRequests::with('staff')->findOrFail($id);
-
-    if ($leave->status !== 'pending') {
-        return back()->with('error','Leave already processed');
-    }
-
-    $userId = auth()->id();
-    $staff = $leave->staff;
-
-    // determine correct approver
-    if($leave->current_approval_level == 1 && $staff->level1_supervisor_id != $userId){
-        return back()->with('error','You are not authorized for Level 1 approval');
-    }
-
-    if($leave->current_approval_level == 2 && $staff->level2_supervisor_id != $userId){
-        return back()->with('error','You are not authorized for Level 2 approval');
-    }
-
-    if($leave->current_approval_level == 3 && $staff->level3_supervisor_id != $userId){
-        return back()->with('error','You are not authorized for Level 3 approval');
-    }
-
-    // check if already approved by this user
-    $alreadyApproved = Leave_Request_Approval::where('leave_request_id',$leave->id)
-        ->where('approver_id',$userId)
-        ->exists();
-
-    if($alreadyApproved){
-        return back()->with('error','You already approved this request');
-    }
-
-    DB::transaction(function () use ($leave,$request,$userId){
-
-        Leave_Request_Approval::create([
-            'leave_request_id' => $leave->id,
-            'approver_id' => $userId,
-            'level' => $leave->current_approval_level,
-            'status' => 'approved',
-            'remarks' => $request->remarks
-        ]);
-
-        $nextLevel = $leave->current_approval_level + 1;
-
-        if($nextLevel > 3){
-
-            // final approval
-            $leave->update([
-                'status' => 'approved'
-            ]);
-
-            // deduct leave
-            LeaveAdjustment::where('staff_id',$leave->employee_id)
-                ->increment('debit',$leave->total_leave_days);
-
-        }else{
-
-            // move to next approval level
-            $leave->update([
-                'current_approval_level' => $nextLevel
-            ]);
-
+        if ($leave->status !== 'pending') {
+            return $this->errorResponse($request, 'Request already processed.');
         }
 
-    });
+        // --- HANDLE REJECTION ---
+        if ($action === 'reject') {
+            $leave->update(['status' => 'rejected'], ['current_approval_level' => 4]);
+            $this->logApproval($id, $user->id, $leave->current_approval_level, $remarks, 'rejected');
 
-    return back()->with('success','Approval recorded');
-}
+            return $this->successResponse($request, 'Leave request rejected.');
+        }
 
+        // --- HANDLE SEQUENTIAL APPROVAL ---
+        if ($user->hasRole('manager') && $leave->current_approval_level === 1) {
+            $this->logApproval($id, $user->id, 1, $remarks);
+            $this->moveToNextLevel($leave, $staff);
+        } elseif ($user->hasRole('hr') && $leave->current_approval_level === 2) {
+            $this->logApproval($id, $user->id, 2, $remarks);
+            $this->moveToNextLevel($leave, $staff);
+        } elseif ($user->hasRole('hod') && $leave->current_approval_level === 3) {
+            $this->logApproval($id, $user->id, 3, $remarks);
+            $leave->update(['status' => 'approved', 'current_approval_level' => 4]);
+        } else {
+            return $this->errorResponse($request, 'Unauthorized for this stage.');
+        }
+
+        return $this->successResponse($request, 'Leave status updated.');
+    }
 
     /**
-     * Reject leave request
+     * Helper: Logic to determine if we go to Level 2, Level 3, or Final Approval
      */
-   public function reject(Request $request,$id)
-{
-    $leave = LeaveRequests::findOrFail($id);
+    private function moveToNextLevel($leave, $staff)
+    {
+        if ($leave->current_approval_level == 1 && $staff->level2_supervisor_id) {
+            $leave->update(['current_approval_level' => 2]);
+        } elseif ($staff->level3_supervisor_id) {
+            $leave->update(['current_approval_level' => 3]);
+        } else {
+            $leave->update(['status' => 'approved', 'current_approval_level' => 4]);
+        }
+    }
 
-    DB::transaction(function () use ($leave,$request){
+    private function applyHierarchyFilter($query, $user)
+    {
+        $userId = $user->id;
 
-        Leave_Request_Approval::create([
-            'leave_request_id' => $leave->id,
-            'approver_id' => auth()->id(),
-            'level' => $leave->current_approval_level,
-            'status' => 'rejected',
-            'remarks' => $request->remarks
+        if ($user->hasRole('manager')) {
+            return $query->where('current_approval_level', 1)
+                ->whereHas('staff', fn ($q) => $q->where('level1_supervisor_id', $userId));
+        }
+
+        if ($user->hasRole('hr')) {
+            return $query->where('current_approval_level', 2)
+                ->whereHas('staff', fn ($q) => $q->where('level2_supervisor_id', $userId));
+        }
+
+        if ($user->hasRole('hod')) {
+            return $query->where('current_approval_level', 3)
+                ->whereHas('staff', fn ($q) => $q->where('level3_supervisor_id', $userId));
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
+    private function logApproval($leaveId, $userId, $level, $remarks, $status = 'approved')
+    {
+        LeaveRequestApprovals::create([
+            'leave_request_id' => $leaveId,
+            'approver_id' => $userId,
+            'level' => $level,
+            'status' => $status,
+            'remarks' => $remarks,
         ]);
+    }
 
-        $leave->update([
-            'status' => 'rejected'
-        ]);
-    });
+    private function successResponse($request, $msg)
+    {
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'message' => $msg])
+            : redirect()->route('hr.leave-approvals.index')->with('success', $msg);
+    }
 
-    return back()->with('success','Leave rejected');
-}
+    private function errorResponse($request, $msg)
+    {
+        return $request->expectsJson()
+            ? response()->json(['success' => false, 'message' => $msg], 403)
+            : back()->with('error', $msg);
+    }
+
+    public function approvedIndex(Request $request)
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+
+        // Catch the status from the filter, default to 'approved'
+        $status = $request->status ?? 'approved';
+
+        $query = LeaveRequests::query()
+            ->with(['staff', 'leaveType'])
+            ->where('status', $status); // Uses the dynamic status (approved or rejected)
+
+        $query->whereHas('staff', function ($q) use ($userId) {
+            $q->where('level1_supervisor_id', $userId)
+                ->orWhere('level2_supervisor_id', $userId)
+                ->orWhere('level3_supervisor_id', $userId);
+        });
+
+        if ($request->search) {
+            $query->whereHas('staff', function ($q) use ($request) {
+                $q->where('employee_id', 'like', "%{$request->search}%")
+                    ->orWhere('name', 'like', "%{$request->search}%");
+            });
+        }
+
+        $approvedLeaves = $query->latest()->paginate(10);
+
+        return view('admin.Leave_Management.leave_request_approval.approved', compact('approvedLeaves'));
+    }
 }

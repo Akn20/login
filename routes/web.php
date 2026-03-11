@@ -37,6 +37,8 @@ use App\Http\Controllers\DepartmentController;
 // Pharmacy
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+//use App\Http\Controllers\Doctor\ViewAppointmentController;
+//use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -618,6 +620,7 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
         */
         Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
             Route::get('/', [LeaveApprovalController::class, 'index'])->name('index');
+            Route::get('/approved', [LeaveApprovalController::class, 'approvedIndex'])->name('approved');
             Route::get('/{id}', [LeaveApprovalController::class, 'show'])->name('show');
             Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
             Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');

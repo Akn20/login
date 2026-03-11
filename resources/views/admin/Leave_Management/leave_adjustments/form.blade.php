@@ -57,11 +57,11 @@ required>
 
 
 <div class="col-md-12 mb-3">
-<label class="form-label">Remarks</label>
+<label class="form-label">Remarks*</label>
 <textarea
 name="remarks"
 class="form-control"
-rows="3">{{ old('remarks', $adjustment->remarks ?? '') }}</textarea>
+rows="3" required>{{ old('remarks', $adjustment->remarks ?? '') }}</textarea>
 </div>
 
 </div>

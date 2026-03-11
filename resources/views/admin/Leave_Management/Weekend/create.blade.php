@@ -11,7 +11,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form action="{{ route('admin.weekends.store') }}" method="POST">
+        <form action="{{ route('hr.weekends.store') }}" method="POST">
             @csrf
 
             @include('admin.Leave_Management.Weekend.form')

@@ -76,24 +76,29 @@ public function create()
 
 public function store(Request $request)
 {
-    // $request->validate([
-    //     'staff_id' => 'required',
-    //     'leave_type_id' => 'required|array',
-    //     'credit' => 'nullable|array',
-    //     'debit' => 'nullable|array',
-    //     'year' => 'required',
-    //     'remarks' => 'nullable|string',
-    // ]);
-    $request->validate([
-    'staff_id' => 'required',
+    
+//     $request->validate([
+//     'staff_id' => 'required',
+//     'leave_type_id' => 'required|array',
+//     'leave_type_id.*' => 'required',
+//     'credit.*' => 'nullable|integer|min:0',
+//     'debit.*' => 'nullable|integer|min:0',
+//     'year' => 'required|integer',
+//     'remarks' => 'required|string|max',
+// ]);
+$request->validate([
+    'staff_id' => 'required|exists:staff,id',
+
     'leave_type_id' => 'required|array',
-    'leave_type_id.*' => 'required',
+    'leave_type_id.*' => 'required|exists:leave_types,id',
+
     'credit.*' => 'nullable|integer|min:0',
     'debit.*' => 'nullable|integer|min:0',
-    'year' => 'required|integer',
-    'remarks' => 'nullable|string',
-]);
 
+    'year' => 'required|integer|min:2000|max:2100',
+
+    'remarks' => 'required|string|max:255',
+]);
     foreach ($request->leave_type_id as $index => $leaveTypeId) {
 
         $credit = $request->credit[$index] ?? 0;

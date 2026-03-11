@@ -26,7 +26,7 @@
 
         <div class="d-flex gap-2 align-items-center">
             {{-- Filter: status + search --}}
-            <form method="GET" action="{{ route('admin.weekends.index') }}" class="d-flex">
+            <form method="GET" action="{{ route('hr.weekends.index') }}" class="d-flex">
                 <select
                     name="status"
                     class="form-control form-control-sm me-2"
