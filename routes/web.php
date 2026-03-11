@@ -41,6 +41,7 @@ use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
@@ -63,6 +64,8 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest) routes
@@ -644,6 +647,26 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('/force-delete/{id}', [LeaveMappingController::class, 'forceDelete'])->name('forceDelete');
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
+
+
+/*--------------------------------------------------------------------------
+| Leave Application
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('leave-application')->name('leave-application.')->group(function () {
+
+    Route::get('/', [LeaveApplicationController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveApplicationController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveApplicationController::class, 'store'])->name('store');
+
+    Route::get('/show/{id}', [LeaveApplicationController::class, 'show'])->name('show');
+
+    Route::delete('/withdraw/{id}', [LeaveApplicationController::class, 'withdraw'])->name('withdraw');
+
+});
 
 
 

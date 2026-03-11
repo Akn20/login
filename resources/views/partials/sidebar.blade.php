@@ -533,7 +533,15 @@
                                     </a>
                                 </li>
 
-
+                {{-- Leave Application --}}
+<li class="nxl-item">
+   <a href="{{ route('admin.leave-application.index') }}" class="nxl-link">
+        <span class="nxl-micon">
+            <i class="feather-calendar"></i>
+        </span>
+        <span class="nxl-mtext">Leave Application</span>
+    </a>
+</li>
                                 <!-- Leave adjustment -->
                                  <li class="nxl-item {{ request()->routeIs('admin.leave-adjustments.*') ? 'active' : '' }}">
     <a href="{{ route('admin.leave-adjustments.index') }}" class="nxl-link">
