@@ -18,7 +18,8 @@ class LeaveMapping extends Model
     'accrual_frequency', 'accrual_value', 'leave_nature', 
     'carry_forward_allowed', 'carry_forward_limit', 'carry_forward_expiry_days',
     'min_leave_per_application', 'max_leave_per_application', 'status','encashment_allowed', 
-    'encashment_trigger'
+    'encashment_trigger','gender',
+    'employment_type',
 ];
 
 protected $casts = [

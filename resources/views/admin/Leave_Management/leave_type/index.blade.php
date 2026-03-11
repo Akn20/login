@@ -32,7 +32,7 @@
 
     <div class="d-flex gap-2 align-items-center">
 
-        <form method="GET" action="{{ route('admin.leave-type.index') }}" class="d-flex">
+        <form method="GET" action="{{ route('hr.leave-type.index') }}" class="d-flex">
 
           
 <input type="text"
@@ -48,10 +48,10 @@
 
         </form>
 
-        <a href="{{ route('admin.leave-type.create') }}" class="btn btn-primary">
+        <a href="{{ route('hr.leave-type.create') }}" class="btn btn-primary">
             <i class="feather-plus me-1"></i> Add Leave Type
         </a>
-<a href="{{ route('admin.leave-type.deleted') }}" 
+<a href="{{ route('hr.leave-type.deleted') }}" 
    class="btn btn-danger">
     Deleted Leave Types
 </a>
@@ -123,12 +123,12 @@ document.getElementById('searchInput').addEventListener('keyup', function() {
 
                                 <div class="d-flex justify-content-end gap-2">
 
-                                    <a href="{{ route('admin.leave-type.edit', $leave->id) }}"
+                                    <a href="{{ route('hr.leave-type.edit', $leave->id) }}"
                                        class="btn btn-outline-secondary btn-icon rounded-circle">
                                         <i class="feather-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('admin.leave-type.delete', $leave->id) }}"
+                                    <form action="{{ route('hr.leave-type.delete', $leave->id) }}"
       method="POST"
       onsubmit="return confirm('Are you sure you want to delete this leave type?');"
       style="display:inline;">

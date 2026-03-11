@@ -16,7 +16,7 @@
     </div>
 
     <div>
-        <a href="{{ route('admin.leave-adjustments.create') }}" class="btn btn-primary">
+        <a href="{{ route('hr.leave-adjustments.create') }}" class="btn btn-primary">
             <i class="feather-plus me-1"></i> Add Adjustment
         </a>
     </div>
@@ -31,7 +31,7 @@
 
 <!-- filter -->
 <div class="p-3 border-bottom">
-<form method="GET" action="{{ route('admin.leave-adjustments.index') }}">
+<form method="GET" action="{{ route('hr.leave-adjustments.index') }}">
 <div class="row align-items-end">
 
 <div class="col-md-4">
@@ -52,7 +52,7 @@
 <i class="feather-search"></i> Filter
 </button>
 
-<a href="{{ route('admin.leave-adjustments.index') }}"
+<a href="{{ route('hr.leave-adjustments.index') }}"
 class="btn btn-light btn-sm px-4">
 Reset
 </a>
@@ -104,7 +104,7 @@ Reset
 <td>{{ $adj->created_at->format('d-m-Y') }}</td>
 
 <td class="text-center">
-<a href="{{ route('admin.leave-adjustments.show',$adj->id) }}">
+<a href="{{ route('hr.leave-adjustments.show',$adj->id) }}">
 <i class="feather-eye"></i>
 </a>
 </td>

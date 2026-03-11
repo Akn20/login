@@ -12,6 +12,12 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            {{ session('error') }}
+            <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
@@ -31,7 +37,7 @@
 
         <div class="d-flex gap-2 align-items-center">
 
-            <form method="GET" action="{{ route('admin.leave-approvals.index') }}" class="d-flex">
+            <form method="GET" action="{{ route('hr.leave-approvals.index') }}" class="d-flex">
 
                 <select name="status" class="form-control form-control-sm me-2">
                     <option value="">All Status</option>
@@ -49,7 +55,7 @@
                     </option>
                 </select>
 
-                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee ID"
+                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee"
                     value="{{ request('search') }}">
 
                 <button class="btn btn-light-brand btn-sm">
@@ -155,34 +161,10 @@
 
                                         <div class="d-flex justify-content-end gap-2">
 
-                                            <a href="{{ route('admin.leave-approvals.show', $leave->id) }}"
+                                            <a href="{{ route('hr.leave-approvals.show', $leave->id) }}"
                                                 class="btn btn-outline-primary btn-icon rounded-circle" title="View">
                                                 <i class="feather-eye"></i>
                                             </a>
-
-
-                                            @if($leave->status == 'pending')
-
-                                                <form action="{{ route('admin.leave-approvals.approve', $leave->id) }}" method="POST">
-                                                    @csrf
-
-                                                    <button class="btn btn-outline-success btn-icon rounded-circle" title="Approve">
-                                                        <i class="feather-check"></i>
-                                                    </button>
-
-                                                </form>
-
-
-                                                <form action="{{ route('admin.leave-approvals.reject', $leave->id) }}" method="POST">
-                                                    @csrf
-
-                                                    <button class="btn btn-outline-danger btn-icon rounded-circle" title="Reject">
-                                                        <i class="feather-x"></i>
-                                                    </button>
-
-                                                </form>
-
-                                            @endif
 
                                         </div>
 

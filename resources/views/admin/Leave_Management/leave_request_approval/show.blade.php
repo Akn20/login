@@ -12,6 +12,35 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            {{ session('error') }}
+            <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @php
+
+        $userId = auth()->id();
+
+        $alreadyActed = $leave->approvals
+            ->where('approver_id', $userId)
+            ->count();
+
+        $authorized = false;
+
+        if ($leave->current_approval_level == 1 && $leave->staff->level1_supervisor_id == $userId) {
+            $authorized = true;
+        }
+
+        if ($leave->current_approval_level == 2 && $leave->staff->level2_supervisor_id == $userId) {
+            $authorized = true;
+        }
+
+        if ($leave->current_approval_level == 3 && $leave->staff->level3_supervisor_id == $userId) {
+            $authorized = true;
+        }
+
+    @endphp
 
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
@@ -26,7 +55,7 @@
                 </li>
 
                 <li class="breadcrumb-item">
-                    <a href="{{ route('admin.leave-approvals.index') }}">
+                    <a href="{{ route('hr.leave-approvals.index') }}">
                         Leave Approvals
                     </a>
                 </li>
@@ -46,7 +75,7 @@
         <div class="card-body">
 
             <div class="row">
-                
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-bold">Employee Name</label>
                     <p>{{ $leave->staff->name }}</p>
@@ -168,26 +197,34 @@
 
 
 
-            @if($leave->status == 'pending')
+            @if($leave->status == 'pending' && $authorized && !$alreadyActed)
 
-                <div class="mt-4 d-flex gap-2">
+                <div class="mt-4">
 
-                    <form action="{{ route('admin.leave-approvals.approve', $leave->id) }}" method="POST">
+                    <form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
+
                         @csrf
 
-                        <button class="btn btn-success">
-                            <i class="feather-check"></i> Approve
-                        </button>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Remarks</label>
 
-                    </form>
+                            <textarea name="remarks" class="form-control" rows="3"
+                                placeholder="Add remarks (optional)"></textarea>
+
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit" name="action" value="approve" class="btn btn-success">
+                                <i class="feather-check"></i> Approve
+                            </button>
 
 
-                    <form action="{{ route('admin.leave-approvals.reject', $leave->id) }}" method="POST">
-                        @csrf
+                            <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                <i class="feather-x"></i> Reject
+                            </button>
 
-                        <button class="btn btn-danger">
-                            <i class="feather-x"></i> Reject
-                        </button>
+                        </div>
 
                     </form>
 
@@ -195,7 +232,55 @@
 
             @endif
 
+            <h5 class="mt-4">Approval History</h5>
 
+            <table class="table table-bordered">
+
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Approver</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($leave->approvals as $approval)
+
+                        <tr>
+
+                            <td>Level {{ $approval->level }}</td>
+
+                            <td>{{ $approval->approver->name }}</td>
+
+                            <td>
+
+                                @if($approval->status == 'approved')
+                                    <span class="badge bg-success">Approved</span>
+                                @else
+                                    <span class="badge bg-danger">Rejected</span>
+                                @endif
+
+                            </td>
+
+                            <td>{{ $approval->remarks }}</td>
+
+                            <td>{{ $approval->created_at->format('d-m-Y H:i') }}</td>
+
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No approval history found.</td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
         </div>
 
     </div>

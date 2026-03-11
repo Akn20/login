@@ -74,7 +74,7 @@ rows="3" required>{{ old('remarks', $adjustment->remarks ?? '') }}</textarea>
 {{ isset($adjustment) ? 'Update' : 'Save' }}
 </button>
 
-<a href="{{ route('admin.leave-adjustments.index') }}"
+<a href="{{ route('hr.leave-adjustments.index') }}"
 class="btn btn-light btn-sm px-4">
 Cancel
 </a>
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
 }
 
-        fetch("/admin/leave-adjustments/mapping/" + staffId)
+        fetch("/hr/leave-adjustments/mapping/" + staffId)
         .then(res => res.json())
         .then(data => {
 

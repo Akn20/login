@@ -89,6 +89,27 @@ $isSelected = false;
         <label class="form-check-label" for="unpaid">Unpaid</label>
     </div>
 </div>
+{{-- Gender --}}
+<div class="form-group">
+    <label>Gender</label>
+    <select name="gender" class="form-control">
+        <option value="">-- Select --</option>
+        <option value="Male"     {{ old('gender', $mapping->gender ?? '') == 'Male'     ? 'selected' : '' }}>Male</option>
+        <option value="Female"   {{ old('gender', $mapping->gender ?? '') == 'Female'   ? 'selected' : '' }}>Female</option>
+       
+    </select>
+</div>
+
+{{-- Employment Type --}}
+<div class="form-group">
+    <label>Employment Type</label>
+    <select name="employment_type" class="form-control">
+        <option value="">-- Select --</option>
+        <option value="Full-time"  {{ old('employment_type', $mapping->employment_type ?? '') == 'Full-time'  ? 'selected' : '' }}>Full-time</option>
+        <option value="Part-time"  {{ old('employment_type', $mapping->employment_type ?? '') == 'Part-time'  ? 'selected' : '' }}>Part-time</option>
+        
+    </select>
+</div>
 
 {{-- Section 5: Carry Forward  --}}
 <div class="card bg-light mb-3">
@@ -160,7 +181,7 @@ $isSelected = false;
     <button type="submit" class="btn btn-primary btn-sm px-4">
         <i class="feather-save me-1"></i> {{ isset($mapping) ? 'Update' : 'Save' }}
     </button>
-    <a href="{{ route('admin.leave-mappings.index') }}" class="btn btn-light btn-sm px-4">
+    <a href="{{ route('hr.leave-mappings.index') }}" class="btn btn-light btn-sm px-4">
         Cancel
     </a>
 </div>

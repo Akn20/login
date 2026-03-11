@@ -56,6 +56,20 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label">Mobile</label>
+                            <input type="text" name="mobile" value="{{ old('mobile', $user->mobile) }}"
+                                class="form-control @error('mobile') is-invalid @enderror">
+                            @error('mobile')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
+                    </div>
+                    
+                    <!-- RIGHT COLUMN -->
+                    <div class="col-lg-6">
+                    
+                        <div class="mb-3">
                             <label class="form-label">Status</label>
                             <select name="status" class="form-select @error('status') is-invalid @enderror">
 
@@ -74,11 +88,8 @@
                             @enderror
                         </div>
 
-                    </div>
 
 
-                    <!-- RIGHT COLUMN -->
-                    <div class="col-lg-6">
 
                         <div class="mb-3">
                             <label class="form-label">Role</label>

@@ -33,8 +33,8 @@
 
 <form method="POST"
       action="{{ isset($leaveType)
-            ? route('admin.leave-type.update', $leaveType->id)
-            : route('admin.leave-type.store') }}">
+            ? route('hr.leave-type.update', $leaveType->id)
+            : route('hr.leave-type.store') }}">
 
     @csrf
 
@@ -295,7 +295,7 @@
         {{ isset($leaveType) ? 'Update Leave Type' : 'Save Leave Type' }}
     </button>
 
-    <a href="{{ route('admin.leave-type.index') }}" class="btn btn-light">
+    <a href="{{ route('hr.leave-type.index') }}" class="btn btn-light">
         Cancel
     </a>
 
