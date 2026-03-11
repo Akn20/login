@@ -28,13 +28,9 @@
                     {{ $appointment->appointment_time }}
 
                 </option>
-
             @endforeach
-
         </select>
     </div>
-
-
 
     {{-- ===============================
         PATIENT
@@ -50,7 +46,6 @@
     </div>
 
 
-
     {{-- ===============================
         DOCTOR
        =============================== --}}
@@ -59,9 +54,9 @@
         <label class="form-label">Doctor</label>
 
         <input type="text"
-               class="form-control"
-               value="{{ $selectedAppointment->doctor->name?? }} "
-               readonly>
+            class="form-control"
+            value="{{ $selectedDoctor->name ?? '' }}"             
+            readonly>
     </div>
 
 
@@ -78,7 +73,6 @@
                value="{{ $selectedAppointment->department->department_name ?? '' }}"
                readonly>
     </div>
-
 
 
     {{-- ===============================
