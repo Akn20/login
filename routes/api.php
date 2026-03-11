@@ -42,7 +42,6 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\WorkStatusController;
 
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;

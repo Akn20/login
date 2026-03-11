@@ -70,11 +70,11 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\ExpiryController;
-use App\Http\Controllers\ReturnController;
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+// use App\Http\Controllers\ReturnController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
