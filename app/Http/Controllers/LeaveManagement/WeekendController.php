@@ -40,7 +40,7 @@ class WeekendController extends Controller
     {
         $days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
-        return view('hr.Leave_Management.Weekend.create', compact('days'));
+        return view('admin.Leave_Management.Weekend.create', compact('days'));
     }
 
     public function store(Request $request)
