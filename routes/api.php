@@ -54,6 +54,9 @@ use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+//Receptionist
+use App\Http\Controllers\TokenController;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -567,4 +570,11 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-
+Route::prefix('tokens')->group(function () {
+    Route::get('/', [TokenController::class, 'apiIndex']);
+    Route::post('/', [TokenController::class, 'apiStore']);
+    Route::get('/{id}', [TokenController::class, 'apiShow']);
+    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
+    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
+    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
+});

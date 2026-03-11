@@ -192,4 +192,146 @@ class TokenController extends Controller
             ->with('success', 'Token completed.');
     }
 
+    /********API Endpoints * ******/
+    public function apiIndex()
+    {
+        $tokens = Token::with([
+            'appointment.patient:id,first_name,last_name',
+            'appointment.doctor:id,name',
+            'appointment.department:id,department_name'
+        ])->get();
+
+        $data = $tokens->map(function ($token) {
+
+            return [
+                'token_id' => $token->id,
+                'token_number' => $token->token_number,
+                'status' => $token->status,
+                'patient_name' => $token->appointment->patient->first_name . ' ' .
+                                $token->appointment->patient->last_name,
+                'doctor_name' => $token->appointment->doctor->name ?? null,
+                'department' => $token->appointment->department->department_name ?? null,
+                'appointment_time' => $token->appointment->appointment_time
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id'
+        ]);
+
+        $lastToken = Token::orderBy('token_number','desc')->first();
+
+        $tokenNumber = $lastToken ? $lastToken->token_number + 1 : 1;
+
+        $token = Token::create([
+            'id' => Str::uuid(),
+            'appointment_id' => $request->appointment_id,
+            'token_number' => $tokenNumber,
+            'status' => 'WAITING'
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token generated successfully',
+            'data' => $token
+        ]);
+    } 
+
+
+    public function apiShow($id)
+    {
+        $token = Token::with([
+            'appointment:id,patient_id,doctor_id,department_id,appointment_date,appointment_time',
+            'appointment.patient:id,patient_code,first_name,last_name',
+            'appointment.doctor:id,name',
+            'appointment.department:id,department_name'
+        ])->findOrFail($id);
+
+        $data = [
+            'token_id' => $token->id,
+            'token_number' => $token->token_number,
+            'status' => $token->status,
+            'appointment' => [
+                'id' => $token->appointment->id,
+                'date' => $token->appointment->appointment_date,
+                'time' => $token->appointment->appointment_time,
+            ],
+            'patient' => [
+                'id' => $token->appointment->patient->id,
+                'code' => $token->appointment->patient->patient_code,
+                'name' => $token->appointment->patient->first_name . ' ' . $token->appointment->patient->last_name,
+            ],
+            'doctor' => [
+                'id' => $token->appointment->doctor->id ?? null,
+                'name' => $token->appointment->doctor->name ?? null,
+            ],
+            'department' => [
+                'id' => $token->appointment->department->id ?? null,
+                'name' => $token->appointment->department->department_name ?? null,
+            ]
+        ];
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+
+    public function apiSkip($id)
+    {
+        $token = Token::findOrFail($id);
+
+        $token->update([
+            'status' => 'SKIPPED'
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token skipped successfully'
+        ]);
+    }
+
+
+    public function apiComplete($id)
+    {
+        $token = Token::findOrFail($id);
+
+        $token->update([
+            'status' => 'COMPLETED'
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token completed successfully'
+        ]);
+    }
+
+    
+    public function apiReassign(Request $request, $id)
+    {
+        $request->validate([
+            'doctor_id' => 'required'
+        ]);
+
+        $token = Token::with('appointment')->findOrFail($id);
+
+        $token->appointment->update([
+            'doctor_id' => $request->doctor_id
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Doctor reassigned successfully'
+        ]);
+    }
 }
