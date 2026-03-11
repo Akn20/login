@@ -12,7 +12,8 @@
             {{-- LEFT SIDE --}}
             <div class="page-header-title">
                 <h5 class="m-b-10">
-                    <i class="feather-calendar me-2"></i>{{ isset($weekend) ? 'Edit Weekend Configuration' : 'Add Weekend Configuration' }}
+                    <i
+                        class="feather-calendar me-2"></i>{{ isset($weekend) ? 'Edit Weekend Configuration' : 'Add Weekend Configuration' }}
                 </h5>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item">
@@ -40,13 +41,9 @@
         <div class="card-body">
 
             {{-- FORM START --}}
-            <form
-                action="{{ isset($weekend)
-                    ? route('admin.weekends.update', $weekend->id)
-                    : route('admin.weekends.store') }}"
-                method="POST"
-                id="weekendForm"
-            >
+            <form action="{{ isset($weekend)
+        ? route('admin.weekends.update', $weekend->id)
+        : route('admin.weekends.store') }}" method="POST" id="weekendForm">
                 @csrf
                 @if(isset($weekend))
                     @method('PUT')
@@ -60,53 +57,41 @@
                         {{-- Configuration Name --}}
                         <div class="mb-3">
                             <label class="form-label">Weekend Name<span class="text-danger">*</span></label>
-                            <input
-                                type="text"
-                                name="name"
-                                value="{{ old('name', $weekend->name ?? '') }}"
+                            <input type="text" name="name" value="{{ old('name', $weekend->name ?? '') }}"
                                 class="form-control @error('name') is-invalid @enderror"
-                                placeholder="e.g., Standard Nursing Shift Offs"
-                            >
+                                placeholder="e.g., Standard Nursing Shift Offs">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         {{-- Weekend Days --}}
-                   <div class="mb-3">
-    <label class="form-label">Weekend Days<span class="text-danger">*</span></label>
-    @php
-        $selectedDays = old(
-            'days',
-            isset($weekend) && $weekend->days
-                ? (is_array($weekend->days) ? $weekend->days : (json_decode($weekend->days, true) ?? []))
-                : []
-        );
-    @endphp
-    <select
-        id="weekend-days-select"
-        name="days[]"
-        class="form-select @error('days') is-invalid @enderror"
-        multiple
-        autocomplete="off"
-    >
-        @foreach ($days as $day)
-            <option
-                value="{{ $day }}"
-                {{ collect($selectedDays)->contains($day) ? 'selected' : '' }}
-            >
-                {{ $day }}
-            </option>
-        @endforeach
-    </select>
+                        <div class="mb-3">
+                            <label class="form-label">Weekend Days<span class="text-danger">*</span></label>
+                            @php
+                                $selectedDays = old(
+                                    'days',
+                                    isset($weekend) && $weekend->days
+                                    ? (is_array($weekend->days) ? $weekend->days : (json_decode($weekend->days, true) ?? []))
+                                    : []
+                                );
+                            @endphp
+                            <select id="weekend-days-select" name="days[]"
+                                class="form-select @error('days') is-invalid @enderror" multiple autocomplete="off">
+                                @foreach ($days as $day)
+                                    <option value="{{ $day }}" {{ collect($selectedDays)->contains($day) ? 'selected' : '' }}>
+                                        {{ $day }}
+                                    </option>
+                                @endforeach
+                            </select>
 
-    @error('days')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-    @enderror
-    @error('days.*')
-        <div class="invalid-feedback d-block">{{ $message }}</div>
-    @enderror
-</div>
+                            @error('days')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error('days.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
 
 
                     </div>
@@ -120,17 +105,15 @@
                             @php
                                 $statusValue = old('status', $weekend->status ?? 'inactive');
                             @endphp
-                            <select
-                                name="status"
-                                class="form-select @error('status') is-invalid @enderror"
-                            >
-                                <option value="active"   {{ $statusValue === 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ $statusValue === 'inactive' ? 'selected' : '' }}> Inactive</option>
+                            <select name="status" class="form-select @error('status') is-invalid @enderror">
+                                <option value="active" {{ $statusValue === 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ $statusValue === 'inactive' ? 'selected' : '' }}> Inactive
+                                </option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            
+
                         </div>
 
                     </div>
@@ -142,5 +125,20 @@
 
         </div>
     </div>
-
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectEl = document.getElementById('weekend-days-select');
+                if (selectEl) {
+                    new TomSelect('#weekend-days-select', {
+                        plugins: ['remove_button'],
+                        maxItems: 7, // all days allowed
+                        closeAfterSelect: false,
+                        create: false,
+                        placeholder: 'Select weekend days',
+                    });
+                }
+            });
+        </script>
+    @endpush
 @endsection

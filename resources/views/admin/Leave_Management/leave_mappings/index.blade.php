@@ -14,11 +14,11 @@
 
         <div class="d-flex gap-2 align-items-center">
             {{-- Add Mapping Button --}}
-            <a href="{{ route('admin.leave-mappings.create') }}" class="btn btn-primary">
+            <a href="{{ route('hr.leave-mappings.create') }}" class="btn btn-primary">
                 <i class="feather-plus me-1"></i> Add Leave Mapping
             </a>
 
-            <a href="{{ route('admin.leave-mappings.deleted') }}" class="btn btn-danger">
+            <a href="{{ route('hr.leave-mappings.deleted') }}" class="btn btn-danger">
                 Deleted Records
             </a>
         </div>
@@ -78,17 +78,17 @@
                                         <td class="text-end">
                                             <div class="d-flex gap-2 justify-content-end">
                                         {{-- New View Button --}}
-                                        <a href="{{ route('admin.leave-mappings.show', $mapping->id) }}" 
+                                        <a href="{{ route('hr.leave-mappings.show', $mapping->id) }}" 
                                         class="btn btn-outline-secondary btn-icon rounded-circle btn-sm" title="View Details">
                                         <i class="feather-eye"></i>
                                             </a>
                                             <div class="d-flex justify-content-end gap-2">
-                                                <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}"
+                                                <a href="{{ route('hr.leave-mappings.edit', $mapping->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
                                                    <i class="feather-edit-2"></i> {{-- Pencil icon --}}
                                                 </a>
 
-                                                <form action="{{ route('admin.leave-mappings.delete', $mapping->id) }}" method="POST"
+                                                <form action="{{ route('hr.leave-mappings.delete', $mapping->id) }}" method="POST"
                                                     onsubmit="return confirm('Move to trash?')">
                                                     @csrf
                                                     @method('DELETE')

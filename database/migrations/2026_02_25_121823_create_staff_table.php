@@ -36,15 +36,20 @@ return new class extends Migration
             ->on('designation_master')
             ->onDelete('set null');
 
-            $table->unsignedBigInteger('level1_supervisor_id')->nullable();
-            $table->unsignedBigInteger('level2_supervisor_id')->nullable();
-            $table->unsignedBigInteger('level3_supervisor_id')->nullable();
+            $table->uuid('level1_supervisor_id')->nullable();
+            $table->uuid('level2_supervisor_id')->nullable();
+            $table->uuid('level3_supervisor_id')->nullable();
 
-            $table->foreign('level1_supervisor_id')->references('id')->on('staff')->onDelete('set null');
-            $table->foreign('level2_supervisor_id')->references('id')->on('staff')->onDelete('set null');
-            $table->foreign('level3_supervisor_id')->references('id')->on('staff')->onDelete('set null');
+            $table->foreign('level1_supervisor_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('level2_supervisor_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('level3_supervisor_id')->references('id')->on('users')->onDelete('set null');
 
             $table->date('joining_date');
+
+            $table->decimal('basic_salary', 15, 2)->nullable();
+            $table->decimal('hra', 15, 2)->nullable();
+            $table->decimal('allowance', 15, 2)->nullable();
+            $table->string('document_path')->nullable();
             $table->string('status')->default('Active');
             $table->softDeletes();
             $table->timestamps();

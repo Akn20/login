@@ -62,15 +62,15 @@ class StaffManagementController extends Controller
         $hrRoleId      = Roles::where('name', 'hr')->value('id');
         $hodRoleId     = Roles::where('name', 'hod')->value('id');
 
-        $level1Supervisors = Staff::where('role_id', $managerRoleId)
+        $level1Supervisors = User::where('role_id', $managerRoleId)
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        $level2Supervisors = Staff::where('role_id', $hrRoleId)
+        $level2Supervisors = User::where('role_id', $hrRoleId)
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        $level3Supervisors = Staff::where('role_id', $hodRoleId)
+        $level3Supervisors = User::where('role_id', $hodRoleId)
             ->orderBy('name')
             ->get(['id', 'name']);
 
@@ -100,9 +100,9 @@ class StaffManagementController extends Controller
             'hra'            => 'nullable|numeric|min:0',
             'allowance'      => 'nullable|numeric|min:0',
 
-            'level1_supervisor_id' => 'required|exists:staff,id',
-            'level2_supervisor_id' => 'nullable|exists:staff,id',
-            'level3_supervisor_id' => 'nullable|exists:staff,id',
+            'level1_supervisor_id' => 'required|exists:users,id',
+            'level2_supervisor_id' => 'nullable|exists:users,id',
+            'level3_supervisor_id' => 'nullable|exists:users,id',
         ]);
 
         try {
@@ -174,18 +174,22 @@ class StaffManagementController extends Controller
         $managerRoleId = Roles::where('name', 'manager')->value('id');
         $hrRoleId      = Roles::where('name', 'hr')->value('id');
         $hodRoleId     = Roles::where('name', 'hod')->value('id');
+        
+        //Staff should not be able to edit their own supervisor
+        $level1Supervisors = User::where('role_id', $managerRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
 
-        $level1Supervisors = Staff::where('role_id', $managerRoleId)
-            ->orderBy('name')
-            ->get(['id', 'name']);
+       $level2Supervisors = User::where('role_id', $hrRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
 
-        $level2Supervisors = Staff::where('role_id', $hrRoleId)
-            ->orderBy('name')
-            ->get(['id', 'name']);
-
-        $level3Supervisors = Staff::where('role_id', $hodRoleId)
-            ->orderBy('name')
-            ->get(['id', 'name']);
+       $level3Supervisors = User::where('role_id', $hodRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
 
         return view('hr.staff_management.edit', compact(
             'staffManagement',
@@ -215,9 +219,9 @@ class StaffManagementController extends Controller
             'hra'            => 'nullable|numeric|min:0',
             'allowance'      => 'nullable|numeric|min:0',
 
-            'level1_supervisor_id' => 'required|exists:staff,id',
-            'level2_supervisor_id' => 'nullable|exists:staff,id',
-            'level3_supervisor_id' => 'nullable|exists:staff,id',
+            'level1_supervisor_id' => 'required|exists:users,id',
+            'level2_supervisor_id' => 'nullable|exists:users,id',
+            'level3_supervisor_id' => 'nullable|exists:users,id',
         ]);
 
         try {

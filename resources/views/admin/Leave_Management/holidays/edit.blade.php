@@ -7,7 +7,7 @@
         </div>
         <div>
             {{-- Reduced width back button --}}
-            <a href="{{ route('admin.holidays.index') }}" class="btn btn-light btn-sm px-3">
+            <a href="{{ route('hr.holidays.index') }}" class="btn btn-light btn-sm px-3">
                 <i class="feather-arrow-left me-1"></i> Back to List
             </a>
         </div>
@@ -16,7 +16,7 @@
     <div class="card">
         <div class="card-body">
             {{-- Ensure the action points to your update route and has enctype for files --}}
-            <form action="{{ route('admin.holidays.update', $holiday->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('hr.holidays.update', $holiday->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT') {{-- This is critical for updates to work --}}
 

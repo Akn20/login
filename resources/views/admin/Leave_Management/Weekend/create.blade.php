@@ -21,19 +21,3 @@
 </div>
 @endsection
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const selectEl = document.getElementById('weekend-days-select');
-    if (selectEl) {
-        new TomSelect('#weekend-days-select', {
-            plugins: ['remove_button'],
-            maxItems: 7, // all days allowed
-            closeAfterSelect: false,
-            create: false,
-            placeholder: 'Select weekend days',
-        });
-    }
-});
-</script>
-@endpush
