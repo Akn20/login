@@ -126,13 +126,8 @@ function removeMedicine(btn){
 
                         <label><strong>Diagnosis</strong></label>
 
-<<<<<<< HEAD
-                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
-                            </textarea>
-=======
                         <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis"
                             required></textarea>
->>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
 
                     </div>
 
