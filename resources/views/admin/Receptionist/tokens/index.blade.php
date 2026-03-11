@@ -62,8 +62,7 @@
                                                 {{ $token->appointment->patient->last_name ?? '' }}
                                             </td>
                                             <td>
-                                                {{ $token->appointment->doctor->first_name ?? '-' }}
-                                                {{ $token->appointment->doctor->last_name ?? '' }}
+                                                {{ $token->appointment->doctor->name ?? '-' }}
                                             </td>
                                             <td>
                                                 {{ $token->appointment->department->department_name ?? '-' }}

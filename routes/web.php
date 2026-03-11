@@ -63,18 +63,19 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 // Doctor controllers
 use App\Http\Controllers\StockController;
-use App\Http\Controllers\TokenController;
-// surgery
+// HR
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+// Reception / Tokens
+use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\ExpiryController;
-// use App\Http\Controllers\ReturnController;
-// use App\Http\Controllers\ControlledDrugController;
-// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+use App\Http\Controllers\ReturnController;
+#use App\Http\Controllers\ControlledDrugController;
+#use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+#use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+#use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -743,11 +744,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('tokens', TokenController::class);
         Route::get('/', [TokenController::class, 'index'])->name('index');
 
-        Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])
-            ->name('tokens.skip');
+        Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])->name('tokens.skip');
 
-        Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
-            ->name('tokens.complete');
+        Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])->name('tokens.complete');
+
+        Route::get('/tokens/{id}/edit', [TokenController::class, 'edit'])->name('admin.tokens.edit');
+
+        Route::put('/tokens/{id}', [TokenController::class, 'update'])->name('admin.tokens.update');
 
     });
 
