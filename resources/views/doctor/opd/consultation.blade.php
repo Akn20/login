@@ -2,7 +2,6 @@
 
 @section('content')
 
-<<<<<<< HEAD
 <script>
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -49,9 +48,6 @@ function removeMedicine(btn){
 }
 
 </script>
-=======
-
->>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
     <div class="container-fluid">
         @if(session('success'))
             <div class="alert alert-success">
@@ -126,13 +122,8 @@ function removeMedicine(btn){
 
                         <label><strong>Diagnosis</strong></label>
 
-<<<<<<< HEAD
-                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
-                            </textarea>
-=======
                         <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis"
                             required></textarea>
->>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
 
                     </div>
 
@@ -167,13 +158,8 @@ function removeMedicine(btn){
 
                                     <tr>
                                         <td>
-<<<<<<< HEAD
                                             <select name="medicine[]" class="form-control" required>
                                                                             <option value="">Select</option>
-=======
-                                            <select name="medicine" class="form-control" required>
-                                                <option value="">Select Medicine</option>
->>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
 
                                                 @foreach($medicines as $medicine)
                                                     <option value="{{ $medicine->id }}">
@@ -182,7 +168,6 @@ function removeMedicine(btn){
                                                 @endforeach
                                             </select>
                                         </td>
-<<<<<<< HEAD
                                         <td><input type="text" class="form-control" name="dosage[]" required></td>
                                         <td><input type="text" class="form-control" name="frequency[]" required></td>
                                         <td><input type="text" class="form-control" name="duration[]" required></td>
@@ -192,12 +177,6 @@ function removeMedicine(btn){
                                                 <i class="feather-trash-2"></i> Remove
                                             </button>
                                         </td>
-=======
-                                        <td><input type="text" class="form-control" name="dosage" required></td>
-                                        <td><input type="text" class="form-control" name="frequency" required></td>
-                                        <td><input type="text" class="form-control" name="duration" required></td>
-                                        <td><input type="text" class="form-control" name="instructions" required></td>
->>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
                                     </tr>
 
                                 </tbody>
