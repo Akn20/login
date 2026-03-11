@@ -3,6 +3,11 @@
 @section('content')
 
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="card">
 
@@ -54,13 +59,17 @@
                                 {{-- Action --}}
                                 <td>
                                     <div class="d-flex gap-2 justify-content-center">
+                                        <a href="{{ route('doctor.edit-consultation', $consultation->id) }}"
+                                            class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
 
                                         <a href="{{ route('doctor.consultation-summary', ['id' => $consultation->id]) }}"
                                             class="btn btn-primary btn-sm">
                                             Generate Consultation Summary
                                         </a>
 
-                                        <a href="{{ route('doctor.print-prescription',$consultation->id) }}"
+                                        <a href="{{ route('doctor.print-prescription', $consultation->id) }}"
                                             class="btn btn-primary btn-sm">
                                             Print Prescription
                                         </a>

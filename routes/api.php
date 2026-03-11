@@ -550,21 +550,25 @@ Route::prefix('consultations')->group(function () {
     Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
     Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
     Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
+    Route::get('/patient/{patientId}', [ConsultationController::class, 'apiPatientHistory']);
+    Route::get('/{id}/prescriptions', [ConsultationController::class, 'apiPrescriptions']);
+    Route::get('/{id}/tests', [ConsultationController::class, 'apiTests']);
+    Route::get('/{id}/referral', [ConsultationController::class, 'apiReferral']);
 
-//Apportionment APIs
+    //Apportionment APIs
 
 
-Route::prefix('appointments')->group(function () {
-    Route::get('/', [AppointmentController::class, 'apiIndex']);
-    Route::get('/trash', [AppointmentController::class, 'apiTrash']);
-    Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
-    Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
-    Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiDoctors']);
-    Route::get('/{id}', [AppointmentController::class, 'apiShow']);
-    Route::post('/', [AppointmentController::class, 'apiStore']);
-    Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
-    Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
-    Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
-    Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
-});
+    Route::prefix('appointments')->group(function () {
+        Route::get('/', [AppointmentController::class, 'apiIndex']);
+        Route::get('/trash', [AppointmentController::class, 'apiTrash']);
+        Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
+        Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
+        Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiDoctors']);
+        Route::get('/{id}', [AppointmentController::class, 'apiShow']);
+        Route::post('/', [AppointmentController::class, 'apiStore']);
+        Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
+        Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
+        Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
+        Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
+    });
 });
