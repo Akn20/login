@@ -310,5 +310,71 @@ class ConsultationController extends Controller
             'data' => $consultation
         ]);
     }
+    public function apiPrescriptions($id)
+    {
+        $consultation = Consultation::with('medicines')->find($id);
+
+        if (!$consultation) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Consultation not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Prescriptions fetched successfully',
+            'data' => $consultation->medicines
+        ]);
+    }
+    public function apiTests($id)
+    {
+        $consultation = Consultation::find($id);
+
+        if (!$consultation) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Consultation not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Tests fetched successfully',
+            'data' => $consultation->tests
+        ]);
+    }
+    public function apiPatientHistory($patientId)
+    {
+        $consultations = Consultation::with([
+            'doctor',
+            'medicines'
+        ])
+            ->where('patient_id', $patientId)
+            ->latest('consultation_date')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $consultations
+        ]);
+    }
+    public function apiReferral($id)
+    {
+        $consultation = Consultation::with('referralDoctor')->find($id);
+
+        if (!$consultation) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Consultation not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Referral doctor fetched successfully',
+            'data' => $consultation->referralDoctor
+        ]);
+    }
 
 }
