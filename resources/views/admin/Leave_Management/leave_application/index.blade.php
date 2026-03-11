@@ -41,7 +41,7 @@
     </form>
 
     {{-- Apply Leave Button --}}
-    <a href="{{ route('admin.leave-application.create') }}" class="btn btn-primary">
+    <a href="{{ route('hr.leave-application.create') }}" class="btn btn-primary">
         <i class="feather-plus me-1"></i> Apply Leave
     </a>
 
@@ -101,7 +101,7 @@
 
 <td>
 @if($application->status == 'pending')
-<form action="{{ route('admin.leave-application.withdraw',$application->id) }}" method="POST">
+<form action="{{ route('hr.leave-application.withdraw',$application->id) }}" method="POST">
 @csrf
 @method('DELETE')
 <button class="btn btn-sm btn-danger">Withdraw</button>

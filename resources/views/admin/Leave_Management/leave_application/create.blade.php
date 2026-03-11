@@ -12,7 +12,7 @@
                 <a href="{{ route('admin.dashboard') }}">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{{ route('admin.leave-application.index') }}">Leave Application</a>
+                <a href="{{ route('hr.leave-application.index') }}">Leave Application</a>
             </li>
             <li class="breadcrumb-item active">Apply Leave</li>
         </ul>

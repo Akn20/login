@@ -1,4 +1,4 @@
-<form action="{{ route('admin.leave-application.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('hr.leave-application.store') }}" method="POST" enctype="multipart/form-data">
 
 @csrf
 
@@ -61,7 +61,7 @@
         Save
     </button>
 
-    <a href="{{ route('admin.leave-application.index') }}" class="btn btn-light text-uppercase">
+    <a href="{{ route('hr.leave-application.index') }}" class="btn btn-light text-uppercase">
         Cancel
     </a>
 

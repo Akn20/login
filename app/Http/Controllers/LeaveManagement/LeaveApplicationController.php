@@ -147,58 +147,38 @@ if ($overlap) {
 
 
 
-
 $weekend = weekends::active()->first();
 $weekendDays = $weekend ? $weekend->days : [];
 
 $days = 0;
 $current = $from->copy();
 
+$type = strtolower($leaveType->sandwich_applies_on ?? '');
 
 while ($current <= $to) {
 
     $isWeekend = in_array($current->format('l'), $weekendDays);
+
     $isHoliday = DB::table('holidays')
-    ->where('status',1)
-    ->whereDate('start_date','<=',$current->toDateString())
-    ->whereDate('end_date','>=',$current->toDateString())
-    ->exists();
+        ->where('status',1)
+        ->whereDate('start_date','<=',$current->toDateString())
+        ->whereDate('end_date','>=',$current->toDateString())
+        ->exists();
 
-if ($leaveType->sandwich_enabled) {
+    $isMiddleDay = $current->gt($from) && $current->lt($to);
 
-    if (
-        ($leaveType->sandwich_applies_on == 'Weekend' && $isWeekend && $current->gt($from) && $current->lt($to)) ||
-        ($leaveType->sandwich_applies_on == 'Holiday' && $isHoliday && $current->gt($from) && $current->lt($to)) ||
-        ($leaveType->sandwich_applies_on == 'Both' && ($isWeekend || $isHoliday) && $current->gt($from) && $current->lt($to))
-    ) {
+    if ($leaveType->sandwich_enabled && $isMiddleDay) {
 
-        $days++;
-
-    } else {
-
-        if ($isHoliday) {
-
-            if ($leaveType->count_holidays) {
-                $days++;
-            }
-
-        }
-
-        elseif ($isWeekend) {
-
-            if ($leaveType->count_weekends) {
-                $days++;
-            }
-
-        }
-
-        else {
+        if (
+            ($type == 'weekend' && $isWeekend) ||
+            ($type == 'holiday' && $isHoliday) ||
+            ($type == 'both' && ($isWeekend || $isHoliday))
+        ) {
             $days++;
+            $current->addDay();
+            continue;
         }
-
     }
-
-} else {
 
     if ($isHoliday) {
 
@@ -217,14 +197,13 @@ if ($leaveType->sandwich_enabled) {
     }
 
     else {
-        $days++;
-    }
 
-}
+        $days++;
+
+    }
 
     $current->addDay();
 }
-
 if ($request->leave_duration !== 'full_day') {
 
     if (!$leaveType->allow_half_day) {
@@ -365,7 +344,7 @@ if ($days > $currentBalance) {
 
 
     return redirect()
-        ->route('admin.leave-application.index')
+        ->route('hr.leave-application.index')
         ->with('success','Leave applied successfully');
 }
 

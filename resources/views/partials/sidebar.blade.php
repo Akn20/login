@@ -219,178 +219,6 @@
 
                 {{-- HR Management --}}
 
-
-                    <ul class="nxl-submenu">
-
-                        {{-- Staff Management --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('hr.staff-management.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-user-check"></i></span>
-                                <span class="nxl-mtext">Staff Management</span>
-                            </a>
-                        </li>
-
-                        {{-- Leave Management --}}
-                        <li class="nxl-item nxl-hasmenu">
-                            <a href="javascript:void(0);" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-clock"></i></span>
-                                <span class="nxl-mtext">Leave Management</span>
-                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                            </a>
-
-                            <ul class="nxl-submenu">
-                                {{-- Weekend Holiday --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.weekends.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-sun"></i></span>
-                                        <span class="nxl-mtext">Weekend Holiday</span>
-                                    </a>
-                                </li>
-
-                                {{-- Holidays --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.holidays.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-calendar"></i></span>
-                                        <span class="nxl-mtext">Holidays</span>
-                                    </a>
-                                </li>
-
-                                {{-- Leave Type --}}
-                                <li class="nxl-item">
-                                    <a href="{{ route('admin.leave-type.index') }}" class="nxl-link">
-                                        <span class="nxl-micon">
-                                            <i class="feather-file-text"></i>
-                                        </span>
-                                        <span class="nxl-mtext">Leave Type</span>
-                                    </a>
-                                </li>
-
-                                {{-- Leave Mapping --}}
-                                <li class="nxl-item {{ request()->routeIs('admin.leave-mappings.*') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.leave-mappings.index') }}" class="nxl-link">
-                                        <span class="nxl-micon"><i class="feather-map"></i></span>
-                                        <span class="nxl-mtext">Leave Mapping</span>
-                                    </a>
-                                </li>
-
-                {{-- Leave Application --}}
-<li class="nxl-item">
-   <a href="{{ route('admin.leave-application.index') }}" class="nxl-link">
-        <span class="nxl-micon">
-            <i class="feather-calendar"></i>
-        </span>
-        <span class="nxl-mtext">Leave Application</span>
-    </a>
-</li>
-                                <!-- Leave adjustment -->
-                                 <li class="nxl-item {{ request()->routeIs('admin.leave-adjustments.*') ? 'active' : '' }}">
-    <a href="{{ route('admin.leave-adjustments.index') }}" class="nxl-link">
-        <span class="nxl-micon"><i class="feather-edit"></i></span>
-        <span class="nxl-mtext">Leave Adjustment</span>
-    </a>
-</li>
-
-
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-
-                {{-- ================Bed Management================== --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-layers"></i></span>
-                        <span class="nxl-mtext">Bed Management</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-
-                        {{-- All Beds --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.beds.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-list"></i></span>
-                                <span class="nxl-mtext">All Beds</span>
-                            </a>
-                        </li>
-
-                        {{-- Add Bed --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.beds.create') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
-                                <span class="nxl-mtext">Add Bed</span>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-
-                {{-- Receptionist --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-users"></i></span>
-                        <span class="nxl-mtext">Receptionist</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.appointments.index') }}" class="nxl-link">
-                                <span class="nxl-micon">
-                                    <i class="feather-calendar"></i>
-                                </span>
-                                <span class="nxl-mtext">
-                                    Appointment Management
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.tokens.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-list"></i></span>
-                                <span class="nxl-mtext">Token & Queue Management</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                {{-- ================Patient Management================== --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-users"></i></span>
-                        <span class="nxl-mtext">Patient Management</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
-                    <ul class="nxl-submenu">
-
-                        {{-- All Patients --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.patients.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-list"></i></span>
-                                <span class="nxl-mtext">All Patients</span>
-                            </a>
-                        </li>
-
-                        {{-- Add Patient --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.patients.create') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-user-plus"></i></span>
-                                <span class="nxl-mtext">Add Patient</span>
-                            </a>
-                        </li>
-
-                        {{-- Duplicate Patients --}}
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.patients.duplicates') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-copy"></i></span>
-                                <span class="nxl-mtext">Duplicate Patients</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                {{-- Section: Account --}}
-
                 <li class="nxl-item nxl-caption">
                     <label>HR Management</label>
                 </li>
@@ -444,16 +272,16 @@
                                 <span class="nxl-mtext">Leave Mapping</span>
                             </a>
                         </li>
-
-{{-- Leave Application --}}
-<li class="nxl-item {{ request()->routeIs('hr.leave-application.*') ? 'active' : '' }}">
-    <a href="{{ route('hr.leave-application.index') }}" class="nxl-link">
-        <span class="nxl-micon">
-            <i class="feather-calendar"></i>
-        </span>
-        <span class="nxl-mtext">Leave Application</span>
-    </a>
-</li>
+                        
+            {{-- Leave Application --}}
+                        <li class="nxl-item">
+                        <a href="{{ route('hr.leave-application.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Leave Application</span>
+                            </a>
+                        </li>
 
                         <!-- Leave adjustment -->
                         <li class="nxl-item {{ request()->routeIs('hr.leave-adjustments.*') ? 'active' : '' }}">
