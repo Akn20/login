@@ -45,4 +45,8 @@ class LeaveRequests extends Model
     {
         return $this->belongsTo(LeaveType::class,'leave_type_id');
     }
+     public function approvals()
+{
+    return $this->hasMany(Leave_Request_Approval::class,'leave_request_id');
+}
 }

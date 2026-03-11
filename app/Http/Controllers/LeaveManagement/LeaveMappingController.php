@@ -120,7 +120,7 @@ class LeaveMappingController extends Controller
 
         LeaveMapping::create($data);
 
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping created successfully!');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Mapping created successfully!');
     }
 
     public function edit($id)
@@ -185,7 +185,7 @@ class LeaveMappingController extends Controller
 
         $mapping->update($data);
 
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Mapping updated successfully!');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Mapping updated successfully!');
     }
 
     public function destroy($id)
@@ -209,7 +209,7 @@ class LeaveMappingController extends Controller
     public function restore($id)
     {
         LeaveMapping::withTrashed()->findOrFail($id)->restore();
-        return redirect()->route('admin.leave-mappings.index')->with('success', 'Restored');
+        return redirect()->route('hr.leave-mappings.index')->with('success', 'Restored');
     }
 
 
