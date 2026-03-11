@@ -9,6 +9,8 @@ use App\Models\Appointment;
 use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Roles;
+use App\Models\LabRequest;
+
 class ConsultationController extends Controller
 {
 
@@ -24,6 +26,8 @@ class ConsultationController extends Controller
         $appointment = Appointment::where('patient_id', $id)
             ->whereDate('appointment_date', today())
             ->first();
+
+        
 
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
@@ -44,14 +48,28 @@ class ConsultationController extends Controller
         $request->validate([
             'symptoms' => 'required|string',
             'diagnosis' => 'required|string',
-            'medicine' => 'required',
-            'dosage' => 'required|string',
-            'frequency' => 'required|string',
-            'duration' => 'required|string',
-            'instructions' => 'required|string'
+
+            'medicine' => 'required|array',
+            'medicine.*' => 'required',
+
+            'dosage' => 'required|array',
+            'dosage.*' => 'required|string',
+
+            'frequency' => 'required|array',
+            'frequency.*' => 'required|string',
+
+            'duration' => 'required|array',
+            'duration.*' => 'required|string',
+
+            'instructions' => 'required|array',
+            'instructions.*' => 'required|string',
         ]);
 
-        $appointment = Appointment::find($request->appointment_id);
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
+        $appointment->update([
+            'appointment_status' => 'Completed'
+        ]);
 
         $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
@@ -69,6 +87,24 @@ class ConsultationController extends Controller
                 'duration' => $request->duration[$index],
                 'instructions' => $request->instructions[$index]
             ]);
+
+        }
+
+        //Labrequests
+        if($request->tests){
+
+            $tests = explode(',', $request->tests);
+
+            foreach($tests as $test){
+
+                LabRequest::create([
+                    'patient_id' => $request->patient_id,
+                    'consultation_id' => $consultation->id,
+                    'test_name' => trim($test),
+                    'status' => 'pending'
+                ]);
+
+            }
 
         }
 

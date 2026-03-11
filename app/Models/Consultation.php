@@ -57,4 +57,9 @@ class Consultation extends Model
     {
         return $this->belongsTo(Staff::class, 'referral_doctor_id');
     }
+
+    public function labRequests()
+    {
+        return $this->hasMany(LabRequest::class);
+    }
 }

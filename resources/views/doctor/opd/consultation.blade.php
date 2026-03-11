@@ -75,7 +75,7 @@ function removeMedicine(btn){
 
                             <div class="col-md-3">
                                 <label>Name</label>
-                                <input type="text" class="form-control" value={{ $patient->first_name }} readonly>
+                                <input type="text" class="form-control" value="{{ $patient->first_name }} {{ $appointment->patient->last_name }}" readonly>
                             </div>
 
                             <div class="col-md-2">
