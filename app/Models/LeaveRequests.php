@@ -9,6 +9,7 @@ class LeaveRequests extends Model
 {
     protected $table = 'leave_requests';
     public $incrementing = false;
+    protected $keyType = 'string'; 
      protected static function boot()
     {
         parent::boot();
