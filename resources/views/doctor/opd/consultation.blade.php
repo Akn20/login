@@ -2,6 +2,7 @@
 
 @section('content')
 
+<<<<<<< HEAD
 <script>
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -48,7 +49,15 @@ function removeMedicine(btn){
 }
 
 </script>
+=======
+
+>>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="card">
 
@@ -106,7 +115,8 @@ function removeMedicine(btn){
 
                         <label><strong>Symptoms</strong></label>
 
-                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"></textarea>
+                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"
+                            required></textarea>
 
                     </div>
 
@@ -116,8 +126,13 @@ function removeMedicine(btn){
 
                         <label><strong>Diagnosis</strong></label>
 
+<<<<<<< HEAD
                         <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis">
                             </textarea>
+=======
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis"
+                            required></textarea>
+>>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
 
                     </div>
 
@@ -152,8 +167,13 @@ function removeMedicine(btn){
 
                                     <tr>
                                         <td>
+<<<<<<< HEAD
                                             <select name="medicine[]" class="form-control" required>
                                                                             <option value="">Select</option>
+=======
+                                            <select name="medicine" class="form-control" required>
+                                                <option value="">Select Medicine</option>
+>>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
 
                                                 @foreach($medicines as $medicine)
                                                     <option value="{{ $medicine->id }}">
@@ -162,6 +182,7 @@ function removeMedicine(btn){
                                                 @endforeach
                                             </select>
                                         </td>
+<<<<<<< HEAD
                                         <td><input type="text" class="form-control" name="dosage[]" required></td>
                                         <td><input type="text" class="form-control" name="frequency[]" required></td>
                                         <td><input type="text" class="form-control" name="duration[]" required></td>
@@ -171,6 +192,12 @@ function removeMedicine(btn){
                                                 <i class="feather-trash-2"></i> Remove
                                             </button>
                                         </td>
+=======
+                                        <td><input type="text" class="form-control" name="dosage" required></td>
+                                        <td><input type="text" class="form-control" name="frequency" required></td>
+                                        <td><input type="text" class="form-control" name="duration" required></td>
+                                        <td><input type="text" class="form-control" name="instructions" required></td>
+>>>>>>> 40374cdafa1d15f352ff9219f8af43cbde4ceb6b
                                     </tr>
 
                                 </tbody>
@@ -189,12 +216,26 @@ function removeMedicine(btn){
                         <input type="text" name="tests" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>
+                    <div class="mb-3">
+                        <label><strong>Referral Doctor</strong></label>
+
+                        <select name="referral_doctor_id" class="form-control">
+                            <option value="">Select Doctor</option>
+
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}">
+                                    {{ $doctor->name }}
+                                </option>
+                            @endforeach
+
+                        </select>
+                    </div>
 
 
                     <!-- Buttons -->
                     <div class="text-center mt-4 d-flex gap-2">
 
-                        <button type="submit" class="btn btn-success" onclick="showSuccess()">
+                        <button type="submit" class="btn btn-success">
                             Save Consultation
                         </button>
 

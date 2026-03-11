@@ -18,6 +18,8 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\WorkStatusController;
+
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -40,7 +42,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\WorkStatusController;
+
 
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
@@ -49,6 +51,10 @@ use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 
 //DOCTOR(OPD)
 use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\AppointmentController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -545,4 +551,20 @@ Route::prefix('consultations')->group(function () {
     Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
     Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
 
+//Apportionment APIs
+
+
+Route::prefix('appointments')->group(function () {
+    Route::get('/', [AppointmentController::class, 'apiIndex']);
+    Route::get('/trash', [AppointmentController::class, 'apiTrash']);
+    Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
+    Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
+    Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiDoctors']);
+    Route::get('/{id}', [AppointmentController::class, 'apiShow']);
+    Route::post('/', [AppointmentController::class, 'apiStore']);
+    Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
+    Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
+});
 });
