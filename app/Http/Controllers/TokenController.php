@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Token;
 use App\Models\Appointment;
 use Illuminate\Support\Str;
+use App\Models\Staff;
 
 class TokenController extends Controller
 {
@@ -33,19 +34,27 @@ class TokenController extends Controller
      */
     public function create(Request $request)
     {
-        $appointments = Appointment::with(['patient','doctor','department'])->get();
+        $appointments = Appointment::with(['patient', 'department'])->get();
 
-        $selectedAppointment = null;
+    $selectedAppointment = null;
+    $selectedDoctor = null;
 
-        if ($request->appointment_id) {
-            $selectedAppointment = Appointment::with(['patient','doctor','department'])
-                ->find($request->appointment_id);
+    if ($request->appointment_id) {
+        $selectedAppointment = Appointment::with(['patient', 'department'])
+            ->find($request->appointment_id);
+
+        if ($selectedAppointment) {
+            $selectedDoctor = Staff::where('id', $selectedAppointment->doctor_id)
+                ->orWhere('user_id', $selectedAppointment->doctor_id)
+                ->first();
         }
+    }
 
-        return view('admin.receptionist.tokens.create', compact(
-            'appointments',
-            'selectedAppointment'
-        ));
+    return view('admin.receptionist.tokens.create', compact(
+        'appointments',
+        'selectedAppointment',
+        'selectedDoctor'
+    ));
     }
 
 
@@ -91,12 +100,19 @@ class TokenController extends Controller
     public function show($id)
     {
         $token = Token::with([
-            'appointment.patient',
-            'appointment.doctor',
-            'appointment.department'
-        ])->findOrFail($id);
+        'appointment.patient',
+        'appointment.department'
+    ])->findOrFail($id);
 
-        return view('admin.Receptionist.tokens.show', compact('token'));
+    $selectedDoctor = null;
+
+    if ($token->appointment) {
+        $selectedDoctor = Staff::where('id', $token->appointment->doctor_id)
+            ->orWhere('user_id', $token->appointment->doctor_id)
+            ->first();
+    }
+
+    return view('admin.receptionist.tokens.show', compact('token', 'selectedDoctor'));
     }
 
 
@@ -105,15 +121,16 @@ class TokenController extends Controller
      */
     public function edit($id)
     {
-        $token = Token::findOrFail($id);
+       $token = Token::with(['appointment.patient', 'appointment.department', 'appointment.doctor'])
+        ->findOrFail($id);
 
-        $appointments = Appointment::with([
-            'patient',
-            'doctor',
-            'department'
-        ])->get();
+    $doctors = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+        ->where('roles.name', 'Doctor')
+        ->whereNull('staff.deleted_at')
+        ->select('staff.id', 'staff.name')
+        ->get();
 
-        return view('admin.Receptionist.tokens.edit', compact('token', 'appointments'));
+    return view('admin.receptionist.tokens.edit', compact('token', 'doctors'));
     }
 
 
@@ -123,18 +140,22 @@ class TokenController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'appointment_id' => 'required|exists:appointments,id'
-        ]);
+        'doctor_id' => 'required|exists:staff,id'
+    ]);
 
-        $token = Token::findOrFail($id);
+    $token = Token::with('appointment')->findOrFail($id);
 
-        $token->update([
-            'appointment_id' => $request->appointment_id
-        ]);
+    if (!$token->appointment) {
+        return redirect()->route('admin.tokens.index')
+            ->with('error', 'Linked appointment not found.');
+    }
 
-        return redirect()
-            ->route('admin.tokens.index')
-            ->with('success', 'Token reassigned successfully.');
+    $token->appointment->update([
+        'doctor_id' => $request->doctor_id
+    ]);
+
+    return redirect()->route('admin.tokens.index')
+        ->with('success', 'Doctor reassigned successfully.');
     }
 
 
