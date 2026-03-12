@@ -5,12 +5,21 @@
 @section('content')
 
     <div class="nxl-content">
-
         <div class="page-header">
-            <div class="page-header-title">
-                <h5>Deleted Appointments</h5>
+            <div class="page-header-left d-flex align-items-center">
+                <div class="page-header-title">
+                    <h5>Deleted Appointments</h5>
+                </div>
+            </div>
+
+            <div class="page-header-right ms-auto d-flex gap-2">
+                <a href="{{ route('admin.appointments.index') }}" class="btn btn-neutral">
+                    Back
+                </a>
             </div>
         </div>
+
+
 
         <div class="card">
             <div class="card-body">
@@ -19,46 +28,57 @@
 
                     <thead>
                         <tr>
+                            <th>Sl.No.</th>
                             <th>Patient</th>
                             <th>Doctor</th>
+                            <th>Department</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                            <th>Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
 
                     <tbody>
 
                         @foreach($appointments as $appointment)
+                            @foreach($appointments as $index => $appointment)
 
-                            <tr>
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>
+                                        {{ $appointment->patient->first_name ?? '' }}
+                                        {{ $appointment->patient->last_name ?? '' }}
+                                    </td>
 
-                                <td>{{ $appointment->patient->first_name ?? '' }}</td>
-                                <td>{{ $appointment->doctor->name ?? '' }}</td>
-                                <td>{{ $appointment->appointment_date }}</td>
+                                    <td>{{ $appointment->doctor->name ?? '-' }}</td>
 
-                                <td>
+                                    <td>{{ $appointment->department->department_name ?? '-' }}</td>
 
-                                    <a href="{{ route('admin.appointments.restore', $appointment->id) }}"
-                                        class="btn btn-success btn-sm">
-                                        Restore
-                                    </a>
+                                    <td>{{ $appointment->appointment_date }}</td>
 
-                                    <form action="{{ route('admin.appointments.forceDelete', $appointment->id) }}" method="POST"
-                                        style="display:inline">
+                                    <td>{{ $appointment->appointment_time }}</td>
 
-                                        @csrf
-                                        @method('DELETE')
+                                    <td class="text-end">
+                                        <div class="hstack gap-2 justify-content-end">
 
-                                        <button class="btn btn-danger btn-sm">
-                                            Delete Permanently
-                                        </button>
+                                            {{-- Restore --}}
+                                            <a href="{{ route('admin.appointments.restore', $appointment->id) }}"
+                                                class="avatar-text avatar-md action-icon action-restore">
+                                                <i class="feather-refresh-ccw"></i>
+                                            </a>
 
-                                    </form>
+                                            {{-- Permanent Delete --}}
+                                            <a href="{{ route('admin.appointments.forceDelete', $appointment->id) }}"
+                                                class="avatar-text avatar-md action-icon action-delete"
+                                                onclick="return confirm('This will permanently delete the appointment. Continue?')">
+                                                <i class="feather-trash"></i>
+                                            </a>
 
-                                </td>
+                                        </div>
+                                    </td>
 
-                            </tr>
-
+                                </tr>
+                            @endforeach
                         @endforeach
 
                     </tbody>
