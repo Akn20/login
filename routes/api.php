@@ -544,20 +544,7 @@ Route::prefix('post-operative')->group(function () {
 // DOCTOR(OPD) API
 Route::prefix('consultations')->group(function () {
 
-    Route::get('/', [ConsultationController::class, 'apiIndex']);
-    Route::get('/{id}', [ConsultationController::class, 'apiShow']);
-    Route::post('/', [ConsultationController::class, 'apiStore']);
-    Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
-    Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
-    Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
-    Route::get('/patient/{patientId}', [ConsultationController::class, 'apiPatientHistory']);
-    Route::get('/{id}/prescriptions', [ConsultationController::class, 'apiPrescriptions']);
-    Route::get('/{id}/tests', [ConsultationController::class, 'apiTests']);
-    Route::get('/{id}/referral', [ConsultationController::class, 'apiReferral']);
-
-    //Apportionment APIs
-
-
+    // APPOINTMENTS FIRST
     Route::prefix('appointments')->group(function () {
         Route::get('/', [AppointmentController::class, 'apiIndex']);
         Route::get('/trash', [AppointmentController::class, 'apiTrash']);
@@ -571,4 +558,17 @@ Route::prefix('consultations')->group(function () {
         Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
     });
+
+    // CONSULTATION ROUTES
+    Route::get('/', [ConsultationController::class, 'apiIndex']);
+    Route::get('/{id}', [ConsultationController::class, 'apiShow']);
+    Route::post('/', [ConsultationController::class, 'apiStore']);
+    Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
+    Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
+    Route::get('/patient/{patientId}', [ConsultationController::class, 'apiPatientHistory']);
+    Route::get('/{id}/prescriptions', [ConsultationController::class, 'apiPrescriptions']);
+    Route::get('/{id}/tests', [ConsultationController::class, 'apiTests']);
+    Route::get('/{id}/referral', [ConsultationController::class, 'apiReferral']);
+
 });
