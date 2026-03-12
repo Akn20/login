@@ -18,29 +18,29 @@
             <button class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-@php
+    @php
 
-$userId = auth()->id();
+        $userId = auth()->id();
 
-$alreadyActed = $leave->approvals
-    ->where('approver_id', $userId)
-    ->count();
+        $alreadyActed = $leave->approvals
+            ->where('approver_id', $userId)
+            ->count();
 
-$authorized = false;
+        $authorized = false;
 
-if ($leave->current_approval_level == 1 && $leave->staff->level1_supervisor_id == $userId) {
-    $authorized = true;
-}
+        if ($leave->current_approval_level == 1 && $leave->staff->level1_supervisor_id == $userId) {
+            $authorized = true;
+        }
 
-if ($leave->current_approval_level == 2 && $leave->staff->level2_supervisor_id == $userId) {
-    $authorized = true;
-}
+        if ($leave->current_approval_level == 2 && $leave->staff->level2_supervisor_id == $userId) {
+            $authorized = true;
+        }
 
-if ($leave->current_approval_level == 3 && $leave->staff->level3_supervisor_id == $userId) {
-    $authorized = true;
-}
+        if ($leave->current_approval_level == 3 && $leave->staff->level3_supervisor_id == $userId) {
+            $authorized = true;
+        }
 
-@endphp
+    @endphp
 
     <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
@@ -197,54 +197,40 @@ if ($leave->current_approval_level == 3 && $leave->staff->level3_supervisor_id =
 
 
 
-           @if($leave->status == 'pending' && $authorized && !$alreadyActed)
+            @if($leave->status == 'pending' && $authorized && !$alreadyActed)
 
-<div class="mt-4">
+                <div class="mt-4">
 
-<form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
+                    <form action="{{ route('hr.leave-approvals.approve', $leave->id) }}" method="POST">
 
-@csrf
+                        @csrf
 
-<div class="mb-3">
-<label class="form-label fw-bold">Remarks</label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Remarks</label>
 
-<textarea
-name="remarks"
-class="form-control"
-rows="3"
-placeholder="Add remarks (optional)"
-></textarea>
+                            <textarea name="remarks" class="form-control" rows="3"
+                                placeholder="Add remarks (optional)"></textarea>
 
-</div>
+                        </div>
 
-<div class="d-flex gap-2">
+                        <div class="d-flex gap-2">
 
-<button
-type="submit"
-name="action"
-value="approve"
-class="btn btn-success"
->
-<i class="feather-check"></i> Approve
-</button>
+                            <button type="submit" name="action" value="approve" class="btn btn-success">
+                                <i class="feather-check"></i> Approve
+                            </button>
 
 
-<button
-type="submit"
-name="action"
-value="reject"
-class="btn btn-danger"
->
-<i class="feather-x"></i> Reject
-</button>
+                            <button type="submit" name="action" value="reject" class="btn btn-danger">
+                                <i class="feather-x"></i> Reject
+                            </button>
 
-</div>
+                        </div>
 
-</form>
+                    </form>
 
-</div>
+                </div>
 
-@endif
+            @endif
 
             <h5 class="mt-4">Approval History</h5>
 
@@ -262,13 +248,13 @@ class="btn btn-danger"
 
                 <tbody>
 
-                    @foreach($leave->approvals as $approval)
+                    @forelse($approvals as $approval)
 
                         <tr>
 
                             <td>Level {{ $approval->level }}</td>
 
-                            <td>{{ $approval->approver->name }}</td>
+                            <td>{{ $approval->user->name  ?? 'N/A' }}</td>
 
                             <td>
 
@@ -285,8 +271,12 @@ class="btn btn-danger"
                             <td>{{ $approval->created_at->format('d-m-Y H:i') }}</td>
 
                         </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No approval history found.</td>
+                        </tr>
 
-                    @endforeach
+                    @endforelse
 
                 </tbody>
 

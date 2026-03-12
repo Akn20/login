@@ -37,16 +37,21 @@ use App\Http\Controllers\DepartmentController;
 // Pharmacy
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+//use App\Http\Controllers\Doctor\ViewAppointmentController;
+//use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
+
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
+
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 // Beds / Wards / Patients
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
-use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 // HR
 use App\Http\Controllers\LeaveManagement\WeekendController;
@@ -60,6 +65,13 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
+
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -473,6 +485,9 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])
 
         Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
 
+        
+        
+
         /*
         |--------------------------------------------------------------------------
         | Staff Management
@@ -558,19 +573,46 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])
             Route::patch('/toggle-status/{id}', [LeaveMappingController::class, 'toggleStatus'])->name('toggleStatus');
         });
 
-        /*
-        |--------------------------------------------------------------------------
-        | Leave Adjustment
-        |--------------------------------------------------------------------------
-        */
-        Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
-            Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
-            Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
-            Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
-            Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
-            Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])->name('show');
-        });
 
+
+/*--------------------------------------------------------------------------
+| Leave Application
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('leave-application')->name('leave-application.')->group(function () {
+
+    Route::get('/', [LeaveApplicationController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveApplicationController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveApplicationController::class, 'store'])->name('store');
+
+    Route::get('/show/{id}', [LeaveApplicationController::class, 'show'])->name('show');
+
+    Route::delete('/withdraw/{id}', [LeaveApplicationController::class, 'withdraw'])->name('withdraw');
+
+});
+
+
+
+        // |----------------------------------------------------------------------
+        // | Leave Adjustment
+        // |----------------------------------------------------------------------
+Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
+
+    Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+
+    Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
+
+    Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+
+    Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
+    Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
+    ->name('show');
+});
+
+        
         /*
         |--------------------------------------------------------------------------
         | Leave Approvals
@@ -578,6 +620,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])
         */
         Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
             Route::get('/', [LeaveApprovalController::class, 'index'])->name('index');
+            Route::get('/approved', [LeaveApprovalController::class, 'approvedIndex'])->name('approved');
             Route::get('/{id}', [LeaveApprovalController::class, 'show'])->name('show');
             Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
             Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');

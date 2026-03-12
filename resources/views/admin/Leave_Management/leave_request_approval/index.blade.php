@@ -55,7 +55,7 @@
                     </option>
                 </select>
 
-                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee ID"
+                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search Employee"
                     value="{{ request('search') }}">
 
                 <button class="btn btn-light-brand btn-sm">

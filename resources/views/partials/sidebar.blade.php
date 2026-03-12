@@ -272,7 +272,16 @@
                                 <span class="nxl-mtext">Leave Mapping</span>
                             </a>
                         </li>
-
+                        
+            {{-- Leave Application --}}
+                        <li class="nxl-item">
+                        <a href="{{ route('hr.leave-application.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Leave Application</span>
+                            </a>
+                        </li>
 
                         <!-- Leave adjustment -->
                         <li class="nxl-item {{ request()->routeIs('hr.leave-adjustments.*') ? 'active' : '' }}">
@@ -286,6 +295,12 @@
                             <a href="{{ route('hr.leave-approvals.index') }}" class="nxl-link">
                                 <span class="nxl-micon"><i class="feather-edit"></i></span>
                                 <span class="nxl-mtext">Leave Approval</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('hr.leave-approvals.approved') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-edit"></i></span>
+                                <span class="nxl-mtext">Approved Leave</span>
                             </a>
                         </li>
                     </ul>

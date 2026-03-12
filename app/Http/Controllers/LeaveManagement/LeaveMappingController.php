@@ -224,17 +224,22 @@ class LeaveMappingController extends Controller
             'data'   => $mappings,
         ]);
     }
+public function apiShow($id)
+{
+    $mapping = LeaveMapping::with('leaveType')->find($id);
 
-    public function apiShow($id)
-    {
-        $mapping = LeaveMapping::with('leaveType')->find($id);
-
-        if (!$mapping) {
-            return response()->json(['status' => false, 'message' => 'Mapping not found'], 404);
-        }
-
-        return response()->json(['status' => true, 'data' => $mapping]);
+    if (!$mapping) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Mapping not found'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => true,
+        'data' => $mapping
+    ]);
+}
 
     public function apiStore(Request $request)
     {
