@@ -395,9 +395,12 @@ Route::prefix('hr')->group(function () {
     Route::get('/staff/deleted', [StaffManagementController::class, 'apiDeleted']);
     Route::post('/staff/{id}/restore', [StaffManagementController::class, 'apiRestore']);
     Route::delete('/staff/{id}/force-delete', [StaffManagementController::class, 'apiForceDelete']);
+    Route::get('/doctors', [StaffManagementController::class, 'apiDoctors']);
 
     // Employee list
     Route::get('/employee', [EmployeeController::class, 'index']);
+
+
 });
 
 /*
@@ -543,6 +546,7 @@ Route::prefix('post-operative')->group(function () {
 
 // DOCTOR(OPD) API
 Route::prefix('consultations')->group(function () {
+    Route::get('/medicines', [ConsultationController::class, 'apiMedicines']);
 
     // APPOINTMENTS FIRST
     Route::prefix('appointments')->group(function () {
@@ -570,5 +574,6 @@ Route::prefix('consultations')->group(function () {
     Route::get('/{id}/prescriptions', [ConsultationController::class, 'apiPrescriptions']);
     Route::get('/{id}/tests', [ConsultationController::class, 'apiTests']);
     Route::get('/{id}/referral', [ConsultationController::class, 'apiReferral']);
+
 
 });
