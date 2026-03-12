@@ -166,4 +166,50 @@ class LeaveApprovalController extends Controller
 
         return view('admin.Leave_Management.leave_request_approval.approved', compact('approvedLeaves'));
     }
+
+    public function apiIndex(Request $request)
+    {
+        $user = auth()->user();
+        $query = LeaveApplication::query()->with(['staff', 'leaveType']);
+        $query = $this->applyHierarchyFilter($query, $user);
+
+        if ($request->search) {
+            $query->whereHas('staff', function ($q) use ($request) {
+                $q->where('staff_id', 'like', "%{$request->search}%")
+                    ->orWhere('name', 'like', "%{$request->search}%");
+            });
+        }
+
+        $status = $request->status ?? 'pending';
+        $leaveRequests = $query->where('status', $status)->latest()->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $leaveRequests
+        ]);
+    }
+
+    public function apiShow($id)
+    {
+        $leave = LeaveApplication::with(['staff', 'leaveType', 'approvals.user'])->findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $leave
+        ]);
+    }
+
+    public function apiApprove(Request $request, $id)
+    {
+        // Reuse existing logic by passing JSON expectation
+        $request->merge(['action' => 'approve']);
+        return $this->approve($request, $id);
+    }
+
+    public function apiReject(Request $request, $id)
+    {
+        // Reuse existing logic by passing JSON expectation
+        $request->merge(['action' => 'reject']);
+        return $this->approve($request, $id);
+    }
 }
