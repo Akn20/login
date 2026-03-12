@@ -414,4 +414,46 @@ class StaffManagementController extends Controller
             'message' => 'Staff permanently deleted.',
         ]);
     }
+    //added by sushan for api
+ public function getSurgeons()
+{
+    $surgeons = Staff::whereHas('designation', function ($query) {
+        $query->where('designation_name', 'Surgeon');
+    })
+    ->select('id','name')
+    ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $surgeons
+    ]);
 }
+//added by sushan for api
+public function getAssistantDoctors()
+{
+    $assistantDoctors = Staff::whereHas('designation', function ($query) {
+        $query->where('designation_name', 'Doctor');
+    })
+    ->select('id','name')
+    ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $assistantDoctors
+    ]);
+}
+//added by sushan for api
+public function getAnesthetists()
+{
+    $anesthetists = Staff::whereHas('designation', function ($query) {
+        $query->where('designation_name', 'Anesthetist');
+    })
+    ->select('id','name')
+    ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $anesthetists
+    ]);
+}
+ }

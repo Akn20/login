@@ -47,6 +47,11 @@ use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 
+//added by sushan for api
+use App\Http\Controllers\Admin\PatientController;
+//added by sushan for api
+    Route::get('/patients', [PatientController::class, 'apiIndex']);
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -381,6 +386,11 @@ Route::prefix('hr')->group(function () {
 
     // Staff Management
     Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
+    //added by sushan for api
+    Route::get('/surgeons', [StaffManagementController::class, 'getSurgeons']);
+    Route::get('/assistant-doctors', [StaffManagementController::class, 'getAssistantDoctors']);
+    Route::get('/anesthetists', [StaffManagementController::class, 'getAnesthetists']);
+
     Route::post('/staff', [StaffManagementController::class, 'apiStore']);
     Route::put('/staff/{id}', [StaffManagementController::class, 'apiUpdate']);
     Route::delete('/staff/{id}', [StaffManagementController::class, 'apiDestroy']);
@@ -498,8 +508,13 @@ Route::prefix('surgery')->group(function () {
 
     // Additional endpoints
     Route::get('/patient/{patientId}', [SurgeryApiController::class, 'getByPatient']); // Get surgeries by patient
-    Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);     // Get surgeries by date
+    Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
+    
+    // Get surgeries by date
 });
+
+
+
 
 Route::prefix('ot')->group(function () {
 
