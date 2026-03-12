@@ -55,8 +55,8 @@
                                             </span>
                                         </td>
                                         <td>{{ is_array($mapping->employee_status) ? implode(', ', $mapping->employee_status) : $mapping->employee_status }}</td>
-                                        <td>{{ $mapping->gender }}</td>
-                                    <td>{{ $mapping->employment_type }}</td>
+                                       <td>{{ $mapping->gender ?? '-' }}</td>
+                                       <td>{{ $mapping->employment_type ?? '-' }}</td>
                                         <td>{{ $mapping->accrual_value }} / {{ $mapping->accrual_frequency }}</td>
                                         <td>
                                             @if($mapping->carry_forward_allowed)
