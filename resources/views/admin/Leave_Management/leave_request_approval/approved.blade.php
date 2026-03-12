@@ -67,7 +67,7 @@
                                             </td>
                                             <td>
                                                 <span class="badge bg-info-soft text-info border">
-                                                    {{ $leave->leaveType->leave_type_name ?? 'N/A' }}
+                                                    {{ $leave->leaveType->display_name ?? 'N/A' }}
                                                 </span>
                                             </td>
                                             <td>
@@ -78,7 +78,7 @@
                                                     {{ \Carbon\Carbon::parse($leave->to_date)->format('d M, Y') }}
                                                 </div>
                                             </td>
-                                            <td><span class="fw-bold text-primary">{{ $leave->total_leave_days }}</span></td>
+                                            <td><span class="fw-bold text-primary">{{ $leave->leave_days }}</span></td>
                                             <td>{{ $leave->updated_at->format('d M, Y H:i') }}</td>
                                             <td class="text-center">
                                                 <a href="{{ route('hr.leave-approvals.show', $leave->id) }}"

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\LeaveManagement;
 
 use App\Http\Controllers\Controller;
+use App\Models\LeaveAdjustment;
 use App\Models\LeaveApplication;
 use App\Models\LeaveRequestApprovals;
+use Exception;
 use Illuminate\Http\Request;
 use Log;
 
@@ -59,7 +61,23 @@ class LeaveApprovalController extends Controller
             return $this->successResponse($request, 'Leave request rejected.');
         }
 
-        Log::info($leave);
+        if ($leave->leaveType->approval_level === 'Single') {
+
+        $this->logApproval(
+            $leave->id,
+            $user->id,
+            1,
+            $remarks
+        );
+
+        $leave->update([
+            'status' => 'approved',
+            'current_approval_level' => 4
+        ]);
+        LeaveAdjustment::where('leave_type_id', $leave->leaveType->id)->increment('debit', $leave->leave_days);
+
+        return $this->successResponse($request, 'Leave approved (Single level).');
+    }
         // --- HANDLE SEQUENTIAL APPROVAL ---
         if ($user->hasRole('manager') && $leave->current_approval_level === 1) {
             $this->logApproval($id, $user->id, 1, $remarks);
@@ -70,6 +88,7 @@ class LeaveApprovalController extends Controller
         } elseif ($user->hasRole('hod') && $leave->current_approval_level === 3) {
             $this->logApproval($id, $user->id, 3, $remarks);
             $leave->update(['status' => 'approved', 'current_approval_level' => 4]);
+            LeaveAdjustment::where('leave_type_id', $leave->leaveType->id)->increment('debit', $leave->leave_days);
         } else {
             return $this->errorResponse($request, 'Unauthorized for this stage.');
         }
@@ -139,22 +158,24 @@ class LeaveApprovalController extends Controller
 
     public function approvedIndex(Request $request)
     {
+        try{
         $user = auth()->user();
         $userId = $user->id;
-
+        
         // Catch the status from the filter, default to 'approved'
         $status = $request->status ?? 'approved';
-
+        
         $query = LeaveApplication::query()
-            ->with(['staff', 'leaveType'])
-            ->where('status', $status); // Uses the dynamic status (approved or rejected)
-
+        ->with(['staff', 'leaveType','approvals'])
+        ->where('status', $status); // Uses the dynamic status (approved or rejected)
+        
         $query->whereHas('staff', function ($q) use ($userId) {
             $q->where('level1_supervisor_id', $userId)
-                ->orWhere('level2_supervisor_id', $userId)
-                ->orWhere('level3_supervisor_id', $userId);
+            ->orWhere('level2_supervisor_id', $userId)
+            ->orWhere('level3_supervisor_id', $userId);
         });
-
+        // Log::info($query );
+        
         if ($request->search) {
             $query->whereHas('staff', function ($q) use ($request) {
                 $q->where('employee_id', 'like', "%{$request->search}%")
@@ -163,7 +184,10 @@ class LeaveApprovalController extends Controller
         }
 
         $approvedLeaves = $query->latest()->paginate(10);
-
         return view('admin.Leave_Management.leave_request_approval.approved', compact('approvedLeaves'));
+    }
+    catch (Exception $e) {
+        return $this->errorResponse($request, $e->getMessage());
+    }
     }
 }
