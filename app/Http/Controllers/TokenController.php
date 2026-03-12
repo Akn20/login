@@ -193,33 +193,43 @@ class TokenController extends Controller
     }
 
     /********API Endpoints * ******/
-    public function apiIndex()
-    {
-        $tokens = Token::with([
-            'appointment.patient:id,first_name,last_name',
-            'appointment.doctor:id,name',
-            'appointment.department:id,department_name'
-        ])->get();
+ public function apiIndex()
+{
+    $tokens = Token::with([
+        'appointment.patient:id,first_name,last_name',
+        'appointment.doctor:id,name',
+        'appointment.department:id,department_name'
+    ])
+    ->whereHas('appointment') // IMPORTANT
+    ->get();
 
-        $data = $tokens->map(function ($token) {
+    $data = $tokens->map(function ($token) {
 
-            return [
-                'token_id' => $token->id,
-                'token_number' => $token->token_number,
-                'status' => $token->status,
-                'patient_name' => $token->appointment->patient->first_name . ' ' .
-                                $token->appointment->patient->last_name,
-                'doctor_name' => $token->appointment->doctor->name ?? null,
-                'department' => $token->appointment->department->department_name ?? null,
-                'appointment_time' => $token->appointment->appointment_time
-            ];
-        });
+        return [
+            'token_id' => $token->id,
+            'token_number' => $token->token_number,
+            'status' => $token->status,
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
-    }
+            'patient_name' =>
+                optional($token->appointment->patient)->first_name . ' ' .
+                optional($token->appointment->patient)->last_name,
+
+            'doctor_name' =>
+                optional($token->appointment->doctor)->name,
+
+            'department' =>
+                optional($token->appointment->department)->department_name,
+
+            'appointment_time' =>
+                $token->appointment->appointment_time ?? null
+        ];
+    });
+
+    return response()->json([
+        'status' => true,
+        'data' => $data
+    ]);
+}
 
 
     public function apiStore(Request $request)
@@ -316,22 +326,43 @@ class TokenController extends Controller
         ]);
     }
 
+
+    public function apiDoctors()
+{
+    $doctors = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+        ->where('roles.name', 'Doctor')
+        ->whereNull('staff.deleted_at')
+        ->select('staff.id', 'staff.name')
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $doctors
+    ]);
+}
     
-    public function apiReassign(Request $request, $id)
-    {
-        $request->validate([
-            'doctor_id' => 'required'
-        ]);
+public function apiReassign(Request $request, $id)
+{
+    $request->validate([
+        'doctor_id' => 'required|exists:staff,id'
+    ]);
 
-        $token = Token::with('appointment')->findOrFail($id);
+    $token = Token::with('appointment')->findOrFail($id);
 
-        $token->appointment->update([
-            'doctor_id' => $request->doctor_id
-        ]);
-
+    if (!$token->appointment) {
         return response()->json([
-            'status' => true,
-            'message' => 'Doctor reassigned successfully'
-        ]);
+            'status' => false,
+            'message' => 'Linked appointment not found'
+        ], 404);
     }
+
+    $token->appointment->update([
+        'doctor_id' => $request->doctor_id
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Doctor reassigned successfully'
+    ]);
+}
 }

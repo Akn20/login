@@ -576,5 +576,8 @@ Route::prefix('tokens')->group(function () {
     Route::get('/{id}', [TokenController::class, 'apiShow']);
     Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
     Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
+    
     Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
+    
 });
+Route::get('/doctors', [TokenController::class, 'apiDoctors']);
