@@ -223,6 +223,58 @@ public function assignmentStore(Request $request)
         ->with('success','Shift assigned successfully');
 }
 
+public function assignmentShow($id)
+{
+    $assignment = ShiftAssignment::with(['staff','shift'])->findOrFail($id);
+
+    return view(
+        'hr.shift_scheduling.shift_assignment.show',
+        compact('assignment')
+    );
+}
+
+
+public function deletedAssignments()
+{
+    $assignments = ShiftAssignment::onlyTrashed()->paginate(10);
+
+    return view(
+        'hr.shift_scheduling.shift_assignment.deleted',
+        compact('assignments')
+    );
+}
+
+
+public function restoreAssignment($id)
+{
+    ShiftAssignment::withTrashed()->findOrFail($id)->restore();
+
+    return redirect()
+        ->route('admin.shift-assignments.deleted')
+        ->with('success','Assignment restored');
+}
+
+
+public function forceDeleteAssignment($id)
+{
+    ShiftAssignment::withTrashed()->findOrFail($id)->forceDelete();
+
+    return redirect()
+        ->route('admin.shift-assignments.deleted')
+        ->with('success','Assignment permanently deleted');
+}
+
+public function assignmentDelete($id)
+{
+    $assignment = ShiftAssignment::findOrFail($id);
+
+    $assignment->delete(); // soft delete
+
+    return redirect()
+        ->route('admin.shift-assignments.index')
+        ->with('success','Assignment moved to trash');
+}
+
 
 public function rotationIndex()
 {
@@ -289,6 +341,56 @@ public function rotationUpdate(Request $request,$id)
     return redirect()
         ->route('admin.shift-rotations.index')
         ->with('success','Rotation updated');
+}
+
+public function rotationShow($id)
+{
+    $rotation = ShiftRotation::with(['staff','firstShift','secondShift'])
+                ->findOrFail($id);
+
+    return view(
+        'hr.shift_scheduling.shift_rotation.show',
+        compact('rotation')
+    );
+}
+
+
+public function rotationDelete($id)
+{
+    ShiftRotation::findOrFail($id)->delete();
+
+    return redirect()
+        ->route('admin.shift-rotations.index')
+        ->with('success','Rotation moved to trash');
+}
+
+
+public function deletedRotations()
+{
+    $rotations = ShiftRotation::onlyTrashed()->paginate(10);
+
+    return view(
+        'hr.shift_scheduling.shift_rotation.deleted',
+        compact('rotations')
+    );
+}
+
+
+public function restoreRotation($id)
+{
+    ShiftRotation::withTrashed()->findOrFail($id)->restore();
+
+    return redirect()
+        ->route('admin.shift-rotations.deleted');
+}
+
+
+public function forceDeleteRotation($id)
+{
+    ShiftRotation::withTrashed()->findOrFail($id)->forceDelete();
+
+    return redirect()
+        ->route('admin.shift-rotations.deleted');
 }
 
 public function weeklyOffIndex()
@@ -358,6 +460,55 @@ public function weeklyOffUpdate(Request $request,$id)
     return redirect()
         ->route('admin.weekly-offs.index')
         ->with('success','Weekly Off Updated');
+}
+
+public function weeklyOffShow($id)
+{
+    $weeklyOff = WeeklyOff::with('staff')->findOrFail($id);
+
+    return view(
+        'hr.shift_scheduling.weekly_off.show',
+        compact('weeklyOff')
+    );
+}
+
+
+public function weeklyOffDelete($id)
+{
+    WeeklyOff::findOrFail($id)->delete();
+
+    return redirect()
+        ->route('admin.weekly-offs.index')
+        ->with('success','Weekly Off moved to trash');
+}
+
+
+public function deletedWeeklyOffs()
+{
+    $weeklyOffs = WeeklyOff::onlyTrashed()->paginate(10);
+
+    return view(
+        'hr.shift_scheduling.weekly_off.deleted',
+        compact('weeklyOffs')
+    );
+}
+
+
+public function restoreWeeklyOff($id)
+{
+    WeeklyOff::withTrashed()->findOrFail($id)->restore();
+
+    return redirect()
+        ->route('admin.weekly-offs.deleted');
+}
+
+
+public function forceDeleteWeeklyOff($id)
+{
+    WeeklyOff::withTrashed()->findOrFail($id)->forceDelete();
+
+    return redirect()
+        ->route('admin.weekly-offs.deleted');
 }
 
 public function conflictIndex()
@@ -439,5 +590,7 @@ public function conflictIndex()
         compact('conflicts')
     );
 }
+
+
 
 }

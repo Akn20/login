@@ -1,29 +1,64 @@
 @extends('layouts.admin')
 
-@section('page-title','Rotational Shifts')
+@section('page-title','Rotational Shifts | ' . config('app.name'))
 
 @section('content')
 
+<!-- Page Header -->
 <div class="page-header mb-4">
-    <div class="page-header-left d-flex align-items-center">
-        <div class="page-header-title">
-            <h5 class="m-b-0">Rotational Shifts</h5>
-        </div>
 
-        <ul class="breadcrumb ms-3">
-            <li class="breadcrumb-item">HR Management</li>
-            <li class="breadcrumb-item">Shift Scheduling</li>
-            <li class="breadcrumb-item">Rotational Shifts</li>
-        </ul>
-    </div>
+<div class="page-header-left d-flex align-items-center">
 
-    <div class="page-header-right ms-auto">
+<div class="page-header-title">
+<h5 class="m-b-0">Rotational Shifts</h5>
+</div>
 
-        <a href="{{ route('admin.shift-rotations.create') }}" class="btn btn-primary">
-            <i class="feather-plus me-2"></i> New Rotation
-        </a>
+<ul class="breadcrumb ms-3">
+<li class="breadcrumb-item">HR Management</li>
+<li class="breadcrumb-item">Shift Scheduling</li>
+<li class="breadcrumb-item">Rotational Shifts</li>
+</ul>
 
-    </div>
+</div>
+
+<div class="page-header-right ms-auto d-flex align-items-center gap-2">
+
+<!-- Search -->
+<form method="GET"
+action="{{ route('admin.shift-rotations.index') }}"
+class="d-flex">
+
+<input type="text"
+name="search"
+value="{{ request('search') }}"
+class="form-control"
+placeholder="Search Employee..."
+style="width:220px;">
+
+<button class="btn btn-light ms-2">
+<i class="feather-search"></i>
+</button>
+
+</form>
+
+<!-- Create -->
+<a href="{{ route('admin.shift-rotations.create') }}"
+class="btn btn-primary">
+
+<i class="feather-plus me-2"></i> New Rotation
+
+</a>
+
+<!-- Deleted -->
+<a href="{{ route('admin.shift-rotations.deleted') }}"
+class="btn btn-danger">
+
+Deleted Rotations
+
+</a>
+
+</div>
+
 </div>
 
 
@@ -31,6 +66,7 @@
 <div class="col-12">
 
 <div class="card stretch stretch-full">
+
 <div class="card-body p-0">
 
 <div class="table-responsive">
@@ -38,6 +74,7 @@
 <table class="table table-hover align-middle mb-0">
 
 <thead class="table-light">
+
 <tr>
 <th>#</th>
 <th>Employee</th>
@@ -46,8 +83,9 @@
 <th>Rotation Days</th>
 <th>Start Date</th>
 <th>Status</th>
-<th class="text-end">Actions</th>
+<th class="text-center">Actions</th>
 </tr>
+
 </thead>
 
 <tbody>
@@ -56,7 +94,9 @@
 
 <tr>
 
-<td>{{ $rotations->firstItem() + $index }}</td>
+<td>
+{{ $rotations->firstItem() ? $rotations->firstItem() + $index : $index + 1 }}
+</td>
 
 <td>{{ $row->staff->name ?? '-' }}</td>
 
@@ -68,18 +108,49 @@
 
 <td>{{ $row->start_date }}</td>
 
-<td>
-{{ $row->status ? 'Active' : 'Inactive' }}
-</td>
+<td>{{ $row->status ? 'Active' : 'Inactive' }}</td>
 
-<td class="text-end">
+<td class="text-center">
 
+<div class="d-flex justify-content-center gap-2 align-items-center">
+
+<!-- View -->
+<a href="{{ route('admin.shift-rotations.show',$row->id) }}"
+class="btn btn-outline-secondary btn-icon rounded-circle"
+title="View">
+
+<i class="feather-eye"></i>
+
+</a>
+
+<!-- Edit -->
 <a href="{{ route('admin.shift-rotations.edit',$row->id) }}"
-class="btn btn-outline-secondary btn-icon rounded-circle">
+class="btn btn-outline-secondary btn-icon rounded-circle"
+title="Edit">
 
 <i class="feather-edit-2"></i>
 
 </a>
+
+<!-- Delete -->
+<form action="{{ route('admin.shift-rotations.destroy',$row->id) }}"
+method="POST"
+onsubmit="return confirm('Move rotation to trash?')">
+
+@csrf
+@method('DELETE')
+
+<button type="submit"
+class="avatar-text avatar-md d-flex align-items-center justify-content-center"
+title="Trash">
+
+<i class="feather-trash-2"></i>
+
+</button>
+
+</form>
+
+</div>
 
 </td>
 
@@ -88,7 +159,9 @@ class="btn btn-outline-secondary btn-icon rounded-circle">
 @empty
 
 <tr>
-<td colspan="8" class="text-center">No Rotations Found</td>
+<td colspan="8" class="text-center">
+No Rotations Found
+</td>
 </tr>
 
 @endforelse
@@ -102,9 +175,7 @@ class="btn btn-outline-secondary btn-icon rounded-circle">
 </div>
 
 <div class="card-footer">
-
 {{ $rotations->links() }}
-
 </div>
 
 </div>

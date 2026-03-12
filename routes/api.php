@@ -49,12 +49,12 @@ use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 
+use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 //DOCTOR(OPD)
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -550,7 +550,7 @@ Route::prefix('consultations')->group(function () {
     Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
     Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
     Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
-
+});
 //Apportionment APIs
 
 
@@ -567,4 +567,28 @@ Route::prefix('appointments')->group(function () {
     Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
+
+
+
+Route::prefix('hr')->group(function () {
+
+Route::get('/shifts',[ShiftSchedulingAPIController::class,'shiftIndex']);
+Route::post('shifts',[ShiftSchedulingAPIController::class,'shiftStore']);
+Route::get('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftShow']);
+Route::put('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftUpdate']);
+Route::delete('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftDelete']);
+
+Route::post('shift-toggle/{id}',[ShiftSchedulingAPIController::class,'toggleShiftStatus']);
+
+Route::get('assignments',[ShiftSchedulingAPIController::class,'assignmentIndex']);
+Route::post('assignments',[ShiftSchedulingAPIController::class,'assignmentStore']);
+
+Route::get('rotations',[ShiftSchedulingAPIController::class,'rotationIndex']);
+Route::post('rotations',[ShiftSchedulingAPIController::class,'rotationStore']);
+
+Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex']);
+Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
+
+Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
+
 });
