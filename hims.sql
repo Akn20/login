@@ -1,4 +1,4 @@
-USE `hims_main`;
+USE `admin`;
 
 -- Helpful: disable FK checks while seeding
 SET FOREIGN_KEY_CHECKS = 0;

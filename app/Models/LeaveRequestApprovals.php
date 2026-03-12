@@ -33,7 +33,7 @@ class LeaveRequestApprovals extends Model
 
     public function leaveRequest()
     {
-        return $this->belongsTo(LeaveRequests::class, 'leave_request_id');
+        return $this->belongsTo(LeaveApplication::class, 'leave_request_id');
     }
 
     public function approver()

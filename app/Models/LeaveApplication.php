@@ -22,7 +22,8 @@ protected $fillable = [
     'attachment',
     'status',
     'balance_before',
-    'balance_after'
+    'balance_after',
+    'current_approval_level'
 ];
 
     protected $keyType = 'string';
@@ -55,5 +56,9 @@ protected $fillable = [
     public function leaveType()
     {
         return $this->belongsTo(LeaveType::class,'leave_type_id');
+    }
+    public function approvals()
+    {
+        return $this->hasMany(LeaveRequestApprovals::class, 'leave_request_id');
     }
 }
