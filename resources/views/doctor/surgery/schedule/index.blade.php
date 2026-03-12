@@ -116,38 +116,44 @@
                         </td>
 
                         <td class="text-end">
-                            <div class="hstack gap-2 justify-content-end">
-                                {{-- Post Op --}}
-                                <a href="{{ route('prescriptions.post.create',$surgery->id) }}"
-                                    class="avatar-text avatar-md action-icon {{ !in_array($surgery->id, $surgeriesWithPostOp) ? 'btn-warning' : '' }}"
-                                    title="Post Op {{ !in_array($surgery->id, $surgeriesWithPostOp) ? '(Pending)' : '' }}">
-                                    <i class="feather-file-text"></i>
-                                    @if(!in_array($surgery->id, $surgeriesWithPostOp))
-                                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle badge-sm">!</span>
-                                    @endif
-                                </a>
+<div class="hstack gap-2 justify-content-end">
 
-                                {{-- Edit --}}
-                                <a href="{{route('prescriptions.post.edit',$surgery->id) }}"
-                                    class="avatar-text avatar-md action-icon action-edit" title="Edit">
-                                    <i class="feather-edit"></i>
-                                </a>
+{{-- Post Op --}}
+<a href="{{ route('prescriptions.post.create',$surgery->id) }}"
+class="avatar-text avatar-md action-icon {{ !in_array($surgery->id, $surgeriesWithPostOp) ? 'btn-warning' : '' }}"
+title="Post Op {{ !in_array($surgery->id, $surgeriesWithPostOp) ? '(Pending)' : '' }}">
+<i class="feather-file-text"></i>
 
-                                {{-- Delete --}}
-                                <form action="{{ route('surgery.destroy',$surgery->id) }}"
-                                    method="POST" class="d-inline"
-                                    onsubmit="return confirm('Delete this surgery?');">
-                                    @csrf
-                                    @method('DELETE')
+@if(!in_array($surgery->id, $surgeriesWithPostOp))
+<span class="badge bg-danger position-absolute top-0 start-100 translate-middle badge-sm">!</span>
+@endif
+</a>
 
-                                    <button type="submit"
-                                        class="avatar-text avatar-md action-icon action-delete"
-                                        title="Delete">
-                                        <i class="feather-trash-2"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+{{-- Edit --}}
+@if(isset($postOps[$surgery->id]))
+<a href="{{ route('prescriptions.post.edit',$postOps[$surgery->id]) }}"
+class="avatar-text avatar-md action-icon action-edit"
+title="Edit">
+<i class="feather-edit"></i>
+</a>
+@endif
+
+{{-- Delete --}}
+<form action="{{ route('surgery.destroy',$surgery->id) }}"
+method="POST" class="d-inline"
+onsubmit="return confirm('Delete this surgery?');">
+@csrf
+@method('DELETE')
+
+<button type="submit"
+class="avatar-text avatar-md action-icon action-delete"
+title="Delete">
+<i class="feather-trash-2"></i>
+</button>
+</form>
+
+</div>
+</td>
 
                     </tr>
 
