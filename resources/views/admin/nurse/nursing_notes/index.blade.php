@@ -28,10 +28,10 @@
         </div>
 
         <div class="page-header-right ms-auto d-flex gap-2">
-            <a href="{{ route('admin.nursing-notes.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.nursing-notes.create') }}" class="btn btn-neutral">
                 Add Nursing Note
             </a>
-            <a href="{{ route('admin.nursing-notes.trash') }}" class="btn btn-danger">
+            <a href="{{ route('admin.nursing-notes.trash') }}" class="btn btn-neutral">
                 Deleted Records
             </a>
         </div>
