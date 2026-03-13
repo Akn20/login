@@ -308,8 +308,9 @@ Route::prefix('leave-management')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('leave-approvals')->group(function () {
+Route::middleware('auth:sanctum')->prefix('leave-approvals')->group(function () {
     Route::get('/', [LeaveApprovalController::class, 'apiIndex']);
+    Route::get('/approved', [LeaveApprovalController::class, 'apiApprovedIndex']);
     Route::get('/{id}', [LeaveApprovalController::class, 'apiShow']);
     Route::post('/{id}/approve', [LeaveApprovalController::class, 'apiApprove']);
     Route::post('/{id}/reject', [LeaveApprovalController::class, 'apiReject']);

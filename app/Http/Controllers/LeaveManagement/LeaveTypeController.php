@@ -59,9 +59,6 @@ class LeaveTypeController extends Controller
             'approval_required'   => 'required|in:0,1',
             'approval_level'      => 'required_if:approval_required,1|in:Single,Multi',
 
-            // TC_LTM_006
-            'attendance_code'     => 'nullable|string|max:50',
-
             // Duration
             'max_continuous_days' => 'nullable|integer|min:1|max:365',
 
@@ -74,7 +71,7 @@ class LeaveTypeController extends Controller
             'count_holidays'      => 'required|in:0,1',
 
             // TC_LTM_006
-'attendance_code' => 'required|string|max:10|unique:leave_types,attendance_code',
+            'attendance_code'     => 'required|string|max:10|unique:leave_types,attendance_code',
         ],
         [
             'display_name.unique' => 'Leave Type already exists.',

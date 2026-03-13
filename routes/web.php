@@ -48,6 +48,7 @@ use App\Http\Controllers\LeaveManagement\HolidayController;
 
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
 
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 // Beds / Wards / Patients
@@ -611,7 +612,22 @@ Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function (
     Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
     ->name('show');
 });
+//-------------------------------------------------------------------------------
+// Comp Off
+//-------------------------------------------------------------------------------
+        Route::prefix('compoffs')->name('compoffs.')->group(function () {
 
+            Route::get('/', [CompOffController::class,'index'])->name('index');
+            Route::get('/create', [CompOffController::class,'create'])->name('create');
+            Route::post('/store', [CompOffController::class,'store'])->name('store');
+            Route::get('/edit/{id}', [CompOffController::class,'edit'])->name('edit');
+            Route::put('/update/{id}', [CompOffController::class,'update'])->name('update');
+            Route::delete('/delete/{id}', [CompOffController::class,'destroy'])->name('delete');
+            Route::get('/deleted', [CompOffController::class,'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [CompOffController::class,'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [CompOffController::class,'forceDelete'])->name('forceDelete');
+
+    });
         
         /*
         |--------------------------------------------------------------------------
