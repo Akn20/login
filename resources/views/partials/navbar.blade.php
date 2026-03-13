@@ -93,7 +93,7 @@
 
                 <div class="dropdown nxl-h-item">
                     <a href="javascript:void(0);" data-bs-toggle="dropdown" role="button">
-                        <img src="assets/images/avatar/1.png" alt="user-image" class="img-fluid user-avtar me-0" />
+                        <span class="">{{ auth()->user()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown">
                         <div class="dropdown-header">
