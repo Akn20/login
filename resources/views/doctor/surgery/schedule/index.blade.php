@@ -118,7 +118,7 @@
                         <td class="text-end">
                             <div class="hstack gap-2 justify-content-end">
                                 {{-- Post Op --}}
-                                <a href="{{ route('post.create',$surgery->id) }}"
+                                <a href="{{ route('prescriptions.post.create',$surgery->id) }}"
                                     class="avatar-text avatar-md action-icon {{ !in_array($surgery->id, $surgeriesWithPostOp) ? 'btn-warning' : '' }}"
                                     title="Post Op {{ !in_array($surgery->id, $surgeriesWithPostOp) ? '(Pending)' : '' }}">
                                     <i class="feather-file-text"></i>
@@ -128,7 +128,7 @@
                                 </a>
 
                                 {{-- Edit --}}
-                                <a href="{{ route('surgery.edit',$surgery->id) }}"
+                                <a href="{{route('prescriptions.post.edit',$surgery->id) }}"
                                     class="avatar-text avatar-md action-icon action-edit" title="Edit">
                                     <i class="feather-edit"></i>
                                 </a>
