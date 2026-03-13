@@ -27,4 +27,16 @@ class ViewPatientController extends Controller
             ]
         ], 200);
     }
+    public function viewPatientProfile($id)
+    {
+        $patient = Patient::findOrFail($id);
+
+        $consultations = Consultation::with(['doctor', 'medicines'])
+            ->where('patient_id', $id)
+            ->latest('consultation_date')
+            ->get();
+
+        return view('doctor.opd.view-patient-profile', compact('patient', 'consultations'));
+    }
+
 }
