@@ -1036,3 +1036,203 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     });
 });
+
+
+//shift scheduling
+
+use App\Http\Controllers\HR\ShiftSchedulingController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    /* SHIFT MANAGEMENT */
+
+    Route::get('/shifts', 
+        [ShiftSchedulingController::class, 'shiftIndex']
+    )->name('shifts.index');
+
+    Route::get('/shifts/create', 
+        [ShiftSchedulingController::class, 'shiftCreate']
+    )->name('shifts.create');
+
+    Route::post('/shifts', 
+        [ShiftSchedulingController::class, 'shiftStore']
+    )->name('shifts.store');
+
+    Route::get('/shifts/{id}/edit', 
+        [ShiftSchedulingController::class, 'shiftEdit']
+    )->name('shifts.edit');
+
+    Route::put('/shifts/{id}', 
+        [ShiftSchedulingController::class, 'shiftUpdate']
+    )->name('shifts.update');
+
+    Route::delete('/shifts/{id}', 
+        [ShiftSchedulingController::class, 'shiftDelete']
+    )->name('shifts.destroy');
+
+    Route::patch('/shifts/{id}/toggle-status',
+    [ShiftSchedulingController::class, 'toggleShiftStatus']
+    )->name('shifts.toggleStatus');
+
+    Route::get('/shifts/deleted',
+    [ShiftSchedulingController::class,'deletedShifts']
+    )->name('shifts.deleted');
+
+    Route::put('/shifts/{id}/restore',
+    [ShiftSchedulingController::class,'restoreShift']
+    )->name('shifts.restore');
+
+    Route::delete('/shifts/{id}/force-delete',
+        [ShiftSchedulingController::class,'forceDeleteShift']
+    )->name('shifts.forceDelete');
+
+    Route::get('/shifts/{id}',
+    [ShiftSchedulingController::class,'shiftShow']
+    )->name('shifts.show');
+
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    /* SHIFT ASSIGNMENTS */
+
+    Route::get('/shift-assignments',
+        [ShiftSchedulingController::class,'assignmentIndex']
+    )->name('shift-assignments.index');
+
+    Route::get('/shift-assignments/create',
+        [ShiftSchedulingController::class,'assignmentCreate']
+    )->name('shift-assignments.create');
+
+    Route::post('/shift-assignments',
+        [ShiftSchedulingController::class,'assignmentStore']
+    )->name('shift-assignments.store');
+
+    Route::get('/shift-assignments/{id}/edit',
+        [ShiftSchedulingController::class,'assignmentEdit']
+    )->name('shift-assignments.edit');
+
+    Route::get('/shift-assignments/deleted',
+    [ShiftSchedulingController::class,'deletedAssignments']
+    )->name('shift-assignments.deleted');
+
+    Route::put('/shift-assignments/{id}/restore',
+        [ShiftSchedulingController::class,'restoreAssignment']
+    )->name('shift-assignments.restore');
+
+    Route::delete('/shift-assignments/{id}/force-delete',
+        [ShiftSchedulingController::class,'forceDeleteAssignment']
+    )->name('shift-assignments.forceDelete');
+
+    Route::get('/shift-assignments/{id}',
+        [ShiftSchedulingController::class,'assignmentShow']
+    )->name('shift-assignments.show');
+
+    Route::delete('/shift-assignments/{id}',
+    [ShiftSchedulingController::class,'assignmentDelete']
+    )->name('shift-assignments.destroy');
+
+});
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+
+    /* ROTATIONAL SHIFTS */
+
+    Route::get('/shift-rotations',
+        [ShiftSchedulingController::class,'rotationIndex']
+    )->name('shift-rotations.index');
+
+    Route::get('/shift-rotations/create',
+        [ShiftSchedulingController::class,'rotationCreate']
+    )->name('shift-rotations.create');
+
+    Route::post('/shift-rotations',
+        [ShiftSchedulingController::class,'rotationStore']
+    )->name('shift-rotations.store');
+
+    Route::get('/shift-rotations/{id}/edit',
+        [ShiftSchedulingController::class,'rotationEdit']
+    )->name('shift-rotations.edit');
+
+    Route::put('/shift-rotations/{id}',
+        [ShiftSchedulingController::class,'rotationUpdate']
+    )->name('shift-rotations.update');
+
+    Route::delete('/shift-rotations/{id}',
+    [ShiftSchedulingController::class,'rotationDelete']
+    )->name('shift-rotations.destroy');
+
+    Route::get('/shift-rotations/deleted',
+        [ShiftSchedulingController::class,'deletedRotations']
+    )->name('shift-rotations.deleted');
+
+    Route::put('/shift-rotations/{id}/restore',
+        [ShiftSchedulingController::class,'restoreRotation']
+    )->name('shift-rotations.restore');
+
+    Route::delete('/shift-rotations/{id}/force-delete',
+        [ShiftSchedulingController::class,'forceDeleteRotation']
+    )->name('shift-rotations.forceDelete');
+
+    Route::get('/shift-rotations/{id}',
+        [ShiftSchedulingController::class,'rotationShow']
+    )->name('shift-rotations.show');
+
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/weekly-offs',
+        [ShiftSchedulingController::class,'weeklyOffIndex']
+    )->name('weekly-offs.index');
+
+    Route::get('/weekly-offs/create',
+        [ShiftSchedulingController::class,'weeklyOffCreate']
+    )->name('weekly-offs.create');
+
+    Route::post('/weekly-offs',
+        [ShiftSchedulingController::class,'weeklyOffStore']
+    )->name('weekly-offs.store');
+
+    Route::get('/weekly-offs/{id}/edit',
+        [ShiftSchedulingController::class,'weeklyOffEdit']
+    )->name('weekly-offs.edit');
+
+    Route::put('/weekly-offs/{id}',
+        [ShiftSchedulingController::class,'weeklyOffUpdate']
+    )->name('weekly-offs.update');
+
+    Route::delete('/weekly-offs/{id}',
+    [ShiftSchedulingController::class,'weeklyOffDelete']
+    )->name('weekly-offs.destroy');
+
+    Route::get('/weekly-offs/deleted',
+        [ShiftSchedulingController::class,'deletedWeeklyOffs']
+    )->name('weekly-offs.deleted');
+
+    Route::put('/weekly-offs/{id}/restore',
+        [ShiftSchedulingController::class,'restoreWeeklyOff']
+    )->name('weekly-offs.restore');
+
+    Route::delete('/weekly-offs/{id}/force-delete',
+        [ShiftSchedulingController::class,'forceDeleteWeeklyOff']
+    )->name('weekly-offs.forceDelete');
+
+    Route::get('/weekly-offs/{id}',
+        [ShiftSchedulingController::class,'weeklyOffShow']
+    )->name('weekly-offs.show');
+
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+
+    Route::get('/shift-conflicts',
+        [ShiftSchedulingController::class,'conflictIndex']
+    )->name('shift-conflicts.index');
+
+});
+
+
+
+
