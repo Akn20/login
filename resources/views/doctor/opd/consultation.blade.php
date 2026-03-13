@@ -2,52 +2,52 @@
 
 @section('content')
 
-<script>
+    <script>
 
-document.addEventListener("DOMContentLoaded", function(){
+        document.addEventListener("DOMContentLoaded", function () {
 
-    const addBtn = document.getElementById("addMedicine");
-    const table = document.querySelector("#medicineTable tbody");
+            const addBtn = document.getElementById("addMedicine");
+            const table = document.querySelector("#medicineTable tbody");
 
-    addBtn.addEventListener("click", function(){
+            addBtn.addEventListener("click", function () {
 
-        let newRow = `
-        <tr>
+                let newRow = `
+            <tr>
 
-        <td>
-            <select name="medicine[]" class="form-control">
-                <option value="">Select</option>
-                @foreach($medicines as $medicine)
-                <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                @endforeach
-            </select>
-        </td>
+            <td>
+                <select name="medicine[]" class="form-control">
+                    <option value="">Select</option>
+                    @foreach($medicines as $medicine)
+                        <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                    @endforeach
+                </select>
+            </td>
 
-        <td><input type="text" class="form-control" name="dosage[]"></td>
-        <td><input type="text" class="form-control" name="frequency[]"></td>
-        <td><input type="text" class="form-control" name="duration[]"></td>
-        <td><input type="text" class="form-control" name="instructions[]"></td>
+            <td><input type="text" class="form-control" name="dosage[]"></td>
+            <td><input type="text" class="form-control" name="frequency[]"></td>
+            <td><input type="text" class="form-control" name="duration[]"></td>
+            <td><input type="text" class="form-control" name="instructions[]"></td>
 
-        <td>
-            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                <i class="feather-trash-2"></i> Remove
-            </button>
-        </td>
+            <td>
+                <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                    <i class="feather-trash-2"></i> Remove
+                </button>
+            </td>
 
-        </tr>
-        `;
+            </tr>
+            `;
 
-        table.insertAdjacentHTML("beforeend", newRow);
+                table.insertAdjacentHTML("beforeend", newRow);
 
-    });
+            });
 
-});
+        });
 
-function removeMedicine(btn){
-    btn.closest("tr").remove();
-}
+        function removeMedicine(btn) {
+            btn.closest("tr").remove();
+        }
 
-</script>
+    </script>
     <div class="container-fluid">
         @if(session('success'))
             <div class="alert alert-success">
@@ -75,7 +75,8 @@ function removeMedicine(btn){
 
                             <div class="col-md-3">
                                 <label>Name</label>
-                                <input type="text" class="form-control" value="{{ $patient->first_name }} {{ $appointment->patient->last_name }}" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ $patient->first_name }} {{ $appointment->patient->last_name }}" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -134,11 +135,11 @@ function removeMedicine(btn){
                         <div class="card-header">
                             <strong>Prescription</strong>
                             <button type="button" class="btn btn-primary" id="addMedicine">
-                        + Add Medicine
-                        </button>
+                                + Add Medicine
+                            </button>
                         </div>
 
-                        
+
 
                         <div class="card-body">
                             <table class="table table-bordered" id="medicineTable">
@@ -159,7 +160,7 @@ function removeMedicine(btn){
                                     <tr>
                                         <td>
                                             <select name="medicine[]" class="form-control" required>
-                                                                            <option value="">Select</option>
+                                                <option value="">Select</option>
 
                                                 @foreach($medicines as $medicine)
                                                     <option value="{{ $medicine->id }}">
@@ -192,7 +193,7 @@ function removeMedicine(btn){
 
                         <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" name="tests" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+                        <input type="text" name="tests[]" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>
                     <div class="mb-3">
