@@ -71,6 +71,7 @@ use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\attendance\AttendanceController;
 
 
 /*
@@ -1234,5 +1235,82 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 
+Route::prefix('hr')
+->name('hr.')
+->middleware(['auth','role:hr,admin'])
+->group(function(){
+
+    /* -----------------------
+    ATTENDANCE CRUD
+    ------------------------ */
+
+    Route::get('/attendance', [AttendanceController::class,'index'])
+        ->name('attendance.index');
+
+    Route::get('/attendance/create', [AttendanceController::class,'create'])
+        ->name('attendance.create');
+
+    Route::post('/attendance', [AttendanceController::class,'store'])
+        ->name('attendance.store');
 
 
+    /* -----------------------
+    ATTENDANCE REPORTS
+    (MUST COME BEFORE {id})
+    ------------------------ */
+
+    Route::get('/attendance/late-entries',
+        [AttendanceController::class,'lateEntries']
+    )->name('attendance.lateEntries');
+
+    Route::get('/attendance/overtime',
+        [AttendanceController::class,'overtime']
+    )->name('attendance.overtime');
+
+    Route::get('/attendance/report/daily',
+        [AttendanceController::class,'dailyReport']
+    )->name('attendance.dailyReport');
+
+    Route::get('/attendance/report/monthly',
+        [AttendanceController::class,'monthlyReport']
+    )->name('attendance.monthlyReport');
+
+
+    /* -----------------------
+    AJAX ROUTES
+    ------------------------ */
+
+    Route::get('/get-designations/{department_id}',
+        [AttendanceController::class,'getDesignations']
+    )->name('attendance.getDesignations');
+
+    Route::get('/get-employees/{designation_id}',
+        [AttendanceController::class,'getEmployees']
+    )->name('attendance.getEmployees');
+
+    Route::get('/get-shift-time/{id}',
+        [AttendanceController::class,'getShiftTime']
+    )->name('attendance.getShiftTime');
+
+
+    /* -----------------------
+    CRUD ACTIONS WITH ID
+    ------------------------ */
+
+    Route::get('/attendance/{id}',
+        [AttendanceController::class,'show']
+    )->name('attendance.show');
+
+    Route::get('/attendance/{id}/edit',
+        [AttendanceController::class,'edit']
+    )->name('attendance.edit');
+
+    Route::put('/attendance/{id}',
+        [AttendanceController::class,'update']
+    )->name('attendance.update');
+
+    Route::delete('/attendance/{id}',
+        [AttendanceController::class,'destroy']
+    )->name('attendance.destroy');
+
+});

@@ -660,6 +660,58 @@
 
                             </ul>
                         </li>
+
+                        {{-- Attendance Management --}}
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Attendance Management</span>
+                                <span class="nxl-arrow">
+                                    <i class="feather-chevron-right"></i>
+                                </span>
+                            </a>
+
+                            <ul class="nxl-submenu">
+
+                                {{-- Attendance Entry --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('hr.attendance.index') }}" class="nxl-link">
+                                        <span class="nxl-mtext">Attendance Entry</span>
+                                    </a>
+                                </li>
+
+                                {{-- Late Entries --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('hr.attendance.lateEntries') }}" class="nxl-link">
+                                        <span class="nxl-mtext">Late Entries</span>
+                                    </a>
+                                </li>
+
+                                {{-- Overtime Monitor --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('hr.attendance.overtime') }}" class="nxl-link">
+                                        <span class="nxl-mtext">Overtime Monitor</span>
+                                    </a>
+                                </li>
+
+                                {{-- Daily Report --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('hr.attendance.dailyReport') }}" class="nxl-link">
+                                        <span class="nxl-mtext">Daily Report</span>
+                                    </a>
+                                </li>
+
+                                {{-- Monthly Report --}}
+                                <li class="nxl-item">
+                                    <a href="{{ route('hr.attendance.monthlyReport') }}" class="nxl-link">
+                                        <span class="nxl-mtext">Monthly Report</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
                     </ul>
                 </li>
 
