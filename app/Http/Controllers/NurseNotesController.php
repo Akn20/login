@@ -28,8 +28,9 @@ class NurseNotesController extends Controller
 
         $nursingNotes = $query->latest()->paginate(10);
 
-        return view('admin.Nurse.nursing_notes.index', compact('nursingNotes'));
+        return view('admin.nurse.nursing_notes.index', compact('nursingNotes'));
     }
+
 
     public function create()
     {
@@ -40,8 +41,9 @@ class NurseNotesController extends Controller
             ->select('staff.id', 'staff.name')
             ->get();
 
-        return view('admin.Nurse.nursing_notes.create', compact('patients', 'nurses'));
+        return view('admin.nurse.nursing_notes.create', compact('patients', 'nurses'));
     }
+
 
     public function store(Request $request)
     {
@@ -63,24 +65,33 @@ class NurseNotesController extends Controller
         ]);
 
         return redirect()->route('admin.nursing-notes.index')
-            ->with('success','Nursing note created successfully');
+            ->with('success','Created successfully');
     }   
+
 
     public function show($id)
     {
         $note = NurseNotes::with(['patient', 'nurse'])->findOrFail($id);
 
-        return view('admin.Nurse.nursing_notes.show', compact('note'));
+        return view('admin.nurse.nursing_notes.show', compact('note'));
     }
+
 
     public function edit($id)
     {
         $note = NurseNotes::findOrFail($id);
-        $patients = Patient::all();
-        $nurses = Staff::where('role', 'nurse')->get();
 
-        return view('admin.Nurse.nursing_notes.edit', compact('note', 'patients', 'nurses'));
+        $patients = Patient::all();
+
+        $nurses = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Nurse')
+            ->whereNull('staff.deleted_at')
+            ->select('staff.id', 'staff.name')
+            ->get();
+
+        return view('admin.nurse.nursing_notes.edit', compact('note', 'patients', 'nurses'));
     }
+
 
     public function update(Request $request, $id)
     {
@@ -94,15 +105,17 @@ class NurseNotesController extends Controller
             'wound_care_notes' => 'nullable|string',
         ]);
 
-        $nurse = Staff::where('id', $request->nurse_id)
-                      ->where('role', 'nurse')
-                      ->first();
+        $nurses = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Nurse')
+            ->whereNull('staff.deleted_at')
+            ->select('staff.id', 'staff.name')
+            ->get();
 
-        if (!$nurse) {
+        if (!$nurses) {
             return back()->withInput()->with('error', 'Selected staff is not a nurse.');
         }
 
-        $note = NurseNote::findOrFail($id);
+        $note = NurseNotes::findOrFail($id);
 
         $note->update([
             'patient_id' => $request->patient_id,
@@ -115,15 +128,34 @@ class NurseNotesController extends Controller
         ]);
 
         return redirect()->route('admin.nursing-notes.index')
-            ->with('success', 'Nursing note updated successfully.');
+            ->with('success', 'Updated successfully.');
     }
 
     public function destroy($id)
     {
-        $note = NurseNote::findOrFail($id);
+        $note = NurseNotes::findOrFail($id);
         $note->delete();
 
         return redirect()->route('admin.nursing-notes.index')
             ->with('success', 'Nursing note deleted successfully.');
+    }
+
+    public function trash()
+    {
+        $deletedNotes = NurseNotes::onlyTrashed()
+            ->with(['patient', 'nurse'])
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.nurse.nursing_notes.trash', compact('deletedNotes'));
+    }
+
+    public function restore($id)
+    {
+        $note = NurseNotes::onlyTrashed()->findOrFail($id);
+        $note->restore();
+
+        return redirect()->route('admin.nursing-notes.trash')
+            ->with('success', 'Nursing note restored successfully.');
     }
 }
