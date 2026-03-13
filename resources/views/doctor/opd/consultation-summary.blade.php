@@ -2,111 +2,129 @@
 
 @section('content')
 
-<style>
-@media print {
-    .nxl-navigation { display: none !important; }
-    .nxl-header { display: none !important; }
-    .nxl-footer { display: none !important; }       /* Footer */
-    footer { display: none !important; }            /* Extra footer */
-    .main-content { margin-left: 0 !important; }
-}
-</style>
+    <style>
+        @media print {
+            .nxl-navigation {
+                display: none !important;
+            }
 
-<div class="container">
+            .nxl-header {
+                display: none !important;
+            }
 
-    <!-- Heading + Buttons -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0">Consultation Summary</h3>
+            .nxl-footer {
+                display: none !important;
+            }
 
-        <div class="d-flex gap-2 align-items-center">
-            <button onclick="window.print()" class="btn btn-success">
-                <i class="feather-printer"></i> Print
-            </button>
+            footer {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+
+    <div class="container">
+
+        <!-- Heading -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Consultation Summary</h3>
 
             
         </div>
-    </div>
 
-    <!-- Summary Card -->
-    <div class="card">
-        <div class="card-body">
 
-            <!-- Patient Details -->
-            <h5 class="mb-3">Patient Information</h5>
+        <div class="card">
+            <div class="card-body">
 
-            <div class="row mb-4">
+                <!-- Patient Information -->
+                <h5 class="mb-3">Patient Information</h5>
 
-                <div class="col-md-4">
-                    <strong>Name:</strong> Ramesh Kumar
+                <div class="row mb-4">
+
+                    <div class="col-md-4">
+                        <strong>Name:</strong>
+                        {{ $consultation->patient->first_name }} {{ $consultation->patient->last_name }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Age:</strong>
+                        {{ \Carbon\Carbon::parse($consultation->patient->date_of_birth)->age }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Gender:</strong>
+                        {{ $consultation->patient->gender }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Blood Group:</strong>
+                        {{ $consultation->patient->blood_group }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Doctor:</strong>
+                        {{ $consultation->doctor->name ?? 'Doctor' }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Referred To:</strong>
+                        {{ $consultation->referralDoctor->name ?? 'None' }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Date:</strong>
+                        {{ \Carbon\Carbon::parse($consultation->consultation_date)->format('d F Y') }}
+                    </div>
+
                 </div>
 
-                <div class="col-md-4">
-                    <strong>Age:</strong> 35
-                </div>
 
-                <div class="col-md-4">
-                    <strong>Gender:</strong> Male
-                </div>
+                <!-- Symptoms -->
+                <h5>Symptoms</h5>
+                <p>{{ $consultation->symptoms }}</p>
 
-                <div class="col-md-4">
-                    <strong>Blood Group:</strong> O+
-                </div>
 
-                <div class="col-md-4">
-                    <strong>Doctor:</strong> Dr. Sharma
-                </div>
+                <!-- Diagnosis -->
+                <h5>Diagnosis</h5>
+                <p>{{ $consultation->diagnosis }}</p>
 
-                <div class="col-md-4">
-                    <strong>Date:</strong> 06 March 2026
-                </div>
+
+                <!-- Prescription -->
+                <h5 class="mt-4">Prescription</h5>
+
+
+                <table class="table table-bordered mt-2">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Dose</th>
+                            <th>Frequency</th>
+                            <th>Days</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach($consultation->medicines as $med)
+                            <tr>
+                                <td>{{ $med->medicine_name }}</td>
+                                <td>{{ $med->pivot->dosage }}</td>
+                                <td>{{ $med->pivot->frequency }}</td>
+                                <td>{{ $med->pivot->duration }}</td>
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+
+                </table>
 
             </div>
-
-            <!-- Symptoms -->
-            <h5>Symptoms</h5>
-            <p>Fever, Headache, Body pain</p>
-
-            <!-- Diagnosis -->
-            <h5>Diagnosis</h5>
-            <p>Viral Fever</p>
-
-            <!-- Prescription -->
-            <h5 class="mt-4">Prescription</h5>
-
-            <table class="table table-bordered mt-2">
-
-                <thead class="table-light">
-                    <tr>
-                        <th>Medicine</th>
-                        <th>Dose</th>
-                        <th>Frequency</th>
-                        <th>Days</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <tr>
-                        <td>Paracetamol</td>
-                        <td>500 mg</td>
-                        <td>3 times a day</td>
-                        <td>5</td>
-                    </tr>
-
-                    <tr>
-                        <td>Cetirizine</td>
-                        <td>10 mg</td>
-                        <td>Once daily</td>
-                        <td>3</td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
         </div>
-    </div>
 
-</div>
+    </div>
 
 @endsection

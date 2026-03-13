@@ -69,6 +69,9 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -105,18 +108,45 @@ Route::post('/set-mpin', [SignInController::class, 'setMpin'])->name('mpin.store
 Route::get('/doctor/view-patient/{id}', [ViewPatientController::class, 'viewPatientProfile'])
     ->name('doctor.view-patient-profile');
 
-Route::get('/doctor/consultation-summary', [ConsultationController::class, 'summary'])
+Route::get('/doctor/consultation-summary/{id}', [ConsultationController::class, 'summary'])
     ->name('doctor.consultation-summary');
 
-Route::get('/appointments',
+Route::get(
+    '/appointments',
     [ViewAppointmentController::class, 'index']
 )->name('doctor.view-appointment');
 
+Route::post('/consultation/save', [ConsultationController::class, 'store'])
+    ->name('doctor.save-consultation');
+
+Route::get('/doctor/print-prescription/{id}', [ConsultationController::class, 'printPrescription'])
+    ->name('doctor.print-prescription');
+
 // Consultation Page
-Route::get('/consultation/{id}',
+Route::get(
+    '/consultation/{id}',
     [ConsultationController::class, 'index']
 )->name('doctor.consultation');
 
+Route::get(
+    '/doctor/view-consultations',
+    [ConsultationController::class, 'viewConsultations']
+)->name('doctor.view-consultations');
+
+Route::post(
+    '/doctor/consultation/store',
+    [ConsultationController::class, 'store']
+)->name('doctor.consultation.store');
+
+Route::get(
+    '/doctor/consultation/edit/{id}',
+    [ConsultationController::class, 'edit']
+)->name('doctor.edit-consultation');
+
+Route::post(
+    '/doctor/consultation/update/{id}',
+    [ConsultationController::class, 'update']
+)->name('doctor.update-consultation');
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA (auth + role:admin, prefix admin, name admin.)
@@ -711,6 +741,10 @@ Route::middleware(['auth', 'role:admin'])
         |--------------------------------------------------------------------------
         */
 
+
+
+
+
         /*
         |--------------------------------------------------------------------------
         | Reception: Tokens / Queue
@@ -727,7 +761,10 @@ Route::middleware(['auth', 'role:admin'])
 
     });
 
-// Appointments routes
+
+
+//Appointments routes 
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('appointments')->name('appointments.')->group(function () {
@@ -742,8 +779,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
 
-        Route::post('/update/{id}', [AppointmentController::class, 'update'])->name('update');
-
+        Route::put('/update/{id}', [AppointmentController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
 
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
@@ -880,19 +916,6 @@ Route::prefix('doctor')->group(function () {
     Route::post('/ot/{id}/toggle-status', [OTController::class, 'toggleStatus'])->name('ot.toggle-status');
 
     Route::get('/postoperative', [PostOperativeController::class, 'index'])->name('post.index');
-
-    Route::get('/surgery/{id}/postoperative', [PostOperativeController::class, 'create'])->name('post.create');
-
-    Route::post('/post/store', [PostOperativeController::class, 'store'])->name('post.store');
-
-    Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
-
-    Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
-
-    Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
-});
-Route::prefix('admin')->name('admin.')->group(function () {
-
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
 
         // Prescription List
@@ -913,6 +936,58 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/store', [PrescriptionController::class, 'storeOffline'])
             ->name('offline.store');
 
+        Route::get('/surgery/{id}/postoperative', [PostOperativeController::class, 'create'])->name('post.create');
+
+        Route::post('/post/store', [PostOperativeController::class, 'store'])->name('post.store');
+
+        Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
+
+        Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
+    });
+    /*
+    |-----------------------------------
+    | Dispense Medicines
+    |-----------------------------------
+    */
+
+    Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
+        ->name('dispense');
+
+    Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
+        ->name('dispense.store');
+
+    Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+
+        // Prescription List
+        Route::get('/', [PrescriptionController::class, 'index'])
+            ->name('index');
+
+        /*
+        |-----------------------------------
+        | Offline Prescription
+        |-----------------------------------
+        */
+
+        // Create Offline Prescription Page
+        Route::get('/create', [PrescriptionController::class, 'createOffline'])
+            ->name('offline.create');
+        /*
+        |-----------------------------------
+        | Verify Prescription
+        |-----------------------------------
+        */
+
+        Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
+            ->name('verify');
+
+        // Store Offline Prescription
+        Route::post('/store', [PrescriptionController::class, 'storeOffline'])
+            ->name('offline.store');
+
         /*
         |-----------------------------------
         | Dispense Medicines
@@ -921,6 +996,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
             ->name('dispense');
+        /*
+          | Bill Page
+          |-----------------------------------
+          */
+
+        Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
+            ->name('bill');
 
         Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
             ->name('dispense.store');
