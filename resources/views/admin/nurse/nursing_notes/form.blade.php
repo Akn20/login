@@ -13,7 +13,7 @@
                 <option value="{{ $patient->id }}"
                     {{ old('patient_id', $note->patient_id ?? '') == $patient->id ? 'selected' : '' }}>
                     {{ $patient->first_name ?? '' }} {{ $patient->last_name ?? '' }}
-                    ({{ $patient->patient_id ?? $patient->id }})
+                    ({{ $patient->patient_code ?? '' }})               
                 </option>
             @endforeach
         </select>
