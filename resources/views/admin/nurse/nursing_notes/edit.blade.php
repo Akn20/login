@@ -45,7 +45,7 @@
 
                             @include('admin.nurse.nursing_notes.form')
 
-                            <div class="d-flex justify-content-end gap-2 mt-3">
+                            <div class="d-flex gap-2 mt-3">
                                 <a href="{{ route('admin.nursing-notes.index') }}" class="btn btn-secondary">
                                     Cancel
                                 </a>
