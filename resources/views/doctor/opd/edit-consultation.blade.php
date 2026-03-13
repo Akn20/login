@@ -12,30 +12,30 @@
             addBtn.addEventListener("click", function () {
 
                 let newRow = `
-            <tr>
+                <tr>
 
-            <td>
-                <select name="medicine[]" class="form-control" required>
-                    <option value="">Select</option>
-                    @foreach($medicines as $medicine)
-                        <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                    @endforeach
-                </select>
-            </td>
+                <td>
+                    <select name="medicine[]" class="form-control" required>
+                        <option value="">Select</option>
+                        @foreach($medicines as $medicine)
+                            <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                        @endforeach
+                    </select>
+                </td>
 
-            <td><input type="text" class="form-control" name="dosage[]" required></td>
-            <td><input type="text" class="form-control" name="frequency[]" required></td>
-            <td><input type="text" class="form-control" name="duration[]" required></td>
-            <td><input type="text" class="form-control" name="instructions[]" required></td>
+                <td><input type="text" class="form-control" name="dosage[]" required></td>
+                <td><input type="text" class="form-control" name="frequency[]" required></td>
+                <td><input type="text" class="form-control" name="duration[]" required></td>
+                <td><input type="text" class="form-control" name="instructions[]" required></td>
 
-            <td>
-                <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                    <i class="feather-trash-2"></i> Remove
-                </button>
-            </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                        <i class="feather-trash-2"></i> Remove
+                    </button>
+                </td>
 
-            </tr>
-            `;
+                </tr>
+                `;
 
                 table.insertAdjacentHTML("beforeend", newRow);
 
@@ -247,7 +247,7 @@
 
                         <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" name="tests" class="form-control" value="{{ $consultation->tests }}"
+                        <input type="text" name="tests[]" class="form-control" value="{{ $consultation->tests }}"
                             placeholder="Blood Test, X-Ray, MRI etc">
 
                     </div>

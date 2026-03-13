@@ -10,6 +10,7 @@ use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
+use Illuminate\Support\Str;
 
 class ConsultationController extends Controller
 {
@@ -70,6 +71,9 @@ class ConsultationController extends Controller
         $appointment->update([
             'appointment_status' => 'Completed'
         ]);
+        $tests = is_array($request->tests)
+            ? implode(',', $request->tests)
+            : $request->tests;
 
         $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
@@ -77,7 +81,7 @@ class ConsultationController extends Controller
             'referral_doctor_id' => $request->referral_doctor_id,
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
-            'tests' => $request->tests,
+            'tests' => $tests,
             'consultation_date' => now()
         ]);
         foreach ($request->medicine as $index => $medicineId) {
@@ -90,17 +94,32 @@ class ConsultationController extends Controller
 
         }
 
-        //Labrequests
-        if ($request->tests) {
+        // Labrequests
+        if (!empty($request->tests)) {
 
-            $tests = explode(',', $request->tests);
+            $tests = [];
+
+            foreach ($request->tests as $testInput) {
+
+                $splitTests = explode(',', $testInput);
+
+                foreach ($splitTests as $test) {
+
+                    $test = trim($test);
+
+                    if ($test !== '') {
+                        $tests[] = $test;
+                    }
+                }
+            }
 
             foreach ($tests as $test) {
 
                 LabRequest::create([
+                    'id' => Str::uuid(),
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
-                    'test_name' => trim($test),
+                    'test_name' => $test,
                     'status' => 'pending'
                 ]);
 
@@ -116,7 +135,7 @@ class ConsultationController extends Controller
 // =========================
     public function edit($id)
     {
-        $consultation = Consultation::with(['medicines'])->findOrFail($id);
+        $consultation = Consultation::with(['medicines', 'labRequests'])->findOrFail($id);
 
         $patient = Patient::find($consultation->patient_id);
 
@@ -147,13 +166,49 @@ class ConsultationController extends Controller
         ]);
 
         $consultation = Consultation::findOrFail($id);
-
+        $tests = is_array($request->tests)
+            ? implode(',', $request->tests)
+            : $request->tests;
         $consultation->update([
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
-            'tests' => $request->tests,
+            'tests' => $tests,
             'referral_doctor_id' => $request->referral_doctor_id
         ]);
+        LabRequest::where('consultation_id', $consultation->id)->delete();
+
+        // Labrequests
+        if (!empty($request->tests)) {
+
+            $tests = [];
+
+            foreach ($request->tests as $testInput) {
+
+                $splitTests = explode(',', $testInput);
+
+                foreach ($splitTests as $test) {
+
+                    $test = trim($test);
+
+                    if ($test !== '') {
+                        $tests[] = $test;
+                    }
+                }
+            }
+
+            foreach ($tests as $test) {
+
+                LabRequest::create([
+                    'id' => Str::uuid(),
+                    'patient_id' => $consultation->patient_id,
+                    'consultation_id' => $consultation->id,
+                    'test_name' => $test,
+                    'status' => 'pending'
+                ]);
+
+            }
+
+        }
 
         // update prescription
         $consultation->medicines()->detach();
@@ -284,6 +339,25 @@ class ConsultationController extends Controller
             'tests' => $validated['tests'] ?? null,
             'consultation_date' => now()
         ]);
+        // Save Lab Requests
+        $tests = is_array($request->tests)
+            ? $request->tests
+            : explode(',', $request->tests);
+
+        foreach ($tests as $test) {
+
+            $test = trim($test);
+
+            if ($test !== '') {
+                LabRequest::create([
+                    'id' => Str::uuid(),
+                    'patient_id' => $request->patient_id,
+                    'consultation_id' => $consultation->id,
+                    'test_name' => $test,
+                    'status' => 'pending'
+                ]);
+            }
+        }
 
         // Save medicines
         if ($request->medicines) {
@@ -328,6 +402,25 @@ class ConsultationController extends Controller
             'diagnosis' => 'sometimes|string',
             'tests' => 'sometimes|nullable|string'
         ]);
+        if (!empty($validated['tests'])) {
+
+            LabRequest::where('consultation_id', $consultation->id)->delete();
+
+            $tests = explode(',', $validated['tests']);
+
+            foreach ($tests as $test) {
+
+                LabRequest::create([
+                    'id' => Str::uuid(),
+                    'patient_id' => $consultation->patient_id,
+                    'consultation_id' => $consultation->id,
+                    'test_name' => trim($test),
+                    'status' => 'pending'
+                ]);
+
+            }
+
+        }
 
         $consultation->update($validated);
 
