@@ -246,4 +246,36 @@ class LeaveApprovalController extends Controller
         $request->merge(['action' => 'reject']);
         return $this->approve($request, $id);
     }
+
+    public function apiApprovedIndex(Request $request)
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+
+        $status = $request->status ?? 'approved';
+
+        $query = LeaveApplication::query()
+            ->with(['staff', 'leaveType', 'approvals'])
+            ->where('status', $status);
+
+        $query->whereHas('staff', function ($q) use ($userId) {
+            $q->where('level1_supervisor_id', $userId)
+                ->orWhere('level2_supervisor_id', $userId)
+                ->orWhere('level3_supervisor_id', $userId);
+        });
+
+        if ($request->search) {
+            $query->whereHas('staff', function ($q) use ($request) {
+                $q->where('employee_id', 'like', "%{$request->search}%")
+                    ->orWhere('name', 'like', "%{$request->search}%");
+            });
+        }
+
+        $leaves = $query->latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $leaves
+        ]);
+    }
 }
