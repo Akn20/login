@@ -331,8 +331,8 @@ class LeaveApplicationController extends Controller
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
             'leave_days' => $days,
-            // 'balance_before' => $balanceBefore,
-            // 'balance_after' => $balanceAfter,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $balanceAfter,
             'reason' => $request->reason,
             'attachment' => $attachment,
             'status' => 'pending'
