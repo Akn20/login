@@ -10,6 +10,7 @@ use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
+use Illuminate\Support\Str;
 
 class ConsultationController extends Controller
 {
@@ -116,7 +117,7 @@ class ConsultationController extends Controller
 // =========================
     public function edit($id)
     {
-        $consultation = Consultation::with(['medicines'])->findOrFail($id);
+        $consultation = Consultation::with(['medicines', 'labRequests'])->findOrFail($id);
 
         $patient = Patient::find($consultation->patient_id);
 
@@ -154,6 +155,28 @@ class ConsultationController extends Controller
             'tests' => $request->tests,
             'referral_doctor_id' => $request->referral_doctor_id
         ]);
+        LabRequest::where('consultation_id', $consultation->id)->delete();
+
+        $tests = $request->tests;
+
+        if (!is_array($tests)) {
+            $tests = [$tests];
+        }
+
+        foreach ($tests as $test) {
+
+            if ($test) {
+
+                LabRequest::create([
+                    'id' => Str::uuid(),
+                    'patient_id' => $consultation->patient_id,
+                    'consultation_id' => $consultation->id,
+                    'test_name' => $test,
+                    'status' => 'pending'
+                ]);
+
+            }
+        }
 
         // update prescription
         $consultation->medicines()->detach();
