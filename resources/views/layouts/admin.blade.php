@@ -1,4 +1,3 @@
-{{-- resources/views/layouts/admin.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,72 +11,31 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendors.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/dataTables.bs5.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/tagify.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/tagify-data.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/quill.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/vendors/css/select2-theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/css/tom-select.bootstrap5.min.css">
+
+    {{-- Unpoly CSS for smooth transitions --}}
+    <link rel="stylesheet" href="https://unpkg.com/unpoly@3.8.0/unpoly.min.css">
+
     @stack('styles')
     @include('partials.head')
+
     <style>
-        .status-toggle {
-            width: 100px;
-            height: 30px;
-            border-radius: 50px;
-            border: none;
-            position: relative;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 12px;
-            font-weight: 600;
-            color: #fff;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
+        /* 1. Sidebar Persistence Styles */
+        .nxl-navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 260px;
+            height: 100vh;
+            z-index: 1000;
         }
 
-        /* Active */
-        .status-toggle.active {
-            background: #28a745;
-            justify-content: flex-end;
-            /* text on right */
-        }
-
-        /* Inactive */
-        .status-toggle.inactive {
-            background: #dc3545;
-            justify-content: flex-start;
-            /* text on left */
-        }
-
-        /* White circle */
-        .status-toggle::before {
-            content: "";
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: white;
-            top: 4px;
-            transition: 0.3s;
-        }
-
-        /* Circle position */
-        .status-toggle.active::before {
-            left: 4px;
-        }
-
-        .status-toggle.inactive::before {
-            right: 4px;
-        }
-
-        /* Keep text above */
-        .status-toggle span {
-            position: relative;
-            z-index: 2;
+        /* Loading Progress Bar at the top */
+        .up-progress-bar {
+            background-color: #28a745;
+            height: 3px;
         }
     </style>
 </head>
@@ -85,19 +43,19 @@
 <body class="app-skin-light app-header-light app-navigation-light">
     <div class="nxl-app">
 
-        {{-- Sidebar --}}
+        {{-- Sidebar - Stays fixed and never re-renders via Unpoly --}}
         <nav class="nxl-navigation">
             @include('partials.sidebar')
         </nav>
 
         <div class="nxl-main">
-            {{-- Top navbar --}}
             <header class="nxl-header">
                 @include('partials.navbar')
             </header>
 
-            {{-- Page content --}}
-            <main class="nxl-container">
+            {{-- 2. Target for No-Refresh Loading --}}
+            {{-- Everything inside this div will change when you click links --}}
+            <main class="nxl-container" id="main-container">
                 <div class="nxl-content">
                     @yield('content')
                 </div>
@@ -108,69 +66,78 @@
 
     </div>
 
-    @include('partials.scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    @stack('scripts')
+    {{-- Essential Scripts --}}
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/js/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
-    <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
-    <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
-    <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script> 
 
-        {{-- Toggle Script --}}
-       <script>
+    {{-- 3. Unpoly Library for AJAX Navigation --}}
+    <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
+
+    @stack('scripts')
+
+    <script>
+        { { --4. Status Toggle Logic(Optimized for No - Refresh) --} }
         document.addEventListener('DOMContentLoaded', function () {
-
-            document.querySelectorAll('.status-toggle-input').forEach(function (toggle) {
-
-                toggle.addEventListener('change', function () {
-
-                    const checkbox = this;
-                    const url = checkbox.dataset.url;
-                    const wrapper = checkbox.closest('.status-toggle-wrapper');
-                    const text = wrapper.querySelector('.status-toggle-text');
-                    const isVip = wrapper.dataset.type === 'vip';
-
-                    fetch(url, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-
-                        if (!data.success) return;
-
-                       
-                        checkbox.checked = data.is_active;
-
-                        if (isVip) {
-                            text.innerText = data.is_active ? 'Yes' : 'No';
-                        } else {
-                            text.innerText = data.is_active ? 'Active' : 'Inactive';
-                        }
-                            
-                        location.reload();
-                        
-                    })
-                  
-                    .catch(() => {
-                        alert('Something went wrong!');
-                        checkbox.checked = !checkbox.checked;
-                    });
-
-                });
-
+            // Unpoly event that runs every time new content is loaded via AJAX
+            up.on('up:content:updated', function () {
+                initializeStatusToggles();
             });
 
+            // Initial run on first page load
+            initializeStatusToggles();
+
+            function initializeStatusToggles() {
+                document.querySelectorAll('.status-toggle-input').forEach(function (toggle) {
+                    // Prevent multiple event listeners
+                    if (toggle.dataset.initialized) return;
+                    toggle.dataset.initialized = "true";
+
+                    toggle.addEventListener('change', function () {
+                        const checkbox = this;
+                        const url = checkbox.dataset.url;
+                        const wrapper = checkbox.closest('.status-toggle-wrapper');
+                        const text = wrapper.querySelector('.status-toggle-text');
+                        const isVip = wrapper.dataset.type === 'vip';
+
+                        fetch(url, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (!data.success) return;
+                                checkbox.checked = data.is_active;
+
+                                // 5. Removed location.reload() to maintain the no-refresh experience
+                                if (isVip) {
+                                    text.innerText = data.is_active ? 'Yes' : 'No';
+                                } else {
+                                    text.innerText = data.is_active ? 'Active' : 'Inactive';
+                                }
+                            })
+                            .catch(() => {
+                                alert('Something went wrong!');
+                                checkbox.checked = !checkbox.checked;
+                            });
+                    });
+                });
+            }
         });
-        </script>
-                        
-      
+
+        { { --6. Scroll Position Persistence-- } }
+        const scrollContainer = document.querySelector('.navbar-content');
+        if (scrollContainer) {
+            // Restore position from local storage
+            scrollContainer.scrollTop = localStorage.getItem('sidebarScroll') || 0;
+
+            // Save position whenever scrolling happens
+            scrollContainer.addEventListener('scroll', () => {
+                localStorage.setItem('sidebarScroll', scrollContainer.scrollTop);
+            });
+        }
+    </script>
 </body>
 
 </html>

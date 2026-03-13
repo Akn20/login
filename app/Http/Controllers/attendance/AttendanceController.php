@@ -25,7 +25,6 @@ class AttendanceController extends Controller
             'attendance.index',
             compact('attendance')
         );
-
 }
 
     public function create()

@@ -10,15 +10,15 @@
         </h5>
         <ul class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.holidays.index') }}">Holidays</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('hr.holidays.index') }}">Holidays</a></li>
             <li class="breadcrumb-item">View</li>
         </ul>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('admin.holidays.edit', $holiday->id) }}" class="btn btn-primary">
+        <a href="{{ route('hr.holidays.edit', $holiday->id) }}" class="btn btn-primary">
             <i class="feather-edit-2 me-1"></i> Edit
         </a>
-        <a href="{{ route('admin.holidays.index') }}" class="btn btn-light">
+        <a href="{{ route('hr.holidays.index') }}" class="btn btn-light">
             <i class="feather-arrow-left me-1"></i> Back
         </a>
     </div>

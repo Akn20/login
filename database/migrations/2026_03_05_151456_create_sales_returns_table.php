@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-     public function up(): void
+    public function up(): void
     {
         Schema::create('sales_returns', function (Blueprint $table) {
 
@@ -20,12 +20,13 @@ return new class extends Migration
             // Reference to sales bill
             $table->uuid('bill_id');
             $table->foreign('bill_id')
-                  ->references('bill_id')
-                  ->on('sales_bills')
-                  ->cascadeOnDelete();
+                ->references('bill_id')
+                ->on('sales_bills')
+                ->cascadeOnDelete();
 
             // Patient reference
             $table->uuid('patient_id')->nullable();
+
 
             $table->text('remarks')->nullable();
 
