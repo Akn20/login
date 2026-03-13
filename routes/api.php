@@ -26,12 +26,13 @@ use App\Http\Controllers\HR\StaffManagementController;
 // Leave management (masters)
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+// HR
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-// HR
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -299,22 +300,36 @@ Route::prefix('masters')->group(function () {
     Route::post('/leave-mappings/{id}/restore', [LeaveMappingController::class, 'apiRestore']);
     Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
 
-    /*
+});
+ /*
 |--------------------------------------------------------------------------
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
-    Route::prefix('leave-management')->group(function () {
+Route::prefix('leave-management')->group(function () {
+    
+    // Main Adjustment Routes
+    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+    
+    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+    
+});
 
-        // Main Adjustment Routes
-        Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
-        Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
-        Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+/*
+|--------------------------------------------------------------------------
+| Leave Approval API
+|--------------------------------------------------------------------------
+*/
 
-        // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
-        Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
-
-    });
+Route::middleware('auth:sanctum')->prefix('leave-approvals')->group(function () {
+    Route::get('/', [LeaveApprovalController::class, 'apiIndex']);
+    Route::get('/approved', [LeaveApprovalController::class, 'apiApprovedIndex']);
+    Route::get('/{id}', [LeaveApprovalController::class, 'apiShow']);
+    Route::post('/{id}/approve', [LeaveApprovalController::class, 'apiApprove']);
+    Route::post('/{id}/reject', [LeaveApprovalController::class, 'apiReject']);
 });
 
 /*

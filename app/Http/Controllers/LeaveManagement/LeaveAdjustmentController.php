@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveAdjustment;
 use App\Models\Staff;
 use App\Models\LeaveType;
-use App\Models\LeaveMapping;//add this
+use App\Models\LeaveMapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 class LeaveAdjustmentController extends Controller
@@ -53,46 +53,49 @@ public function create()
         compact('staff','leaveTypes')
     );
 }
-// public function store(Request $request)
 
-// {dd($request->all());
-//     $data = $request->validate([
-//         'staff_id' => 'required|uuid',
-//         'leave_type_id' => 'required|uuid',
-//         'credit' => 'nullable|integer',
-//         'debit' => 'nullable|integer',
-//         'year' => 'required|integer',
-//         'remarks' => 'nullable|string',
-//     ]);
-
-//     LeaveAdjustment::create($data);
-
-//     return redirect()
-//         ->route('admin.leave-adjustments.index')
-//         ->with('success','Leave adjustment created successfully');
-// }
 
 
 
 public function store(Request $request)
 {
-    // $request->validate([
-    //     'staff_id' => 'required',
-    //     'leave_type_id' => 'required|array',
-    //     'credit' => 'nullable|array',
-    //     'debit' => 'nullable|array',
-    //     'year' => 'required',
-    //     'remarks' => 'nullable|string',
-    // ]);
-    $request->validate([
-    'staff_id' => 'required',
+    
+
+$request->validate([
+    'staff_id' => 'required|exists:staff,id',
+
     'leave_type_id' => 'required|array',
-    'leave_type_id.*' => 'required',
+    'leave_type_id.*' => 'required|exists:leave_types,id',
+
     'credit.*' => 'nullable|integer|min:0',
     'debit.*' => 'nullable|integer|min:0',
-    'year' => 'required|integer',
-    'remarks' => 'nullable|string',
+
+    'year' => 'required|integer|min:2000|max:2100',
+
+    'remarks' => 'required|string|max:255',
 ]);
+
+
+//validation for credit and debit
+
+$hasAdjustment = false;
+
+foreach ($request->leave_type_id as $index => $leaveTypeId) {
+
+    $credit = $request->credit[$index] ?? 0;
+    $debit  = $request->debit[$index] ?? 0;
+
+    if ($credit > 0 || $debit > 0) {
+        $hasAdjustment = true;
+        break;
+    }
+}
+
+if (!$hasAdjustment) {
+    return back()->withErrors('Please enter credit or debit for at least one leave type.');
+}
+
+
 
     foreach ($request->leave_type_id as $index => $leaveTypeId) {
 
@@ -116,7 +119,7 @@ public function store(Request $request)
     }
 
     return redirect()
-        ->route('admin.leave-adjustments.index')
+        ->route('hr.leave-adjustments.index')
         ->with('success','Leave adjustment created successfully');
 }
 /*public function getLeaveMapping($staffId)

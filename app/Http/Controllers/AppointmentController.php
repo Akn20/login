@@ -156,7 +156,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::onlyTrashed()->get();
 
-        return view('admin.receptionist.appointments.trash', compact('appointments'));
+        return view('admin.Receptionist.appointments.trash', compact('appointments'));
     }
 
 

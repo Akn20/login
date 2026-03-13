@@ -68,7 +68,7 @@ class WeekendController extends Controller
                 ], 201);
             }
         return redirect()
-        ->route('admin.weekends.index')
+        ->route('hr.weekends.index')
         ->with('success', 'Weekend configuration created successfully.');
     }
 
@@ -106,7 +106,7 @@ class WeekendController extends Controller
     }
 
     return redirect()
-        ->route('admin.weekends.index')
+        ->route('hr.weekends.index')
         ->with('success', 'Weekend configuration updated successfully.');
 }
 
@@ -124,7 +124,7 @@ class WeekendController extends Controller
         }
 
         return redirect()
-            ->route('admin.weekends.index')
+            ->route('hr.weekends.index')
             ->with('success', 'Weekend configuration moved to trash.');
     }
 
@@ -157,7 +157,7 @@ class WeekendController extends Controller
         }
 
         return redirect()
-            ->route('admin.weekends.deleted')
+            ->route('hr.weekends.deleted')
             ->with('success', 'Weekend configuration restored successfully.');
     }
 
@@ -174,7 +174,7 @@ class WeekendController extends Controller
         }
 
         return redirect()
-            ->route('admin.weekends.deleted')
+            ->route('hr.weekends.deleted')
             ->with('success', 'Weekend configuration permanently deleted.');
     }
 
