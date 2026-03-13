@@ -1,4 +1,23 @@
 <div class="mb-4">
+    <label class="form-label">Nurse <span class="text-danger">*</span></label>
+
+    <select name="nurse_id" class="form-select">
+        <option value="">Select Nurse</option>
+
+        @foreach($nurses as $nurse)
+            <option value="{{ $nurse->id }}">
+                {{ $nurse->name }}
+            </option>
+        @endforeach
+
+    </select>
+</div>
+
+@error('nurse_id')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
+
+<div class="mb-4">
     <label class="form-label">Patient <span class="text-danger">*</span></label>
 
     <select name="patient_id" class="form-select">

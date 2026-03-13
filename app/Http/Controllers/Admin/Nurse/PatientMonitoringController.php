@@ -7,6 +7,7 @@ use App\Models\Vital;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Institution;
+use App\Models\Staff;
 
 class PatientMonitoringController extends Controller
 {
@@ -24,32 +25,33 @@ class PatientMonitoringController extends Controller
 
     public function create()
     {
-        $patients = Patient::select('id', 'first_name', 'last_name')->get();
+        $patients = Patient::whereNull('deleted_at')->get();
+
+        $nurses = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Nurse')
+            ->whereNull('staff.deleted_at')
+            ->select('staff.id', 'staff.name')
+            ->get();
 
         return view(
             'admin.nurse.patientMonitoring.create',
-            compact('patients')
+            compact('patients', 'nurses')
         );
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'patient_id' => 'required'
+            'patient_id' => 'required',
+            'nurse_id' => 'required'
         ]);
 
-        // Same pattern as Appointment module
         $institution = Institution::first();
 
         Vital::create([
-
             'institution_id' => $institution->id,
-
             'patient_id' => $request->patient_id,
-
-            // nurse_id stores staff_id
-            'nurse_id' => auth()->user()->staff_id,
-
+            'nurse_id' => $request->nurse_id,
             'temperature' => $request->temperature,
             'blood_pressure_systolic' => $request->blood_pressure_systolic,
             'blood_pressure_diastolic' => $request->blood_pressure_diastolic,
@@ -75,7 +77,18 @@ class PatientMonitoringController extends Controller
     public function edit($id)
     {
         $vital = Vital::findOrFail($id);
-        return view('admin.nurse.patientMonitoring.edit', compact('vital'));
+
+        $patients = Patient::get();
+
+        $nurses = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Nurse')
+            ->select('staff.id', 'staff.name')
+            ->get();
+
+        return view(
+            'admin.nurse.patientMonitoring.edit',
+            compact('vital', 'patients', 'nurses')
+        );
     }
 
     public function update(Request $request, $id)
