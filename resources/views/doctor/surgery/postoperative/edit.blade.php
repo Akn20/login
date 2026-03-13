@@ -10,10 +10,9 @@
 <h4>Edit Post Operative Notes</h4>
 </div>
 
-<form action="{{ route('post.update', $post->id) }}" method="POST">
-
-@csrf
-@method('PUT')
+<form action="{{ route('prescriptions.post.update', $post->id) }}" method="POST">
+    @csrf
+    @method('PUT')
 
 <div class="card-body">
 

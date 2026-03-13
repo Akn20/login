@@ -27,7 +27,7 @@ class ConsultationController extends Controller
             ->whereDate('appointment_date', today())
             ->first();
 
-        
+
 
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
@@ -91,11 +91,11 @@ class ConsultationController extends Controller
         }
 
         //Labrequests
-        if($request->tests){
+        if ($request->tests) {
 
             $tests = explode(',', $request->tests);
 
-            foreach($tests as $test){
+            foreach ($tests as $test) {
 
                 LabRequest::create([
                     'patient_id' => $request->patient_id,
@@ -217,7 +217,9 @@ class ConsultationController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Consultation list fetched successfully',
-            'data' => Consultation::with(['patient'])->latest()->get()
+            'data' => Consultation::with(['patient', 'doctor', 'medicines'])
+                ->latest()
+                ->get()
         ]);
     }
 
@@ -227,7 +229,7 @@ class ConsultationController extends Controller
     ==========================*/
     public function apiShow($id)
     {
-        $consultation = Consultation::with('patient')->find($id);
+        $consultation = Consultation::with(['patient', 'medicines'])->find($id);
 
         if (!$consultation) {
             return response()->json([
@@ -250,25 +252,59 @@ class ConsultationController extends Controller
     {
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
             'symptoms' => 'required|string',
             'diagnosis' => 'required|string',
-            'tests' => 'nullable|string'
+            'tests' => 'nullable|string',
+            'referral_doctor_id' => 'nullable|exists:staff,id',
+
+            'medicines' => 'nullable|array',
+            'medicines.*.medicine' => 'required_with:medicines',
+            'medicines.*.dosage' => 'nullable|string',
+            'medicines.*.frequency' => 'nullable|string',
+            'medicines.*.duration' => 'nullable|string',
+            'medicines.*.instructions' => 'nullable|string'
         ]);
 
+        // Get appointment
+        $appointment = Appointment::findOrFail($validated['appointment_id']);
+
+        // Mark appointment completed
+        $appointment->update([
+            'appointment_status' => 'Completed'
+        ]);
+
+        // Create consultation
         $consultation = Consultation::create([
             'patient_id' => $validated['patient_id'],
-            'doctor_id' => $validated['doctor_id'],
+            'doctor_id' => $appointment->doctor_id,
+            'referral_doctor_id' => $request->referral_doctor_id,
             'symptoms' => $validated['symptoms'],
             'diagnosis' => $validated['diagnosis'],
             'tests' => $validated['tests'] ?? null,
             'consultation_date' => now()
         ]);
 
+        // Save medicines
+        if ($request->medicines) {
+
+            foreach ($request->medicines as $medicine) {
+
+                $consultation->medicines()->attach($medicine['medicine'], [
+                    'dosage' => $medicine['dosage'] ?? null,
+                    'frequency' => $medicine['frequency'] ?? null,
+                    'duration' => $medicine['duration'] ?? null,
+                    'instructions' => $medicine['instructions'] ?? null
+                ]);
+
+            }
+
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Consultation created successfully',
-            'data' => $consultation->load('patient')
+            'data' => $consultation->load(['patient', 'medicines'])
         ], 201);
     }
 
@@ -331,7 +367,12 @@ class ConsultationController extends Controller
     ==========================*/
     public function apiSummary($id)
     {
-        $consultation = Consultation::with('patient')->find($id);
+        $consultation = Consultation::with([
+            'patient',
+            'doctor',
+            'medicines',
+            'referralDoctor'
+        ])->find($id);
 
         if (!$consultation) {
             return response()->json([
@@ -383,6 +424,7 @@ class ConsultationController extends Controller
     public function apiPatientHistory($patientId)
     {
         $consultations = Consultation::with([
+            'patient',
             'doctor',
             'medicines'
         ])
@@ -412,5 +454,14 @@ class ConsultationController extends Controller
             'data' => $consultation->referralDoctor
         ]);
     }
+    public function apiMedicines()
+    {
+        $medicines = Medicine::select('id', 'medicine_name')
+            ->where('status', 1)
+            ->get();
+
+        return response()->json($medicines);
+    }
+
 
 }

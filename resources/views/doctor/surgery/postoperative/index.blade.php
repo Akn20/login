@@ -80,7 +80,7 @@
 
                         <td class="text-end">
                             <div class="hstack gap-2 justify-content-end">
-                                <a href="{{ route('post.edit', $post->id) }}"
+                                <a href="{{ route('prescriptions.post.edit', $post->id) }}"
                                     class="avatar-text avatar-md action-icon action-edit" title="Edit">
                                     <i class="feather-edit"></i>
                                 </a>
