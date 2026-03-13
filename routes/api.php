@@ -56,6 +56,7 @@ use Illuminate\Support\Facades\Route;
 
 //Receptionist
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 
 /* Religion */
 
@@ -576,8 +577,33 @@ Route::prefix('tokens')->group(function () {
     Route::get('/{id}', [TokenController::class, 'apiShow']);
     Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
     Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
-    
+
     Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-    
+
 });
 Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+
+
+// Patient Monitoring (Vitals) API
+
+Route::prefix('vitals')->group(function () {
+
+    Route::get('/trash', [PatientMonitoringController::class, 'apiTrash']);
+
+    Route::post('/restore/{id}', [PatientMonitoringController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [PatientMonitoringController::class, 'apiForceDelete']);
+
+
+    Route::get('/', [PatientMonitoringController::class, 'apiIndex']);
+
+    Route::get('/{id}', [PatientMonitoringController::class, 'apiShow']);
+
+    Route::post('/', [PatientMonitoringController::class, 'apiStore']);
+
+    Route::put('/{id}', [PatientMonitoringController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
+
+    Route::get('/patients', [PatientMonitoringController::class, 'apiGetPatients']);
+});

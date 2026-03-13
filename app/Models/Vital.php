@@ -4,13 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use App\Models\Patient;
+use App\Models\Staff;
 
 class Vital extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'vitals';
+
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'institution_id',
@@ -32,12 +38,19 @@ class Vital extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
         });
     }
 
     public function patient()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
+
+    public function nurse()
+    {
+        return $this->belongsTo(Staff::class, 'nurse_id');
     }
 }
