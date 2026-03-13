@@ -43,6 +43,7 @@ class LeaveApplicationController extends Controller
         );
     }
 
+
     public function create()
     {
         $leaveTypes = LeaveType::whereNull('deleted_at')->get();
@@ -52,6 +53,14 @@ class LeaveApplicationController extends Controller
         $leaveBalances = [];
 
         foreach ($leaveTypes as $type) {
+
+            $mapping = DB::table('leave_mappings')
+                ->where('leave_type_id', $type->id)
+                ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
+                ->whereJsonContains('designations', $staff->designation_id ?? null)
+                ->first();
+
+            $default = $mapping->accrual_value ?? 0;
 
             $credit = DB::table('leave_adjustments')
                 ->where('staff_id', $staff->id)
@@ -63,7 +72,12 @@ class LeaveApplicationController extends Controller
                 ->where('leave_type_id', $type->id)
                 ->sum('debit');
 
-            $balance = $credit - $debit;
+            $approvedLeaves = LeaveApplication::where('staff_id', $staff->id)
+                ->where('leave_type_id', $type->id)
+                ->where('status', 'approved')
+                ->sum('leave_days');
+
+            $balance = $default + $credit - $debit - $approvedLeaves;
 
             $leaveBalances[$type->display_name] = $balance;
         }
@@ -73,6 +87,7 @@ class LeaveApplicationController extends Controller
             compact('leaveTypes', 'leaveBalances')
         );
     }
+
 
 
     public function store(Request $request)
@@ -94,22 +109,10 @@ class LeaveApplicationController extends Controller
             return back()->with('error', 'No staff found');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Calculate Leave Days
-        |--------------------------------------------------------------------------
-        */
-
         $from = Carbon::parse($request->from_date);
         $to = Carbon::parse($request->to_date);
 
         $leaveType = LeaveType::find($request->leave_type_id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Past Date Validation
-        |--------------------------------------------------------------------------
-        */
 
         if ($from->lt(Carbon::today())) {
 
@@ -118,9 +121,6 @@ class LeaveApplicationController extends Controller
             ])->withInput();
         }
 
-
-
-        /*Overlapping validation */
 
         $overlap = LeaveApplication::where('staff_id', $staff->id)
             ->where('status', '!=', 'rejected')
@@ -200,6 +200,8 @@ class LeaveApplicationController extends Controller
 
             $current->addDay();
         }
+
+
         if ($request->leave_duration !== 'full_day') {
 
             if (!$leaveType->allow_half_day) {
@@ -211,69 +213,28 @@ class LeaveApplicationController extends Controller
             }
 
             $days = $leaveType->min_leave_unit ?? 0.5;
-
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Max Continuous Leave Validation
-        |--------------------------------------------------------------------------
-        */
 
         if ($leaveType->max_continuous_days && $days > $leaveType->max_continuous_days) {
 
             return back()->withErrors([
                 'leave_days' => 'Maximum continuous leave allowed is ' . $leaveType->max_continuous_days . ' days'
             ])->withInput();
-
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Get Leave Mapping FIRST
-        |--------------------------------------------------------------------------
-        */
+
+        /* ---------------- BALANCE CALCULATION ---------------- */
 
         $mapping = DB::table('leave_mappings')
             ->where('leave_type_id', $request->leave_type_id)
+            ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
+            ->whereJsonContains('designations', $staff->designation_id ?? null)
             ->first();
 
-        $minLeave = $mapping->min_leave_per_application ?? 0;
-        $maxLeave = $mapping->max_leave_per_application ?? 999;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Minimum Leave Validation
-        |--------------------------------------------------------------------------
-        */
-        if ($days < $minLeave && $days != $leaveType->min_leave_unit) {
-
-            return back()->withErrors([
-                'leave_days' => 'Minimum leave per application is ' . $minLeave . ' day(s)'
-            ])->withInput();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Maximum Leave Validation
-        |--------------------------------------------------------------------------
-        */
-
-        if ($days > $maxLeave) {
-
-            return back()->withErrors([
-                'leave_days' => 'Maximum leave per application is ' . $maxLeave . ' day(s)'
-            ])->withInput();
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Leave Balance Validation (Using leave_adjustments)
-        |--------------------------------------------------------------------------
-        */
+        $default = $mapping->accrual_value ?? 0;
 
         $credit = DB::table('leave_adjustments')
             ->where('staff_id', $staff->id)
@@ -285,7 +246,12 @@ class LeaveApplicationController extends Controller
             ->where('leave_type_id', $request->leave_type_id)
             ->sum('debit');
 
-        $currentBalance = $credit - $debit;
+        $approvedLeaves = LeaveApplication::where('staff_id', $staff->id)
+            ->where('leave_type_id', $request->leave_type_id)
+            ->where('status', 'approved')
+            ->sum('leave_days');
+
+        $currentBalance = $default + $credit - $debit - $approvedLeaves;
 
         $balanceBefore = $currentBalance;
         $balanceAfter = $currentBalance - $days;
@@ -297,12 +263,8 @@ class LeaveApplicationController extends Controller
             ])->withInput();
         }
 
+        /* ----------------------------------------------------- */
 
-        /*
-        |--------------------------------------------------------------------------
-        | File Upload
-        |--------------------------------------------------------------------------
-        */
 
         $attachment = null;
 
@@ -318,11 +280,6 @@ class LeaveApplicationController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save Leave Application
-        |--------------------------------------------------------------------------
-        */
 
         LeaveApplication::create([
             'staff_id' => $staff->id,
@@ -331,8 +288,8 @@ class LeaveApplicationController extends Controller
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
             'leave_days' => $days,
-            // 'balance_before' => $balanceBefore,
-            // 'balance_after' => $balanceAfter,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $balanceAfter,
             'reason' => $request->reason,
             'attachment' => $attachment,
             'status' => 'pending'
@@ -343,6 +300,7 @@ class LeaveApplicationController extends Controller
             ->route('hr.leave-application.index')
             ->with('success', 'Leave applied successfully');
     }
+
 
 
     public function show($id)
