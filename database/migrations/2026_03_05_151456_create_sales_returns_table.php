@@ -15,6 +15,12 @@ return new class extends Migration
 
             $table->uuid('id')->primary();
 
+<<<<<<< HEAD
+    // $table->string('return_number')->unique();
+    // $table->uuid('bill_id');
+    //  $table->foreign('bill_id')->references('id')->on('sales_bills')->onDelete('cascade');
+    $table->uuid('patient_id')->nullable();
+=======
             $table->string('return_number')->unique();
 
             // Reference to sales bill
@@ -26,6 +32,7 @@ return new class extends Migration
 
             // Patient reference
             $table->uuid('patient_id')->nullable();
+>>>>>>> a33284c8c0bf333c4c0d5d9f6a198f794f01a6f7
 
             $table->text('remarks')->nullable();
 
