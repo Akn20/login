@@ -71,6 +71,9 @@ class ConsultationController extends Controller
         $appointment->update([
             'appointment_status' => 'Completed'
         ]);
+        $tests = is_array($request->tests)
+            ? implode(',', $request->tests)
+            : $request->tests;
 
         $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
@@ -78,7 +81,7 @@ class ConsultationController extends Controller
             'referral_doctor_id' => $request->referral_doctor_id,
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
-            'tests' => $request->tests,
+            'tests' => $tests,
             'consultation_date' => now()
         ]);
         foreach ($request->medicine as $index => $medicineId) {
@@ -94,11 +97,14 @@ class ConsultationController extends Controller
         //Labrequests
         if($request->tests){
 
-            $tests = explode(',', $request->tests);
+            $tests = is_array($request->tests)
+                ? $request->tests
+                : explode(',', $request->tests);
 
             foreach($tests as $test){
 
                 LabRequest::create([
+                    'id' => Str::uuid(),
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
@@ -148,11 +154,13 @@ class ConsultationController extends Controller
         ]);
 
         $consultation = Consultation::findOrFail($id);
-
+        $tests = is_array($request->tests)
+            ? implode(',', $request->tests)
+            : $request->tests;
         $consultation->update([
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
-            'tests' => $request->tests,
+            'tests' => $tests,
             'referral_doctor_id' => $request->referral_doctor_id
         ]);
         LabRequest::where('consultation_id', $consultation->id)->delete();
