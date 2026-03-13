@@ -254,6 +254,15 @@
                                 <span class="nxl-mtext">Holidays</span>
                             </a>
                         </li>
+                      {{-- Comp-Off --}}
+<li class="nxl-item {{ request()->routeIs('hr.compoffs.*') ? 'active' : '' }}">
+    <a href="{{ route('hr.compoffs.index') }}" class="nxl-link">
+        <span class="nxl-micon">
+            <i class="feather-calendar"></i>
+        </span>
+        <span class="nxl-mtext">Comp-Off</span>
+    </a>
+</li>
 
                         {{-- Leave Type --}}
                         <li class="nxl-item">
