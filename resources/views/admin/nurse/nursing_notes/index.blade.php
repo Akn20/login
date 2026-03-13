@@ -119,9 +119,7 @@
                                     <tr>
                                         <th>Sl.No.</th>
                                         <th>Patient Name</th>
-                                        <th>Patient ID</th>
                                         <th>Shift</th>
-                                        <th>Pain Level</th>
                                         <th>Nurse Name</th>
                                         <th>Date & Time</th>
                                         <th class="text-end">Actions</th>
@@ -144,15 +142,7 @@
                                             </td>
 
                                             <td>
-                                                {{ $note->patient->patient_id ?? '-' }}
-                                            </td>
-
-                                            <td>
                                                 {{ $note->shift ?? '-' }}
-                                            </td>
-
-                                            <td>
-                                                {{ $note->pain_level ?? '-' }}
                                             </td>
 
                                             <td>
