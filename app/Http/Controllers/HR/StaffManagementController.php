@@ -19,7 +19,7 @@ class StaffManagementController extends Controller
         $lastId = Staff::withTrashed()->max('id');
         $nextNumber = $lastId ? $lastId + 1 : 1;
 
-        return 'EMP-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'EMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function index()
@@ -134,7 +134,7 @@ class StaffManagementController extends Controller
                 ->with('success', 'Staff and User account created successfully.');
 
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error creating staff: '.$e->getMessage());
+            return back()->withInput()->with('error', 'Error creating staff: ' . $e->getMessage());
         }
     }
 
@@ -184,8 +184,8 @@ class StaffManagementController extends Controller
             'status' => 'required|in:Active,Inactive',
             // 'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id,
             // 'email' => 'nullable|email|unique:users,email,' . $staff->user_id,
-            'mobile' => 'required|digits:10|unique:users,mobile,'.$staff->user_id.',id',
-            'email' => 'nullable|email|unique:users,email,'.$staff->user_id.',id',
+            'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id . ',id',
+            'email' => 'nullable|email|unique:users,email,' . $staff->user_id . ',id',
             'basic_salary' => 'nullable|numeric|min:0',
             'hra' => 'nullable|numeric|min:0',
             'allowance' => 'nullable|numeric|min:0',
@@ -231,7 +231,7 @@ class StaffManagementController extends Controller
                 ->with('success', 'Staff updated successfully.');
 
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Update failed: '.$e->getMessage());
+            return back()->withInput()->with('error', 'Update failed: ' . $e->getMessage());
         }
     }
 
@@ -414,7 +414,15 @@ class StaffManagementController extends Controller
             'message' => 'Staff permanently deleted.',
         ]);
     }
-    //added by sushan for api
+    public function apiDoctors()
+    {
+        $doctors = Staff::select('id', 'name')
+            ->where('status', 'Active')
+            ->get();
+
+        return response()->json($doctors);
+    }
+      //added by sushan for api
  public function getSurgeons()
 {
     $surgeons = Staff::whereHas('designation', function ($query) {
@@ -456,4 +464,6 @@ public function getAnesthetists()
         'data' => $anesthetists
     ]);
 }
- }
+}
+
+ 

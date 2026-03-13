@@ -55,7 +55,7 @@ class Consultation extends Model
     }
     public function referralDoctor()
     {
-        return $this->belongsTo(Staff::class, 'referral_doctor_id');
+        return $this->belongsTo(Staff::class, 'referral_doctor_id', 'id');
     }
 
     public function labRequests()
