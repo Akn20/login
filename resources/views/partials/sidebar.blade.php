@@ -599,6 +599,7 @@
                     </ul>
                 </li>
 
+
                 {{-- ================Patient Management================== --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
@@ -633,6 +634,26 @@
                         </li>
                     </ul>
                 </li>
+
+                {{----------- Nurse -----------}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-heart"></i></span>
+                        <span class="nxl-mtext">Nurse</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Nursing Notes  </span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 {{-- ================= Surgery Management ================= --}}
                 <li class="nxl-item nxl-hasmenu">
                     <a href="javascript:void(0);" class="nxl-link">
