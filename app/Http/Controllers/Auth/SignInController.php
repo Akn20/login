@@ -64,6 +64,11 @@ class SignInController extends Controller
                 ->with('success', 'Login successful');
         }
 
+        if ($roleName === 'hr' || $roleName === 'manager' || $roleName === 'hod') {
+            return redirect()->route('hr.dashboard')
+                ->with('success', 'Login successful');
+        }
+
         return redirect()->route('login')
             ->with('error', 'No dashboard configured for this role');
     }
@@ -238,8 +243,10 @@ class SignInController extends Controller
 
     public function createDefaultAdmin()
     {
-        if (User::count() > 0) {
-            return redirect()->route('login')->with('error', 'Admin already exists.');
+        if (User::where('mobile', '9999999999')->exists()) {
+            return redirect()
+                ->route('login', ['mobile' => '9999999999'])
+                ->with('error', 'Admin already exists. You can login with 9999999999.');
         }
 
         try {
@@ -256,10 +263,12 @@ class SignInController extends Controller
                 'status' => 'active',
             ]);
 
-            return redirect()->route('login')->with(
-                'success',
-                'Default admin created! Mobile: 9999999999 | MPIN: 1234'
-            );
+            return redirect()
+                ->route('login', ['mobile' => '9999999999'])
+                ->with(
+                    'success',
+                    'Default admin created! Mobile: 9999999999 | MPIN: 1234'
+                );
         } catch (\Exception $e) {
             return redirect()->route('login')->with(
                 'error',
@@ -324,7 +333,7 @@ class SignInController extends Controller
                 'name' => $user->name,
                 'mobile' => $user->mobile,
                 'role' => $user->role?->name,
-                'is_enrolled'=>$user->is_enrolled
+                'is_enrolled' => $user->is_enrolled,
             ],
         ]);
     }

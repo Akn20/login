@@ -14,11 +14,11 @@
 
         <div class="d-flex gap-2 align-items-center">
             {{-- Add Mapping Button --}}
-            <a href="{{ route('admin.leave-mappings.create') }}" class="btn btn-primary">
+            <a href="{{ route('hr.leave-mappings.create') }}" class="btn btn-primary">
                 <i class="feather-plus me-1"></i> Add Leave Mapping
             </a>
 
-            <a href="{{ route('admin.leave-mappings.deleted') }}" class="btn btn-danger">
+            <a href="{{ route('hr.leave-mappings.deleted') }}" class="btn btn-danger">
                 Deleted Records
             </a>
         </div>
@@ -33,11 +33,16 @@
                             <thead>
                                 <tr>
                                    <th>Leave Type</th> 
-                                    <th>Employee Status</th> 
+                                    <th>Employee Status</th>
+                                    <th>Gender</th>
+                                    <th>Employment type</th> 
                                   <th>Accrual</th> 
                                     <th>Carry Forward</th> 
                                     <th>Category </th>
                                     <th class="text-end">Actions</th>
+                                    
+                                    
+                                    
                                 </tr>
                             </thead>
                             
@@ -50,6 +55,8 @@
                                             </span>
                                         </td>
                                         <td>{{ is_array($mapping->employee_status) ? implode(', ', $mapping->employee_status) : $mapping->employee_status }}</td>
+                                       <td>{{ $mapping->gender ?? '-' }}</td>
+                                       <td>{{ $mapping->employment_type ?? '-' }}</td>
                                         <td>{{ $mapping->accrual_value }} / {{ $mapping->accrual_frequency }}</td>
                                         <td>
                                             @if($mapping->carry_forward_allowed)
@@ -58,32 +65,37 @@
                                                 <span class="text-danger">No</span> {{-- Red for No [cite: 157] --}}
                                             @endif
                                         </td>
-                                        {{-- Locate the Designation/Category <td> in your index table and replace it with this --}}
-<td>
-    @if(isset($designationMap) && !empty($mapping->designations))
-        @foreach($mapping->designations as $id)
-            <span class="badge bg-soft-info text-info me-1">
-                {{ $designationMap[$id] ?? 'Unknown' }}
-            </span>
-        @endforeach
-    @else
-        <span class="text-muted small">No Designations</span>
-    @endif
-</td>
+                                    <td>
+                                        @php
+                                            // Safety: Convert single string UUID to array so foreach doesn't crash
+                                            $designationIds = $mapping->designations;
+                                            if (!is_array($designationIds)) {
+                                                $designationIds = $designationIds ? [$designationIds] : [];
+                                            }
+                                        @endphp
+
+                                        @forelse($designationIds as $id)
+                                            <span class="badge bg-soft-info text-info me-1">
+                                                {{ $designationMap[$id] ?? 'Unknown' }}
+                                            </span>
+                                        @empty
+                                            <span class="text-muted small">No Designations</span>
+                                        @endforelse
+                                    </td>
                                         <td class="text-end">
                                             <div class="d-flex gap-2 justify-content-end">
                                         {{-- New View Button --}}
-                                        <a href="{{ route('admin.leave-mappings.show', $mapping->id) }}" 
+                                        <a href="{{ route('hr.leave-mappings.show', $mapping->id) }}" 
                                         class="btn btn-outline-secondary btn-icon rounded-circle btn-sm" title="View Details">
                                         <i class="feather-eye"></i>
                                             </a>
                                             <div class="d-flex justify-content-end gap-2">
-                                                <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}"
+                                                <a href="{{ route('hr.leave-mappings.edit', $mapping->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
                                                    <i class="feather-edit-2"></i> {{-- Pencil icon --}}
                                                 </a>
 
-                                                <form action="{{ route('admin.leave-mappings.delete', $mapping->id) }}" method="POST"
+                                                <form action="{{ route('hr.leave-mappings.delete', $mapping->id) }}" method="POST"
                                                     onsubmit="return confirm('Move to trash?')">
                                                     @csrf
                                                     @method('DELETE')
