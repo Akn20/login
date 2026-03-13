@@ -55,7 +55,6 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold">{{ $holiday->name }}</div>
-                                            <small class="text-muted">Ref: {{ $holiday->id }}</small>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($holiday->start_date)->format('d M Y') }}</td>
                                         <td>

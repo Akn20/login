@@ -18,10 +18,14 @@ class weekends extends Model
         'name',
         'days',
         'status',
+        'roles',
+        'staff'
     ];
 
     protected $casts = [
         'days' => 'array',
+        'roles' => 'array',
+        'staff' => 'array',
     ];
 
     protected static function booted()

@@ -1,4 +1,4 @@
-USE `hims`;
+USE `hims_main`;
 
 -- Helpful: disable FK checks while seeding
 SET
@@ -1760,301 +1760,300 @@ VALUES
   );
 
 -- ===================== APPOINTMENTS (UUID) =====================
-INSERT INTO
-  `appointments` (
-    `id`,
-    `patient_id`,
-    `doctor_id`,
-    `department_id`,
-    `appointment_date`,
-    `appointment_time`,
-    `appointment_status`,
-    `consultation_fee`,
-    `institution_id`,
-    `receptionist_user_id`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    (
-      SELECT
-        id
-      FROM
-        patients
-      WHERE
-        patient_code = 'PAT-001'
-      LIMIT
-        1
-    ), (
-      SELECT
-        id
-      FROM
-        users
-      WHERE
-        mobile = '8000000001'
-      LIMIT
-        1
-    ), (
-      SELECT
-        id
-      FROM
-        department_master
-      WHERE
-        department_code = 'OPD'
-      LIMIT
-        1
-    ), CURDATE(), '10:00:00', 'Scheduled', 500.00, (
-      SELECT
-        id
-      FROM
-        hospitals
-      WHERE
-        code = 'HOSP-DH1'
-      LIMIT
-        1
-    ), (
-      SELECT
-        id
-      FROM
-        users
-      WHERE
-        mobile = '9000000005'
-      LIMIT
-        1
-    ), NOW(),
-    NOW()
-  );
+-- INSERT INTO
+--   `appointments` (
+--     `id`,
+--     `patient_id`,
+--     `doctor_id`,
+--     `department_id`,
+--     `appointment_date`,
+--     `appointment_time`,
+--     `appointment_status`,
+--     `consultation_fee`,
+--     `institution_id`,
+--     `receptionist_user_id`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     (
+--       SELECT
+--         id
+--       FROM
+--         patients
+--       WHERE
+--         patient_code = 'PAT-001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '8000000001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         department_master
+--       WHERE
+--         department_code = 'OPD'
+--       LIMIT
+--         1
+--     ), CURDATE(), '10:00:00', 'Scheduled', 500.00, (
+--       SELECT
+--         id
+--       FROM
+--         hospitals
+--       WHERE
+--         code = 'HOSP-DH1'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '9000000005'
+--       LIMIT
+--         1
+--     ), NOW(),
+--     NOW()
+--   );
 
--- ===================== OPD (UUID) =====================
-INSERT INTO
-  `opd` (
-    `id`,
-    `appointment_id`,
-    `patient_id`,
-    `doctor_id`,
-    `visit_date`,
-    `visit_status`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    (
-      SELECT
-        id
-      FROM
-        appointments
-      WHERE
-        patient_id = (
-          SELECT
-            id
-          FROM
-            patients
-          WHERE
-            patient_code = 'PAT-001'
-          LIMIT
-            1
-        )
-      LIMIT
-        1
-    ), (
-      SELECT
-        id
-      FROM
-        patients
-      WHERE
-        patient_code = 'PAT-001'
-      LIMIT
-        1
-    ), (
-      SELECT
-        id
-      FROM
-        users
-      WHERE
-        mobile = '8000000001'
-      LIMIT
-        1
-    ), CURDATE(), 'Pending', NOW(),
-    NOW()
-  );
+-- -- ===================== OPD (UUID) =====================
+-- INSERT INTO
+--   `opd` (
+--     `id`,
+--     `appointment_id`,
+--     `patient_id`,
+--     `doctor_id`,
+--     `visit_date`,
+--     `visit_status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     (
+--       SELECT
+--         id
+--       FROM
+--         appointments
+--       WHERE
+--         patient_id = (
+--           SELECT
+--             id
+--           FROM
+--             patients
+--           WHERE
+--             patient_code = 'PAT-001'
+--           LIMIT
+--             1
+--         )
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         patients
+--       WHERE
+--         patient_code = 'PAT-001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '8000000001'
+--       LIMIT
+--         1
+--     ), CURDATE(), 'Pending', NOW(),
+--     NOW()
+--   );
 
--- ===================== VENDORS (UUID) =====================
-INSERT INTO
-  `vendors` (
-    `id`,
-    `vendor_name`,
-    `phone_number`,
-    `email`,
-    `address`,
-    `status`,
-    `created_by`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    'Global Pharma Distributors',
-    '1112223333',
-    'sales@globalpharma.com',
-    'Business Park, Bangalore',
-    'Active',
-    1,
-    NOW(),
-    NOW()
-  );
+-- -- ===================== VENDORS (UUID) =====================
+-- INSERT INTO
+--   `vendors` (
+--     `id`,
+--     `vendor_name`,
+--     `phone_number`,
+--     `email`,
+--     `address`,
+--     `status`,
+--     `created_by`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'Global Pharma Distributors',
+--     '1112223333',
+--     'sales@globalpharma.com',
+--     'Business Park, Bangalore',
+--     'Active',
+--     1,
+--     NOW(),
+--     NOW()
+--   );
 
--- ===================== MEDICINES (UUID) =====================
-INSERT INTO
-  `medicines` (
-    `id`,
-    `medicine_name`,
-    `generic_name`,
-    `category`,
-    `manufacturer`,
-    `status`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    'Paracetamol 500mg',
-    'Paracetamol',
-    'Analgesic',
-    'PharmaCorp',
-    1,
-    NOW(),
-    NOW()
-  );
+-- -- ===================== MEDICINES (UUID) =====================
+-- INSERT INTO
+--   `medicines` (
+--     `id`,
+--     `medicine_name`,
+--     `generic_name`,
+--     `category`,
+--     `manufacturer`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'Paracetamol 500mg',
+--     'Paracetamol',
+--     'Analgesic',
+--     'PharmaCorp',
+--     1,
+--     NOW(),
+--     NOW()
+--   );
 
--- ===================== ITEMS (auto id) =====================
-INSERT INTO
-  `items` (
-    `name`,
-    `code`,
-    `category`,
-    `unit`,
-    `purchase_price`,
-    `selling_price`,
-    `reorder_level`,
-    `current_stock`,
-    `status`,
-    `stock`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    'Medical Gloves',
-    'CG-001',
-    'Consumable',
-    'Box',
-    200.00,
-    350.00,
-    50,
-    100,
-    'active',
-    100,
-    NOW(),
-    NOW()
-  ),
-  (
-    'Blood Pressure Monitor',
-    'EQ-001',
-    'Equipment',
-    'Unit',
-    1500.00,
-    2500.00,
-    5,
-    20,
-    'active',
-    20,
-    NOW(),
-    NOW()
-  );
+-- -- ===================== ITEMS (auto id) =====================
+-- INSERT INTO
+--   `items` (
+--     `name`,
+--     `code`,
+--     `category`,
+--     `unit`,
+--     `purchase_price`,
+--     `selling_price`,
+--     `reorder_level`,
+--     `current_stock`,
+--     `status`,
+--     `stock`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     'Medical Gloves',
+--     'CG-001',
+--     'Consumable',
+--     'Box',
+--     200.00,
+--     350.00,
+--     50,
+--     100,
+--     'active',
+--     100,
+--     NOW(),
+--     NOW()
+--   ),
+--   (
+--     'Blood Pressure Monitor',
+--     'EQ-001',
+--     'Equipment',
+--     'Unit',
+--     1500.00,
+--     2500.00,
+--     5,
+--     20,
+--     'active',
+--     20,
+--     NOW(),
+--     NOW()
+--   );
 
--- ===================== WARDS (UUID) =====================
-INSERT INTO
-  `wards` (
-    `id`,
-    `ward_name`,
-    `ward_type`,
-    `floor_number`,
-    `total_beds`,
-    `status`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    'General Ward A',
-    'General',
-    1,
-    10,
-    1,
-    NOW(),
-    NOW()
-  ),
-  (
-    UUID(),
-    'ICU',
-    'Critical Care',
-    2,
-    5,
-    1,
-    NOW(),
-    NOW()
-  );
+-- -- ===================== WARDS (UUID) =====================
+-- INSERT INTO
+--   `wards` (
+--     `id`,
+--     `ward_name`,
+--     `ward_type`,
+--     `floor_number`,
+--     `total_beds`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'General Ward A',
+--     'General',
+--     1,
+--     10,
+--     1,
+--     NOW(),
+--     NOW()
+--   ),
+--   (
+--     UUID(),
+--     'ICU',
+--     'Critical Care',
+--     2,
+--     5,
+--     1,
+--     NOW(),
+--     NOW()
+--   );
 
--- ===================== BEDS (UUID) =====================
-INSERT INTO
-  `beds` (
-    `id`,
-    `bed_code`,
-    `ward_id`,
-    `room_number`,
-    `bed_type`,
-    `status`,
-    `created_at`,
-    `updated_at`
-  )
-VALUES
-  (
-    UUID(),
-    'GW-A-01',
-    (
-      SELECT
-        id
-      FROM
-        wards
-      WHERE
-        ward_name = 'General Ward A'
-      LIMIT
-        1
-    ), '101', 'Standard', 'Available', NOW(),
-    NOW()
-  ),
-  (
-    UUID(),
-    'ICU-01',
-    (
-      SELECT
-        id
-      FROM
-        wards
-      WHERE
-        ward_name = 'ICU'
-      LIMIT
-        1
-    ), '201', 'ICU Bed', 'Available', NOW(),
-    NOW()
-  );
+-- -- ===================== BEDS (UUID) =====================
+-- INSERT INTO
+--   `beds` (
+--     `id`,
+--     `bed_code`,
+--     `ward_id`,
+--     `room_number`,
+--     `bed_type`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'GW-A-01',
+--     (
+--       SELECT
+--         id
+--       FROM
+--         wards
+--       WHERE
+--         ward_name = 'General Ward A'
+--       LIMIT
+--         1
+--     ), '101', 'Standard', 'Available', NOW(),
+--     NOW()
+--   ),
+--   (
+--     UUID(),
+--     'ICU-01',
+--     (
+--       SELECT
+--         id
+--       FROM
+--         wards
+--       WHERE
+--         ward_name = 'ICU'
+--       LIMIT
+--         1
+--     ), '201', 'ICU Bed', 'Available', NOW(),
+--     NOW()
+--   );
 
-SET
-  FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = 1;

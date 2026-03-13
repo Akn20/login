@@ -49,11 +49,11 @@
                 </button>
             </form>
 
-            <a href="{{ route('admin.weekends.create') }}" class="btn btn-primary">
+            <a href="{{ route('hr.weekends.create') }}" class="btn btn-primary">
                 <i class="feather-plus me-1"></i> Add Weekend
             </a>
 
-            <a href="{{ route('admin.weekends.deleted') }}" class="btn btn-danger">
+            <a href="{{ route('hr.weekends.deleted') }}" class="btn btn-danger">
                 Deleted Weekends
             </a>
         </div>
@@ -104,7 +104,7 @@
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
                                             
                                             <a
-                                                href="{{ route('admin.weekends.edit', $weekend->id) }}"
+                                                href="{{ route('hr.weekends.edit', $weekend->id) }}"
                                                 class="btn btn-outline-secondary btn-icon rounded-circle"
                                                 title="Edit"
                                             >
@@ -112,7 +112,7 @@
                                             </a>
 
                                             <form
-                                                action="{{ route('admin.weekends.delete', $weekend->id) }}"
+                                                action="{{ route('hr.weekends.delete', $weekend->id) }}"
                                                 method="POST"
                                                 onsubmit="return confirm('Move weekend configuration to trash?')"
                                             >
@@ -128,7 +128,7 @@
                                                     <i class="feather feather-trash-2"></i>
                                                 </button>
                                             </form>
-                                                    <form action="{{ route('admin.weekends.toggleStatus', $weekend->id) }}"
+                                                    <form action="{{ route('hr.weekends.toggleStatus', $weekend->id) }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PATCH')
