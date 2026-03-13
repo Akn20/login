@@ -131,7 +131,7 @@ class VendorController extends Controller
     {
         $vendors = Vendor::latest()->get();
 
-        return response()->json($vendors);
+        return ApiResponse::success($vendors, 'Vendors fetched successfully');
     }
 
 

@@ -217,6 +217,264 @@
                     </ul>
                 </li>
 
+                {{-- Module Management --}}
+
+                {{-- Dynamic Modules --}}
+                <li class="nxl-item nxl-caption">
+                    <label>Modules</label>
+                </li>
+
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-grid"></i></span>
+                        <span class="nxl-mtext">Modules Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.modules.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Add Module</span>
+                            </a>
+                        </li>
+                        {{-- ================= INVENTORY ================= --}}
+                        @foreach($sidebarModules as $module)
+                            @if($module->children->count() > 0)
+                                <li class="nxl-item nxl-hasmenu">
+                                    <a href="javascript:void(0);" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-layers' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                        <span class="nxl-arrow">
+                                            <i class="feather-chevron-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="nxl-submenu">
+                                        @foreach($module->children as $child)
+                                            <li class="nxl-item">
+                                                <a href="{{ url($child->file_url) }}" class="nxl-link">
+                                                    {{ $child->module_display_name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                <li class="nxl-item">
+                                    <a href="{{ url($module->file_url) }}" class="nxl-link">
+                                        <span class="nxl-micon">
+                                            <i class="{{ $module->icon ?? 'feather-circle' }}"></i>
+                                        </span>
+                                        <span class="nxl-mtext">{{ $module->module_display_name }}</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </li>
+
+                <li class="nxl-item nxl-caption">
+                    <label>Clinical Management</label>
+                </li>
+
+                {{-- ================= INVENTORY ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-package"></i></span>
+                        <span class="nxl-mtext">Inventory</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+
+                        {{-- Items --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.index') }}">
+                                All Items
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.create') }}">
+                                Add Item
+                            </a>
+                        </li>
+
+                        {{-- Purchase Orders --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.index') }}">
+                                Purchase Orders
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.purchase-orders.create') }}">
+                                Create Purchase Order
+                            </a>
+                        </li>
+
+                        {{-- Inventory Vendors --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.index') }}">
+                                Vendors
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory-vendors.create') }}">
+                                Add Vendor
+                            </a>
+                        </li>
+
+                        {{-- GRN --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.grns.index') }}">
+                                GRN List
+                            </a>
+                        </li>
+
+                        {{-- Stock Transfers --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.index') }}">
+                                Stock Transfers
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-transfers.create') }}">
+                                Create Stock Transfer
+                            </a>
+                        </li>
+
+                        {{-- Stock Audit --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.index') }}">
+                                Stock Audits
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.stock-audits.create') }}">
+                                New Stock Audit
+                            </a>
+                        </li>
+
+                        {{-- Reports --}}
+                        <li class="nxl-item">
+                            <a class="nxl-link" href="{{ route('admin.inventory.reports') }}">
+                                Reports Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- ================= CONFIGURATION ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-sliders"></i></span>
+                        <span class="nxl-mtext">Configuration</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.religion.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-book"></i></span>
+                                <span class="nxl-mtext">Religion</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.job-type.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-briefcase"></i></span>
+                                <span class="nxl-mtext">Job Type</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.work-status.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Work Status</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.designation.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-tag"></i></span>
+                                <span class="nxl-mtext">Designation</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.blood-groups.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-droplet"></i></span>
+                                <span class="nxl-mtext">Blood Group</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.departments.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-grid"></i></span>
+                                <span class="nxl-mtext">Department</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- Pharmacy --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-shopping-bag"></i></span>
+                        <span class="nxl-mtext">Pharmacy</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.vendors.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-truck"></i></span>
+                                <span class="nxl-mtext">Vendor Management</span>
+                            </a>
+                        </li>
+                        {{-- Goods Receipt(GRN) --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.grn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fa-solid fa-file-invoice"></i></span>
+                                <span class="nxl-mtext">Goods Receipt(GRN)</span>
+                            </a>
+                        </li>
+
+
+                        {{-- Stock Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.stock.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-package"></i>
+                                </span>
+                                <span class="nxl-mtext">Stock Management</span>
+                            </a>
+                        </li>
+                        {{-- Expiry Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.expiry.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-alert-triangle"></i></span>
+                                <span class="nxl-mtext">Expiry Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Controlled Drug Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-shield"></i></span>
+                                <span class="nxl-mtext">Controlled Drug Management</span>
+                            </a>
+                        </li>
+                        {{-- Prescription Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fa-solid fa-file-medical"></i></span>
+                                <span class="nxl-mtext">Prescription Management</span>
+                            </a>
+                        </li>
+
+
+                        {{-- Sales Return Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-rotate-ccw"></i></span>
+                                <span class="nxl-mtext">Sales Return Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 {{-- HR Management --}}
 
                 <li class="nxl-item nxl-caption">
@@ -336,6 +594,94 @@
                         </a>
                     </li>
 
+                        {{-- Duplicate Patients --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patients.duplicates') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-copy"></i></span>
+                                <span class="nxl-mtext">Duplicate Patients</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {{-- ================= Surgery Management ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-activity"></i></span>
+                        <span class="nxl-mtext">Surgery Management</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                        {{-- Surgery List --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('surgery.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-list"></i></span>
+                                <span class="nxl-mtext">Surgery List</span>
+                            </a>
+                        </li>
+
+                        {{-- Schedule Surgery --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('surgery.create') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-plus-circle"></i></span>
+                                <span class="nxl-mtext">Schedule Surgery</span>
+                            </a>
+                        </li>
+
+                        {{-- OT Management --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('ot.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-settings"></i></span>
+                                <span class="nxl-mtext">OT Management</span>
+                            </a>
+                        </li>
+
+                        {{-- Post Operative Notes --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('post.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                                <span class="nxl-mtext">Post Operative Notes</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                {{-- ================= Doctor Module ================= --}}
+                <li class="nxl-item nxl-hasmenu">
+
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon">
+                            <i class="feather-activity"></i>
+                        </span>
+                        <span class="nxl-mtext">Doctor</span>
+                        <span class="nxl-arrow">
+                            <i class="feather-chevron-right"></i>
+                        </span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+
+                        {{-- Today's Appointments --}}
+                        <li class="nxl-item">
+                            <a href="{{ route('doctor.view-appointment') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">OPD Appointments</span>
+                            </a>
+                        </li>
+                        <li class="nxl-item">
+                            <a href="{{ route('doctor.view-consultations') }}" class="nxl-link">
+                                <span class="nxl-micon">
+                                    <i class="feather-calendar"></i>
+                                </span>
+                                <span class="nxl-mtext">Consultations</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                     @foreach($sidebarModules as $module)
                         @if($module->children->count() > 0)
                             <li class="nxl-item nxl-hasmenu">
