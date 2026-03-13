@@ -538,6 +538,128 @@
                                 </li>
                             </ul>
                         </li>
+
+                        {{-- Shift Scheduling --}}
+                        <li class="nxl-item nxl-hasmenu">
+                            <a href="javascript:void(0);" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-clock"></i></span>
+                                <span class="nxl-mtext">Shift Scheduling</span>
+                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                            </a>
+
+                            <ul class="nxl-submenu">
+
+                                        {{-- Shift Management --}}
+                                        <li class="nxl-item nxl-hasmenu">
+                                            <a href="javascript:void(0);" class="nxl-link">
+                                                <span class="nxl-micon"><i class="feather-settings"></i></span>
+                                                <span class="nxl-mtext">Shift Management</span>
+                                                <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                                            </a>
+
+                                            <ul class="nxl-submenu">
+
+                                                {{-- All Shifts --}}
+                                                <li class="nxl-item">
+                                                    <a href="{{ route('admin.shifts.index') }}" class="nxl-link">
+                                                        <span class="nxl-mtext">All Shifts</span>
+                                                    </a>
+                                                </li>
+
+                                                {{-- Add Shift --}}
+                                                <li class="nxl-item">
+                                                    <a href="{{ route('admin.shifts.create') }}" class="nxl-link">
+                                                        <span class="nxl-mtext">Add Shift</span>
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </li>
+
+                                        {{-- Shift Assignment --}}
+                                         <li class="nxl-item nxl-hasmenu">
+
+                                             <a href="javascript:void(0);" class="nxl-link">
+                                               <span class="nxl-mtext">Shift Assignment</span>
+                                               <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                                            </a>
+
+                                                <ul class="nxl-submenu">
+
+                                                          <li class="nxl-item">
+                                                              <a href="{{ route('admin.shift-assignments.index') }}" class="nxl-link">
+                                                                  <span class="nxl-mtext">All Assignments</span>
+                                                              </a>
+                                                         </li>
+
+                                                         <li class="nxl-item">
+                                                               <a href="{{ route('admin.shift-assignments.create') }}" class="nxl-link">
+                                                                   <span class="nxl-mtext">Assign Shift</span>
+                                                                </a>
+                                                         </li>
+
+                                                </ul>
+
+                                        </li>
+
+                                        {{-- Rotational Shifts --}}
+
+                                        <li class="nxl-item nxl-hasmenu">
+                                            <a href="javascript:void(0);" class="nxl-link">
+                                                <span class="nxl-micon">
+                                                    <i class="feather-refresh-cw"></i>
+                                                </span>
+                                                <span class="nxl-mtext">Rotational Shifts</span>
+                                                <span class="nxl-arrow">
+                                                    <i class="feather-chevron-right"></i>
+                                                </span>
+                                            </a>
+
+                                            <ul class="nxl-submenu">
+
+                                                {{-- All Rotations --}}
+                                                <li class="nxl-item">
+                                                    <a href="{{ route('admin.shift-rotations.index') }}" class="nxl-link">
+                                                        <span class="nxl-mtext">All Rotations</span>
+                                                    </a>
+                                                </li>
+
+                                                {{-- Create Rotation --}}
+                                                <li class="nxl-item">
+                                                    <a href="{{ route('admin.shift-rotations.create') }}" class="nxl-link">
+                                                        <span class="nxl-mtext">Create Rotation</span>
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </li>
+ 
+                                        {{--  Weekly Off --}}
+                                        <li class="nxl-item">
+                                           <a href="{{ route('admin.weekly-offs.index') }}" class="nxl-link">
+                                               <span class="nxl-mtext">Weekly Off</span>
+                                           </a>
+                                        </li>
+
+
+                                        <li class="nxl-item">
+                                           <a href="{{ route('admin.shift-conflicts.index') }}" class="nxl-link">
+                                                <span class="nxl-mtext">Conflict Monitor</span>
+                                           </a>
+                                        </li>
+                                        
+                                    </ul>
+                                </li>
+
+                                
+                               
+
+                                
+
+                               
+
+                            </ul>
+                        </li>
                     </ul>
                 </li>
 
