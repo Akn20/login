@@ -168,13 +168,16 @@ class PatientController extends Controller
         return redirect()->route('admin.patients.index')
             ->with('success', 'Patients merged successfully.');
     }
+    //added by sushan for api
+    public function apiIndex()
+{
+    $patients = Patient::select('id','first_name','last_name','patient_code')
+        ->where('status',1)
+        ->get();
 
-    //Api
-    public function apiShow($id)
-    {
-        $patient = Patient::with(['consultations.doctor','consultations.medicines'])
-            ->findOrFail($id);
-
-        return response()->json($patient);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $patients
+    ]);
+}
 }
