@@ -548,7 +548,9 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function() {
         Route::get('/', [LeaveAdjustmentController::class, 'index'])->name('index');
+        Route::get('/create', [LeaveAdjustmentController::class, 'create'])->name('create');
         Route::post('/store', [LeaveAdjustmentController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])->name('show');
         Route::get('/mapping/{staff}', [LeaveAdjustmentController::class, 'getLeaveMapping'])->name('mapping');
     });
 
