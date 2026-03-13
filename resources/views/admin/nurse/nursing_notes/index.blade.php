@@ -31,6 +31,9 @@
             <a href="{{ route('admin.nursing-notes.create') }}" class="btn btn-primary">
                 Add Nursing Note
             </a>
+            <a href="{{ route('admin.nursing-notes.trash') }}" class="btn btn-danger">
+                Deleted Records
+            </a>
         </div>
     </div>
 
@@ -41,14 +44,11 @@
         <!-- Search Section -->
         <div class="card stretch mb-3">
             <div class="card-body">
-
                 <form action="{{ route('admin.nursing-notes.index') }}" method="GET">
-
                     <div class="row g-2">
 
                         <!-- Patient Name -->
-                        <div class="col-md-4">
-                            
+                        <div class="col-md-4">                          
                             <input type="text"
                                    name="patient_name"
                                    class="form-control"
@@ -57,33 +57,8 @@
                         </div>
 
 
-                        <!-- Shift -->
-                        <div class="col-md-3">
-
-                            <select name="shift" class="form-select">
-                                <option value="">Select Shift</option>
-
-                                <option value="Morning"
-                                    {{ request('shift') == 'Morning' ? 'selected' : '' }}>
-                                    Morning
-                                </option>
-
-                                <option value="Evening"
-                                    {{ request('shift') == 'Evening' ? 'selected' : '' }}>
-                                    Evening
-                                </option>
-
-                                <option value="Night"
-                                    {{ request('shift') == 'Night' ? 'selected' : '' }}>
-                                    Night
-                                </option>
-
-                            </select>
-                        </div>
-
                         <!-- Buttons -->
                         <div class="col-md-2 d-flex align-items-end gap-2">
-
                             <button type="submit"
                                     class="btn btn-success w-50">
                                 Search
@@ -93,13 +68,10 @@
                                class="btn btn-secondary w-50">
                                 Reset
                             </a>
-
                         </div>
 
                     </div>
-
                 </form>
-
             </div>
         </div>
 
@@ -107,14 +79,10 @@
         <!-- Table Section -->
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card stretch stretch-full">
                     <div class="card-body p-0">
-
                         <div class="table-responsive">
-
                             <table class="table table-hover">
-
                                 <thead>
                                     <tr>
                                         <th>Sl.No.</th>
@@ -127,11 +95,8 @@
                                 </thead>
 
                                 <tbody>
-
                                     @forelse($nursingNotes as $index => $note)
-
                                         <tr>
-
                                             <td>
                                                 {{ $nursingNotes->firstItem() + $index }}
                                             </td>
@@ -155,10 +120,8 @@
                                                     : '-' }}
                                             </td>
 
-
                                             <!-- Actions -->
                                             <td class="text-end">
-
                                                 <div class="hstack gap-2 justify-content-end">
 
                                                     <!-- View -->
@@ -167,13 +130,11 @@
                                                         <i class="feather-eye"></i>
                                                     </a>
 
-
                                                     <!-- Edit -->
                                                     <a href="{{ route('admin.nursing-notes.edit', $note->id) }}"
                                                        class="avatar-text avatar-md action-icon action-restore">
                                                         <i class="feather-edit"></i>
                                                     </a>
-
 
                                                     <!-- Delete -->
                                                     <form action="{{ route('admin.nursing-notes.destroy', $note->id) }}"
@@ -187,17 +148,11 @@
                                                                 class="avatar-text avatar-md action-icon action-delete border-0 bg-transparent">
 
                                                             <i class="feather-trash-2"></i>
-
                                                         </button>
-
                                                     </form>
-
                                                 </div>
-
                                             </td>
-
                                         </tr>
-
                                     @empty
 
                                         <tr>
@@ -207,25 +162,18 @@
                                         </tr>
 
                                     @endforelse
-
                                 </tbody>
-
                             </table>
-
                         </div>
-
 
                         <!-- Pagination -->
                         <div class="p-3">
                             {{ $nursingNotes->appends(request()->query())->links() }}
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
 </div>
 @endsection
