@@ -104,21 +104,11 @@
                 </div>
 
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">From Session</label>
-                    <p>{{ ucfirst(str_replace('_', ' ', $leave->from_session)) }}</p>
-                </div>
-
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label fw-bold">To Session</label>
-                    <p>{{ ucfirst(str_replace('_', ' ', $leave->to_session)) }}</p>
-                </div>
 
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-bold">Total Leave Days</label>
-                    <p>{{ $leave->total_leave_days }}</p>
+                    <p>{{ $leave->leave_days }}</p>
                 </div>
 
 
@@ -142,7 +132,7 @@
 
                 <div class="col-md-12 mb-3">
                     <label class="form-label fw-bold">Purpose</label>
-                    <p>{{ $leave->purpose }}</p>
+                    <p>{{ $leave->reason }}</p>
                 </div>
 
 

@@ -243,23 +243,34 @@ public function apiShow($id)
 
     public function apiStore(Request $request)
     {
-        $data = $request->validate([
-            'leave_type_id'             => 'required|uuid',
-            'priority'                  => 'required|integer',
-            'employee_status'           => 'required|array',
-            'designations'              => 'required',
-            'gender'                    => 'required|in:Male,Female,All',
-            'employment_type'           => 'required|in:Full-time,Part-time,All',
-            'accrual_frequency'         => 'required|in:Monthly,Yearly,Event Based',
-            'accrual_value'             => 'required|integer',
-            'leave_nature'              => 'required|in:Paid,Unpaid',
-            'carry_forward_allowed'     => 'nullable|boolean',
-            'carry_forward_limit'       => 'nullable|integer',
-            'carry_forward_expiry_days' => 'nullable|integer',
-            'min_leave_per_application' => 'nullable|integer',
-            'max_leave_per_application' => 'nullable|integer',
-            'status'                    => 'required|in:active,inactive',
-        ]);
+
+    
+       $data = $request->validate([
+    'leave_type_id' => 'required|uuid',
+    'priority' => 'required|integer',
+    'employee_status' => 'required|array',
+    'designations' => 'required',
+
+    'gender' => 'required|in:Male,Female,All',
+    'employment_type' => 'required|in:Full-time,Part-time,All',
+
+    'accrual_frequency' => 'required|in:Monthly,Yearly,Event Based',
+    'accrual_value' => 'required|integer',
+
+    'leave_nature' => 'required|in:Paid,Unpaid',
+
+    'carry_forward_allowed' => 'nullable|boolean',
+    'carry_forward_limit' => 'nullable|integer',
+    'carry_forward_expiry_days' => 'nullable|integer',
+
+    'encashment_allowed' => 'nullable|boolean',
+    'encashment_trigger' => 'nullable|string|in:Year-end,Exit,Specific Date',
+
+    'min_leave_per_application' => 'required|integer|min:1',
+    'max_leave_per_application' => 'nullable|integer|gte:min_leave_per_application',
+
+    'status' => 'required|in:active,inactive',
+]);
 
         $mapping = LeaveMapping::create($data);
 
@@ -294,6 +305,14 @@ public function apiShow($id)
             'min_leave_per_application' => 'nullable|integer',
             'max_leave_per_application' => 'nullable|integer',
             'status'                    => 'sometimes|in:active,inactive',
+            'gender' => 'sometimes|in:Male,Female,All',
+'employment_type' => 'sometimes|in:Full-time,Part-time,All',
+
+'encashment_allowed' => 'nullable|boolean',
+'encashment_trigger' => 'nullable|string|in:Year-end,Exit,Specific Date',
+
+'min_leave_per_application' => 'nullable|integer|min:1',
+'max_leave_per_application' => 'nullable|integer|gte:min_leave_per_application',
         ]);
 
         $mapping->update($data);

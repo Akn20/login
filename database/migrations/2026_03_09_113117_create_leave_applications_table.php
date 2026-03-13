@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -32,7 +31,8 @@ return new class extends Migration
             // Leave dates
             $table->date('from_date');
             $table->date('to_date');
-
+            $table->decimal('balance_before', 5, 2)->nullable();
+            $table->decimal('balance_after', 5, 2)->nullable();
             // Calculated leave days
             $table->decimal('leave_days', 4, 1);
 
@@ -49,7 +49,7 @@ return new class extends Migration
                 'rejected',
                 'withdrawn'
             ])->default('pending');
-
+            $table->integer('current_approval_level')->default(1);
             // timestamps
             $table->timestamps();
 

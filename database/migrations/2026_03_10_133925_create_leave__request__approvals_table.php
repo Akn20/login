@@ -23,9 +23,9 @@ return new class extends Migration
     $table->enum('status',['pending','approved','rejected']);
 
     $table->text('remarks')->nullable();
-
+   
     $table->timestamps();
-    $table->foreign('leave_request_id')->references('id')->on('leave_requests')->cascadeOnDelete();
+    $table->foreign('leave_request_id')->references('id')->on('leave_applications')->cascadeOnDelete();
     $table->foreign('approver_id')->references('id')->on('users')->cascadeOnDelete();
 });
     }

@@ -115,14 +115,14 @@
 
 
                                     <td>
-                                        {{ \Carbon\Carbon::parse($leave->from_date)->format('d-m-Y') }}
+                                        {{ $leave->from_date}}
                                         →
-                                        {{ \Carbon\Carbon::parse($leave->to_date)->format('d-m-Y') }}
+                                        {{ $leave->to_date}}
                                     </td>
 
 
                                     <td>
-                                        {{ $leave->total_leave_days }}
+                                        {{ $leave->leave_days }}
                                     </td>
 
 
