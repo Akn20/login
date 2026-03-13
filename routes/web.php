@@ -850,10 +850,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('nursing-notes')->name('nursing-notes.')->group(function () {
         Route::get('/', [NurseNotesController::class, 'index'])->name('index');
         Route::get('/create', [NurseNotesController::class, 'create'])->name('create');
-        Route::post('/', [NurseNotesController::class, 'store'])->name('store');        
-        Route::get('/{id}', [NurseNotesController::class, 'show'])->name('show');
+        Route::post('/', [NurseNotesController::class, 'store'])->name('store');      
+
+        Route::get('/trash', [NurseNotesController::class, 'trash'])->name('trash');
+        Route::patch('/restore/{id}', [NurseNotesController::class, 'restore'])->name('restore');
+
         Route::get('/{id}/edit', [NurseNotesController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [NurseNotesController::class, 'update'])->name('update');
         Route::delete('/{id}', [NurseNotesController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}', [NurseNotesController::class, 'show'])->name('show');
     });
 });
 
