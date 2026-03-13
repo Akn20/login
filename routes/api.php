@@ -59,6 +59,9 @@ use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Api\Attendance\AttendanceApiController;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -630,5 +633,22 @@ Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex'])
 Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
 
 Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
+
+});
+Route::prefix('attendance')->group(function(){
+
+    Route::get('/', [AttendanceApiController::class,'index']);
+
+    Route::post('/', [AttendanceApiController::class,'store']);
+
+    Route::get('/{id}', [AttendanceApiController::class,'show']);
+
+    Route::put('/{id}', [AttendanceApiController::class,'update']);
+
+    Route::delete('/{id}', [AttendanceApiController::class,'destroy']);
+
+    Route::get('/late/list', [AttendanceApiController::class,'lateEntries']);
+
+    Route::get('/overtime/list', [AttendanceApiController::class,'overtime']);
 
 });
