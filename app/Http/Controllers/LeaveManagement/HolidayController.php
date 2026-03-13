@@ -71,6 +71,12 @@ class HolidayController extends Controller
         if ($request->wantsJson()) {
             return response()->json(['success' => true, 'data' => $holiday], 201);
         }
+
+        $holiday = Holiday::create($data);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'data' => $holiday], 201);
+        }
         return redirect()->route('hr.holidays.index')->with('success', 'Created!');
     }
 
@@ -140,7 +146,15 @@ class HolidayController extends Controller
         }
         return redirect()->route('hr.holidays.index')->with('success', 'Holiday updated successfully!');
 
+    
+    if ($request->wantsJson()) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Holiday updated successfully!']);
     }
+    return redirect()->route('hr.holidays.index')->with('success', 'Holiday updated successfully!');
+
+}
 
 
     /**
@@ -157,7 +171,7 @@ class HolidayController extends Controller
             ]);
         }
         // You MUST redirect back to the list
-        return redirect()->route('admin.holidays.index')
+        return redirect()->route('hr.holidays.index')
             ->with('success', 'Holiday moved to trash successfully!');
     }
     public function deleted()
@@ -182,7 +196,7 @@ class HolidayController extends Controller
                 'message' => 'Holiday restored successfully!',
             ]);
         }
-        return redirect()->route('admin.holidays.index')
+        return redirect()->route('hr.holidays.index')
             ->with('success', 'Holiday restored successfully!');
     }
     public function forceDelete($id)
