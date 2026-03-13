@@ -63,7 +63,7 @@
         <i class="feather-save me-1"></i> {{ isset($holiday) ? 'Update' : 'Save' }}
     </button>
     
-    <a href="{{ route('admin.holidays.index') }}" class="btn btn-light btn-sm px-4">
+    <a href="{{ route('hr.holidays.index') }}" class="btn btn-light btn-sm px-4">
         Cancel
     </a>
 </div>

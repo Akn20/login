@@ -1,25 +1,32 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::table('leave_mappings', function (Blueprint $table) {
-       $table->string('gender')->nullable()->after('designations');     // Full-time / Part-time
-    });
-}
+    public function up(): void
+    {
+        Schema::table('leave_mappings', function (Blueprint $table) {
 
-public function down(): void
-{
-    Schema::table('leave_mappings', function (Blueprint $table) {
-        $table->dropColumn('gender'); // ✅ only drop gender
-    });
-}
+            if (!Schema::hasColumn('leave_mappings', 'gender')) {
+                $table->string('gender')->nullable()->after('designations');
+            }
+
+            if (!Schema::hasColumn('leave_mappings', 'employment_type')) {
+                $table->string('employment_type')->nullable()->after('gender');
+            }
+
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('leave_mappings', function (Blueprint $table) {
+
+            $table->dropColumn(['gender','employment_type']);
+
+        });
+    }
 };
