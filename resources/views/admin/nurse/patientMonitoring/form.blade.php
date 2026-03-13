@@ -5,7 +5,7 @@
         <option value="">Select Nurse</option>
 
         @foreach($nurses as $nurse)
-            <option value="{{ $nurse->id }}">
+            <option value="{{ $nurse->id }}" {{ old('nurse_id', $vital->nurse_id ?? '') == $nurse->id ? 'selected' : '' }}>
                 {{ $nurse->name }}
             </option>
         @endforeach
@@ -21,17 +21,15 @@
     <label class="form-label">Patient <span class="text-danger">*</span></label>
 
     <select name="patient_id" class="form-select">
-
         <option value="">Select Patient</option>
 
         @foreach($patients as $patient)
-            <option value="{{ $patient->id }}">
+            <option value="{{ $patient->id }}" {{ old('patient_id', $vital->patient_id ?? '') == $patient->id ? 'selected' : '' }}>
                 {{ $patient->first_name }} {{ $patient->last_name }}
             </option>
         @endforeach
 
     </select>
-
 </div>
 
 @error('patient_id')

@@ -35,9 +35,14 @@
                             <thead>
                                 <tr>
                                     <th>Sl.No.</th>
+                                    <th>Patient</th>
                                     <th>Temperature</th>
+                                    <th>Blood Pressure</th>
                                     <th>Pulse</th>
+                                    <th>Respiratory</th>
                                     <th>SpO2</th>
+                                    <th>Blood Sugar</th>
+                                    <th>Weight</th>
                                     <th>Recorded At</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -51,11 +56,25 @@
 
                                         <td>{{ $index + 1 }}</td>
 
-                                        <td>{{ $vital->temperature }}</td>
+                                        <td>
+                                            {{ $vital->patient->first_name }} {{ $vital->patient->last_name }}
+                                        </td>
 
-                                        <td>{{ $vital->pulse_rate }}</td>
+                                        <td>{{ $vital->temperature ?? '-' }}</td>
 
-                                        <td>{{ $vital->spo2 }}</td>
+                                        <td>
+                                            {{ $vital->blood_pressure_systolic }}/{{ $vital->blood_pressure_diastolic }}
+                                        </td>
+
+                                        <td>{{ $vital->pulse_rate ?? '-' }}</td>
+
+                                        <td>{{ $vital->respiratory_rate ?? '-' }}</td>
+
+                                        <td>{{ $vital->spo2 ?? '-' }}</td>
+
+                                        <td>{{ $vital->blood_sugar ?? '-' }}</td>
+
+                                        <td>{{ $vital->weight ?? '-' }}</td>
 
                                         <td>{{ \Carbon\Carbon::parse($vital->recorded_at)->format('d-m-Y H:i') }}</td>
 
