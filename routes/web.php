@@ -69,6 +69,8 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 // Reception / Tokens
 use App\Http\Controllers\TokenController;
+//nurse
+use App\Http\Controllers\NurseNotesController;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
@@ -756,6 +758,8 @@ Route::middleware(['auth', 'role:admin'])
 
 
 
+
+
 //Appointments routes 
 
 
@@ -835,6 +839,21 @@ Route::prefix('stock')->group(function () {
     Route::get('stock-trash', [StockController::class, 'apiTrash']);
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nursing Notes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nursing-notes')->name('nursing-notes.')->group(function () {
+        Route::get('/', [NurseNotesController::class, 'index'])->name('index');
+        Route::get('/create', [NurseNotesController::class, 'create'])->name('create');
+        Route::post('/', [NurseNotesController::class, 'store'])->name('store');        Route::get('/{id}', [NurseNotesController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [NurseNotesController::class, 'edit'])->name('edit');
+        Route::delete('/{id}', [NurseNotesController::class, 'destroy'])->name('destroy');
+    });
 });
 
 Route::prefix('admin')
