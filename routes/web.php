@@ -1046,6 +1046,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [AppointmentController::class, 'index'])->name('index');
         Route::get('/create', [AppointmentController::class, 'create'])->name('create');
         Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
+        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [AppointmentController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
+
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
