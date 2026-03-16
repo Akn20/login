@@ -63,7 +63,7 @@ use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\attendance\AttendanceController;
-
+use App\Http\Controllers\Admin\LabTestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -1066,7 +1066,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
 
-    //Laborartory Management
+    // Laboratory Management
+    Route::prefix('laboratory')->name('laboratory.')->group(function () {
+
+        Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
+
+        Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
+
+    });
 });
 
 /*
