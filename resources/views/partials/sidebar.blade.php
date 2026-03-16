@@ -152,7 +152,7 @@
                 </ul>
             </li>
 
-           <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-flask"></i></span>
                     <span class="nxl-mtext">Laboratory</span>
@@ -161,10 +161,19 @@
 
                 <ul class="nxl-submenu">
                     <li class="nxl-item">
-                        <a href="{{ route('admin.laboratory.tests.create') }}" 
-                        class="nxl-link" up-follow up-target="#main-container">
-                        <i class="feather-plus-circle me-2"></i>
-                        Add Lab Test
+                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Lab Test
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            View Lab Tests
                         </a>
                     </li>
                 </ul>
