@@ -71,10 +71,10 @@ use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\ControlledDrugController;
+//use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+//use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+//use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -727,16 +727,6 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
-        | Reception: Appointments
-        |--------------------------------------------------------------------------
-        */
-
-
-
-
-
-        /*
-        |--------------------------------------------------------------------------
         | Reception: Tokens / Queue
         |--------------------------------------------------------------------------
         */
@@ -751,7 +741,7 @@ Route::middleware(['auth', 'role:admin'])
 
     });
 
-    });
+   
 
 //Appointments routes 
 
@@ -845,16 +835,14 @@ Route::prefix('admin')
         |--------------------------------------------------------------------------
         */
 
-        // Main CRUD routes
+        
         Route::resource('salesReturn', SalesReturnController::class);
 
-        // Print Sales Return
         Route::get(
             'salesReturn/{id}/print',
             [SalesReturnController::class, 'print']
         )->name('salesReturn.print');
 
-        // Approve Sales Return
         Route::post(
             'salesReturn/{id}/approve',
             [SalesReturnController::class, 'approve']
@@ -863,7 +851,6 @@ Route::prefix('admin')
         Route::get('admin/salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])
             ->name('admin.salesReturn.approve');
 
-        // Reject Sales Return
         Route::post(
             'salesReturn/{id}/reject',
             [SalesReturnController::class, 'reject']
@@ -908,23 +895,6 @@ Route::prefix('doctor')->group(function () {
     Route::get('/postoperative', [PostOperativeController::class, 'index'])->name('post.index');
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
 
-        // Prescription List
-        Route::get('/', [PrescriptionController::class, 'index'])
-            ->name('index');
-
-        /*
-        |-----------------------------------
-        | Offline Prescription
-        |-----------------------------------
-        */
-
-        // Create Offline Prescription Page
-        Route::get('/create', [PrescriptionController::class, 'createOffline'])
-            ->name('offline.create');
-
-        // Store Offline Prescription
-        Route::post('/store', [PrescriptionController::class, 'storeOffline'])
-            ->name('offline.store');
 
     Route::get('/surgery/{id}/postoperative', [PostOperativeController::class, 'create'])->name('post.create');
 
@@ -933,95 +903,60 @@ Route::prefix('doctor')->group(function () {
     Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
 
     Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
-        /*
-        |-----------------------------------
-        | Dispense Medicines
-        |-----------------------------------
-        */
-
-        Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
-            ->name('dispense');
-
-        Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
-            ->name('dispense.store');
+        
 
     Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Prescripion
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
 
-        // Prescription List
         Route::get('/', [PrescriptionController::class, 'index'])
             ->name('index');
 
-        /*
-        |-----------------------------------
-        | Offline Prescription
-        |-----------------------------------
-        */
-
-        // Create Offline Prescription Page
+        // CREATE PAGE
         Route::get('/create', [PrescriptionController::class, 'createOffline'])
-            ->name('offline.create');
-        /*
-        |-----------------------------------
-        | Verify Prescription
-        |-----------------------------------
-        */
+            ->name('create');
 
-        Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
-            ->name('verify');
-
-        // Store Offline Prescription
+        // STORE OFFLINE PRESCRIPTION
         Route::post('/store', [PrescriptionController::class, 'storeOffline'])
             ->name('offline.store');
 
-        /*
-        |-----------------------------------
-        | Dispense Medicines
-        |-----------------------------------
-        */
+        // VERIFY
+        Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
+            ->name('verify');
 
+        // REJECT
+        Route::post('/reject/{id}', [PrescriptionController::class, 'reject'])
+            ->name('reject');
+
+        // DISPENSE
         Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
             ->name('dispense');
-      /*
-        | Bill Page
-        |-----------------------------------
-        */
-
-        Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
-            ->name('bill');
 
         Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
             ->name('dispense.store');
 
-        /*
-        |-----------------------------------
-        | Verify Prescription
-        |-----------------------------------
-        */
-
-        Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
-            ->name('verify');
-
-        /*
-        |-----------------------------------
-        | Bill Page
-        |-----------------------------------
-        */
-
+        // BILL
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
             ->name('bill');
 
-        /*
-        |-----------------------------------
-        | View Prescription (KEEP LAST)
-        |-----------------------------------
-        */
+        // PRINT
+        Route::get('/print/{id}', [PrescriptionController::class,'print'])
+            ->name('print');
 
+        // SHOW PRESCRIPTION (ALWAYS LAST)
         Route::get('/{id}', [PrescriptionController::class, 'show'])
             ->name('show');
 
     });
+
+});
 });

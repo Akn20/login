@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class SalesBillItem extends Model
 {
+    use HasUuids;
+
     protected $table = 'sales_bill_items';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'sales_bill_id',
@@ -17,7 +23,7 @@ class SalesBillItem extends Model
         'total_price'
     ];
 
-    // REMOVE UUID settings (because id is bigint auto increment)
+
 
     public function medicine()
     {
