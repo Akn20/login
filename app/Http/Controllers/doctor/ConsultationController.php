@@ -113,13 +113,14 @@ class ConsultationController extends Controller
                 }
             }
 
-            foreach ($tests as $test) {
+            foreach ($tests as $index => $test) {
 
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
+                    'priority' => $request->priority[$index] ?: 'routine',
                     'status' => 'pending'
                 ]);
 
@@ -196,13 +197,14 @@ class ConsultationController extends Controller
                 }
             }
 
-            foreach ($tests as $test) {
+            foreach ($tests as $index => $test) {
 
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
+                    'priority' => $request->priority[$index] ?? 'routine',
                     'status' => 'pending'
                 ]);
 
@@ -355,7 +357,7 @@ class ConsultationController extends Controller
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
-                    'priority' => $request->priority[$index],
+                    'priority' => $request->priority[$index] ?? 'routine',
                     'status' => 'pending'
                 ]);
 
@@ -418,7 +420,7 @@ class ConsultationController extends Controller
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
-                    'priority' => $request->priority[$index],
+                    'priority' => $request->priority[$index] ?? 'routine',
                     'status' => 'pending'
                 ]);
 
