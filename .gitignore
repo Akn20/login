@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+hims.sql
+database/migrations/2026_03_05_151456_create_sales_returns_table.php
+database/migrations/2026_03_05_151801_create_sales_bill_items_table.php

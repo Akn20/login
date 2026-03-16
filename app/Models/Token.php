@@ -9,6 +9,10 @@ class Token extends Model
 {
     use HasUuids;
 
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'appointment_id',
         'token_number',

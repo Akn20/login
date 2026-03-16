@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->json('days'); // ["Friday","Saturday"]
             $table->enum('status', ['active', 'inactive'])->default('inactive');
+            $table->json('roles')->nullable();
+            $table->json('staff')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

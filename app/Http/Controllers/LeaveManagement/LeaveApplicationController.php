@@ -47,7 +47,7 @@ class LeaveApplicationController extends Controller
     {
         $leaveTypes = LeaveType::whereNull('deleted_at')->get();
 
-        $staff = Staff::first();
+        $staff = Staff::findOrFail(5);
 
         $leaveBalances = [];
 
@@ -88,7 +88,7 @@ class LeaveApplicationController extends Controller
         ]);
 
 
-        $staff = Staff::first();
+        $staff = Staff::findOrFail(5);
 
         if (!$staff) {
             return back()->with('error', 'No staff found');
@@ -331,8 +331,8 @@ class LeaveApplicationController extends Controller
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
             'leave_days' => $days,
-            // 'balance_before' => $balanceBefore,
-            // 'balance_after' => $balanceAfter,
+            'balance_before' => $balanceBefore,
+            'balance_after' => $balanceAfter,
             'reason' => $request->reason,
             'attachment' => $attachment,
             'status' => 'pending'
