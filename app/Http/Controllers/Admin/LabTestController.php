@@ -17,7 +17,7 @@ class LabTestController extends Controller
 
     public function store(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'test_name' => 'required|string|max:255',
             'test_code' => 'required|string|max:50|unique:lab_tests,test_code',
             'test_category' => 'nullable|string|max:100',
@@ -41,7 +41,7 @@ class LabTestController extends Controller
         ]);
 
 
-        return redirect()->back()->with('success','Lab Test Added Successfully');
+        return redirect()->back()->with('success', 'Lab Test Added Successfully');
     }
     public function index(Request $request)
     {
@@ -68,5 +68,126 @@ class LabTestController extends Controller
             compact('labRequests', 'departments')
         );
     }
+    /* =====================================
+       API: LIST LAB TESTS
+    ===================================== */
+    public function apiIndex()
+    {
+        $tests = LabRequest::latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $tests
+        ]);
+    }
+
+
+    /* =====================================
+       API: SHOW SINGLE LAB TEST
+    ===================================== */
+    public function apiShow($id)
+    {
+        $test = LabRequest::find($id);
+
+        if (!$test) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lab test not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $test
+        ]);
+    }
+
+
+    /* =====================================
+       API: UPDATE LAB TEST
+    ===================================== */
+    public function apiUpdate(Request $request, $id)
+    {
+        $test = LabRequest::find($id);
+
+        if (!$test) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lab test not found'
+            ], 404);
+        }
+
+        $test->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lab test updated successfully',
+            'data' => $test
+        ]);
+    }
+
+
+    /* =====================================
+       API: DELETE LAB TEST
+    ===================================== */
+    public function apiDelete($id)
+    {
+        $test = LabRequest::find($id);
+
+        if (!$test) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lab test not found'
+            ], 404);
+        }
+
+        $test->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lab test deleted successfully'
+        ]);
+    }
+
+
+    /* =====================================
+       API: LIST LAB REQUESTS
+    ===================================== */
+    public function apiLabRequests()
+    {
+        $requests = LabRequest::with(['patient', 'consultation'])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $requests
+        ]);
+    }
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'test_name' => 'required|string|max:255',
+            'test_code' => 'required|string|max:50|unique:lab_tests,test_code',
+            'test_category' => 'nullable|string|max:100',
+            'sample_type' => 'nullable|string|max:100',
+            'price' => 'nullable|numeric|min:0',
+            'turnaround_time' => 'nullable|string|max:100',
+            'status' => 'required|boolean',
+            'description' => 'nullable|string'
+        ]);
+
+        $test = LabRequest::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lab test created successfully',
+            'data' => $test
+        ], 201);
+    }
+
+
 
 }
+
+
