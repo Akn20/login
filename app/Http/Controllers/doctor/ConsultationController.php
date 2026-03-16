@@ -344,18 +344,21 @@ class ConsultationController extends Controller
             ? $request->tests
             : explode(',', $request->tests);
 
-        foreach ($tests as $test) {
+        foreach ($tests as $index => $test) {
 
             $test = trim($test);
 
             if ($test !== '') {
+
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
+                    'priority' => $request->priority[$index],
                     'status' => 'pending'
                 ]);
+
             }
         }
 
@@ -408,13 +411,14 @@ class ConsultationController extends Controller
 
             $tests = explode(',', $validated['tests']);
 
-            foreach ($tests as $test) {
+            foreach ($tests as $index => $test) {
 
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
+                    'priority' => $request->priority[$index],
                     'status' => 'pending'
                 ]);
 
