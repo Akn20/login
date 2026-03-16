@@ -11,7 +11,7 @@ use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
 use Illuminate\Support\Str;
-
+use App\Models\LabTest;
 class ConsultationController extends Controller
 {
 
@@ -37,7 +37,8 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors'));
+        $labTests = LabTest::where('status',1)->get();
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors','labTests'));
     }
 
 
@@ -71,9 +72,18 @@ class ConsultationController extends Controller
         $appointment->update([
             'appointment_status' => 'Completed'
         ]);
-        $tests = is_array($request->tests)
-            ? implode(',', $request->tests)
-            : $request->tests;
+       $tests = [];
+
+        if (!empty($request->tests)) {
+            foreach ($request->tests as $testId) {
+                $labTest = LabTest::find($testId);
+                if ($labTest) {
+                    $tests[] = $labTest->test_name;
+                }
+            }
+        }
+
+        $tests = implode(',', $tests);
 
         $consultation = Consultation::create([
             'patient_id' => $request->patient_id,
@@ -94,40 +104,30 @@ class ConsultationController extends Controller
 
         }
 
-        // Labrequests
+       
+       // Lab Requests
         if (!empty($request->tests)) {
 
-            $tests = [];
+            foreach ($request->tests as $index => $testId) {
 
-            foreach ($request->tests as $testInput) {
+                $labTest = LabTest::find($testId);
 
-                $splitTests = explode(',', $testInput);
+                if ($labTest) {
 
-                foreach ($splitTests as $test) {
+                    LabRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $request->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'test_name' => $labTest->test_name,
+                        'priority' => $request->priority[$index] ?? 'routine',
+                        'status' => 'pending'
+                    ]);
 
-                    $test = trim($test);
-
-                    if ($test !== '') {
-                        $tests[] = $test;
-                    }
                 }
-            }
-
-            foreach ($tests as $index => $test) {
-
-                LabRequest::create([
-                    'id' => Str::uuid(),
-                    'patient_id' => $request->patient_id,
-                    'consultation_id' => $consultation->id,
-                    'test_name' => $test,
-                    'priority' => $request->priority[$index] ?: 'routine',
-                    'status' => 'pending'
-                ]);
 
             }
 
         }
-
         return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
 
     }

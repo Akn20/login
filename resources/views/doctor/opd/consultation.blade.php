@@ -191,9 +191,19 @@
                     <!-- Recommended Tests -->
                     <div class="mb-3">
 
-                        <label><strong>Recommended Tests</strong></label>
+                    <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" name="tests[]" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+                    <select name="tests[]" class="form-control" multiple>
+
+                        <option value="">Select Test</option>
+
+                        @foreach($labTests as $test)
+                        <option value="{{ $test->id }}">
+                        {{ $test->test_name }}
+                        </option>
+                        @endforeach
+
+                    </select>
 
                     </div>
                     <div class="mb-3">
