@@ -1110,6 +1110,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [WeekendController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [WeekendController::class, 'forceDelete'])->name('forceDelete');
         Route::patch('/{id}/toggle-status', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::get('/staff-by-roles', [WeekendController::class, 'getStaffByRoles'])->name('staff-by-roles');
         Route::get('/', [WeekendController::class, 'index'])->name('index');
         Route::get('/create', [WeekendController::class, 'create'])->name('create');
         Route::post('/', [WeekendController::class, 'store'])->name('store');
