@@ -6,7 +6,7 @@
         <h5 class="m-b-10 mb-1"><i class="feather-trash-2 me-2"></i>Deleted Mappings</h5>
     </div>
     <div class="page-header-right">
-        <a href="{{ route('admin.leave-mappings.index') }}" class="btn btn-light btn-sm px-3">
+        <a href="{{ route('hr.leave-mappings.index') }}" class="btn btn-light btn-sm px-3">
             <i class="feather-arrow-left me-1"></i> Back to List
         </a>
     </div>
@@ -31,7 +31,7 @@
                             <td class="text-end">
                                 <div class="d-flex justify-content-end gap-2">
                                     {{-- Restore Button --}}
-                                    <form action="{{ route('admin.leave-mappings.restore', $map->id) }}" method="POST">
+                                    <form action="{{ route('hr.leave-mappings.restore', $map->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn btn-outline-success btn-icon rounded-circle btn-sm" title="Restore">
                                             <i class="feather-rotate-ccw"></i>
@@ -39,7 +39,7 @@
                                     </form>
 
                                     {{-- Permanent Delete --}}
-                                    <form action="{{ route('admin.leave-mappings.forceDelete', $map->id) }}" method="POST" 
+                                    <form action="{{ route('hr.leave-mappings.forceDelete', $map->id) }}" method="POST" 
                                           onsubmit="return confirm('Delete permanently?')">
                                         @csrf
                                         @method('DELETE')

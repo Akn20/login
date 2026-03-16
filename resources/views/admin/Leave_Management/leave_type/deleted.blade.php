@@ -45,7 +45,7 @@
             <div class="d-flex justify-content-end gap-2">
 
                 {{-- RESTORE --}}
-                <form action="{{ route('admin.leave-type.restore', $leave->id) }}"
+                <form action="{{ route('hr.leave-type.restore', $leave->id) }}"
                       method="POST">
                     @csrf
 
@@ -56,7 +56,7 @@
                 </form>
 
                 {{-- PERMANENT DELETE --}}
-                <form action="{{ route('admin.leave-type.forceDelete', $leave->id) }}"
+                <form action="{{ route('hr.leave-type.forceDelete', $leave->id) }}"
                       method="POST"
                       onsubmit="return confirm('Delete permanently?')">
                     @csrf
