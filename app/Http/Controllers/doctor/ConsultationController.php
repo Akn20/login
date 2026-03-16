@@ -10,6 +10,7 @@ use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
+use App\Models\LabTest;
 use Illuminate\Support\Str;
 
 class ConsultationController extends Controller
@@ -37,7 +38,9 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors'));
+        $labTests = LabTest::where('status',1)->get(); // active tests
+
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests'));
     }
 
 

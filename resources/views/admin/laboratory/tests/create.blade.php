@@ -5,16 +5,15 @@
 <div class="container">
     <h3>Add Lab Test</h3>
 
-   {{-- Validation Errors --}}
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+   @if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 
     {{-- Success Message --}}
     @if(session('success'))
@@ -28,14 +27,36 @@
         @csrf
 
         <div class="mb-3">
-            <label class="form-label">Test Name</label>
-            <input type="text" name="test_name" class="form-control" required>
-        </div>
+    <label class="form-label">Test Name</label>
 
-        <div class="mb-3">
-            <label class="form-label">Test Code</label>
-            <input type="text" name="test_code" class="form-control" required>
+    <input type="text"
+           name="test_name"
+           class="form-control @error('test_name') is-invalid @enderror"
+           value="{{ old('test_name') }}"
+           required>
+
+    @error('test_name')
+        <div class="invalid-feedback">
+            {{ $message }}
         </div>
+    @enderror
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Test Code</label>
+
+    <input type="text"
+           name="test_code"
+           class="form-control @error('test_code') is-invalid @enderror"
+           value="{{ old('test_code') }}"
+           required>
+
+    @error('test_code')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
 
         <div class="mb-3">
             <label class="form-label">Test Category</label>
