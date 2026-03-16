@@ -1228,4 +1228,14 @@ Route::prefix('stock')->group(function () {
     Route::post('stock', [StockController::class, 'apiStore']);
 });
 
+//Laboratory routes
+Route::prefix('laboratory')->name('laboratory.')->group(function () {
+
+    Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
+
+    Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
+
+    Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
+
+});
 

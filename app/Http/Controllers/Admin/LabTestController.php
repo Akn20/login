@@ -73,7 +73,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiIndex()
     {
-        $tests = LabTest::latest()->get();
+        $tests = LabRequest::latest()->get();
 
         return response()->json([
             'status' => true,
@@ -87,7 +87,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiShow($id)
     {
-        $test = LabTest::find($id);
+        $test = LabRequest::find($id);
 
         if (!$test) {
             return response()->json([
@@ -108,7 +108,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiUpdate(Request $request, $id)
     {
-        $test = LabTest::find($id);
+        $test = LabRequest::find($id);
 
         if (!$test) {
             return response()->json([
@@ -132,7 +132,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiDelete($id)
     {
-        $test = LabTest::find($id);
+        $test = LabRequest::find($id);
 
         if (!$test) {
             return response()->json([
@@ -163,6 +163,27 @@ class LabTestController extends Controller
             'status' => true,
             'data' => $requests
         ]);
+    }
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'test_name' => 'required|string|max:255',
+            'test_code' => 'required|string|max:50|unique:lab_tests,test_code',
+            'test_category' => 'nullable|string|max:100',
+            'sample_type' => 'nullable|string|max:100',
+            'price' => 'nullable|numeric|min:0',
+            'turnaround_time' => 'nullable|string|max:100',
+            'status' => 'required|boolean',
+            'description' => 'nullable|string'
+        ]);
+
+        $test = LabRequest::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lab test created successfully',
+            'data' => $test
+        ], 201);
     }
 
 
