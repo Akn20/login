@@ -26,10 +26,6 @@ return new class extends Migration
 
             // Patient reference
             $table->uuid('patient_id')->nullable();
-<<<<<<< HEAD
-=======
-
->>>>>>> 9f00afbf714e61a2241f77fa8748b2301d3d02f6
 
             $table->text('remarks')->nullable();
 
