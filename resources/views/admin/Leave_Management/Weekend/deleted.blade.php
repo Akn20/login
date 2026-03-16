@@ -21,14 +21,14 @@
                     <a href="{{ route('admin.dashboard') }}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ route('admin.weekends.index') }}">Weekend Configurations</a>
+                    <a href="{{ route('hr.weekends.index') }}">Weekend Configurations</a>
                 </li>
                 <li class="breadcrumb-item">Deleted</li>
             </ul>
         </div>
 
         <div>
-            <a href="{{ route('admin.weekends.index') }}" class="btn btn-light">
+            <a href="{{ route('hr.weekends.index') }}" class="btn btn-light">
                 <i class="feather-arrow-left me-1"></i> Back to List
             </a>
         </div>
@@ -70,7 +70,7 @@
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
                                             {{-- Restore --}}
                                             <form
-                                                action="{{ route('admin.weekends.restore', $weekend->id) }}"
+                                                action="{{ route('hr.weekends.restore', $weekend->id) }}"
                                                 method="POST"
                                                 onsubmit="return confirm('Restore this configuration?')"
                                             >
@@ -86,7 +86,7 @@
 
                                             {{-- Force delete --}}
                                             <form
-                                                action="{{ route('admin.weekends.forceDelete', $weekend->id) }}"
+                                                action="{{ route('hr.weekends.forceDelete', $weekend->id) }}"
                                                 method="POST"
                                                 onsubmit="return confirm('Permanently delete this configuration? This cannot be undone.')"
                                             >

@@ -19,6 +19,8 @@ class Holiday extends Model
     protected $casts = [
     'start_date' => 'date',
     'end_date'   => 'date',
+       'roles' => 'array',
+        'staff' => 'array',
 ];
 
     protected $fillable = [
@@ -27,6 +29,8 @@ class Holiday extends Model
         'end_date',
         'details',
         'document',
+        'staff',
+        'roles',
         'status',
     ];
 

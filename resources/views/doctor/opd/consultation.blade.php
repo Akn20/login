@@ -12,30 +12,30 @@
             addBtn.addEventListener("click", function () {
 
                 let newRow = `
-            <tr>
+                    <tr>
 
-            <td>
-                <select name="medicine[]" class="form-control">
-                    <option value="">Select</option>
-                    @foreach($medicines as $medicine)
-                        <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                    @endforeach
-                </select>
-            </td>
+                    <td>
+                        <select name="medicine[]" class="form-control">
+                            <option value="">Select</option>
+                            @foreach($medicines as $medicine)
+                                <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                            @endforeach
+                        </select>
+                    </td>
 
-            <td><input type="text" class="form-control" name="dosage[]"></td>
-            <td><input type="text" class="form-control" name="frequency[]"></td>
-            <td><input type="text" class="form-control" name="duration[]"></td>
-            <td><input type="text" class="form-control" name="instructions[]"></td>
+                    <td><input type="text" class="form-control" name="dosage[]"></td>
+                    <td><input type="text" class="form-control" name="frequency[]"></td>
+                    <td><input type="text" class="form-control" name="duration[]"></td>
+                    <td><input type="text" class="form-control" name="instructions[]"></td>
 
-            <td>
-                <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                    <i class="feather-trash-2"></i> Remove
-                </button>
-            </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                            <i class="feather-trash-2"></i> Remove
+                        </button>
+                    </td>
 
-            </tr>
-            `;
+                    </tr>
+                    `;
 
                 table.insertAdjacentHTML("beforeend", newRow);
 
@@ -194,6 +194,18 @@
                         <label><strong>Recommended Tests</strong></label>
 
                         <input type="text" name="tests[]" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+
+                    </div>
+                    <div class="mb-3">
+
+                        <label><strong>Test Priority</strong></label>
+
+                        <select name="priority[]" class="form-control">
+                            <option value="">Select Priority</option>
+                            <option value="routine">Routine</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="stat">STAT</option>
+                        </select>
 
                     </div>
                     <div class="mb-3">
