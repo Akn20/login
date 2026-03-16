@@ -1065,6 +1065,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])->name('bill');
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
+
+    //Laborartory Management
 });
 
 /*
@@ -1208,3 +1210,5 @@ Route::prefix('stock')->group(function () {
     Route::get('stock/low', [StockController::class, 'apiLowStock']);
     Route::post('stock', [StockController::class, 'apiStore']);
 });
+
+
