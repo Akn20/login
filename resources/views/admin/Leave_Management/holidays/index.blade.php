@@ -13,7 +13,7 @@
         </div>
 
         <div class="d-flex gap-2 align-items-center">
-            <form method="GET" action="{{ route('admin.holidays.index') }}" class="d-flex gap-2">
+            <form method="GET" action="{{ route('hr.holidays.index') }}" class="d-flex gap-2">
                 <select name="status" class="form-control form-control-sm" style="width: 120px;">
                     <option value="">All Status</option>
                     <option value="1">Active</option>
@@ -24,11 +24,11 @@
                 <button class="btn btn-light btn-sm border"><i class="feather-search"></i></button>
             </form>
 
-            <a href="{{ route('admin.holidays.create') }}" class="btn btn-primary">
+            <a href="{{ route('hr.holidays.create') }}" class="btn btn-primary">
                 <i class="feather-plus me-1"></i> Add Holiday
             </a>
 
-            <a href="{{ route('admin.holidays.deleted') }}" class="btn btn-danger">
+            <a href="{{ route('hr.holidays.deleted') }}" class="btn btn-danger">
                 Deleted Holidays
             </a>
         </div>
@@ -55,7 +55,6 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold">{{ $holiday->name }}</div>
-                                            <small class="text-muted">Ref: {{ $holiday->id }}</small>
                                         </td>
                                         <td>{{ \Carbon\Carbon::parse($holiday->start_date)->format('d M Y') }}</td>
                                         <td>
@@ -69,19 +68,19 @@
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
                                                 {{-- View Button --}}
-                                                <a href="{{ route('admin.holidays.show', $holiday->id) }}"
+                                                <a href="{{ route('hr.holidays.show', $holiday->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
                                                     <i class="feather-eye"></i>
                                                 </a>
 
                                                 {{-- Edit Button --}}
-                                                <a href="{{ route('admin.holidays.edit', $holiday->id) }}"
+                                                <a href="{{ route('hr.holidays.edit', $holiday->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
                                                     <i class="feather-edit-2"></i>
                                                 </a>
 
                                                 {{-- Delete Button --}}
-                                                <form action="{{ route('admin.holidays.delete', $holiday->id) }}" method="POST"
+                                                <form action="{{ route('hr.holidays.delete', $holiday->id) }}" method="POST"
                                                     onsubmit="return confirm('Move to trash?')">
                                                     @csrf
                                                     @method('DELETE')
@@ -91,7 +90,7 @@
                                                     </button>
                                                 </form>
                                                 {{-- Update the status check to use strings --}}
-                                                <form action="{{ route('admin.holidays.toggleStatus', $holiday->id) }}"
+                                                <form action="{{ route('hr.holidays.toggleStatus', $holiday->id) }}"
                                                     method="POST" class="d-inline">
                                                     @csrf
                                                     @method('PATCH')

@@ -38,7 +38,7 @@ class AppointmentController extends Controller
             ->get();
 
         return view(
-            'admin.receptionist.appointments.create',
+            'admin.Receptionist.appointments.create',
             compact('patients', 'departments', 'doctors')
         );
     }
@@ -90,7 +90,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::with(['patient', 'doctor', 'department'])
             ->findOrFail($id);
 
-        return view('admin.receptionist.appointments.show', compact('appointment'));
+        return view('admin.Receptionist.appointments.show', compact('appointment'));
     }
 
 
@@ -107,7 +107,7 @@ class AppointmentController extends Controller
             ->get();
 
         return view(
-            'admin.receptionist.appointments.edit',
+            'admin.Receptionist.appointments.edit',
             compact('appointment', 'patients', 'departments', 'doctors')
         );
     }
@@ -156,7 +156,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::onlyTrashed()->get();
 
-        return view('admin.receptionist.appointments.trash', compact('appointments'));
+        return view('admin.Receptionist.appointments.trash', compact('appointments'));
     }
 
 

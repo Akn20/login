@@ -1,297 +1,1055 @@
-USE `hims`;
+USE `hims_main`;
 
 -- Helpful: disable FK checks while seeding
-SET FOREIGN_KEY_CHECKS = 0;
+SET
+  FOREIGN_KEY_CHECKS = 0;
 
 -- ===================== ORGANIZATIONS (UUID) =====================
-INSERT INTO `organizations` (
-  `id`, `name`, `type`, `registration_number`, `gst`,
-  `address`, `city`, `state`, `country`, `pincode`,
-  `contact_number`, `email`, `timezone`, `organization_url`,
-  `software_url`, `logo`, `language`, `status`,
-  `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `organizations` (
+    `id`,
+    `name`,
+    `type`,
+    `registration_number`,
+    `gst`,
+    `address`,
+    `city`,
+    `state`,
+    `country`,
+    `pincode`,
+    `contact_number`,
+    `email`,
+    `timezone`,
+    `organization_url`,
+    `software_url`,
+    `logo`,
+    `language`,
+    `status`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(
-  UUID(),
-  'Demo Health Group',
-  'Healthcare Group',
-  'REG-001',
-  'GST-001',
-  NULL, 'Mangalore', 'Karnataka', 'India', '575001',
-  '9876543210', 'info@demohealth.com', 'Asia/Kolkata',
-  NULL, NULL, NULL,
-  'English',
-  1,
-  NOW(), NOW(), NULL
-);
+  (
+    UUID(),
+    'Demo Health Group',
+    'Healthcare Group',
+    'REG-001',
+    'GST-001',
+    NULL,
+    'Mangalore',
+    'Karnataka',
+    'India',
+    '575001',
+    '9876543210',
+    'info@demohealth.com',
+    'Asia/Kolkata',
+    NULL,
+    NULL,
+    NULL,
+    'English',
+    1,
+    NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== INSTITUTIONS (UUID, FK via subquery) =====================
-INSERT INTO `institutions` (
-  `id`, `organization_id`, `code`, `name`,
-  `address`, `city`, `state`, `country`, `pincode`,
-  `contact_number`, `email`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `institutions` (
+    `id`,
+    `organization_id`,
+    `code`,
+    `name`,
+    `address`,
+    `city`,
+    `state`,
+    `country`,
+    `pincode`,
+    `contact_number`,
+    `email`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(
-  UUID(),
-  (SELECT id FROM organizations LIMIT 1),
-  'INST-HQ',
-  'Demo Health HQ',
-  'Main Road, Someshwara',
-  'Mangalore', 'Karnataka', 'India', '575001',
-  '9876543210', 'hq@demohealth.com',
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  (SELECT id FROM organizations LIMIT 1),
-  'INST-CLINIC',
-  'Demo Health Clinic',
-  'Near Bus Stand, Mangalore',
-  'Mangalore', 'Karnataka', 'India', '575001',
-  '9876543210', 'clinic@demohealth.com',
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  (SELECT id FROM organizations LIMIT 1),
-  'INST-DIAG',
-  'Demo Diagnostics Center',
-  'City Center, Mangalore',
-  'Mangalore', 'Karnataka', 'India', '575002',
-  '9876543211', 'diagnostics@demohealth.com',
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  (SELECT id FROM organizations LIMIT 1),
-  'INST-REHAB',
-  'Demo Rehabilitation Center',
-  'Beach Road, Mangalore',
-  'Mangalore', 'Karnataka', 'India', '575003',
-  '9876543212', 'rehab@demohealth.com',
-  NOW(), NOW(), NULL
-);
+  (
+    UUID(),
+    (
+      SELECT
+        id
+      FROM
+        organizations
+      LIMIT
+        1
+    ), 'INST-HQ', 'Demo Health HQ', 'Main Road, Someshwara', 'Mangalore', 'Karnataka', 'India', '575001', '9876543210', 'hq@demohealth.com', NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    (
+      SELECT
+        id
+      FROM
+        organizations
+      LIMIT
+        1
+    ), 'INST-CLINIC', 'Demo Health Clinic', 'Near Bus Stand, Mangalore', 'Mangalore', 'Karnataka', 'India', '575001', '9876543210', 'clinic@demohealth.com', NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    (
+      SELECT
+        id
+      FROM
+        organizations
+      LIMIT
+        1
+    ), 'INST-DIAG', 'Demo Diagnostics Center', 'City Center, Mangalore', 'Mangalore', 'Karnataka', 'India', '575002', '9876543211', 'diagnostics@demohealth.com', NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    (
+      SELECT
+        id
+      FROM
+        organizations
+      LIMIT
+        1
+    ), 'INST-REHAB', 'Demo Rehabilitation Center', 'Beach Road, Mangalore', 'Mangalore', 'Karnataka', 'India', '575003', '9876543212', 'rehab@demohealth.com', NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== HOSPITALS (UUID, FK via subquery) =====================
-INSERT INTO `hospitals` (
-  `id`, `name`, `code`, `address`, `contact_number`,
-  `institution_id`, `status`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `hospitals` (
+    `id`,
+    `name`,
+    `code`,
+    `address`,
+    `contact_number`,
+    `institution_id`,
+    `status`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(
-  UUID(),
-  'General Hospital',
-  'HOSP-DH1',
-  'Near Bus Stand, Mangalore',
-  '9876543210',
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  1,
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  'Critical Care Hospital',
-  'HOSP-DH2',
-  'City Center, Mangalore',
-  '9876543211',
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  1,
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  'Specialty Clinic',
-  'HOSP-DH3',
-  'Beach Road, Mangalore',
-  '9876543212',
-  (SELECT id FROM institutions WHERE code = 'INST-CLINIC' LIMIT 1),
-  1,
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  'Women & Children Hospital',
-  'HOSP-DH4',
-  'Market Road, Mangalore',
-  '9876543213',
-  (SELECT id FROM institutions WHERE code = 'INST-DIAG' LIMIT 1),
-  1,
-  NOW(), NOW(), NULL
-),
-(
-  UUID(),
-  'Rehabilitation Hospital',
-  'HOSP-DH5',
-  'Hilltop, Mangalore',
-  '9876543214',
-  (SELECT id FROM institutions WHERE code = 'INST-REHAB' LIMIT 1),
-  1,
-  NOW(), NOW(), NULL
-);
+  (
+    UUID(),
+    'General Hospital',
+    'HOSP-DH1',
+    'Near Bus Stand, Mangalore',
+    '9876543210',
+    (
+      SELECT
+        id
+      FROM
+        institutions
+      WHERE
+        code = 'INST-HQ'
+      LIMIT
+        1
+    ), 1, NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Critical Care Hospital',
+    'HOSP-DH2',
+    'City Center, Mangalore',
+    '9876543211',
+    (
+      SELECT
+        id
+      FROM
+        institutions
+      WHERE
+        code = 'INST-HQ'
+      LIMIT
+        1
+    ), 1, NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Specialty Clinic',
+    'HOSP-DH3',
+    'Beach Road, Mangalore',
+    '9876543212',
+    (
+      SELECT
+        id
+      FROM
+        institutions
+      WHERE
+        code = 'INST-CLINIC'
+      LIMIT
+        1
+    ), 1, NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Women & Children Hospital',
+    'HOSP-DH4',
+    'Market Road, Mangalore',
+    '9876543213',
+    (
+      SELECT
+        id
+      FROM
+        institutions
+      WHERE
+        code = 'INST-DIAG'
+      LIMIT
+        1
+    ), 1, NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Rehabilitation Hospital',
+    'HOSP-DH5',
+    'Hilltop, Mangalore',
+    '9876543214',
+    (
+      SELECT
+        id
+      FROM
+        institutions
+      WHERE
+        code = 'INST-REHAB'
+      LIMIT
+        1
+    ), 1, NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== MODULES (bigint auto / labels stable) =====================
-INSERT INTO `modules` (
-  `id`, `module_label`, `module_display_name`, `parent_module`, `priority`,
-  `icon`, `file_url`, `page_name`, `type`, `access_for`, `status`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `modules` (
+    `id`,
+    `module_label`,
+    `module_display_name`,
+    `parent_module`,
+    `priority`,
+    `icon`,
+    `file_url`,
+    `page_name`,
+    `type`,
+    `access_for`,
+    `status`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'dashboard',      'Dashboard',           NULL, 1,  'feather-activity',    '/admin/dashboard',      'Dashboard',        'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'access_control', 'Access Control',      NULL, 2,  'feather-lock',        '/admin/access-control', 'AccessControl',    'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'users',          'Users',               NULL, 3,  'feather-users',       '/admin/users',          'Users',            'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'roles',          'Roles & Permissions', NULL, 4,  'feather-shield',      '/admin/roles',          'Roles',            'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'organization',   'Organization',        NULL, 5,  'feather-briefcase',   '/admin/organization',   'Organization',     'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'hospitals',      'Hospitals',           NULL, 6,  'feather-home',        '/admin/hospitals',      'Hospitals',        'admin', 'both', 1, NOW(), NULL, NULL),
-(UUID(), 'institutions',   'Institutions',        NULL, 7,  'feather-aperture',    '/admin/institutions',   'Institutions',     'admin', 'web', 1, NOW(), NULL, NULL),
-(UUID(), 'departments',    'Departments',         NULL, 8,  'feather-grid',        '/admin/departments',    'Departments',      'admin', 'web', 1, NOW(), NULL, NULL),
-(UUID(), 'staff',          'Staff Management',    NULL, 9,  'feather-user-check',  '/hr/staff-management',  'StaffManagement',  'admin', 'web', 1, NOW(), NULL, NULL),
-(UUID(), 'patients',       'Patient Management',  NULL, 10, 'feather-users',       '/admin/patients',       'Patients',         'admin', 'web', 1, NOW(), NULL, NULL),
-(UUID(), 'inventory',      'Inventory',           NULL, 11, 'feather-package',     '/admin/inventory',      'Inventory',        'admin',('web'), 1, NOW(), NULL, NULL),
-(UUID(), 'pharmacy',       'Pharmacy',            NULL, 12, 'feather-shopping-bag','/admin/pharmacy',      ('Pharmacy'),        ('admin'), ('web'), 1, NOW(), NULL, NULL),
-(UUID(), 'leave_mgmt',     'Leave Management',    NULL, 13, 'feather-clock',       '/admin/leave-mappings', 'LeaveManagement',  'admin', 'web', 1, NOW(), NULL, NULL);
+  (
+    UUID(),
+    'dashboard',
+    'Dashboard',
+    NULL,
+    1,
+    'feather-activity',
+    '/admin/dashboard',
+    'Dashboard',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'access_control',
+    'Access Control',
+    NULL,
+    2,
+    'feather-lock',
+    '/admin/access-control',
+    'AccessControl',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'users',
+    'Users',
+    NULL,
+    3,
+    'feather-users',
+    '/admin/users',
+    'Users',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'roles',
+    'Roles & Permissions',
+    NULL,
+    4,
+    'feather-shield',
+    '/admin/roles',
+    'Roles',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'organization',
+    'Organization',
+    NULL,
+    5,
+    'feather-briefcase',
+    '/admin/organization',
+    'Organization',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'hospitals',
+    'Hospitals',
+    NULL,
+    6,
+    'feather-home',
+    '/admin/hospitals',
+    'Hospitals',
+    'admin',
+    'both',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'institutions',
+    'Institutions',
+    NULL,
+    7,
+    'feather-aperture',
+    '/admin/institutions',
+    'Institutions',
+    'admin',
+    'web',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'departments',
+    'Departments',
+    NULL,
+    8,
+    'feather-grid',
+    '/admin/departments',
+    'Departments',
+    'admin',
+    'web',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'staff',
+    'Staff Management',
+    NULL,
+    9,
+    'feather-user-check',
+    '/hr/staff-management',
+    'StaffManagement',
+    'admin',
+    'web',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'patients',
+    'Patient Management',
+    NULL,
+    10,
+    'feather-users',
+    '/admin/patients',
+    'Patients',
+    'admin',
+    'web',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'inventory',
+    'Inventory',
+    NULL,
+    11,
+    'feather-package',
+    '/admin/inventory',
+    'Inventory',
+    'admin',
+    ('web'),
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'pharmacy',
+    'Pharmacy',
+    NULL,
+    12,
+    'feather-shopping-bag',
+    '/admin/pharmacy',
+    ('Pharmacy'),
+    ('admin'),
+    ('web'),
+    1,
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'leave_mgmt',
+    'Leave Management',
+    NULL,
+    13,
+    'feather-clock',
+    '/admin/leave-mappings',
+    'LeaveManagement',
+    'admin',
+    'web',
+    1,
+    NOW(),
+    NULL,
+    NULL
+  );
 
 -- Link HQ institution to all modules by label
-INSERT INTO `institution_module` (`institution_id`, `module_id`, `created_at`, `updated_at`)
+INSERT INTO
+  `institution_module` (
+    `institution_id`,
+    `module_id`,
+    `created_at`,
+    `updated_at`
+  )
 SELECT
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1) AS institution_id,
+  (
+    SELECT
+      id
+    FROM
+      institutions
+    WHERE
+      code = 'INST-HQ'
+    LIMIT
+      1
+  ) AS institution_id,
   m.id AS module_id,
   NOW(),
   NOW()
-FROM modules m;
-
--- ===================== DEPARTMENT_MASTER (UUID) =====================
-INSERT INTO `department_master` (
-  `id`, `department_code`, `department_name`, `description`,
-  `status`, `created_by`, `updated_by`, `created_at`, `updated_at`, `deleted_at`
-)
-VALUES
-(UUID(), 'OPD',       'Outpatient Department (OPD)', 'Outpatient Department',         1, NULL, NULL, NOW(), NOW(), NULL),
-(UUID(), 'IPD',       'Inpatient Department (IPD)',  'Inpatient Department',          1, NULL, NULL, NOW(), NOW(), NULL),
-(UUID(), 'EMERGENCY', 'Emergency',                   'Emergency Department',          1, NULL, NULL, NOW(), NOW(), NULL),
-(UUID(), 'PHARMACY',  'Pharmacy',                    'Pharmacy Department',           1, NULL, NULL, NOW(), NOW(), NULL),
-(UUID(), 'LAB',       'Laboratory',                  'Laboratory / Diagnostics Dept', 1, NULL, NULL, NOW(), NOW(), NULL);
-
--- ===================== DESIGNATION_MASTER (UUID, FK via subquery) =====================
-INSERT INTO `designation_master` (
-  `id`, `designation_code`, `designation_name`, `department_id`,
-  `description`, `status`, `created_by`, `updated_by`,
-  `created_at`, `updated_at`, `deleted_at`
-)
-VALUES
-(
-  UUID(), 'DOC',   'Doctor',
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  'Medical Doctor',                   1, NULL, NULL, NOW(), NOW(), NULL
-),
-(
-  UUID(), 'NUR',   'Nurse',
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  'Registered Nurse',                 1, NULL, NULL, NOW(), NOW(), NULL
-),
-(
-  UUID(), 'PHARM', 'Pharmacist',
-  (SELECT id FROM department_master WHERE department_code = 'PHARMACY' LIMIT 1),
-  'Pharmacy Incharge',               1, NULL, NULL, NOW(), NOW(), NULL
-),
-(
-  UUID(), 'REC',   'Receptionist',
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  'Front Desk / Reception Staff',    1, NULL, NULL, NOW(), NOW(), NULL
-),
-(
-  UUID(), 'ADMIN', 'Administrator',
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  'Hospital / System Administrator', 1, NULL, NULL, NOW(), NOW(), NULL
-);
+FROM
+  modules m;
 
 -- ===================== BLOOD_GROUP_MASTER (UUID + created_by) =====================
-INSERT INTO `blood_group_master` (
-  `id`, `blood_group_name`, `status`, `created_by`, `updated_by`,
-  `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `blood_group_master` (
+    `id`,
+    `blood_group_name`,
+    `status`,
+    `created_by`,
+    `updated_by`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'A+',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'A-',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'B+',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'B-',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'O+',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'O-',  'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'AB+', 'Active', 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'AB-', 'Active', 1, NULL, NOW(), NOW(), NULL);
+  (
+    UUID(),
+    'A+',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'A-',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'B+',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'B-',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'O+',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'O-',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'AB+',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'AB-',
+    'Active',
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== RELIGION_MASTER (UUID) =====================
-INSERT INTO `religion_master` (
-  `id`, `religion_name`, `status`, `display_order`,
-  `created_by`, `updated_by`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `religion_master` (
+    `id`,
+    `religion_name`,
+    `status`,
+    `display_order`,
+    `created_by`,
+    `updated_by`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'Hindu',     'Active', 1, 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'Christian', 'Active', 2, 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'Muslim',    'Active', 3, 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'Buddhist',  'Active', 4, 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'Jain',      'Active', 5, 1, NULL, NOW(), NOW(), NULL),
-(UUID(), 'Other',     'Active', 6, 1, NULL, NOW(), NOW(), NULL);
+  (
+    UUID(),
+    'Hindu',
+    'Active',
+    1,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Christian',
+    'Active',
+    2,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Muslim',
+    'Active',
+    3,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Buddhist',
+    'Active',
+    4,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Jain',
+    'Active',
+    5,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Other',
+    'Active',
+    6,
+    1,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== ROLES (UUID, enum status) =====================
-INSERT INTO `roles` (
-  `id`,
-  `name`,
-  `description`,
-  `status`,
-  `created_at`,
-  `updated_at`,
-  `deleted_at`
-)
+INSERT INTO
+  `roles` (
+    `id`,
+    `name`,
+    `description`,
+    `status`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'super_admin', 'Super administrator with full access', 'active', NOW(), NOW(), NULL),
-(UUID(), 'admin',       'Hospital / institution admin',        'active', NOW(), NOW(), NULL),
-(UUID(), 'doctor',      'Doctor role',                          'active', NOW(), NOW(), NULL),
-(UUID(), 'nurse',       'Nurse role',                           'active', NOW(), NOW(), NULL),
-(UUID(), 'receptionist','Reception / front desk',               'active', NOW(), NOW(), NULL);
+  (
+    UUID(),
+    'super_admin',
+    'Super administrator with full access',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'hr',
+    'Human resource',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'manager',
+    'Manager role',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'hod',
+    'Head of Department',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'doctor',
+    'Doctor role',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'nurse',
+    'Nurse role',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'receptionist',
+    'Reception / front desk',
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  );
+
+-- ===================== USER_ROLES (UUID FKs via subquery) =====================
+INSERT INTO
+  `users` (
+    `id`,
+    `name`,
+    `mobile`,
+    `email`,
+    `role_id`,
+    `mpin`,
+    `is_enrolled`,
+    `status`,
+    `failed_attempts`,
+    `locked_until`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`,
+    `biometric_updated_at`
+  )
+VALUES
+  (
+    UUID(),
+    'Super Admin',
+    '9000000001',
+    'superadmin@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'super_admin'
+      LIMIT
+        1
+    ), NULL,
+    0,
+    'active',
+    0,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'HR Manager',
+    '9000000002',
+    'hr@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'hr'
+      LIMIT
+        1
+    ), NULL,
+    0,
+    'active',
+    0,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'General Manager',
+    '9000000003',
+    'manager@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'manager'
+      LIMIT
+        1
+    ), NULL,
+    0,
+    'active',
+    0,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'OPD HOD',
+    '9000000004',
+    'hod@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'hod'
+      LIMIT
+        1
+    ), NULL,
+    0,
+    'active',
+    0,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+  ),
+  (
+    UUID(),
+    'Front Desk',
+    '9000000005',
+    'reception@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'receptionist'
+      LIMIT
+        1
+    ), NULL,
+    0,
+    'active',
+    0,
+    NULL,
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+  );
 
 -- ===================== FINANCIAL_YEARS (UUID) =====================
-INSERT INTO `financial_years` (
-  `id`, `code`, `start_date`, `end_date`, `is_active`,
-  `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `financial_years` (
+    `id`,
+    `code`,
+    `start_date`,
+    `end_date`,
+    `is_active`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'FY 2024-25', '2024-04-01', '2025-03-31', 1, NOW(), NOW(), NULL),
-(UUID(), 'FY 2025-26', '2025-04-01', '2026-03-31', 1, NOW(), NOW(), NULL);
+  (
+    UUID(),
+    'FY 2024-25',
+    '2024-04-01',
+    '2025-03-31',
+    1,
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'FY 2025-26',
+    '2025-04-01',
+    '2026-03-31',
+    1,
+    NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== HOSPITAL_FINANCIAL_YEARS (UUID FKs via subquery) =====================
-INSERT INTO `hospital_financial_years` (
-  `hospital_id`, `financial_year_id`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `hospital_financial_years` (
+    `hospital_id`,
+    `financial_year_id`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM financial_years WHERE code = 'FY 2024-25' LIMIT 1),
-  NOW(), NOW(), NULL
-),
-(
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM financial_years WHERE code = 'FY 2025-26' LIMIT 1),
-  NOW(), NOW(), NULL
-);
+  (
+    (
+      SELECT
+        id
+      FROM
+        hospitals
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        financial_years
+      WHERE
+        code = 'FY 2024-25'
+      LIMIT
+        1
+    ), NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    (
+      SELECT
+        id
+      FROM
+        hospitals
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        financial_years
+      WHERE
+        code = 'FY 2025-26'
+      LIMIT
+        1
+    ), NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== WEEKENDS (UUID, JSON days) =====================
-INSERT INTO `weekends` (
-  `id`, `name`, `days`, `status`, `deleted_at`, `created_at`, `updated_at`
-)
+INSERT INTO
+  `weekends` (
+    `id`,
+    `name`,
+    `days`,
+    `status`,
+    `deleted_at`,
+    `created_at`,
+    `updated_at`
+  )
 VALUES
-(UUID(), 'Default Weekend', JSON_ARRAY('Saturday','Sunday'), 'active',   NULL, NOW(), NOW()),
-(UUID(), 'Middle East Weekend', JSON_ARRAY('Friday','Saturday'), 'inactive', NULL, NOW(), NOW());
+  (
+    UUID(),
+    'Default Weekend',
+    JSON_ARRAY('Saturday', 'Sunday'),
+    'active',
+    NULL,
+    NOW(),
+    NOW()
+  ),
+  (
+    UUID(),
+    'Middle East Weekend',
+    JSON_ARRAY('Friday', 'Saturday'),
+    'inactive',
+    NULL,
+    NOW(),
+    NOW()
+  );
 
 -- ===================== HOLIDAYS (UUID) =====================
-INSERT INTO `holidays` (
-  `id`, `name`, `start_date`, `end_date`, `details`, `document`,
-  `status`, `created_at`, `updated_at`, `deleted_at`
-)
+INSERT INTO
+  `holidays` (
+    `id`,
+    `name`,
+    `start_date`,
+    `end_date`,
+    `details`,
+    `document`,
+    `status`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+  )
 VALUES
-(UUID(), 'New Year', '2026-01-01', '2026-01-01', 'New Year public holiday', NULL, 'active',   NOW(), NOW(), NULL),
-(UUID(), 'Independence Day', '2026-08-15', '2026-08-15', 'National holiday', NULL, 'active', NOW(), NOW(), NULL),
-(UUID(), 'Annual Maintenance Break', '2026-05-01', '2026-05-03', 'Planned hospital maintenance shutdown', NULL, 'inactive', NOW(), NOW(), NULL);
+  (
+    UUID(),
+    'New Year',
+    '2026-01-01',
+    '2026-01-01',
+    'New Year public holiday',
+    NULL,
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Independence Day',
+    '2026-08-15',
+    '2026-08-15',
+    'National holiday',
+    NULL,
+    'active',
+    NOW(),
+    NOW(),
+    NULL
+  ),
+  (
+    UUID(),
+    'Annual Maintenance Break',
+    '2026-05-01',
+    '2026-05-03',
+    'Planned hospital maintenance shutdown',
+    NULL,
+    'inactive',
+    NOW(),
+    NOW(),
+    NULL
+  );
 
 -- ===================== person (UUID) =====================
 
@@ -531,214 +1289,821 @@ VALUES
 (UUID(),'DOC049','Hand Surgeon','Hand surgery specialist',1,NOW(),NOW()),
 (UUID(),'DOC050','Palliative Care Specialist','End of life care specialist',1,NOW(),NOW());
 
-
--- ===================== User =====================
-
--- INSERT INTO users
--- (id,name,mobile,email,role_id,mpin,is_enrolled,status,failed_attempts,locked_until,created_at,updated_at,deleted_at,biometric_updated_at)
--- VALUES
-
--- (UUID(),'User 01','9000000001','user1@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 02','9000000002','user2@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 03','9000000003','user3@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 04','9000000004','user4@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 05','9000000005','user5@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 06','9000000006','user6@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 07','9000000007','user7@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 08','9000000008','user8@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 09','9000000009','user9@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 10','9000000010','user10@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 11','9000000011','user11@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 12','9000000012','user12@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 13','9000000013','user13@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 14','9000000014','user14@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 15','9000000015','user15@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 16','9000000016','user16@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 17','9000000017','user17@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 18','9000000018','user18@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 19','9000000019','user19@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 20','9000000020','user20@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 21','9000000021','user21@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 22','9000000022','user22@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 23','9000000023','user23@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 24','9000000024','user24@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 25','9000000025','user25@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 26','9000000026','user26@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 27','9000000027','user27@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 28','9000000028','user28@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 29','9000000029','user29@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 30','9000000030','user30@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 31','9000000031','user31@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 32','9000000032','user32@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 33','9000000033','user33@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 34','9000000034','user34@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 35','9000000035','user35@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 36','9000000036','user36@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 37','9000000037','user37@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 38','9000000038','user38@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 39','9000000039','user39@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 40','9000000040','user40@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 41','9000000041','user41@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 42','9000000042','user42@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 43','9000000043','user43@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 44','9000000044','user44@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 45','9000000045','user45@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
-
--- (UUID(),'User 46','9000000046','user46@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 47','9000000047','user47@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 48','9000000048','user48@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 49','9000000049','user49@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL),
--- (UUID(),'User 50','9000000050','user50@hospital.com','67298705-1caf-11f1-9619-08bfb8d077f7',NULL,0,'active',0,NULL,NOW(),NOW(),NULL,NULL);
-
-
--- ===================== staff =====================
-
--- INSERT INTO staff
--- (user_id, employee_id, name, role_id, department_id, designation_id, joining_date, status, basic_salary, hra, allowance, created_at, updated_at)
--- VALUES
-
--- ('0a79e61d-1cab-11f1-9619-08bfb8d077f7','EMP001','Dr Rajesh Sharma','67298705-1caf-11f1-9619-08bfb8d077f7','afed60ed-1ca8-11f1-9619-08bfb8d077f7','6a3d5442-1ca6-11f1-9619-08bfb8d077f7','2021-01-10','Active',90000,20000,10000,NOW(),NOW()),
-
--- ('0a7a5594-1cab-11f1-9619-08bfb8d077f7','EMP002','Dr Priya Nair','67298705-1caf-11f1-9619-08bfb8d077f7','afed617a-1ca8-11f1-9619-08bfb8d077f7','6a3db3c9-1ca6-11f1-9619-08bfb8d077f7','2021-02-12','Active',85000,18000,9000,NOW(),NOW()),
-
--- ('0a7a5716-1cab-11f1-9619-08bfb8d077f7','EMP003','Dr Arjun Reddy','67298705-1caf-11f1-9619-08bfb8d077f7','afed61d2-1ca8-11f1-9619-08bfb8d077f7','6a3db4bc-1ca6-11f1-9619-08bfb8d077f7','2021-03-05','Active',92000,21000,12000,NOW(),NOW()),
-
--- ('0a7a57a5-1cab-11f1-9619-08bfb8d077f7','EMP004','Dr Sneha Kapoor','67298705-1caf-11f1-9619-08bfb8d077f7','afed6228-1ca8-11f1-9619-08bfb8d077f7','6a3db52e-1ca6-11f1-9619-08bfb8d077f7','2021-04-17','Active',87000,18000,10000,NOW(),NOW()),
-
--- ('0a7a5830-1cab-11f1-9619-08bfb8d077f7','EMP005','Dr Vikram Singh','67298705-1caf-11f1-9619-08bfb8d077f7','afed7f2a-1ca8-11f1-9619-08bfb8d077f7','6a3db58e-1ca6-11f1-9619-08bfb8d077f7','2021-05-19','Active',91000,20000,11000,NOW(),NOW()),
-
--- ('0a7a58c5-1cab-11f1-9619-08bfb8d077f7','EMP006','Dr Meera Iyer','67298705-1caf-11f1-9619-08bfb8d077f7','afed8122-1ca8-11f1-9619-08bfb8d077f7','6a3db5f7-1ca6-11f1-9619-08bfb8d077f7','2021-06-01','Active',88000,17000,9500,NOW(),NOW()),
-
--- ('0a7a592e-1cab-11f1-9619-08bfb8d077f7','EMP007','Dr Kiran Patel','67298705-1caf-11f1-9619-08bfb8d077f7','afed4f11-1ca8-11f1-9619-08bfb8d077f7','6a3db645-1ca6-11f1-9619-08bfb8d077f7','2021-06-15','Active',90000,20000,10000,NOW(),NOW()),
-
--- ('0a7a5994-1cab-11f1-9619-08bfb8d077f7','EMP008','Dr Neha Agarwal','67298705-1caf-11f1-9619-08bfb8d077f7','afed80d6-1ca8-11f1-9619-08bfb8d077f7','6a3db698-1ca6-11f1-9619-08bfb8d077f7','2021-07-10','Active',86000,18000,9000,NOW(),NOW()),
-
--- ('0a7a59d8-1cab-11f1-9619-08bfb8d077f7','EMP009','Dr Aditya Gupta','67298705-1caf-11f1-9619-08bfb8d077f7','afed8083-1ca8-11f1-9619-08bfb8d077f7','6a3db6e9-1ca6-11f1-9619-08bfb8d077f7','2021-07-20','Active',94000,21000,12000,NOW(),NOW()),
-
--- ('0a7a5a18-1cab-11f1-9619-08bfb8d077f7','EMP010','Dr Kavya Rao','67298705-1caf-11f1-9619-08bfb8d077f7','afed8167-1ca8-11f1-9619-08bfb8d077f7','6a3db745-1ca6-11f1-9619-08bfb8d077f7','2021-08-01','Active',88000,19000,10000,NOW(),NOW()),
-
--- ('0a7a5a5c-1cab-11f1-9619-08bfb8d077f7','EMP011','Dr Rahul Verma','67298705-1caf-11f1-9619-08bfb8d077f7','afed8223-1ca8-11f1-9619-08bfb8d077f7','6a3db7d7-1ca6-11f1-9619-08bfb8d077f7','2021-08-15','Active',91000,20000,10500,NOW(),NOW()),
-
--- ('0a7a5a9c-1cab-11f1-9619-08bfb8d077f7','EMP012','Dr Pooja Menon','67298705-1caf-11f1-9619-08bfb8d077f7','afed81b6-1ca8-11f1-9619-08bfb8d077f7','6a3db80d-1ca6-11f1-9619-08bfb8d077f7','2021-09-01','Active',86000,18000,9500,NOW(),NOW()),
-
--- ('0a7a5ae2-1cab-11f1-9619-08bfb8d077f7','EMP013','Dr Manish Bhat','67298705-1caf-11f1-9619-08bfb8d077f7','afed828a-1ca8-11f1-9619-08bfb8d077f7','6a3db83c-1ca6-11f1-9619-08bfb8d077f7','2021-09-20','Active',93000,21000,12000,NOW(),NOW()),
-
--- ('0a7a5b24-1cab-11f1-9619-08bfb8d077f7','EMP014','Dr Lakshmi Nair','67298705-1caf-11f1-9619-08bfb8d077f7','afed4f11-1ca8-11f1-9619-08bfb8d077f7','6a3db869-1ca6-11f1-9619-08bfb8d077f7','2021-10-05','Active',88000,18500,10000,NOW(),NOW()),
-
--- ('0a7a5b65-1cab-11f1-9619-08bfb8d077f7','EMP015','Dr Naveen Shetty','67298705-1caf-11f1-9619-08bfb8d077f7','afed8167-1ca8-11f1-9619-08bfb8d077f7','6a3db897-1ca6-11f1-9619-08bfb8d077f7','2021-10-25','Active',91000,20000,11000,NOW(),NOW()),
-
--- ('0a7a5ba6-1cab-11f1-9619-08bfb8d077f7','EMP016','Dr Deepak Yadav','67298705-1caf-11f1-9619-08bfb8d077f7','afed8122-1ca8-11f1-9619-08bfb8d077f7','6a3db8c9-1ca6-11f1-9619-08bfb8d077f7','2021-11-10','Active',87000,18000,9500,NOW(),NOW()),
-
--- ('0a7a5be5-1cab-11f1-9619-08bfb8d077f7','EMP017','Dr Ritu Malhotra','67298705-1caf-11f1-9619-08bfb8d077f7','afed4f11-1ca8-11f1-9619-08bfb8d077f7','6a3db8f6-1ca6-11f1-9619-08bfb8d077f7','2021-11-25','Active',89000,19000,10000,NOW(),NOW()),
-
--- ('0a7a5c3b-1cab-11f1-9619-08bfb8d077f7','EMP018','Dr Amit Das','67298705-1caf-11f1-9619-08bfb8d077f7','afed8122-1ca8-11f1-9619-08bfb8d077f7','6a3db927-1ca6-11f1-9619-08bfb8d077f7','2021-12-01','Active',90000,20000,10500,NOW(),NOW()),
-
--- ('0a7a5ca3-1cab-11f1-9619-08bfb8d077f7','EMP019','Dr Suresh Kumar','67298705-1caf-11f1-9619-08bfb8d077f7','afed8122-1ca8-11f1-9619-08bfb8d077f7','6a3db95a-1ca6-11f1-9619-08bfb8d077f7','2021-12-15','Active',88000,18000,9500,NOW(),NOW()),
-
--- ('0a7a5d04-1cab-11f1-9619-08bfb8d077f7','EMP020','Dr Divya Kulkarni','67298705-1caf-11f1-9619-08bfb8d077f7','afed8122-1ca8-11f1-9619-08bfb8d077f7','6a3db988-1ca6-11f1-9619-08bfb8d077f7','2022-01-05','Active',92000,21000,12000,NOW(),NOW());
-
--- ===================== EMPLOYEES (UUID + FKs via subquery) =====================
-
-INSERT INTO `employees` (
-  `id`,
-  `hospital_id`,
-  `institution_id`,
-  `department_id`,
-  `designation_id`,
-  `employee_id`,
-  `first_name`,
-  `middle_name`,
-  `last_name`,
-  `email`,
-  `phone`,
-  `emergency_contact`,
-  `date_of_birth`,
-  `gender`,
-  `address`,
-  `joining_date`,
-  `confirmation_date`,
-  `contract_end_date`,
-  `employment_type`,
-  `basic_salary`,
-  `gross_salary`,
-  `is_active`,
-  `is_confirmed`,
-  `status_reason`,
-  `exit_date`,
-  `created_by`,
-  `updated_by`,
-  `created_at`,
-  `updated_at`,
-  `deleted_at`
-)
+-- ===================== LEAVE_TYPES (UUID) =====================
+INSERT INTO
+  `leave_types` (
+    `id`,
+    `display_name`,
+    `description`,
+    `allow_half_day`,
+    `min_leave_unit`,
+    `max_continuous_days`,
+    `count_weekends`,
+    `count_holidays`,
+    `sandwich_enabled`,
+    `approval_required`,
+    `approval_level`,
+    `attendance_code`,
+    `created_at`,
+    `updated_at`
+  )
 VALUES
-(
-  UUID(),
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  (SELECT id FROM designation_master WHERE designation_code = 'ADMIN' LIMIT 1),
-  'EMP-001',
-  'Hospital', NULL, 'Admin',
-  'admin@example.com',
-  '9000000002',
-  NULL,
-  '1990-01-01',
-  'Male',
-  'Someshwara',
-  '2024-01-01',
-  NULL,
-  NULL,
-  'Full-time',
-  50000.00,
-  60000.00,
-  1,
-  1,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW(),
-  NULL
-),
-(
-  UUID(),
-  (SELECT id FROM hospitals LIMIT 1),
-  (SELECT id FROM institutions WHERE code = 'INST-HQ' LIMIT 1),
-  (SELECT id FROM department_master WHERE department_code = 'OPD' LIMIT 1),
-  (SELECT id FROM designation_master WHERE designation_code = 'REC' LIMIT 1),
-  'EMP-002',
-  'Front', NULL, 'Desk',
-  'reception@example.com',
-  '9000000003',
-  NULL,
-  '1995-01-01',
-  'Female',
-  'Someshwara',
-  '2024-02-01',
-  NULL,
-  NULL,
-  'Full-time',
-  25000.00,
-  30000.00,
-  1,
-  0,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NOW(),
-  NOW(),
-  NULL
-);
+  (
+    UUID(),
+    'Casual Leave',
+    'Standard casual leave',
+    1,
+    0.5,
+    3,
+    0,
+    0,
+    0,
+    1,
+    'Single',
+    'CL',
+    NOW(),
+    NOW()
+  ),
+  (
+    UUID(),
+    'Sick Leave',
+    'Medical leave',
+    1,
+    0.5,
+    15,
+    0,
+    0,
+    0,
+    1,
+    'Sequential',
+    'SL',
+    NOW(),
+    NOW()
+  ),
+  (
+    UUID(),
+    'Earned Leave',
+    'Privilege leave',
+    0,
+    1,
+    30,
+    1,
+    1,
+    1,
+    1,
+    'Sequential',
+    'EL',
+    NOW(),
+    NOW()
+  );
+
+-- ===================== STAFF (bigint id, UUID FKs) =====================
+INSERT INTO
+  `staff` (
+    `id`,
+    `user_id`,
+    `employee_id`,
+    `name`,
+    `role_id`,
+    `department_id`,
+    `designation_id`,
+    `level1_supervisor_id`,
+    `level2_supervisor_id`,
+    `level3_supervisor_id`,
+    `joining_date`,
+    `status`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    1,
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000001'
+      LIMIT
+        1
+    ), 'EMP-001', 'Super Admin', (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'super_admin'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        department_master
+      WHERE
+        department_code = 'OPD'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        designation_master
+      WHERE
+        designation_code = 'ADMIN'
+      LIMIT
+        1
+    ), NULL,
+    NULL,
+    NULL,
+    '2024-01-01',
+    'Active',
+    NOW(),
+    NOW()
+  ),
+  (
+    2,
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000002'
+      LIMIT
+        1
+    ), 'EMP-002', 'HR Manager', (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'hr'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        department_master
+      WHERE
+        department_code = 'OPD'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        designation_master
+      WHERE
+        designation_code = 'REC'
+      LIMIT
+        1
+    ), NULL,
+    NULL,
+    NULL,
+    '2024-01-01',
+    'Active',
+    NOW(),
+    NOW()
+  ),
+  (
+    3,
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000003'
+      LIMIT
+        1
+    ), 'EMP-003', 'General Manager', (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'manager'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        department_master
+      WHERE
+        department_code = 'OPD'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        designation_master
+      WHERE
+        designation_code = 'ADMIN'
+      LIMIT
+        1
+    ), NULL,
+    NULL,
+    NULL,
+    '2024-01-01',
+    'Active',
+    NOW(),
+    NOW()
+  ),
+  (
+    4,
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000004'
+      LIMIT
+        1
+    ), 'EMP-004', 'OPD HOD', (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'hod'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        department_master
+      WHERE
+        department_code = 'OPD'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        designation_master
+      WHERE
+        designation_code = 'DOC'
+      LIMIT
+        1
+    ), NULL,
+    NULL,
+    NULL,
+    '2024-01-01',
+    'Active',
+    NOW(),
+    NOW()
+  );
+
+-- Add a regular staff member who applies for leave
+INSERT INTO
+  `users` (
+    `id`,
+    `name`,
+    `mobile`,
+    `email`,
+    `role_id`,
+    `status`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    UUID(),
+    'John Staff',
+    '8000000001',
+    'john@example.com',
+    (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'doctor'
+      LIMIT
+        1
+    ), 'active', NOW(),
+    NOW()
+  );
+
+INSERT INTO
+  `staff` (
+    `id`,
+    `user_id`,
+    `employee_id`,
+    `name`,
+    `role_id`,
+    `department_id`,
+    `designation_id`,
+    `level1_supervisor_id`,
+    `level2_supervisor_id`,
+    `level3_supervisor_id`,
+    `joining_date`,
+    `status`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    5,
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '8000000001'
+      LIMIT
+        1
+    ), 'EMP-005', 'John Staff', (
+      SELECT
+        id
+      FROM
+        roles
+      WHERE
+        name = 'doctor'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        department_master
+      WHERE
+        department_code = 'OPD'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        designation_master
+      WHERE
+        designation_code = 'DOC'
+      LIMIT
+        1
+    ), (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000003'
+      LIMIT
+        1
+    ), -- Manager
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000002'
+      LIMIT
+        1
+    ), -- HR
+    (
+      SELECT
+        id
+      FROM
+        users
+      WHERE
+        mobile = '9000000004'
+      LIMIT
+        1
+    ), -- HOD
+    '2024-06-01', 'Active', NOW(),
+    NOW()
+  );
+
+-- ===================== LEAVE_ADJUSTMENTS (UUID) =====================
+INSERT INTO
+  `leave_adjustments` (
+    `id`,
+    `staff_id`,
+    `leave_type_id`,
+    `credit`,
+    `debit`,
+    `remarks`,
+    `year`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    UUID(),
+    5,
+    (
+      SELECT
+        id
+      FROM
+        leave_types
+      WHERE
+        display_name = 'Casual Leave'
+      LIMIT
+        1
+    ), 12, 0, 'Opening Balance', 2026, NOW(),
+    NOW()
+  ),
+  (
+    UUID(),
+    5,
+    (
+      SELECT
+        id
+      FROM
+        leave_types
+      WHERE
+        display_name = 'Sick Leave'
+      LIMIT
+        1
+    ), 10, 0, 'Opening Balance', 2026, NOW(),
+    NOW()
+  );
+
+-- ===================== LEAVE_APPLICATIONS (UUID) =====================
+INSERT INTO
+  `leave_applications` (
+    `id`,
+    `staff_id`,
+    `leave_type_id`,
+    `leave_duration`,
+    `from_date`,
+    `to_date`,
+    `leave_days`,
+    `reason`,
+    `status`,
+    `current_approval_level`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    UUID(),
+    5,
+    (
+      SELECT
+        id
+      FROM
+        leave_types
+      WHERE
+        display_name = 'Casual Leave'
+      LIMIT
+        1
+    ), 'full_day', '2026-03-20', '2026-03-21', 2.0, 'Personal work', 'pending', 1, NOW(),
+    NOW()
+  ),
+  (
+    UUID(),
+    5,
+    (
+      SELECT
+        id
+      FROM
+        leave_types
+      WHERE
+        display_name = 'Sick Leave'
+      LIMIT
+        1
+    ), 'full_day', '2026-03-25', '2026-03-25', 1.0, 'Fever', 'pending', 1, NOW(),
+    NOW()
+  );
+
+-- ===================== PATIENTS (UUID) =====================
+INSERT INTO
+  `patients` (
+    `id`,
+    `patient_code`,
+    `first_name`,
+    `last_name`,
+    `gender`,
+    `date_of_birth`,
+    `mobile`,
+    `email`,
+    `blood_group`,
+    `address`,
+    `status`,
+    `created_at`,
+    `updated_at`
+  )
+VALUES
+  (
+    UUID(),
+    'PAT-001',
+    'Jane',
+    'Doe',
+    'Female',
+    '1995-08-15',
+    '8888888888',
+    'jane.doe@example.com',
+    'A+',
+    'Beach Road, Mangalore',
+    1,
+    NOW(),
+    NOW()
+  );
+
+-- ===================== APPOINTMENTS (UUID) =====================
+-- INSERT INTO
+--   `appointments` (
+--     `id`,
+--     `patient_id`,
+--     `doctor_id`,
+--     `department_id`,
+--     `appointment_date`,
+--     `appointment_time`,
+--     `appointment_status`,
+--     `consultation_fee`,
+--     `institution_id`,
+--     `receptionist_user_id`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     (
+--       SELECT
+--         id
+--       FROM
+--         patients
+--       WHERE
+--         patient_code = 'PAT-001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '8000000001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         department_master
+--       WHERE
+--         department_code = 'OPD'
+--       LIMIT
+--         1
+--     ), CURDATE(), '10:00:00', 'Scheduled', 500.00, (
+--       SELECT
+--         id
+--       FROM
+--         hospitals
+--       WHERE
+--         code = 'HOSP-DH1'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '9000000005'
+--       LIMIT
+--         1
+--     ), NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== OPD (UUID) =====================
+-- INSERT INTO
+--   `opd` (
+--     `id`,
+--     `appointment_id`,
+--     `patient_id`,
+--     `doctor_id`,
+--     `visit_date`,
+--     `visit_status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     (
+--       SELECT
+--         id
+--       FROM
+--         appointments
+--       WHERE
+--         patient_id = (
+--           SELECT
+--             id
+--           FROM
+--             patients
+--           WHERE
+--             patient_code = 'PAT-001'
+--           LIMIT
+--             1
+--         )
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         patients
+--       WHERE
+--         patient_code = 'PAT-001'
+--       LIMIT
+--         1
+--     ), (
+--       SELECT
+--         id
+--       FROM
+--         users
+--       WHERE
+--         mobile = '8000000001'
+--       LIMIT
+--         1
+--     ), CURDATE(), 'Pending', NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== VENDORS (UUID) =====================
+-- INSERT INTO
+--   `vendors` (
+--     `id`,
+--     `vendor_name`,
+--     `phone_number`,
+--     `email`,
+--     `address`,
+--     `status`,
+--     `created_by`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'Global Pharma Distributors',
+--     '1112223333',
+--     'sales@globalpharma.com',
+--     'Business Park, Bangalore',
+--     'Active',
+--     1,
+--     NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== MEDICINES (UUID) =====================
+-- INSERT INTO
+--   `medicines` (
+--     `id`,
+--     `medicine_name`,
+--     `generic_name`,
+--     `category`,
+--     `manufacturer`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'Paracetamol 500mg',
+--     'Paracetamol',
+--     'Analgesic',
+--     'PharmaCorp',
+--     1,
+--     NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== ITEMS (auto id) =====================
+-- INSERT INTO
+--   `items` (
+--     `name`,
+--     `code`,
+--     `category`,
+--     `unit`,
+--     `purchase_price`,
+--     `selling_price`,
+--     `reorder_level`,
+--     `current_stock`,
+--     `status`,
+--     `stock`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     'Medical Gloves',
+--     'CG-001',
+--     'Consumable',
+--     'Box',
+--     200.00,
+--     350.00,
+--     50,
+--     100,
+--     'active',
+--     100,
+--     NOW(),
+--     NOW()
+--   ),
+--   (
+--     'Blood Pressure Monitor',
+--     'EQ-001',
+--     'Equipment',
+--     'Unit',
+--     1500.00,
+--     2500.00,
+--     5,
+--     20,
+--     'active',
+--     20,
+--     NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== WARDS (UUID) =====================
+-- INSERT INTO
+--   `wards` (
+--     `id`,
+--     `ward_name`,
+--     `ward_type`,
+--     `floor_number`,
+--     `total_beds`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'General Ward A',
+--     'General',
+--     1,
+--     10,
+--     1,
+--     NOW(),
+--     NOW()
+--   ),
+--   (
+--     UUID(),
+--     'ICU',
+--     'Critical Care',
+--     2,
+--     5,
+--     1,
+--     NOW(),
+--     NOW()
+--   );
+
+-- -- ===================== BEDS (UUID) =====================
+-- INSERT INTO
+--   `beds` (
+--     `id`,
+--     `bed_code`,
+--     `ward_id`,
+--     `room_number`,
+--     `bed_type`,
+--     `status`,
+--     `created_at`,
+--     `updated_at`
+--   )
+-- VALUES
+--   (
+--     UUID(),
+--     'GW-A-01',
+--     (
+--       SELECT
+--         id
+--       FROM
+--         wards
+--       WHERE
+--         ward_name = 'General Ward A'
+--       LIMIT
+--         1
+--     ), '101', 'Standard', 'Available', NOW(),
+--     NOW()
+--   ),
+--   (
+--     UUID(),
+--     'ICU-01',
+--     (
+--       SELECT
+--         id
+--       FROM
+--         wards
+--       WHERE
+--         ward_name = 'ICU'
+--       LIMIT
+--         1
+--     ), '201', 'ICU Bed', 'Available', NOW(),
+--     NOW()
+--   );
 
 SET FOREIGN_KEY_CHECKS = 1;
