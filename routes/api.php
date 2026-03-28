@@ -65,6 +65,9 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
+//Nurse
+use App\Http\Controllers\NurseNotesController;
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -521,7 +524,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
 });
 
-    //Prescription APIs
+
+Route::prefix('nursing-notes')->group(function () {
+
+    Route::get('/', [NurseNotesController::class,'apiIndex']);
+
+    Route::get('/deleted', [NurseNotesController::class,'apiDeleted']);
+
+    Route::get('/form', [NurseNotesController::class,'apiForm']);
+
+    Route::get('/form/{id}', [NurseNotesController::class,'apiForm']);
+
+    Route::get('/{id}', [NurseNotesController::class,'apiShow']); // keep AFTER above routes
+
+    Route::post('/', [NurseNotesController::class,'apiStore']);
+
+    Route::put('/{id}', [NurseNotesController::class,'apiUpdate']);
+
+    Route::delete('/{id}', [NurseNotesController::class,'apiDelete']);
+
+    Route::post('/{id}/restore', [NurseNotesController::class,'apiRestore']);
+    
+    Route::delete('/{id}/force-delete', [NurseNotesController::class,'apiForceDelete']);
+
+});
+
+
+//Prescription APIs
     
 
 
