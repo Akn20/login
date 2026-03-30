@@ -511,5 +511,6 @@ class ConsultationController extends Controller
             'data' => $consultation->referralDoctor
         ]);
     }
+    
 
 }
