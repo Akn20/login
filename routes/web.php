@@ -1114,6 +1114,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [WeekendController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [WeekendController::class, 'forceDelete'])->name('forceDelete');
         Route::patch('/{id}/toggle-status', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::get('/staff-by-roles', [WeekendController::class, 'getStaffByRoles'])->name('staff-by-roles');
         Route::get('/', [WeekendController::class, 'index'])->name('index');
         Route::get('/create', [WeekendController::class, 'create'])->name('create');
         Route::post('/', [WeekendController::class, 'store'])->name('store');
@@ -1130,7 +1131,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::delete('/{id}/force-delete', [HolidayController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/', [HolidayController::class, 'index'])->name('index');
         Route::get('/create', [HolidayController::class, 'create'])->name('create');
-        Route::get('/show', [HolidayController::class, 'show'])->name('show');
+        Route::get('/show/{id}', [HolidayController::class, 'show'])->name('show');
         Route::post('/', [HolidayController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [HolidayController::class, 'edit'])->name('edit');
         Route::put('/{id}', [HolidayController::class, 'update'])->name('update');
@@ -1195,6 +1196,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
         Route::get('/', [LeaveApprovalController::class, 'index'])->name('index');
+        Route::get('/{id}/show', [LeaveApprovalController::class, 'show'])->name('show');
         Route::get('/approved', [LeaveApprovalController::class, 'approvedIndex'])->name('approved');
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');

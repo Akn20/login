@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -62,6 +64,26 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    
+    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
+    } 
+});
+    
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -319,8 +341,30 @@ Route::prefix('leave-management')->group(function () {
     
     // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
     Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Comp Off API
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/compoffs', [CompOffController::class, 'apiIndex']);
+    Route::post('/compoffs', [CompOffController::class, 'apiStore']);
+     Route::get('/compoffs/deleted', [CompOffController::class, 'apiDeleted']);
+    Route::get('/compoffs/{id}', [CompOffController::class, 'apiShow']);
+    Route::patch('/compoffs/{id}', [CompOffController::class, 'apiUpdate']);
+    Route::delete('/compoffs/{id}', [CompOffController::class, 'apiDestroy']);
+
+    Route::post('/compoffs/{id}/restore', [CompOffController::class, 'apiRestore']);
+    Route::delete('/compoffs/{id}/force-delete', [CompOffController::class, 'apiForceDelete']);
+
     
 });
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
