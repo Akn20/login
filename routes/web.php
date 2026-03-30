@@ -60,11 +60,12 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\PharmacyDashboardController;
 
-use App\Http\Controllers\TokenController;
+#use App\Http\Controllers\TokenController;
 //nurse
 use App\Http\Controllers\NurseNotesController;
-use Illuminate\Support\Facades\Route;
+#use Illuminate\Support\Facades\Route;
 
 use App\http\Controllers\attendance\AttendanceController;
 //use App\Http\Controllers\ExpiryController;
@@ -387,6 +388,14 @@ Route::middleware(['auth', 'role:admin'])
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
+        
+        /*
+        |--------------------------------------------------------------------------
+        | Pharmacy: Dashboard
+        |--------------------------------------------------------------------------
+        */
+        
+        Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'index'])->name('pharmacy.dashboard');
 
         /*
         |--------------------------------------------------------------------------
