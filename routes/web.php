@@ -920,39 +920,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/', [PrescriptionController::class, 'index'])
             ->name('index');
-
-        // CREATE PAGE
         Route::get('/create', [PrescriptionController::class, 'createOffline'])
             ->name('create');
-
-        // STORE OFFLINE PRESCRIPTION
         Route::post('/store', [PrescriptionController::class, 'storeOffline'])
             ->name('offline.store');
-
-        // VERIFY
         Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
             ->name('verify');
-
-        // REJECT
         Route::post('/reject/{id}', [PrescriptionController::class, 'reject'])
             ->name('reject');
-
-        // DISPENSE
         Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
             ->name('dispense');
-
         Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
             ->name('dispense.store');
-
-        // BILL
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
             ->name('bill');
-
-        // PRINT
         Route::get('/print/{id}', [PrescriptionController::class,'print'])
             ->name('print');
-
-        // SHOW PRESCRIPTION (ALWAYS LAST)
         Route::get('/{id}', [PrescriptionController::class, 'show'])
             ->name('show');
 
