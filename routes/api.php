@@ -42,7 +42,8 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\WorkStatusController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\WorkStatusController;
 
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
@@ -486,7 +487,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    //Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -566,4 +593,7 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
     Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
+});
+
+    
 });
