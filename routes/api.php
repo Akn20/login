@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -43,6 +45,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\WorkStatusController;
+
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
@@ -62,6 +67,29 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
+//Nurse
+use App\Http\Controllers\NurseNotesController;
+
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    
+    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
+    } 
+});
+    
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -319,8 +347,30 @@ Route::prefix('leave-management')->group(function () {
     
     // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
     Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Comp Off API
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/compoffs', [CompOffController::class, 'apiIndex']);
+    Route::post('/compoffs', [CompOffController::class, 'apiStore']);
+     Route::get('/compoffs/deleted', [CompOffController::class, 'apiDeleted']);
+    Route::get('/compoffs/{id}', [CompOffController::class, 'apiShow']);
+    Route::patch('/compoffs/{id}', [CompOffController::class, 'apiUpdate']);
+    Route::delete('/compoffs/{id}', [CompOffController::class, 'apiDestroy']);
+
+    Route::post('/compoffs/{id}/restore', [CompOffController::class, 'apiRestore']);
+    Route::delete('/compoffs/{id}/force-delete', [CompOffController::class, 'apiForceDelete']);
+
     
 });
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -515,7 +565,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    // Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -623,55 +699,5 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-
-
-Route::prefix('hr')->group(function () {
-
-Route::get('/shifts',[ShiftSchedulingAPIController::class,'shiftIndex']);
-Route::post('shifts',[ShiftSchedulingAPIController::class,'shiftStore']);
-Route::get('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftShow']);
-Route::put('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftUpdate']);
-Route::delete('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftDelete']);
-
-Route::post('shift-toggle/{id}',[ShiftSchedulingAPIController::class,'toggleShiftStatus']);
-
-Route::get('assignments',[ShiftSchedulingAPIController::class,'assignmentIndex']);
-Route::post('assignments',[ShiftSchedulingAPIController::class,'assignmentStore']);
-
-Route::get('rotations',[ShiftSchedulingAPIController::class,'rotationIndex']);
-Route::post('rotations',[ShiftSchedulingAPIController::class,'rotationStore']);
-
-Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex']);
-Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
-
-Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
-
-});
-Route::prefix('attendance')->group(function(){
-
-    Route::get('/', [AttendanceApiController::class,'index']);
-
-    Route::post('/', [AttendanceApiController::class,'store']);
-
-    Route::get('/{id}', [AttendanceApiController::class,'show']);
-
-    Route::put('/{id}', [AttendanceApiController::class,'update']);
-
-    Route::delete('/{id}', [AttendanceApiController::class,'destroy']);
-
-    Route::get('/late/list', [AttendanceApiController::class,'lateEntries']);
-
-    Route::get('/overtime/list', [AttendanceApiController::class,'overtime']);
-
-});
-Route::prefix('tokens')->group(function () {
-    Route::get('/', [TokenController::class, 'apiIndex']);
-    Route::post('/', [TokenController::class, 'apiStore']);
-    Route::get('/{id}', [TokenController::class, 'apiShow']);
-    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
-    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
     
-    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-    
-});
-Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+

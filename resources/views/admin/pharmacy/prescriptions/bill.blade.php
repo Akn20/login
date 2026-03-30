@@ -6,6 +6,38 @@
 
 @section('content')
 
+<style>
+
+/* PRINT STYLING */
+@media print{
+
+body *{
+    visibility:hidden;
+}
+
+#printArea, #printArea *{
+    visibility:visible;
+}
+
+#printArea{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+}
+
+.btn,
+.navbar,
+.sidebar,
+header,
+footer{
+    display:none !important;
+}
+
+}
+
+</style>
+
 <div class="container-fluid">
 
 <!-- Page Header -->
@@ -17,13 +49,13 @@
 <small class="text-muted">Pharmacy → Billing</small>
 </div>
 
-<div>
+<div class="d-flex gap-2">
 
 <button onclick="window.print()" class="btn btn-primary">
 Print Bill
 </button>
 
-<a href="{{ route('admin.prescriptions.index') }}" class="btn btn-secondary">
+<a href="{{ route('admin.prescriptions.dispense',$bill->prescription_id) }}" class="btn btn-secondary">
 Back
 </a>
 
@@ -31,37 +63,46 @@ Back
 
 </div>
 
+<!-- PRINT AREA -->
 
-
-<!-- Bill Card -->
+<div id="printArea">
 
 <div class="card">
 
 <div class="card-body">
 
-
-<!-- Bill Header -->
+<!-- Invoice Header -->
 
 <div class="row mb-4">
 
-<div class="col-md-6">
+<div class="col-md-12 text-center">
 
-<h5>Hospital Pharmacy</h5>
-
-<p>
-Prescription No: {{ $bill->prescription->prescription_number }}<br>
-Bill No: {{ $bill->bill_number }}<br>
-Bill Date: {{ $bill->created_at }}
-</p>
+<h3 class="fw-bold text-primary">
+Hospital Pharmacy Invoice
+</h3>
 
 </div>
 
+<div class="col-md-6">
+
+<p>
+
+Prescription No: {{ $bill->prescription_number ?? '-' }} <br>
+
+Bill No: {{ $bill->bill_number }} <br>
+
+Bill Date: {{ $bill->created_at }}
+
+</p>
+
+</div>
 
 <div class="col-md-6 text-end">
 
 <p>
 
-Patient: {{ $bill->patient->name }} <br>
+Patient: {{ $bill->patient->patient_name ?? '-' }} <br>
+
 Phone: {{ $bill->patient->phone ?? '-' }}
 
 </p>
@@ -70,9 +111,7 @@ Phone: {{ $bill->patient->phone ?? '-' }}
 
 </div>
 
-
-
-<!-- Medicine Table -->
+<!-- Medicines Table -->
 
 <div class="table-responsive">
 
@@ -99,21 +138,21 @@ $subtotal = 0;
 @foreach($bill->items as $key => $item)
 
 @php
-$total = $item->quantity * $item->price;
+$total = $item->quantity * $item->unit_price;
 $subtotal += $total;
 @endphp
 
 <tr>
 
-<td>{{ $key+1 }}</td>
+<td>{{ $key + 1 }}</td>
 
-<td>{{ $item->medicine->name }}</td>
+<td>{{ $item->medicine_name ?? '-' }}</td>
 
 <td>{{ $item->quantity }}</td>
 
-<td>{{ $item->price }}</td>
+<td>{{ number_format($item->unit_price,2) }}</td>
 
-<td>{{ $total }}</td>
+<td>₹ {{ number_format($total,2) }}</td>
 
 </tr>
 
@@ -124,8 +163,6 @@ $subtotal += $total;
 </table>
 
 </div>
-
-
 
 <!-- Bill Summary -->
 
@@ -138,22 +175,35 @@ $subtotal += $total;
 <table class="table">
 
 <tr>
+
 <th>Subtotal</th>
-<td>{{ $subtotal }}</td>
+
+<td>₹ {{ number_format($subtotal,2) }}</td>
+
 </tr>
 
 <tr>
+
 <th>GST (5%)</th>
-<td>{{ $subtotal * 0.05 }}</td>
+
+<td>₹ {{ number_format($subtotal * 0.05,2) }}</td>
+
 </tr>
 
 <tr>
+
 <th>Total Amount</th>
+
 <td>
+
 <strong>
-{{ $subtotal + ($subtotal * 0.05) }}
+
+₹ {{ number_format($subtotal + ($subtotal * 0.05),2) }}
+
 </strong>
+
 </td>
+
 </tr>
 
 </table>
@@ -162,6 +212,7 @@ $subtotal += $total;
 
 </div>
 
+</div>
 
 </div>
 
