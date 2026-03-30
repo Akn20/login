@@ -173,7 +173,7 @@
                         <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
                             up-target="#main-container">
                             <i class="feather-list me-2"></i>
-                            View Lab Tests
+                            View Lab Requests   
                         </a>
                     </li>
                 </ul>

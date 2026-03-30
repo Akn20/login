@@ -10,8 +10,9 @@ use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
-use Illuminate\Support\Str;
 use App\Models\LabTest;
+use Illuminate\Support\Str;
+
 class ConsultationController extends Controller
 {
 
@@ -119,7 +120,9 @@ class ConsultationController extends Controller
                         'patient_id' => $request->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
-                        'priority' => $request->priority[$index] ?? 'routine',
+                        'priority' => is_array($request->priority)
+    ? $request->priority[0]
+    : ($request->priority ?? 'routine'),
                         'status' => 'pending'
                     ]);
 
@@ -146,9 +149,11 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
+        $labTests = LabTest::where('status',1)->get();
+
         return view(
             'doctor.opd.edit-consultation',
-            compact('consultation', 'patient', 'medicines', 'doctors')
+            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests')
         );
     }
     // =========================
@@ -167,9 +172,18 @@ class ConsultationController extends Controller
         ]);
 
         $consultation = Consultation::findOrFail($id);
-        $tests = is_array($request->tests)
-            ? implode(',', $request->tests)
-            : $request->tests;
+        $tests = [];
+
+        if (!empty($request->tests)) {
+            foreach ($request->tests as $testId) {
+                $labTest = LabTest::find($testId);
+                if ($labTest) {
+                    $tests[] = $labTest->test_name;
+                }
+            }
+        }
+
+        $tests = implode(',', $tests);
         $consultation->update([
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
@@ -179,37 +193,27 @@ class ConsultationController extends Controller
         LabRequest::where('consultation_id', $consultation->id)->delete();
 
         // Labrequests
-        if (!empty($request->tests)) {
+       if (!empty($request->tests)) {
 
-            $tests = [];
+            foreach ($request->tests as $testId) {
 
-            foreach ($request->tests as $testInput) {
+                $labTest = LabTest::find($testId);
 
-                $splitTests = explode(',', $testInput);
+                if ($labTest) {
 
-                foreach ($splitTests as $test) {
+                    LabRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $consultation->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'test_name' => $labTest->test_name,
+                        'priority' => is_array($request->priority)
+    ? $request->priority[0]
+    : ($request->priority ?? 'routine'),
+                        'status' => 'pending'
+                    ]);
 
-                    $test = trim($test);
-
-                    if ($test !== '') {
-                        $tests[] = $test;
-                    }
                 }
             }
-
-            foreach ($tests as $index => $test) {
-
-                LabRequest::create([
-                    'id' => Str::uuid(),
-                    'patient_id' => $consultation->patient_id,
-                    'consultation_id' => $consultation->id,
-                    'test_name' => $test,
-                    'priority' => $request->priority[$index] ?? 'routine',
-                    'status' => 'pending'
-                ]);
-
-            }
-
         }
 
         // update prescription
@@ -241,7 +245,7 @@ class ConsultationController extends Controller
     ==========================*/
     public function summary($id)
     {
-        $consultation = Consultation::with(['patient', 'medicines'])
+        $consultation = Consultation::with(['patient', 'medicines','labRequests'])
             ->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
@@ -337,7 +341,7 @@ class ConsultationController extends Controller
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
-                    'priority' => $request->priority[$index] ?? 'routine',
+                    'priority' => $request->priority ?? 'routine',
                     'status' => 'pending'
                 ]);
 
@@ -384,7 +388,7 @@ class ConsultationController extends Controller
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
-                    'priority' => $request->priority[$index] ?? 'routine',
+                    'priority' => $request->priority ?? 'routine',
                     'status' => 'pending'
                 ]);
 
