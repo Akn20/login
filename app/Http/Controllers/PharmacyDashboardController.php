@@ -37,13 +37,70 @@ class PharmacyDashboardController extends Controller
         // 6. Return Requests (NO status column ❗)
         $returnRequests = ReturnMedicine::count();
 
+        // Stock Distribution
+        $availableStock = MedicineBatch::whereColumn('quantity', '>', 'reorder_level')->count();
+
+        $lowStockCount = MedicineBatch::whereColumn('quantity', '<=', 'reorder_level')
+                            ->where('quantity', '>', 0)
+                            ->count();
+
+        $outOfStock = MedicineBatch::where('quantity', 0)->count();
+
         return view('admin.pharmacy.dashboard', compact(
             'pendingPrescriptions',
             'todaySales',
             'lowStock',
             'expiryAlerts',
             'controlledDrugs',
-            'returnRequests'
+            'returnRequests',
+            'availableStock',
+            'lowStockCount',
+            'outOfStock'
         ));
     }
+
+    //Api
+    public function dashboardApi()
+    {
+        $pendingPrescriptions = OfflinePrescription::where('status', 'pending')->count();
+
+        $todaySales = SalesBill::whereDate('created_at', now()->toDateString())
+                        ->sum('total_amount');
+
+        $lowStock = MedicineBatch::whereColumn('quantity', '<=', 'reorder_level')->count();
+
+        $expiryAlerts = MedicineBatch::whereBetween('expiry_date', [
+                            now(),
+                            now()->addDays(30)
+                        ])->count();
+
+        $controlledDrugs = ControlledDrug::count();
+
+        $returnRequests = ReturnMedicine::count();
+
+        $availableStock = MedicineBatch::whereColumn('quantity', '>', 'reorder_level')->count();
+
+        $lowStockCount = MedicineBatch::whereColumn('quantity', '<=', 'reorder_level')
+                            ->where('quantity', '>', 0)
+                            ->count();
+
+        $outOfStock = MedicineBatch::where('quantity', 0)->count();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'pending_prescriptions' => $pendingPrescriptions,
+                'today_sales' => $todaySales,
+                'low_stock' => $lowStock,
+                'expiry_alerts' => $expiryAlerts,
+                'controlled_drugs' => $controlledDrugs,
+                'return_requests' => $returnRequests,
+                'stock_distribution' => [
+                    'available' => $availableStock,
+                    'low_stock' => $lowStockCount,
+                    'out_of_stock' => $outOfStock
+                ]
+            ]
+        ]);
+    }  
 }
