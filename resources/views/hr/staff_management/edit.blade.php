@@ -15,7 +15,8 @@
             <div class="col-12 col-md-10 col-lg-6">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                       <form method="POST" action="{{ route('hr.staff-management.update', $staffManagement->id) }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('hr.staff-management.update', $staffManagement->id) }}"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 

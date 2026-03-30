@@ -19,17 +19,18 @@ class StaffManagementController extends Controller
         $lastId = Staff::withTrashed()->max('id');
         $nextNumber = $lastId ? $lastId + 1 : 1;
 
-        return 'EMP-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'EMP-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function index()
     {
         $staffManagement = Staff::with([
-            'role',
-            'user',
-            'department',
-            'designation',
-        ])->latest()->paginate(10);
+                'role',
+                'user',
+                'department',
+                'designation',
+            ])->latest()
+            ->paginate(10);
 
         if (request()->wantsJson()) {
             return response()->json(
@@ -39,14 +40,6 @@ class StaffManagementController extends Controller
 
         return view('hr.staff_management.index', compact('staffManagement'));
     }
-
-    // public function create()
-    // {
-    //     $staffManagement = null;
-    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
-
-    //     return view('hr.staff_management.create', compact('staffManagement', 'roles'));
-    // }
 
     public function create()
     {
@@ -64,87 +57,104 @@ class StaffManagementController extends Controller
             ->orderBy('designation_name', 'asc')
             ->get();
 
+        // Roles for supervisors (case‑sensitive to your data)
+        $managerRoleId = Roles::where('name', 'manager')->value('id');
+        $hrRoleId      = Roles::where('name', 'hr')->value('id');
+        $hodRoleId     = Roles::where('name', 'hod')->value('id');
+
+        $level1Supervisors = User::where('role_id', $managerRoleId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $level2Supervisors = User::where('role_id', $hrRoleId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $level3Supervisors = User::where('role_id', $hodRoleId)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return view('hr.staff_management.create', compact(
             'staffManagement',
             'roles',
             'departments',
-            'designations'
+            'designations',
+            'level1Supervisors',
+            'level2Supervisors',
+            'level3Supervisors'
         ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'role_id' => 'required|exists:roles,id',
-            // 'department' => 'required|string|max:255',
-            // 'designation' => 'required|string|max:255',
-
-            'department_id' => 'required|exists:department_master,id',
+            'name'           => 'required|string|max:255',
+            'role_id'        => 'required|exists:roles,id',
+            'department_id'  => 'required|exists:department_master,id',
             'designation_id' => 'required|exists:designation_master,id',
-            'joining_date' => 'required|date|before_or_equal:today',
-            'status' => 'required|in:Active,Inactive',
-            'mobile' => 'required|digits:10|unique:users,mobile',
-            'email' => 'nullable|email|unique:users,email',
-            'basic_salary' => 'nullable|numeric|min:0',
-            'hra' => 'nullable|numeric|min:0',
-            'allowance' => 'nullable|numeric|min:0',
+            'joining_date'   => 'required|date|before_or_equal:today',
+            'status'         => 'required|in:Active,Inactive',
+            'mobile'         => 'required|digits:10|unique:users,mobile',
+            'email'          => 'nullable|email|unique:users,email',
+            'basic_salary'   => 'nullable|numeric|min:0',
+            'hra'            => 'nullable|numeric|min:0',
+            'allowance'      => 'nullable|numeric|min:0',
+
+            'level1_supervisor_id' => 'required|exists:users,id',
+            'level2_supervisor_id' => 'nullable|exists:users,id',
+            'level3_supervisor_id' => 'nullable|exists:users,id',
         ]);
 
         try {
             DB::transaction(function () use ($request) {
-                // 1. Create User first (Matches your User Migration)
+                // 1. User
                 $user = User::create([
-                    'id' => (string) Str::uuid(),
-                    'name' => $request->name,
-                    'mobile' => $request->mobile,
-                    'email' => $request->email,
+                    'id'      => (string) Str::uuid(),
+                    'name'    => $request->name,
+                    'mobile'  => $request->mobile,
+                    'email'   => $request->email,
                     'role_id' => $request->role_id,
-                    'status' => strtolower($request->status), // users table uses lowercase enum
-                    'mpin' => null,
-
+                    'status'  => strtolower($request->status), // enum is lowercase
+                    'mpin'    => null,
                 ]);
-                // uplpoad document
-                $documentPath = null;
 
+                // 2. Document upload
+                $documentPath = null;
                 if ($request->hasFile('document')) {
                     $documentPath = $request->file('document')->store('staff_documents', 'public');
                 }
 
-                // 2. Create Staff linked to the User
+                // 3. Staff
                 Staff::create([
-                    'user_id' => $user->id,
-                    'employee_id' => $this->generateEmployeeId(),
-                    'name' => $request->name,
-                    'role_id' => $request->role_id,
-                    // 'department' => $request->department,
-                    // 'designation' => $request->designation,
-                    'department_id' => $request->department_id,
+                    'user_id'        => $user->id,
+                    'employee_id'    => $this->generateEmployeeId(),
+                    'name'           => $request->name,
+                    'role_id'        => $request->role_id,
+                    'department_id'  => $request->department_id,
                     'designation_id' => $request->designation_id,
-                    'joining_date' => $request->joining_date,
-                    'status' => $request->status,
-                    'document_path' => $documentPath,
-                    'basic_salary' => $request->basic_salary,
-                    'hra' => $request->hra,
-                    'allowance' => $request->allowance,
+                    'joining_date'   => $request->joining_date,
+                    'status'         => $request->status,
+                    'document_path'  => $documentPath,
+                    'basic_salary'   => $request->basic_salary,
+                    'hra'            => $request->hra,
+                    'allowance'      => $request->allowance,
+
+                    'level1_supervisor_id' => $request->level1_supervisor_id,
+                    'level2_supervisor_id' => $request->level2_supervisor_id,
+                    'level3_supervisor_id' => $request->level3_supervisor_id,
                 ]);
             });
 
-            return redirect()->route('hr.staff-management.index')
+            return redirect()
+                ->route('hr.staff-management.index')
                 ->with('success', 'Staff and User account created successfully.');
-
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error creating staff: '.$e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Error creating staff: ' . $e->getMessage());
         }
     }
 
-    // public function edit($id)
-    // {
-    //     $staffManagement = Staff::findOrFail($id);
-    //     $roles = Roles::where('status', 'active')->orderBy('name', 'asc')->get();
-
-    //     return view('hr.staff_management.edit', compact('staffManagement', 'roles'));
-    // }
     public function edit($id)
     {
         $staffManagement = Staff::findOrFail($id);
@@ -161,11 +171,34 @@ class StaffManagementController extends Controller
             ->orderBy('designation_name', 'asc')
             ->get();
 
+        $managerRoleId = Roles::where('name', 'manager')->value('id');
+        $hrRoleId      = Roles::where('name', 'hr')->value('id');
+        $hodRoleId     = Roles::where('name', 'hod')->value('id');
+        
+        //Staff should not be able to edit their own supervisor
+        $level1Supervisors = User::where('role_id', $managerRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
+
+       $level2Supervisors = User::where('role_id', $hrRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
+
+       $level3Supervisors = User::where('role_id', $hodRoleId)
+    ->where('id', '!=', $staffManagement->user_id)
+    ->orderBy('name')
+    ->get(['id', 'name']);
+
         return view('hr.staff_management.edit', compact(
             'staffManagement',
             'roles',
             'departments',
-            'designations'
+            'designations',
+            'level1Supervisors',
+            'level2Supervisors',
+            'level3Supervisors'
         ));
     }
 
@@ -174,64 +207,67 @@ class StaffManagementController extends Controller
         $staff = Staff::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'role_id' => 'required|exists:roles,id',
-            // 'department' => 'required|string|max:255',
-            // 'designation' => 'required|string|max:255',
-            'department_id' => 'required|exists:department_master,id',
+            'name'           => 'required|string|max:255',
+            'role_id'        => 'required|exists:roles,id',
+            'department_id'  => 'required|exists:department_master,id',
             'designation_id' => 'required|exists:designation_master,id',
-            'joining_date' => 'required|date|before_or_equal:today',
-            'status' => 'required|in:Active,Inactive',
-            // 'mobile' => 'required|digits:10|unique:users,mobile,' . $staff->user_id,
-            // 'email' => 'nullable|email|unique:users,email,' . $staff->user_id,
-            'mobile' => 'required|digits:10|unique:users,mobile,'.$staff->user_id.',id',
-            'email' => 'nullable|email|unique:users,email,'.$staff->user_id.',id',
-            'basic_salary' => 'nullable|numeric|min:0',
-            'hra' => 'nullable|numeric|min:0',
-            'allowance' => 'nullable|numeric|min:0',
+            'joining_date'   => 'required|date|before_or_equal:today',
+            'status'         => 'required|in:Active,Inactive',
+            'mobile'         => 'required|digits:10|unique:users,mobile,' . $staff->user_id . ',id',
+            'email'          => 'nullable|email|unique:users,email,' . $staff->user_id . ',id',
+            'basic_salary'   => 'nullable|numeric|min:0',
+            'hra'            => 'nullable|numeric|min:0',
+            'allowance'      => 'nullable|numeric|min:0',
 
+            'level1_supervisor_id' => 'required|exists:users,id',
+            'level2_supervisor_id' => 'nullable|exists:users,id',
+            'level3_supervisor_id' => 'nullable|exists:users,id',
         ]);
 
         try {
             DB::transaction(function () use ($request, $staff) {
-
                 $documentPath = $staff->document_path;
-
                 if ($request->hasFile('document')) {
                     $documentPath = $request->file('document')->store('staff_documents', 'public');
                 }
+
                 // Update Staff
                 $staff->update([
-                    'name' => $request->name,
-                    'role_id' => $request->role_id,
-
-                    'joining_date' => $request->joining_date,
-                    'status' => $request->status,
-                    'department_id' => $request->department_id,
+                    'name'           => $request->name,
+                    'role_id'        => $request->role_id,
+                    'joining_date'   => $request->joining_date,
+                    'status'         => $request->status,
+                    'department_id'  => $request->department_id,
                     'designation_id' => $request->designation_id,
-                    'document_path' => $documentPath,
-                    'basic_salary' => $request->basic_salary,
-                    'hra' => $request->hra,
-                    'allowance' => $request->allowance,
+                    'document_path'  => $documentPath,
+                    'basic_salary'   => $request->basic_salary,
+                    'hra'            => $request->hra,
+                    'allowance'      => $request->allowance,
+
+                    'level1_supervisor_id' => $request->level1_supervisor_id,
+                    'level2_supervisor_id' => $request->level2_supervisor_id,
+                    'level3_supervisor_id' => $request->level3_supervisor_id,
                 ]);
 
-                // Update linked User if exists
+                // Update User
                 if ($staff->user_id) {
                     User::where('id', $staff->user_id)->update([
-                        'name' => $request->name,
-                        'mobile' => $request->mobile,
-                        'email' => $request->email,
+                        'name'    => $request->name,
+                        'mobile'  => $request->mobile,
+                        'email'   => $request->email,
                         'role_id' => $request->role_id,
-                        'status' => strtolower($request->status),
+                        'status'  => strtolower($request->status),
                     ]);
                 }
             });
 
-            return redirect()->route('hr.staff-management.index')
+            return redirect()
+                ->route('hr.staff-management.index')
                 ->with('success', 'Staff updated successfully.');
-
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Update failed: '.$e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Update failed: ' . $e->getMessage());
         }
     }
 
@@ -239,7 +275,6 @@ class StaffManagementController extends Controller
     {
         $staff = Staff::findOrFail($id);
 
-        // Use transaction to ensure user is also soft-deleted if needed
         DB::transaction(function () use ($staff) {
             if ($staff->user_id) {
                 User::where('id', $staff->user_id)->delete();
@@ -248,21 +283,24 @@ class StaffManagementController extends Controller
         });
 
         if (request()->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Staff and linked User deleted.']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff and linked User deleted.',
+            ]);
         }
 
-        return redirect()->route('hr.staff-management.index')->with('success', 'Staff deleted successfully.');
+        return redirect()
+            ->route('hr.staff-management.index')
+            ->with('success', 'Staff deleted successfully.');
     }
-
-    // --- Soft Delete Management Methods ---
 
     public function deleted()
     {
         $staffManagement = Staff::with([
-            'department',
-            'designation',
-            'role',
-        ])
+                'department',
+                'designation',
+                'role',
+            ])
             ->onlyTrashed()
             ->latest()
             ->paginate(10);
@@ -281,7 +319,9 @@ class StaffManagementController extends Controller
             $staff->restore();
         });
 
-        return redirect()->route('hr.staff-management.deleted')->with('success', 'Staff restored successfully.');
+        return redirect()
+            ->route('hr.staff-management.deleted')
+            ->with('success', 'Staff restored successfully.');
     }
 
     public function forceDelete($id)
@@ -295,17 +335,19 @@ class StaffManagementController extends Controller
             $staff->forceDelete();
         });
 
-        return redirect()->route('hr.staff-management.deleted')->with('success', 'Staff permanently deleted.');
+        return redirect()
+            ->route('hr.staff-management.deleted')
+            ->with('success', 'Staff permanently deleted.');
     }
 
     public function show($id)
     {
         $staffManagement = Staff::with([
-            'role',
-            'user',
-            'department',
-            'designation',
-        ])->findOrFail($id);
+                'role',
+                'user',
+                'department',
+                'designation',
+            ])->findOrFail($id);
 
         return view('hr.staff_management.show', compact('staffManagement'));
     }
@@ -412,6 +454,56 @@ class StaffManagementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Staff permanently deleted.',
+        ]);
+    }
+    public function apiDoctors()
+    {
+        $doctors = Staff::select('id', 'name')
+            ->where('status', 'Active')
+            ->get();
+
+        return response()->json($doctors);
+    }
+      //added by sushan for api
+    public function getSurgeons()
+    {
+        $surgeons = Staff::whereHas('designation', function ($query) {
+            $query->where('designation_name', 'Surgeon');
+        })
+        ->select('id','name')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $surgeons
+        ]);
+    }
+    //added by sushan for api
+    public function getAssistantDoctors()
+    {
+        $assistantDoctors = Staff::whereHas('designation', function ($query) {
+            $query->where('designation_name', 'Doctor');
+        })
+        ->select('id','name')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $assistantDoctors
+        ]);
+    }
+    //added by sushan for api
+    public function getAnesthetists()
+    {
+        $anesthetists = Staff::whereHas('designation', function ($query) {
+            $query->where('designation_name', 'Anesthetist');
+        })
+        ->select('id','name')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $anesthetists
         ]);
     }
 }

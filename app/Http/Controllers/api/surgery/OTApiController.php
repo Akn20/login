@@ -27,20 +27,28 @@ class OTApiController extends Controller
             'surgery_id' => 'required|exists:surgeries,id',
         ]);
 
-        $ot = OTManagement::updateOrCreate(
+        // $ot = OTManagement::updateOrCreate(
 
-            ['surgery_id' => $request->surgery_id],
+        //     ['surgery_id' => $request->surgery_id],
 
-            [
-                'ot_room_used' => $request->ot_room_used,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'equipment_used' => $request->equipment_used,
-                'approval_status' => $request->approval_status ?? 'Not Approved',
-                'notes' => $request->notes
-            ]
-        );
-
+        //     [
+        //         'ot_room_used' => $request->ot_room_used,
+        //         'start_time' => $request->start_time,
+        //         'end_time' => $request->end_time,
+        //         'equipment_used' => $request->equipment_used,
+        //         'approval_status' => $request->approval_status ?? 'Not Approved',
+        //         'notes' => $request->notes
+        //     ]
+        // );
+         $ot = OTManagement::create([
+    'surgery_id' => $request->surgery_id,
+    'ot_room_used' => $request->ot_room_used,
+    'start_time' => $request->start_time,
+    'end_time' => $request->end_time,
+    'equipment_used' => $request->equipment_used,
+    'approval_status' => $request->approval_status ?? 'Not Approved',
+    'notes' => $request->notes
+]);
         return response()->json([
             'success' => true,
             'message' => 'OT record saved successfully',

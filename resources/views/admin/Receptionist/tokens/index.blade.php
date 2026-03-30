@@ -62,8 +62,7 @@
                                                 {{ $token->appointment->patient->last_name ?? '' }}
                                             </td>
                                             <td>
-                                                {{ $token->appointment->doctor->first_name ?? '-' }}
-                                                {{ $token->appointment->doctor->last_name ?? '' }}
+                                                {{ $token->appointment->doctor->name ?? '-' }}
                                             </td>
                                             <td>
                                                 {{ $token->appointment->department->department_name ?? '-' }}
@@ -87,42 +86,50 @@
 
                                                     <!-- View -->
                                                     <a href="{{ route('admin.tokens.show', $token->id) }}"
-                                                       class="avatar-text avatar-md action-icon">
+                                                       class="avatar-text avatar-md action-icon action-edit">
                                                         <i class="feather-eye"></i>
                                                     </a>
 
                                                     <!-- Reassign -->
+                                                    @if(($token->status ?? '') != 'COMPLETED')
                                                     <a href="{{ route('admin.tokens.edit', $token->id) }}"
-                                                       class="avatar-text avatar-md action-icon action-edit">
-                                                        <i class="feather-repeat"></i>
+                                                    class="avatar-text avatar-md action-icon action-restore">
+                                                        <i class="feather-refresh-cw"></i>
                                                     </a>
+                                                    @endif
 
                                                     <!-- Skip -->
                                                     @if(($token->status ?? '') == 'WAITING')
-                                                        <form action="{{ route('admin.tokens.skip', $token->id) }}"
-                                                              method="POST"
-                                                              onsubmit="return confirm('Are you sure you want to skip this token?')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit"
-                                                                    class="avatar-text avatar-md action-icon action-delete">
-                                                                <i class="feather-skip-forward"></i>
-                                                            </button>
-                                                        </form>
+                                                    <form action="{{ route('admin.tokens.skip', $token->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Are you sure you want to skip this token?')">
+
+                                                        @csrf
+                                                        @method('PATCH')
+
+                                                        <button type="submit"
+                                                                class="avatar-text avatar-md action-icon action-delete">
+                                                            <i class="feather-skip-forward"></i>
+                                                        </button>
+
+                                                    </form>
                                                     @endif
 
                                                     <!-- Complete -->
                                                     @if(($token->status ?? '') != 'COMPLETED')
-                                                        <form action="{{ route('admin.tokens.complete', $token->id) }}"
-                                                              method="POST"
-                                                              onsubmit="return confirm('Are you sure you want to complete this token?')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit"
-                                                                    class="avatar-text avatar-md action-icon">
-                                                                <i class="feather-check-circle"></i>
-                                                            </button>
-                                                        </form>
+                                                    <form action="{{ route('admin.tokens.complete', $token->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Are you sure you want to complete this token?')">
+
+                                                        @csrf
+                                                        @method('PATCH')
+
+                                                        <button type="submit"
+                                                                class="avatar-text avatar-md action-icon action-edit">
+                                                            <i class="feather-check"></i>
+                                                        </button>
+
+                                                    </form>
                                                     @endif
                                                 </div>
                                             </td>

@@ -26,34 +26,26 @@
 
         <div class="d-flex gap-2 align-items-center">
             {{-- Filter: status + search --}}
-            <form method="GET" action="{{ route('admin.weekends.index') }}" class="d-flex">
-                <select
-                    name="status"
-                    class="form-control form-control-sm me-2"
-                >
+            <form method="GET" action="{{ route('hr.weekends.index') }}" class="d-flex">
+                <select name="status" class="form-control form-control-sm me-2">
                     <option value="">All Status</option>
-                    <option value="active"   {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
 
-                <input
-                    type="text"
-                    name="search"
-                    class="form-control form-control-sm me-2"
-                    placeholder="Search Configuration"
-                    value="{{ request('search') }}"
-                >
+                <input type="text" name="search" class="form-control form-control-sm me-2"
+                    placeholder="Search Configuration" value="{{ request('search') }}">
 
                 <button class="btn btn-light-brand btn-sm">
                     <i class="feather-search"></i>
                 </button>
             </form>
 
-            <a href="{{ route('admin.weekends.create') }}" class="btn btn-primary">
+            <a href="{{ route('hr.weekends.create') }}" class="btn btn-primary">
                 <i class="feather-plus me-1"></i> Add Weekend
             </a>
 
-            <a href="{{ route('admin.weekends.deleted') }}" class="btn btn-danger">
+            <a href="{{ route('hr.weekends.deleted') }}" class="btn btn-danger">
                 Deleted Weekends
             </a>
         </div>
@@ -102,46 +94,39 @@
 
                                     <td class="text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
-                                            
-                                            <a
-                                                href="{{ route('admin.weekends.edit', $weekend->id) }}"
-                                                class="btn btn-outline-secondary btn-icon rounded-circle"
-                                                title="Edit"
-                                            >
+
+                                            <a href="{{ route('hr.weekends.edit', $weekend->id) }}"
+                                                class="btn btn-outline-secondary btn-icon rounded-circle" title="Edit">
                                                 <i class="feather-edit-2"></i>
                                             </a>
 
-                                            <form
-                                                action="{{ route('admin.weekends.delete', $weekend->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Move weekend configuration to trash?')"
-                                            >
+                                            <form action="{{ route('hr.weekends.delete', $weekend->id) }}" method="POST"
+                                                onsubmit="return confirm('Move weekend configuration to trash?')">
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button
-                                                    type="submit"
+                                                <button type="submit"
                                                     class="avatar-text avatar-md d-flex align-items-center justify-content-center"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Trash"
-                                                >
+                                                    data-bs-toggle="tooltip" title="Trash">
                                                     <i class="feather feather-trash-2"></i>
                                                 </button>
                                             </form>
-                                                    <form action="{{ route('admin.weekends.toggleStatus', $weekend->id) }}"
-                                                method="POST" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
+                                            <form action="{{ route('hr.weekends.toggleStatus', $weekend->id) }}" method="POST"
+                                                class="d-inline">
+                                                <form action="{{ route('hr.weekends.toggleStatus', $weekend->id) }}" method="POST"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('PATCH')
 
-                                                <button type="submit"
-                                                    class="status-toggle {{ $weekend->status === 'active' ? 'inactive' : 'active' }}">
-                                                    <span>
-                                                        {{ $weekend->status === 'active' ? 'Deactivate' : 'Activate' }}
-                                                    </span>
-                                                </button>
-                                            </form>
+                                                    <button type="submit"
+                                                        class="status-toggle {{ $weekend->status === 'active' ? 'inactive' : 'active' }}">
+                                                        <span>
+                                                            {{ $weekend->status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                        </span>
+                                                    </button>
+                                                </form>
                                         </div>
-                                        
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -162,4 +147,3 @@
         </div>
     </div>
 @endsection
-

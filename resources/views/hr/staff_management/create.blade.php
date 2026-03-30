@@ -25,22 +25,23 @@
                     <div class="card stretch stretch-full">
                         <div class="card-body">
                             <!-- @if ($errors->any())
-    <div style="color:red;">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif -->
+        <div style="color:red;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif -->
 
-@if(session('error'))
-<div class="alert alert-danger">
-{{ session('error') }}
-</div>
-@endif
+                            @if(session('error'))
+                                <div class="alert alert-danger">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
 
-                            <form method="POST" action="{{ route('hr.staff-management.store') }}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('hr.staff-management.store') }}"
+                                enctype="multipart/form-data">
                                 @csrf
 
                                 @include('hr.staff_management.form')

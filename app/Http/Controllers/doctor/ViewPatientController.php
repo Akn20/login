@@ -9,15 +9,34 @@ use App\Models\Consultation; // IMPORTANT
 
 class ViewPatientController extends Controller
 {
+    public function apiPatientProfile($patientId)
+    {
+        $patient = Patient::findOrFail($patientId);
+
+        $consultations = Consultation::with(['doctor', 'medicines'])
+            ->where('patient_id', $patientId)
+            ->latest('consultation_date')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Patient profile fetched successfully',
+            'data' => [
+                'patient' => $patient,
+                'consultations' => $consultations
+            ]
+        ], 200);
+    }
     public function viewPatientProfile($id)
     {
         $patient = Patient::findOrFail($id);
 
         $consultations = Consultation::with(['doctor', 'medicines'])
             ->where('patient_id', $id)
-            ->latest()
+            ->latest('consultation_date')
             ->get();
 
         return view('doctor.opd.view-patient-profile', compact('patient', 'consultations'));
     }
+
 }

@@ -106,7 +106,7 @@
 
                             <tr>
                                 <th style="width:200px;">Appointment ID</th>
-                                <td>{{ $token->appointment->id }}</td>
+                                <td>{{ $token->appointment->patient->id }}</td>
                             </tr>
 
                             <tr>
@@ -118,18 +118,8 @@
                             </tr>
 
                             <tr>
-                                <th>Patient Code</th>
-                                <td>
-                                    {{ $token->appointment->patient->patient_code }}
-                                </td>
-                            </tr>
-
-                            <tr>
                                 <th>Doctor</th>
-                                <td>
-                                    {{ $token->appointment->doctor->first_name }}
-                                    {{ $token->appointment->doctor->last_name }}
-                                </td>
+                                <td>{{ $selectedDoctor->name ?? '' }}</td>
                             </tr>
 
                             <tr>
@@ -156,17 +146,9 @@
                         </table>
 
                     </div>
-
                 </div>
-
-                {{-- Future Feature --}}
-                {{-- Queue History / Token Movement can be added here later --}}
-
             </div>
-
         </div>
     </div>
-
 </div>
-
 @endsection

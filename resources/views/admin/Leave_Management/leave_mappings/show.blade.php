@@ -6,10 +6,10 @@
         <h5 class="m-b-10 mb-1"><i class="feather-eye me-2"></i>Mapping Details</h5>
     </div>
     <div class="d-flex gap-2">
-        <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}" class="btn btn-primary">
+        <a href="{{ route('hr.leave-mappings.edit', $mapping->id) }}" class="btn btn-primary">
             <i class="feather-edit-2 me-1"></i> Edit
         </a>
-        <a href="{{ route('admin.leave-mappings.index') }}" class="btn btn-light">
+        <a href="{{ route('hr.leave-mappings.index') }}" class="btn btn-light">
             <i class="feather-arrow-left me-1"></i> Back
         </a>
     </div>
