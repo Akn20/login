@@ -124,7 +124,10 @@ class UserController extends Controller
             'status' => $user->status,
         ]);
     }
-
+ public function notEnrolled(){
+        $users = User::where('is_enrolled', false)->get();
+        return response()->json($users);
+    }
     
 
 }
