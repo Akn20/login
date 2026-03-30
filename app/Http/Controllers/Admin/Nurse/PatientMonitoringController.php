@@ -160,12 +160,15 @@ class PatientMonitoringController extends Controller
     public function apiStore(Request $request)
     {
         $request->validate([
-            'patient_id' => 'required',
-            'nurse_id' => 'required',
-            'temperature' => 'required'
+            'patient_id' => 'required|exists:patients,id',
+            'nurse_id' => 'required|exists:staff,id',
+            'temperature' => 'required|numeric'
         ]);
 
-        $institution = \App\Models\Institution::first();
+        $institution = Institution::first();
+        if (!$institution) {
+            return ApiResponse::error('Institution not configured');
+        }
 
         $vital = Vital::create([
             'institution_id' => $institution->id,
@@ -193,7 +196,24 @@ class PatientMonitoringController extends Controller
             return ApiResponse::error('Vital record not found');
         }
 
-        $vital->update($request->all());
+        $request->validate([
+            'patient_id' => 'sometimes|exists:patients,id',
+            'nurse_id' => 'sometimes|exists:staff,id',
+            'temperature' => 'sometimes|numeric',
+            'blood_pressure_systolic' => 'sometimes|integer',
+            'blood_pressure_diastolic' => 'sometimes|integer',
+            'pulse_rate' => 'sometimes|integer',
+            'respiratory_rate' => 'sometimes|integer',
+            'spo2' => 'sometimes|integer',
+            'blood_sugar' => 'sometimes|numeric',
+            'weight' => 'sometimes|numeric',
+        ]);
+
+        $vital->update($request->only([
+            'patient_id', 'nurse_id', 'temperature',
+            'blood_pressure_systolic', 'blood_pressure_diastolic',
+            'pulse_rate', 'respiratory_rate', 'spo2', 'blood_sugar', 'weight'
+        ]));
 
         return ApiResponse::success($vital, 'Vitals updated successfully');
     }
@@ -260,5 +280,16 @@ class PatientMonitoringController extends Controller
             ->get();
 
         return ApiResponse::success($patients, 'Patients retrieved successfully');
+    }
+
+    public function apiGetNurses()
+    {
+        $nurses = Staff::join('roles', 'staff.role_id', '=', 'roles.id')
+            ->where('roles.name', 'Nurse')
+            ->whereNull('staff.deleted_at')
+            ->select('staff.id', 'staff.name')
+            ->get();
+
+        return ApiResponse::success($nurses, 'Nurses retrieved successfully');
     }
 }

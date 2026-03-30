@@ -587,23 +587,17 @@ Route::get('/doctors', [TokenController::class, 'apiDoctors']);
 // Patient Monitoring (Vitals) API
 
 Route::prefix('vitals')->group(function () {
-
+    // Specific routes FIRST (before /{id} wildcard)
     Route::get('/trash', [PatientMonitoringController::class, 'apiTrash']);
-
-    Route::post('/restore/{id}', [PatientMonitoringController::class, 'apiRestore']);
-
-    Route::delete('/force-delete/{id}', [PatientMonitoringController::class, 'apiForceDelete']);
-
-
-    Route::get('/', [PatientMonitoringController::class, 'apiIndex']);
-
-    Route::get('/{id}', [PatientMonitoringController::class, 'apiShow']);
-
-    Route::post('/', [PatientMonitoringController::class, 'apiStore']);
-
-    Route::put('/{id}', [PatientMonitoringController::class, 'apiUpdate']);
-
-    Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
-
     Route::get('/patients', [PatientMonitoringController::class, 'apiGetPatients']);
+    Route::get('/nurses', [PatientMonitoringController::class, 'apiGetNurses']);
+
+    // Dynamic routes SECOND (after specific routes)
+    Route::get('/', [PatientMonitoringController::class, 'apiIndex']);
+    Route::get('/{id}', [PatientMonitoringController::class, 'apiShow']);
+    Route::post('/', [PatientMonitoringController::class, 'apiStore']);
+    Route::put('/{id}', [PatientMonitoringController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [PatientMonitoringController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
 });
