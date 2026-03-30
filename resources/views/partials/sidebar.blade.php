@@ -285,6 +285,9 @@
                             up-target="#main-container"><i class="feather-briefcase me-2"></i>Organizations</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.institutions.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-aperture me-2"></i>Institutions</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.users.biometrics') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-aperture me-2"></i>Biometrics</a>
+                    </li>
                 </ul>
             </li>
             <li

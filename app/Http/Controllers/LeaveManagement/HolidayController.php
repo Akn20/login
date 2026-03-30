@@ -7,6 +7,7 @@ use App\Models\Roles;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use App\Models\Holiday;
+use Log;
 
 class HolidayController extends Controller
 {
@@ -85,6 +86,7 @@ class HolidayController extends Controller
      */
     public function show(string $id)
     {
+        Log::info($id);
         $holiday = Holiday::findOrFail($id);
         if (request()->wantsJson()) {
             return response()->json([
