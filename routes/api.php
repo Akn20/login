@@ -72,13 +72,27 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\NurseNotesController;
 
 
-/*|--------------------------------------------------------------------------
-| Biometric (protected by Sanctum)
+
+/*
+|--------------------------------------------------------------------------
+| Public auth APIs (no sanctum)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'role:admin'])
-    ->prefix('biometric')
-    ->group(function () {
+Route::prefix('auth')->group(function () {
+    Route::post('login', [SignInController::class, 'apiLogin']);
+    Route::post('send-otp', [SignInController::class, 'apiSendOtp']);
+    Route::post('resend-otp', [SignInController::class, 'apiResendOtp']);
+    Route::post('verify-otp', [SignInController::class, 'apiVerifyOtp']);
+    Route::post('set-mpin', [SignInController::class, 'apiSetMpin']);
+    Route::post('logout', [SignInController::class, 'apiLogout']);
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+  /* Biometric */  
+Route::prefix('biometric')->group(function () {
         Route::post('/enroll', [BiometricController::class, 'enroll']);
         Route::post('/check-in', [BiometricController::class, 'checkIn']);
         Route::post('/check-out', [BiometricController::class, 'checkOut']);
@@ -86,9 +100,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])
     });
 
 
-Route::middleware('auth:sanctum')->group(function () {
 
     /*Users*/
+    Route::middleware('role:admin')->group(function () {
+        
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::patch('/users/{id}', [UserController::class, 'update']);
@@ -108,7 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/deleted-roles', [RoleController::class, 'displayDeletedRoles']);
     Route::post('/restore-role/{id}', [RoleController::class, 'restore']);
     Route::delete('/force-delete-role/{id}', [RoleController::class, 'forceDeleteRole']);
-
+    });
 });
     
 
@@ -256,22 +271,6 @@ Route::get('/employee', [EmployeeController::class, 'index']);
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
-Route::get('/test-api', function () {
-    return 'API working';
-});
-/*
-|--------------------------------------------------------------------------
-| Public auth APIs (no sanctum)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('auth')->group(function () {
-    Route::post('login', [SignInController::class, 'apiLogin']);
-    Route::post('send-otp', [SignInController::class, 'apiSendOtp']);
-    Route::post('resend-otp', [SignInController::class, 'apiResendOtp']);
-    Route::post('verify-otp', [SignInController::class, 'apiVerifyOtp']);
-    Route::post('set-mpin', [SignInController::class, 'apiSetMpin']);
-    Route::post('logout', [SignInController::class, 'apiLogout']);
-});
 
 /*
 |--------------------------------------------------------------------------
