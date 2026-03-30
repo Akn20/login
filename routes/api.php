@@ -46,6 +46,8 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+use App\Http\Controllers\PharmacyDashboardController;
 //use App\Http\Controllers\WorkStatusController;
 
 //surgery
@@ -478,6 +480,13 @@ Route::prefix('hr')->group(function () {
 
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| Pharmacy dashboard
+|--------------------------------------------------------------------------
+*/
+Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
 /*
 |--------------------------------------------------------------------------

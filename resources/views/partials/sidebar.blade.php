@@ -118,6 +118,8 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="fas fa-chart-line"></i>  Dashboard</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-truck me-2"></i>Vendors</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow

@@ -59,6 +59,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
+use App\Http\Controllers\PharmacyDashboardController;
 // nurse
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
@@ -382,6 +383,14 @@ Route::middleware(['auth', 'role:admin'])
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
+        
+        /*
+        |--------------------------------------------------------------------------
+        | Pharmacy: Dashboard
+        |--------------------------------------------------------------------------
+        */
+        
+        Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'index'])->name('pharmacy.dashboard');
 
         /*
         |--------------------------------------------------------------------------
