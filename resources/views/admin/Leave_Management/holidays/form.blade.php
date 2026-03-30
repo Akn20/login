@@ -61,13 +61,6 @@
         @endphp
 
         <select id="staff-select" name="staff[]" class="form-select @error('staff') is-invalid @enderror" multiple>
-
-            @foreach ($staffs as $staff)
-                <option value="{{ $staff->id }}" {{ collect($selectedStaff)->contains($staff->id) ? 'selected' : '' }}>
-                    {{ $staff->name }} ({{ $staff->employee_id }})
-                </option>
-            @endforeach
-
         </select>
 
         @error('staff')
@@ -119,19 +112,49 @@
 </div>
 
 <script>
-            document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
-                new TomSelect('#roles-select', {
-                    plugins: ['remove_button'],
-                    closeAfterSelect: false,
-                    placeholder: 'Select roles'
+        const roleSelect = new TomSelect('#roles-select', {
+            plugins: ['remove_button'],
+            closeAfterSelect: false,
+            placeholder: 'Select roles'
+        });
+
+        const staffSelect = new TomSelect('#staff-select', {
+            plugins: ['remove_button'],
+            closeAfterSelect: false,
+            placeholder: 'Select staff'
+        });
+        roleSelect.on('change', function (values) {
+
+            staffSelect.clear();        // remove selected
+            staffSelect.clearOptions(); // remove options
+
+            if (values.length === 0) {
+                return;
+            }
+
+            fetch("{{ route('hr.weekends.staff-by-roles') }}?roles[]=" + values.join('&roles[]='))
+
+                .then(res => res.json())
+
+                .then(data => {
+
+                    data.forEach(staff => {
+
+                        staffSelect.addOption({
+                            value: staff.id,
+                            text: staff.name
+                        });
+
+                    });
+
+                    staffSelect.refreshOptions(false);
+
                 });
 
-                new TomSelect('#staff-select', {
-                    plugins: ['remove_button'],
-                    closeAfterSelect: false,
-                    placeholder: 'Select staff'
-                });
+        });
 
-            });
-        </script>
+
+    });
+</script>

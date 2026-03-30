@@ -25,15 +25,15 @@ class SalesBillItem extends Model
 
 
 
-    public function medicine()
-    {
-        return $this->belongsTo(Medicine::class, 'medicine_id', 'id');
-    }
+   public function medicine()
+{
+    return $this->belongsTo(Medicine::class, 'medicine_id');
+}
 
-    public function batch()
-    {
-        return $this->belongsTo(MedicineBatch::class, 'batch_id', 'id');
-    }
+public function batch()
+{
+    return $this->belongsTo(MedicineBatch::class, 'batch_id');
+}
 
     public function bill()
     {

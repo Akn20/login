@@ -1,4 +1,4 @@
-USE `hims_main`;
+USE `hims_test`;
 
 -- Helpful: disable FK checks while seeding
 SET
@@ -1810,72 +1810,71 @@ VALUES
   );
 
 -- ===================== APPOINTMENTS (UUID) =====================
--- INSERT INTO
---   `appointments` (
---     `id`,
---     `patient_id`,
---     `doctor_id`,
---     `department_id`,
---     `appointment_date`,
---     `appointment_time`,
---     `appointment_status`,
---     `consultation_fee`,
---     `institution_id`,
---     `receptionist_user_id`,
---     `created_at`,
---     `updated_at`
---   )
--- VALUES
---   (
---     UUID(),
---     (
---       SELECT
---         id
---       FROM
---         patients
---       WHERE
---         patient_code = 'PAT-001'
---       LIMIT
---         1
---     ), (
---       SELECT
---         id
---       FROM
---         users
---       WHERE
---         mobile = '8000000001'
---       LIMIT
---         1
---     ), (
---       SELECT
---         id
---       FROM
---         department_master
---       WHERE
---         department_code = 'OPD'
---       LIMIT
---         1
---     ), CURDATE(), '10:00:00', 'Scheduled', 500.00, (
---       SELECT
---         id
---       FROM
---         hospitals
---       WHERE
---         code = 'HOSP-DH1'
---       LIMIT
---         1
---     ), (
---       SELECT
---         id
---       FROM
---         users
---       WHERE
---         mobile = '9000000005'
---       LIMIT
---         1
---     ), NOW(),
---     NOW()
---   );
+INSERT INTO
+  `appointments` (
+     `id`,
+     `patient_id`,
+     `doctor_id`,
+     `department_id`,
+     `appointment_date`,
+     `appointment_time`,
+     `appointment_status`,
+     `consultation_fee`,
+     `institution_id`,
+     `receptionist_user_id`,
+     `created_at`,
+     `updated_at`
+   )
+ VALUES
+   (
+     UUID(),
+     (
+       SELECT
+         id
+       FROM
+         patients
+       WHERE
+         patient_code = 'PAT-001'
+       LIMIT
+         1
+     ), (
+       SELECT
+         id
+       FROM
+         users
+       WHERE
+         mobile = '8000000001'
+       LIMIT
+         1
+     ), (
+       SELECT
+         id
+       FROM
+         department_master
+       WHERE
+         department_code = 'OPD'
+         1
+     ), CURDATE(), '10:00:00', 'Scheduled', 500.00, (
+       SELECT
+         id
+       FROM
+         hospitals
+       WHERE
+         code = 'HOSP-DH1'
+       LIMIT
+         1
+     ), (
+       SELECT
+         id
+     FROM
+        users
+       WHERE
+        mobile = '9000000005'
+      LIMIT
+         1
+     ), NOW(),
+    NOW()
+   );
 
 -- -- ===================== OPD (UUID) =====================
 -- INSERT INTO
