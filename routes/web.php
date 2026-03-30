@@ -482,11 +482,11 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
 
-            Route::delete('/delete/{id>', [StockController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
 
             Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id>', [StockController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id>', [StockController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
 
             Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
         });
@@ -932,7 +932,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
         Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-        Route::delete('/delete/{id}', [StockController::class, 'delete'])->name('delete');
+        Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
         Route::put('/toggle-status/{id}', [StockController::class, 'toggleStatus'])->name('toggleStatus');
         Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
     });
