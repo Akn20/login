@@ -120,7 +120,9 @@ class ConsultationController extends Controller
                         'patient_id' => $request->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
-                        'priority' => $request->priority ?? 'routine',
+                        'priority' => is_array($request->priority)
+    ? $request->priority[0]
+    : ($request->priority ?? 'routine'),
                         'status' => 'pending'
                     ]);
 
@@ -204,7 +206,9 @@ class ConsultationController extends Controller
                         'patient_id' => $consultation->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
-                        'priority' => $request->priority ?? 'routine',
+                        'priority' => is_array($request->priority)
+    ? $request->priority[0]
+    : ($request->priority ?? 'routine'),
                         'status' => 'pending'
                     ]);
 
@@ -241,7 +245,7 @@ class ConsultationController extends Controller
     ==========================*/
     public function summary($id)
     {
-        $consultation = Consultation::with(['patient', 'medicines'])
+        $consultation = Consultation::with(['patient', 'medicines','labRequests'])
             ->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
@@ -337,7 +341,7 @@ class ConsultationController extends Controller
                     'patient_id' => $request->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => $test,
-                    'priority' => $request->priority[$index] ?? 'routine',
+                    'priority' => $request->priority ?? 'routine',
                     'status' => 'pending'
                 ]);
 
@@ -384,7 +388,7 @@ class ConsultationController extends Controller
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
-                    'priority' => $request->priority[$index] ?? 'routine',
+                    'priority' => $request->priority ?? 'routine',
                     'status' => 'pending'
                 ]);
 
