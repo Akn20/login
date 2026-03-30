@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
@@ -69,21 +70,44 @@ use App\Http\Controllers\TokenController;
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum', 'role:admin'])
     ->prefix('biometric')
     ->group(function () {
         Route::post('/enroll', [BiometricController::class, 'enroll']);
-        Route::post('/match', [BiometricController::class, 'match']);
         Route::post('/check-in', [BiometricController::class, 'checkIn']);
         Route::post('/check-out', [BiometricController::class, 'checkOut']);
         Route::get('/check-status', [BiometricController::class, 'checkStatus']);
     });
-Route::middleware('auth:sanctum')->prefix('users')->group(function () {
-    
-    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
-    } 
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    /*Users*/
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::patch('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/deleted-users', [UserController::class, 'displayDeletedUsers']);
+    Route::post('/restore-user/{id}', [UserController::class, 'restore']);
+    Route::delete('/force-delete-user/{id}', [UserController::class, 'forceDeleteUser']);
+    Route::get('/users/notEnrolled', [UserController::class, 'notEnrolled']);
+
+
+
+    /*Roles*/
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::post('/role', [RoleController::class, 'store']);
+    Route::patch('/roles/{id}', [RoleController::class, 'update']);
+    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+    Route::get('/deleted-roles', [RoleController::class, 'displayDeletedRoles']);
+    Route::post('/restore-role/{id}', [RoleController::class, 'restore']);
+    Route::delete('/force-delete-role/{id}', [RoleController::class, 'forceDeleteRole']);
+
 });
     
+
+
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -236,6 +260,11 @@ Route::get('/test-api', function () {
 */
 Route::prefix('auth')->group(function () {
     Route::post('login', [SignInController::class, 'apiLogin']);
+    Route::post('send-otp', [SignInController::class, 'apiSendOtp']);
+    Route::post('resend-otp', [SignInController::class, 'apiResendOtp']);
+    Route::post('verify-otp', [SignInController::class, 'apiVerifyOtp']);
+    Route::post('set-mpin', [SignInController::class, 'apiSetMpin']);
+    Route::post('logout', [SignInController::class, 'apiLogout']);
 });
 
 /*
