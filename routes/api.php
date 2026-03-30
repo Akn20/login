@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -62,6 +63,26 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    
+    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
+    } 
+});
+    
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
