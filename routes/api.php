@@ -46,6 +46,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\WorkStatusController;
+
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
@@ -64,6 +67,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
+
+//Nurse
+use App\Http\Controllers\NurseNotesController;
 
 
 /*|--------------------------------------------------------------------------
@@ -588,7 +594,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    // Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -696,55 +728,5 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-
-
-Route::prefix('hr')->group(function () {
-
-Route::get('/shifts',[ShiftSchedulingAPIController::class,'shiftIndex']);
-Route::post('shifts',[ShiftSchedulingAPIController::class,'shiftStore']);
-Route::get('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftShow']);
-Route::put('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftUpdate']);
-Route::delete('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftDelete']);
-
-Route::post('shift-toggle/{id}',[ShiftSchedulingAPIController::class,'toggleShiftStatus']);
-
-Route::get('assignments',[ShiftSchedulingAPIController::class,'assignmentIndex']);
-Route::post('assignments',[ShiftSchedulingAPIController::class,'assignmentStore']);
-
-Route::get('rotations',[ShiftSchedulingAPIController::class,'rotationIndex']);
-Route::post('rotations',[ShiftSchedulingAPIController::class,'rotationStore']);
-
-Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex']);
-Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
-
-Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
-
-});
-Route::prefix('attendance')->group(function(){
-
-    Route::get('/', [AttendanceApiController::class,'index']);
-
-    Route::post('/', [AttendanceApiController::class,'store']);
-
-    Route::get('/{id}', [AttendanceApiController::class,'show']);
-
-    Route::put('/{id}', [AttendanceApiController::class,'update']);
-
-    Route::delete('/{id}', [AttendanceApiController::class,'destroy']);
-
-    Route::get('/late/list', [AttendanceApiController::class,'lateEntries']);
-
-    Route::get('/overtime/list', [AttendanceApiController::class,'overtime']);
-
-});
-Route::prefix('tokens')->group(function () {
-    Route::get('/', [TokenController::class, 'apiIndex']);
-    Route::post('/', [TokenController::class, 'apiStore']);
-    Route::get('/{id}', [TokenController::class, 'apiShow']);
-    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
-    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
     
-    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-    
-});
-Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+

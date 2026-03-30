@@ -43,12 +43,12 @@ Back
 
 <div class="col-md-4">
 <strong>Patient Name:</strong>
-{{ $prescription->patient->name ?? '-' }}
+{{ $prescription->patient_name ?? '-' }}
 </div>
 
 <div class="col-md-4">
 <strong>Doctor:</strong>
-{{ $prescription->doctor->name ?? 'Offline Doctor' }}
+{{ $prescription->doctor_name ?? 'Offline Doctor' }}
 </div>
 
 </div>
@@ -58,11 +58,15 @@ Back
 </div>
 
 
+<!-- Dispense Form -->
 
-<form action="{{ route('admin.prescriptions.dispense.store',$prescription->id ?? 0) }}" method="POST">
+<form id="dispenseForm"
+      action="{{ route('admin.prescriptions.dispense.store',$prescription->id ?? 0) }}"
+      method="POST">
 
 @csrf
 
+<input type="hidden" name="patient_id" value="{{ $prescription->patient_id }}">
 
 <!-- Medicines Table -->
 
@@ -91,7 +95,6 @@ Back
 
 </thead>
 
-
 <tbody>
 
 @forelse($prescription->items ?? [] as $key => $item)
@@ -100,10 +103,14 @@ Back
 
 <td>{{ $key+1 }}</td>
 
-<td>{{ $item->medicine->name ?? '-' }}</td>
+<td>
+{{ $item->medicine->name ?? '-' }}
+<input type="hidden"
+       name="medicine_id[]"
+       value="{{ $item->medicine_id ?? '' }}">
+</td>
 
 <td>{{ $item->quantity ?? 0 }}</td>
-
 
 <td>
 
@@ -114,7 +121,7 @@ Back
 @foreach($item->medicine->batches ?? [] as $batch)
 
 <option value="{{ $batch->id }}"
-data-stock="{{ $batch->quantity_available }}"
+data-stock="{{ $batch->quantity_available ?? $batch->quantity ?? 0 }}"
 data-expiry="{{ $batch->expiry_date }}">
 
 {{ $batch->batch_number }} | Exp: {{ $batch->expiry_date }}
@@ -127,7 +134,6 @@ data-expiry="{{ $batch->expiry_date }}">
 
 </td>
 
-
 <td class="stockCell">0</td>
 
 <td>
@@ -135,8 +141,9 @@ data-expiry="{{ $batch->expiry_date }}">
 <input type="number"
 name="dispense_qty[]"
 class="form-control qtyInput"
+value="{{ $item->quantity ?? 1 }}"
 max="{{ $item->quantity ?? 0 }}"
->
+required>
 
 </td>
 
@@ -162,23 +169,34 @@ No medicines available
 
 </div>
 
-
-
-<!-- Submit -->
-
-<div class="mt-3">
-
-<button class="btn btn-success">
-Dispense Medicines
-</button>
-
-</div>
-
 </form>
 
 
+<!-- Action Buttons -->
+
+<div class="mt-3 d-flex gap-2">
+
+<button type="submit"
+        form="dispenseForm"
+        class="btn btn-success">
+Dispense Medicines
+</button>
+
+<form action="{{ route('admin.prescriptions.reject',$prescription->id) }}"
+      method="POST">
+
+@csrf
+
+<button class="btn btn-danger"
+onclick="return confirm('Are you sure you want to reject this prescription?')">
+Reject
+</button>
+
+</form>
+
 </div>
 
+</div>
 
 
 <script>

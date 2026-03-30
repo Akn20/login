@@ -9,29 +9,58 @@
 
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
+
         <div>
             <h4 class="mb-0">Prescription Details</h4>
             <small class="text-muted">Pharmacy → Prescriptions → View</small>
         </div>
 
-        <div>
+        <div class="d-flex gap-2">
+
             <a href="{{ route('admin.prescriptions.index') }}" class="btn btn-secondary">
                 Back
             </a>
 
-            @if(($prescription->status ?? '') == 'Pending')
-            <a href="{{ route('admin.prescriptions.verify',$prescription->id ?? 0) }}"
-               class="btn btn-primary">
-               Verify Prescription
-            </a>
+            {{-- Pending --}}
+            @if($prescription->status == 'Pending')
+
+                <a href="{{ route('admin.prescriptions.verify',$prescription->id) }}"
+                   class="btn btn-primary">
+                    Verify Prescription
+                </a>
+
+               <form action="{{ route('admin.prescriptions.reject',$prescription->id) }}"
+                method="POST"
+                style="display:inline;">
+                
+                @csrf
+
+                <button type="submit" class="btn btn-danger">
+                    Reject
+                </button>
+
+            </form>
+
+            {{-- Verified --}}
+            @elseif($prescription->status == 'Verified')
+
+                <a href="{{ route('admin.prescriptions.dispense',$prescription->id) }}"
+                   class="btn btn-success">
+                    Dispense Medicines
+                </a>
+
+            {{-- Dispensed --}}
+            @elseif($prescription->status == 'Dispensed')
+
+                <a href="{{ route('admin.prescriptions.print',$prescription->id) }}"
+                   class="btn btn-info">
+                    Print Bill
+                </a>
+
             @endif
 
-            <a href="{{ route('admin.prescriptions.dispense',$prescription->id ?? 0) }}"
-               class="btn btn-success">
-               Dispense Medicines
-            </a>
-
         </div>
+
     </div>
 
     <!-- Patient & Doctor Information -->
@@ -47,22 +76,18 @@
 
                 <div class="card-body">
 
-                    <p><strong>Patient Name:</strong> {{ $prescription->patient->name ?? '-' }}</p>
+                    <p><strong>Patient Name:</strong> {{ $prescription->patient_name ?? '-' }}</p>
 
-                    <p><strong>Patient ID:</strong> {{ $prescription->patient_id ?? '-' }}</p>
+                    <p><strong>Phone:</strong> {{ $prescription->patient_phone ?? '-' }}</p>
 
-                    <p><strong>Phone:</strong> {{ $prescription->patient->phone ?? '-' }}</p>
-
-                    <p><strong>Age/Gender:</strong>
-                        {{ $prescription->patient->age ?? '-' }} /
-                        {{ $prescription->patient->gender ?? '-' }}
+                    <p><strong>Gender:</strong>
+                        {{ $prescription->patient_gender ?? '-' }}
                     </p>
 
                 </div>
             </div>
 
         </div>
-
 
         <!-- Doctor Info -->
         <div class="col-md-6">
@@ -75,11 +100,11 @@
                 <div class="card-body">
 
                     <p><strong>Doctor Name:</strong>
-                        {{ $prescription->doctor->name ?? 'Offline Doctor' }}
+                        {{ $prescription->doctor_name ?? 'Offline Doctor' }}
                     </p>
 
                     <p><strong>Department:</strong>
-                        {{ $prescription->doctor->department ?? '-' }}
+                        {{ $prescription->doctor_department ?? '-' }}
                     </p>
 
                     <p><strong>Prescription Date:</strong>
@@ -101,7 +126,6 @@
 
     </div>
 
-
     <!-- Medicines List -->
     <div class="card mt-3">
 
@@ -122,20 +146,19 @@
                             <th>Dosage</th>
                             <th>Frequency</th>
                             <th>Duration</th>
-                            <th>Quantity</th>
                             <th>Instructions</th>
                         </tr>
                     </thead>
 
                     <tbody>
 
-                        @forelse($prescription->items ?? [] as $key => $item)
+                    @forelse($prescription->items ?? [] as $key => $item)
 
                         <tr>
 
                             <td>{{ $key+1 }}</td>
 
-                            <td>{{ $item->medicine->name ?? '-' }}</td>
+                            <td>{{ $item->medicine_name ?? $item->name ?? '-' }}</td>
 
                             <td>{{ $item->dosage ?? '-' }}</td>
 
@@ -143,21 +166,19 @@
 
                             <td>{{ $item->duration ?? '-' }}</td>
 
-                            <td>{{ $item->quantity ?? '-' }}</td>
-
                             <td>{{ $item->instructions ?? '-' }}</td>
 
                         </tr>
 
-                        @empty
+                    @empty
 
                         <tr>
-                            <td colspan="7" class="text-center text-muted">
+                            <td colspan="6" class="text-center text-muted">
                                 No medicines found
                             </td>
                         </tr>
 
-                        @endforelse
+                    @endforelse
 
                     </tbody>
 
@@ -168,7 +189,6 @@
         </div>
 
     </div>
-
 
     <!-- Uploaded Prescription -->
     @if(!empty($prescription->uploaded_prescription))
@@ -194,7 +214,6 @@
     </div>
 
     @endif
-
 
 </div>
 

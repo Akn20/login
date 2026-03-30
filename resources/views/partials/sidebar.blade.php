@@ -93,10 +93,14 @@
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/beds*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-layers"></i></span>
-                    <span class="nxl-mtext">Bed Management</span>
+                    <span class="nxl-mtext">Bed & Ward Management</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('admin.ward.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-box me-2"></i>All Wards</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.ward.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-plus-circle me-2"></i>Add Ward</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.beds.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-box me-2"></i>All Beds</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.beds.create') }}" class="nxl-link" up-follow
@@ -130,6 +134,26 @@
                             up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
                 </ul>
             </li>
+
+            {{----------- Nurse -----------}}
+            <li class="nxl-item nxl-hasmenu">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-heart"></i></span>
+                    <span class="nxl-mtext">Nurse</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
+                            <span class="nxl-micon">
+                                <i class="feather-calendar"></i>
+                            </span>
+                            <span class="nxl-mtext">Nursing Notes </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-package"></i></span>
@@ -265,6 +289,9 @@
                             up-target="#main-container"><i class="feather-briefcase me-2"></i>Organizations</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.institutions.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-aperture me-2"></i>Institutions</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.users.biometrics') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-aperture me-2"></i>Biometrics</a>
+                    </li>
                 </ul>
             </li>
             <li

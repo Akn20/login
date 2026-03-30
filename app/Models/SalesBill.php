@@ -18,8 +18,8 @@ class SalesBill extends Model
         'total_amount'
     ];
 
-    public function items()
-    {
-        return $this->hasMany(SalesBillItem::class, 'sales_bill_id', 'id');
-    }
+   public function items()
+{
+    return $this->hasMany(SalesBillItem::class, 'sales_bill_id', 'bill_id');
+}
 }
