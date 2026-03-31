@@ -93,7 +93,7 @@
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/beds*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-layers"></i></span>
-                    <span class="nxl-mtext">Bed & Ward Management</span>
+                    <span class="nxl-mtext" style="font-size: 12px">Bed & Ward Management</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
