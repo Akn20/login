@@ -374,38 +374,20 @@ Route::prefix('leave-management')->group(function () {
 
 Route::prefix('nursing-notes')->group(function () {
 
-    // Get all notes (with filters)
     Route::get('/', [NurseNotesController::class, 'apiIndex']);
     Route::post('/', [NurseNotesController::class, 'apiStore']);
-    // Get create form data (patients, nurses, shifts)
-    Route::get('/create', [NurseNotesController::class, 'apiCreate']);
-    
 
-    // Get form data + optional note (for edit)
+    Route::get('/deleted', [NurseNotesController::class, 'apiDeleted']);
     Route::get('/form/{id?}', [NurseNotesController::class, 'apiForm']);
 
-    // Store new nursing note
-    Route::post('/store', [NurseNotesController::class, 'apiStore']);
+    Route::get('/{id}', [NurseNotesController::class, 'apiShow']); // ✅ IMPORTANT
 
-    // Show single note
-    Route::get('/show/{id}', [NurseNotesController::class, 'apiShow']);
+    Route::put('/{id}', [NurseNotesController::class, 'apiUpdate']);
+    Route::delete('/{id}', [NurseNotesController::class, 'apiDelete']);
 
-    // Update note
-    Route::post('/update/{id}', [NurseNotesController::class, 'apiUpdate']);
-
-    // Soft delete
-    Route::delete('/delete/{id}', [NurseNotesController::class, 'apiDelete']);
-
-    // Get all deleted notes
-    Route::get('/deleted', [NurseNotesController::class, 'apiDeleted']);
-
-    // Restore deleted note
-    Route::post('/restore/{id}', [NurseNotesController::class, 'apiRestore']);
-
-    // Permanently delete
-    Route::delete('/force-delete/{id}', [NurseNotesController::class, 'apiForceDelete']);
+    Route::post('/{id}/restore', [NurseNotesController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [NurseNotesController::class, 'apiForceDelete']);
 });
-
 
 
 
