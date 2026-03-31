@@ -39,6 +39,7 @@ use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -49,6 +50,7 @@ use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
@@ -1190,6 +1192,28 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
     });
+
+    // Leave report
+    Route::prefix('leave-report')->name('leave-report.')->group(function () {
+        Route::get('/', [LeaveReportController::class, 'index'])->name('index');
+    });
+
+    // Payroll - Allowance
+
+    // Payroll - Deduction
+    Route::prefix('payroll/deduction')->name('payroll.deduction.')->group(function () {
+        Route::get('/', [PayrollDeductionController::class, 'index'])->name('index');
+        Route::get('/create', [PayrollDeductionController::class, 'create'])->name('create');
+        Route::post('/store', [PayrollDeductionController::class, 'store'])->name('store');
+        Route::get('/deleted', [PayrollDeductionController::class, 'deleted'])->name('deleted');
+        Route::get('/{id}/show', [PayrollDeductionController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PayrollDeductionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PayrollDeductionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PayrollDeductionController::class, 'destroy'])->name('delete');
+        Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
+    });
+
 });
 
 /*
