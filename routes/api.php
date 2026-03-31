@@ -36,6 +36,7 @@ use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
+use App\Http\Controllers\LeaveManagement\LeaveReportController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -393,7 +394,14 @@ Route::prefix('leave-management')->group(function () {
     Route::post('/compoffs/{id}/restore', [CompOffController::class, 'apiRestore']);
     Route::delete('/compoffs/{id}/force-delete', [CompOffController::class, 'apiForceDelete']);
 
-    
+    /*
+|--------------------------------------------------------------------------
+| Leave Report API
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/leave-report', [LeaveReportController::class, 'apiIndex']);
+Route::get('/leave-report/compoff', [LeaveReportController::class, 'apiCompoff']);
 });
 
 
