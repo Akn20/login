@@ -60,7 +60,13 @@ class LeaveApplicationController extends Controller
                 ->whereJsonContains('designations', $staff->designation_id ?? null)
                 ->first();
 
-            $default = $mapping->accrual_value ?? 0;
+            if (!$mapping) {
+                $mapping = DB::table('leave_mappings')
+                    ->where('leave_type_id', $type->id)
+                    ->first();
+            }
+
+            $default = $mapping ? $mapping->accrual_value : 0;
 
             $credit = DB::table('leave_adjustments')
                 ->where('staff_id', $staff->id)
@@ -72,12 +78,7 @@ class LeaveApplicationController extends Controller
                 ->where('leave_type_id', $type->id)
                 ->sum('debit');
 
-            $approvedLeaves = LeaveApplication::where('staff_id', $staff->id)
-                ->where('leave_type_id', $type->id)
-                ->where('status', 'approved')
-                ->sum('leave_days');
-
-            $balance = $default + $credit - $debit - $approvedLeaves;
+            $balance = $default + $credit - $debit;
 
             $leaveBalances[$type->display_name] = $balance;
         }
@@ -230,11 +231,9 @@ class LeaveApplicationController extends Controller
 
         $mapping = DB::table('leave_mappings')
             ->where('leave_type_id', $request->leave_type_id)
-            ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
-            ->whereJsonContains('designations', $staff->designation_id ?? null)
             ->first();
 
-        $default = $mapping->accrual_value ?? 0;
+        $default = $mapping ? $mapping->accrual_value : 0;
 
         $credit = DB::table('leave_adjustments')
             ->where('staff_id', $staff->id)
@@ -246,20 +245,25 @@ class LeaveApplicationController extends Controller
             ->where('leave_type_id', $request->leave_type_id)
             ->sum('debit');
 
-        $approvedLeaves = LeaveApplication::where('staff_id', $staff->id)
+        $actualBalance = $default + $credit - $debit;
+
+        $lastApplication = LeaveApplication::where('staff_id', $staff->id)
             ->where('leave_type_id', $request->leave_type_id)
-            ->where('status', 'approved')
-            ->sum('leave_days');
+            ->orderByDesc('created_at')
+            ->first();
 
-        $currentBalance = $default + $credit - $debit - $approvedLeaves;
+        if ($lastApplication) {
+            $balanceBefore = $lastApplication->balance_after;
+        } else {
+            $balanceBefore = $actualBalance;
+        }
 
-        $balanceBefore = $currentBalance;
-        $balanceAfter = $currentBalance - $days;
+        $balanceAfter = $balanceBefore - $days;
 
-        if ($days > $currentBalance) {
+        if ($days > $balanceBefore) {
 
             return back()->withErrors([
-                'leave_days' => 'Leave exceeds available balance. Remaining: ' . $currentBalance . ' days'
+                'leave_days' => 'Leave exceeds available balance. Remaining: ' . $balanceBefore . ' days'
             ])->withInput();
         }
 
