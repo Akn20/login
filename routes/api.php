@@ -68,6 +68,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 
 //Nurse
 use App\Http\Controllers\NurseNotesController;
@@ -371,6 +372,42 @@ Route::prefix('leave-management')->group(function () {
 });
 
 
+Route::prefix('nursing-notes')->group(function () {
+
+    // Get all notes (with filters)
+    Route::get('/', [NurseNotesController::class, 'apiIndex']);
+    Route::post('/', [NurseNotesController::class, 'apiStore']);
+    // Get create form data (patients, nurses, shifts)
+    Route::get('/create', [NurseNotesController::class, 'apiCreate']);
+    
+
+    // Get form data + optional note (for edit)
+    Route::get('/form/{id?}', [NurseNotesController::class, 'apiForm']);
+
+    // Store new nursing note
+    Route::post('/store', [NurseNotesController::class, 'apiStore']);
+
+    // Show single note
+    Route::get('/show/{id}', [NurseNotesController::class, 'apiShow']);
+
+    // Update note
+    Route::post('/update/{id}', [NurseNotesController::class, 'apiUpdate']);
+
+    // Soft delete
+    Route::delete('/delete/{id}', [NurseNotesController::class, 'apiDelete']);
+
+    // Get all deleted notes
+    Route::get('/deleted', [NurseNotesController::class, 'apiDeleted']);
+
+    // Restore deleted note
+    Route::post('/restore/{id}', [NurseNotesController::class, 'apiRestore']);
+
+    // Permanently delete
+    Route::delete('/force-delete/{id}', [NurseNotesController::class, 'apiForceDelete']);
+});
+
+
+
 
 
 
@@ -481,46 +518,42 @@ Route::prefix('hr')->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Pharmacy dashboard
-|--------------------------------------------------------------------------
-*/
-Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
-/*
-|--------------------------------------------------------------------------
-| Pharmacy Stock (mobile APIs)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('pharmacy')->group(function () {
+    //Pharmacy dashboard
+    Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
-    // Stock
-    Route::get('/stock', [StockController::class, 'apiIndex']);
-    Route::get('/stock/low', [StockController::class, 'apiLowStock']);
-    Route::get('/stock/{id}', [StockController::class, 'apiShow']);
-    Route::post('/stock', [StockController::class, 'apiStore']);
-    Route::put('/stock/{id}', [StockController::class, 'apiUpdate']);
-    Route::delete('/stock/{id}', [StockController::class, 'apiDestroy']);
 
-    Route::get('/stock-trash', [StockController::class, 'apiTrash']);
-    Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
-    Route::delete('/stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+    
+    //Pharmacy Stock (mobile APIs)
 
-    // GRN (PharmacyGrnController)
-    Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);
-    Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);
-    Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);
-    Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']);
-    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']);
+    Route::prefix('pharmacy')->group(function () {
 
-    Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']);
-    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']);
-    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
+        // Stock
+        Route::get('/stock', [StockController::class, 'apiIndex']);
+        Route::get('/stock/low', [StockController::class, 'apiLowStock']);
+        Route::get('/stock/{id}', [StockController::class, 'apiShow']);
+        Route::post('/stock', [StockController::class, 'apiStore']);
+        Route::put('/stock/{id}', [StockController::class, 'apiUpdate']);
+        Route::delete('/stock/{id}', [StockController::class, 'apiDestroy']);
 
-    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
-    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
-});
+        Route::get('/stock-trash', [StockController::class, 'apiTrash']);
+        Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
+        Route::delete('/stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+
+        // GRN (PharmacyGrnController)
+        Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);
+        Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);
+        Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);
+        Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']);
+        Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']);
+
+        Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']);
+        Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']);
+        Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
+
+        Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
+        Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -708,5 +741,33 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-    
+Route::prefix('tokens')->group(function () {
+    Route::get('/', [TokenController::class, 'apiIndex']);
+    Route::post('/', [TokenController::class, 'apiStore']);
+    Route::get('/{id}', [TokenController::class, 'apiShow']);
+    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
+    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
 
+    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
+
+});
+Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+
+
+// Patient Monitoring (Vitals) API
+
+Route::prefix('vitals')->group(function () {
+    // Specific routes FIRST (before /{id} wildcard)
+    Route::get('/trash', [PatientMonitoringController::class, 'apiTrash']);
+    Route::get('/patients', [PatientMonitoringController::class, 'apiGetPatients']);
+    Route::get('/nurses', [PatientMonitoringController::class, 'apiGetNurses']);
+
+    // Dynamic routes SECOND (after specific routes)
+    Route::get('/', [PatientMonitoringController::class, 'apiIndex']);
+    Route::get('/{id}', [PatientMonitoringController::class, 'apiShow']);
+    Route::post('/', [PatientMonitoringController::class, 'apiStore']);
+    Route::put('/{id}', [PatientMonitoringController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [PatientMonitoringController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
+});

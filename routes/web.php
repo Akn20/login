@@ -63,6 +63,14 @@ use App\Http\Controllers\PharmacyDashboardController;
 // nurse
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+#use App\Http\Controllers\ControlledDrugController;
+#use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+#use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+#use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1356,4 +1364,50 @@ Route::prefix('doctor')->group(function () {
         });
 
     });
+});
+
+//Nurse: Patient Monitoring routes
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('patientMonitoring', [PatientMonitoringController::class, 'index'])
+        ->name('patientMonitoring.index');
+
+    Route::get('patientMonitoring/create', [PatientMonitoringController::class, 'create'])
+        ->name('patientMonitoring.create');
+
+    Route::post('patientMonitoring/store', [PatientMonitoringController::class, 'store'])
+        ->name('patientMonitoring.store');
+
+    Route::get('patientMonitoring/show/{id}', [PatientMonitoringController::class, 'show'])
+        ->name('patientMonitoring.show');
+
+    Route::get('patientMonitoring/edit/{id}', [PatientMonitoringController::class, 'edit'])
+        ->name('patientMonitoring.edit');
+
+    Route::post('patientMonitoring/update/{id}', [PatientMonitoringController::class, 'update'])
+        ->name('patientMonitoring.update');
+
+    Route::delete('patientMonitoring/delete/{id}', [PatientMonitoringController::class, 'delete'])
+        ->name('patientMonitoring.delete');
+
+    Route::get('patientMonitoring/trash', [PatientMonitoringController::class, 'trash'])
+        ->name('patientMonitoring.trash');
+
+    Route::get('patientMonitoring/restore/{id}', [PatientMonitoringController::class, 'restore'])
+        ->name('patientMonitoring.restore');
+
+    Route::get('patientMonitoring/forceDelete/{id}', [PatientMonitoringController::class, 'forceDelete'])
+        ->name('patientMonitoring.forceDelete');
+
+});
+
+Route::prefix('admin/medication')->name('admin.medication.')->group(function () {
+
+    Route::get('/', [MedicationAdministrationController::class, 'index'])->name('index');
+
+    Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
+
+    Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
+
 });
