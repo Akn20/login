@@ -652,6 +652,17 @@
                         </li>
 
                     </ul>
+
+                    <ul class="nxl-submenu">
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.medication.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Medication Administration</span>
+                            </a>
+                        </li>
+
+                    </ul>
                 </li>
 
 

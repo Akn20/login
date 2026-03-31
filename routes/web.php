@@ -71,6 +71,7 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 #use App\Http\Controllers\ControlledDrugController;
@@ -1065,5 +1066,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('patientMonitoring/forceDelete/{id}', [PatientMonitoringController::class, 'forceDelete'])
         ->name('patientMonitoring.forceDelete');
+
+});
+
+Route::prefix('admin/medication')->name('admin.medication.')->group(function () {
+
+    Route::get('/', [MedicationAdministrationController::class, 'index'])->name('index');
+
+    Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
+
+    Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
 
 });
