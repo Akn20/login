@@ -268,8 +268,12 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('hr.payroll.allowance.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-plus-circle me-2"></i>Allowances</a>
+                    </li>
                     <li class="nxl-item"><a href="{{ route('hr.payroll.deduction.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-minus-circle me-2"></i>Deductions</a></li>
+                            up-target="#main-container"><i class="feather-minus-circle me-2"></i>Deductions</a>
+                    </li>
                 </ul>
             </li>
 
