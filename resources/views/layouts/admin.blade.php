@@ -1,4 +1,3 @@
-{{-- resources/views/layouts/admin.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,11 +18,68 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/select2-theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/css/tom-select.bootstrap5.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.0/dist/css/tom-select.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    {{-- Unpoly CSS --}}
+    <link rel="stylesheet" href="https://unpkg.com/unpoly@3.8.0/unpoly.min.css">
+
     @stack('styles')
     @include('partials.head')
+
     <style>
+        /* 1. FORCE SIDEBAR FIXED POSITION */
+        .nxl-navigation {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 260px !important;
+            height: 100vh !important;
+            z-index: 1050;
+            background: #fff;
+            border-right: 1px solid #e3e7ed;
+            overflow: hidden;
+        }
+
+        /* 2. FIX HEADER OFFSET */
+        .nxl-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 260px !important;
+            /* Offset by sidebar width */
+            width: calc(100% - 260px) !important;
+            height: 70px;
+            z-index: 1040;
+            background: #fff;
+        }
+
+        /* 3. FIX MAIN CONTENT OVERLAP (THE BIG FIX) */
+        .nxl-main {
+            margin-left: 0px !important;
+            /* Moves content to the right */
+            padding-top: 0px !important;
+            /* Moves content below navbar */
+            min-height: fit-content;
+            background: #f4f7fa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nxl-container {
+            flex: 1;
+            width: auto;
+            padding: 25px;
+        }
+
+        /* Loading Progress Bar for Unpoly */
+        .up-progress-bar {
+            background-color: #28a745;
+            height: 3px;
+        }
+
+        /* Your Status Toggle Styles */
         .status-toggle {
             width: 100px;
             height: 30px;
@@ -40,21 +96,16 @@
             align-items: center;
         }
 
-        /* Active */
         .status-toggle.active {
             background: #28a745;
             justify-content: flex-end;
-            /* text on right */
         }
 
-        /* Inactive */
         .status-toggle.inactive {
             background: #dc3545;
             justify-content: flex-start;
-            /* text on left */
         }
 
-        /* White circle */
         .status-toggle::before {
             content: "";
             position: absolute;
@@ -66,7 +117,6 @@
             transition: 0.3s;
         }
 
-        /* Circle position */
         .status-toggle.active::before {
             left: 4px;
         }
@@ -75,7 +125,6 @@
             right: 4px;
         }
 
-        /* Keep text above */
         .status-toggle span {
             position: relative;
             z-index: 2;
@@ -86,10 +135,10 @@
 <body class="app-skin-light app-header-light app-navigation-light">
     <div class="nxl-app">
 
-        {{-- Sidebar --}}
-        <nav class="nxl-navigation">
+        {{-- Sidebar - up-fixed keeps it from disappearing during AJAX loads --}}
+        <aside class="nxl-navigation" up-fixed>
             @include('partials.sidebar')
-        </nav>
+        </aside>
 
         <div class="nxl-main">
             {{-- Top navbar --}}
@@ -97,20 +146,22 @@
                 @include('partials.navbar')
             </header>
 
-            {{-- Page content --}}
-            <main class="nxl-container">
-                <div class="nxl-content">
+            {{-- THE AJAX TARGET: Only content inside #main-container will refresh --}}
+            <main class="nxl-container" id="main-container">
+                <div class="nxl-content" up-main>
                     @yield('content')
                 </div>
-
                 @include('partials.footer')
             </main>
         </div>
 
     </div>
 
+    {{-- SCRIPTS --}}
     @include('partials.scripts')
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
+
     @stack('scripts')
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/js/daterangepicker.min.js') }}"></script>
@@ -118,61 +169,79 @@
     <script src="{{ asset('assets/vendors/js/circle-progress.min.js') }}"></script>
     <script src="{{ asset('assets/js/common-init.min.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard-init.min.js') }}"></script>
-    <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script> 
+    <script src="{{ asset('assets/js/theme-customizer-init.min.js') }}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-        {{-- Toggle Script --}}
-       <script>
+
+    {{-- YOUR ORIGINAL SCRIPT (KEPT INTACT) --}}
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            document.querySelectorAll('.status-toggle-input').forEach(function (toggle) {
-
-                toggle.addEventListener('change', function () {
-
-                    const checkbox = this;
-                    const url = checkbox.dataset.url;
-                    const wrapper = checkbox.closest('.status-toggle-wrapper');
-                    const text = wrapper.querySelector('.status-toggle-text');
-                    const isVip = wrapper.dataset.type === 'vip';
-
-                    fetch(url, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-
-                        if (!data.success) return;
-
-                       
-                        checkbox.checked = data.is_active;
-
-                        if (isVip) {
-                            text.innerText = data.is_active ? 'Yes' : 'No';
-                        } else {
-                            text.innerText = data.is_active ? 'Active' : 'Inactive';
-                        }
-                            
-                        location.reload();
-                        
-                    })
-                  
-                    .catch(() => {
-                        alert('Something went wrong!');
-                        checkbox.checked = !checkbox.checked;
-                    });
-
-                });
-
+            // Safety Catch for Unpoly: Re-run logic when content updates
+            up.on('up:content:updated', function () {
+                initializeStatusToggles();
             });
 
+            function initializeStatusToggles() {
+                document.querySelectorAll('.status-toggle-input').forEach(function (toggle) {
+                    toggle.addEventListener('change', function () {
+                        const checkbox = this;
+                        const url = checkbox.dataset.url;
+                        const wrapper = checkbox.closest('.status-toggle-wrapper');
+                        const text = wrapper.querySelector('.status-toggle-text');
+                        const isVip = wrapper.dataset.type === 'vip';
+
+                        fetch(url, {
+                            method: 'PATCH',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (!data.success) return;
+                                checkbox.checked = data.is_active;
+                                if (isVip) {
+                                    text.innerText = data.is_active ? 'Yes' : 'No';
+                                } else {
+                                    text.innerText = data.is_active ? 'Active' : 'Inactive';
+                                }
+                                location.reload(); // Your original reload logic
+                            })
+                            .catch(() => {
+                                alert('Something went wrong!');
+                                checkbox.checked = !checkbox.checked;
+                            });
+                    });
+                });
+            }
+            initializeStatusToggles();
         });
-        </script>
-                        
-      
+
+        // 4. SIDEBAR SCROLL PERSISTENCE SCRIPT
+        const scrollArea = document.getElementById('sidebar-scroll-area');
+        if (scrollArea) {
+            scrollArea.scrollTop = localStorage.getItem('sidebar_scroll_pos') || 0;
+            scrollArea.addEventListener('scroll', () => {
+                localStorage.setItem('sidebar_scroll_pos', scrollArea.scrollTop);
+            });
+            up.on('up:link:follow', () => {
+                localStorage.setItem('sidebar_scroll_pos', scrollArea.scrollTop);
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Automatically apply Unpoly logic to all sidebar links
+            document.querySelectorAll('.nxl-navigation a').forEach(link => {
+                if (link.getAttribute('href') && link.getAttribute('href') !== 'javascript:void(0);') {
+                    link.setAttribute('up-follow', '');
+                    link.setAttribute('up-target', '#main-container');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

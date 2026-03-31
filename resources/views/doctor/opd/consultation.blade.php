@@ -2,12 +2,58 @@
 
 @section('content')
 
-<script>
-function showSuccess() {
-    alert("Consultation saved successfully!");
-}
-</script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const addBtn = document.getElementById("addMedicine");
+            const table = document.querySelector("#medicineTable tbody");
+
+            addBtn.addEventListener("click", function () {
+
+                let newRow = `
+                    <tr>
+
+                    <td>
+                        <select name="medicine[]" class="form-control">
+                            <option value="">Select</option>
+                            @foreach($medicines as $medicine)
+                                <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+
+                    <td><input type="text" class="form-control" name="dosage[]"></td>
+                    <td><input type="text" class="form-control" name="frequency[]"></td>
+                    <td><input type="text" class="form-control" name="duration[]"></td>
+                    <td><input type="text" class="form-control" name="instructions[]"></td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                            <i class="feather-trash-2"></i> Remove
+                        </button>
+                    </td>
+
+                    </tr>
+                    `;
+
+                table.insertAdjacentHTML("beforeend", newRow);
+
+            });
+
+        });
+
+        function removeMedicine(btn) {
+            btn.closest("tr").remove();
+        }
+
+    </script>
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="card">
 
@@ -29,22 +75,24 @@ function showSuccess() {
 
                             <div class="col-md-3">
                                 <label>Name</label>
-                                <input type="text" class="form-control" value="Ramesh Kumar" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ $patient->first_name }} {{ $appointment->patient->last_name }}" readonly>
                             </div>
 
                             <div class="col-md-2">
                                 <label>Age</label>
-                                <input type="text" class="form-control" value="35" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ \Carbon\Carbon::parse($patient->date_of_birth)->age }}" readonly>
                             </div>
 
                             <div class="col-md-2">
                                 <label>Gender</label>
-                                <input type="text" class="form-control" value="Male" readonly>
+                                <input type="text" class="form-control" value={{ $patient->gender }} readonly>
                             </div>
 
                             <div class="col-md-3">
                                 <label>Blood Group</label>
-                                <input type="text" class="form-control" value="O+" readonly>
+                                <input type="text" class="form-control" value={{ $patient->blood_group }} readonly>
                             </div>
 
                         </div>
@@ -53,8 +101,10 @@ function showSuccess() {
                 </div>
 
 
-                <form method="POST" action="#">
+                <form method="POST" action="{{ route('doctor.save-consultation') }}">
                     @csrf
+                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                    <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
 
 
                     <!-- Symptoms -->
@@ -62,8 +112,8 @@ function showSuccess() {
 
                         <label><strong>Symptoms</strong></label>
 
-                        <textarea class="form-control" rows="3" placeholder="Enter symptoms (Fever, Headache, Cough etc)">
-        </textarea>
+                        <textarea name="symptoms" class="form-control" rows="3" placeholder="Enter symptoms"
+                            required></textarea>
 
                     </div>
 
@@ -73,8 +123,8 @@ function showSuccess() {
 
                         <label><strong>Diagnosis</strong></label>
 
-                        <textarea class="form-control" rows="3" placeholder="Enter diagnosis">
-        </textarea>
+                        <textarea name="diagnosis" class="form-control" rows="3" placeholder="Enter diagnosis"
+                            required></textarea>
 
                     </div>
 
@@ -84,11 +134,15 @@ function showSuccess() {
 
                         <div class="card-header">
                             <strong>Prescription</strong>
+                            <button type="button" class="btn btn-primary" id="addMedicine">
+                                + Add Medicine
+                            </button>
                         </div>
 
-                        <div class="card-body">
 
-                            <table class="table table-bordered">
+
+                        <div class="card-body">
+                            <table class="table table-bordered" id="medicineTable">
 
                                 <thead>
                                     <tr>
@@ -97,17 +151,33 @@ function showSuccess() {
                                         <th>Frequency</th>
                                         <th>Duration</th>
                                         <th>Instructions</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
 
                                     <tr>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
-                                        <td><input type="text" class="form-control"></td>
+                                        <td>
+                                            <select name="medicine[]" class="form-control" required>
+                                                <option value="">Select</option>
+
+                                                @foreach($medicines as $medicine)
+                                                    <option value="{{ $medicine->id }}">
+                                                        {{ $medicine->medicine_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><input type="text" class="form-control" name="dosage[]" required></td>
+                                        <td><input type="text" class="form-control" name="frequency[]" required></td>
+                                        <td><input type="text" class="form-control" name="duration[]" required></td>
+                                        <td><input type="text" class="form-control" name="instructions[]" required></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                                                <i class="feather-trash-2"></i> Remove
+                                            </button>
+                                        </td>
                                     </tr>
 
                                 </tbody>
@@ -121,23 +191,59 @@ function showSuccess() {
                     <!-- Recommended Tests -->
                     <div class="mb-3">
 
-                        <label><strong>Recommended Tests</strong></label>
+                    <label><strong>Recommended Tests</strong></label>
 
-                        <input type="text" class="form-control" placeholder="Blood Test, X-Ray, MRI etc">
+                    <select name="tests[]" class="form-control" multiple>
 
+                        <option value="">Select Test</option>
+
+                        @foreach($labTests as $test)
+                        <option value="{{ $test->id }}">
+                        {{ $test->test_name }}
+                        </option>
+                        @endforeach
+
+                    </select>
+
+                    </div>
+                    <div class="mb-3">
+
+                        <label><strong>Test Priority</strong></label>
+
+                        <select name="priority[]" class="form-control">
+                            <option value="">Select Priority</option>
+                            <option value="routine">Routine</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="stat">STAT</option>
+                        </select>
+
+                    </div>
+                    <div class="mb-3">
+                        <label><strong>Referral Doctor</strong></label>
+
+                        <select name="referral_doctor_id" class="form-control">
+                            <option value="">Select Doctor</option>
+
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->id }}">
+                                    {{ $doctor->name }}
+                                </option>
+                            @endforeach
+
+                        </select>
                     </div>
 
 
                     <!-- Buttons -->
                     <div class="text-center mt-4 d-flex gap-2">
 
-                        <button class="btn btn-success me-2" onclick="showSuccess()">
+                        <button type="submit" class="btn btn-success">
                             Save Consultation
                         </button>
 
-                       <a href="{{ route('doctor.consultation-summary') }}" class="btn btn-primary">
-                            Generate Summary
-                        </a>
+
+
+
 
                     </div>
 

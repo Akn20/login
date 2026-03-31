@@ -277,6 +277,11 @@ class SignInController extends Controller
         }
     }
 
+
+    /*.......................................................
+                                APIs
+    .......................................................*/
+    
     public function apiLogin(Request $request)
     {
         $request->validate([
@@ -335,6 +340,183 @@ class SignInController extends Controller
                 'role' => $user->role?->name,
                 'is_enrolled' => $user->is_enrolled,
             ],
+        ]);
+    }
+
+
+    
+     public function apiSendOtp(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|digits:10'
+        ]);
+
+        $mobile = $request->mobile;
+        Otp::where('mobile', $mobile)
+        ->where(function ($query) {
+            $query->where('used', 1)
+                  ->orWhere('expires_at', '<', now());
+        })
+        ->forceDelete();
+        $key = 'otp-send:' . $mobile;
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            return response()->json(['message' => "OTP send limit reached. Try again in {$seconds} seconds."], 429);
+        }
+
+        RateLimiter::hit($key, 60);
+
+        $otpCode = rand(100000, 999999);
+        $hashedOtp = Hash::make($otpCode);
+
+            Otp::create([
+                'mobile' => $mobile,
+                'otp' => $hashedOtp,
+                'expires_at' => now()->addMinutes(5),
+                'attempts' => 0,
+                'resends' => 0,
+                'used' => 0,
+                'last_sent_at' => now()
+            ]);
+
+        // session(['otp_mobile' => $mobile]);
+
+        return response()->json([
+            'message' => 'OTP sent successfully',
+            'mobile' => $mobile,  // For testing, remove in production
+            'otp' => $otpCode  // For testing, remove in production
+        ]);
+    }
+    // Resend OTP with rate limiting
+    public function apiResendOtp(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|digits:10'
+        ]);
+        $mobile = $request->mobile;
+        // $mobile = session('otp_mobile');
+        
+
+        if (!$mobile) {
+            return response()->json(['message' => 'No OTP session found'], 400);
+        }
+
+        $key = 'otp-resend:' . $mobile;
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            return response()->json(['message' => "Resend limit reached. Try again in {$seconds} seconds."], 429);
+        }
+
+        RateLimiter::hit($key, 60);
+        $otp = Otp::where('mobile', $mobile)
+            ->where('used', 0)
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        $otpCode = rand(100000, 999999);
+        $hashedOtp = Hash::make($otpCode);
+        if ($otp) {
+            // Update existing
+            $otp->update([
+                'otp' => $hashedOtp,
+                'expires_at' => now()->addMinutes(5),
+                'resends' => $otp->resends + 1,
+                'last_sent_at' => now()
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'OTP resent successfully',
+            'otp' => $otpCode  // For testing, remove in production
+        ]);
+    }
+
+    // Verify OTP and mark as used
+    public function apiVerifyOtp(Request $request)
+{
+    // $mobile = session('otp_mobile');
+        $request->validate([
+                'mobile' => 'required|digits:10',
+                'otp' => 'required|digits:6'
+            ]);
+        $mobile = $request->mobile;
+
+    if (!$mobile) {
+        return response()->json(['message' => 'No OTP session found'], 400);
+    }
+
+    $verifyKey = 'otp-verify:' . $mobile;
+
+    // 🔒 Check if already locked
+    if (RateLimiter::tooManyAttempts($verifyKey, 3)) {
+        $seconds = RateLimiter::availableIn($verifyKey);
+
+        return response()->json(['message' => "Too many invalid attempts. Try again in {$seconds} seconds."], 429);
+    }
+
+
+    $otp = Otp::where('mobile', $mobile)
+        ->where('used', 0)
+        ->where('expires_at', '>', now())
+        ->latest()
+        ->first();
+
+    if (!$otp || !Hash::check($request->otp, $otp->otp)) {
+
+        // ❗ Count failed attempt
+        RateLimiter::hit($verifyKey, 60);
+
+        return response()->json(['message' => 'Invalid OTP'], 401);
+    }
+
+    $otp->update(['used' => 1]);
+
+    RateLimiter::clear($verifyKey);
+
+    return response()->json(['message' => 'OTP verified successfully', 'mobile' => $mobile]);
+}
+
+    // Set MPIN after OTP verification
+    public function apiSetMpin(Request $request)
+    {
+        // $mobile = session('otp_mobile');
+        $request->validate([
+            'mobile' => 'required|digits:10',
+            'mpin' => 'required|digits_between:4,6'
+        ]);
+        $mobile = $request->mobile;
+
+        if (!$mobile) {
+            return response()->json(['message' => 'No OTP session found'], 400);
+        }
+
+        $user = User::where('mobile', $request->mobile)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->update([
+            'mpin' => Hash::make($request->mpin)
+        ]);
+
+        // session()->forget('otp_mobile');
+
+        return response()->json([
+            'message' => 'MPIN set successfully'
+        ]);
+    }
+
+    // Logout and revoke token
+    public function apiLogout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
         ]);
     }
 }

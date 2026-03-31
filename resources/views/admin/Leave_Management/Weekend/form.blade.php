@@ -17,7 +17,7 @@
                 </h5>
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('admin.weekends.index') }}">Weekend Configurations</a>
+                        <a href="{{ route('hr.weekends.index') }}">Weekend Configurations</a>
                     </li>
                     <li class="breadcrumb-item">{{ isset($weekend) ? 'Edit' : 'Create' }}</li>
                 </ul>
@@ -25,7 +25,7 @@
 
             {{-- RIGHT SIDE BUTTONS --}}
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.weekends.index') }}" class="btn btn-light">
+                <a href="{{ route('hr.weekends.index') }}" class="btn btn-light">
                     <i class="feather-x me-2"></i> Cancel
                 </a>
 
@@ -42,8 +42,8 @@
 
             {{-- FORM START --}}
             <form action="{{ isset($weekend)
-        ? route('admin.weekends.update', $weekend->id)
-        : route('admin.weekends.store') }}" method="POST" id="weekendForm">
+        ? route('hr.weekends.update', $weekend->id)
+        : route('hr.weekends.store') }}" method="POST" id="weekendForm">
                 @csrf
                 @if(isset($weekend))
                     @method('PUT')
@@ -92,7 +92,27 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
+                        {{-- Staff --}}
+                        <div class="mb-3">
+                            <label class="form-label">Select Staff</label>
 
+                            @php
+                                $selectedStaff = old(
+                                    'staff',
+                                    isset($weekend) && $weekend->staff
+                                    ? (is_array($weekend->staff) ? $weekend->staff : json_decode($weekend->staff, true))
+                                    : []
+                                );
+                            @endphp
+
+                            <select id="staff-select" name="staff[]"
+                                class="form-select @error('staff') is-invalid @enderror" multiple>
+                            </select>
+
+                            @error('staff')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                     </div>
 
@@ -115,7 +135,34 @@
                             @enderror
 
                         </div>
+                        {{-- Roles --}}
+                        <div class="mb-3">
+                            <label class="form-label">Select Roles</label>
 
+                            @php
+                                $selectedRoles = old(
+                                    'roles',
+                                    isset($weekend) && $weekend->roles
+                                    ? (is_array($weekend->roles) ? $weekend->roles : json_decode($weekend->roles, true))
+                                    : []
+                                );
+                            @endphp
+
+                            <select id="roles-select" name="roles[]"
+                                class="form-select @error('roles') is-invalid @enderror" multiple>
+
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}" {{ collect($selectedRoles)->contains($role->id) ? 'selected' : '' }}>
+                                        {{ $role->name }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+
+                            @error('roles')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                 </div>
@@ -128,17 +175,60 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const selectEl = document.getElementById('weekend-days-select');
-                if (selectEl) {
-                    new TomSelect('#weekend-days-select', {
-                        plugins: ['remove_button'],
-                        maxItems: 7, // all days allowed
-                        closeAfterSelect: false,
-                        create: false,
-                        placeholder: 'Select weekend days',
-                    });
-                }
+
+    const roleSelect = new TomSelect('#roles-select', {
+        plugins: ['remove_button'],
+        closeAfterSelect: false,
+        placeholder: 'Select roles',
+        dropdownParent: 'body'
+    });
+
+    const staffSelect = new TomSelect('#staff-select', {
+        plugins: ['remove_button'],
+        closeAfterSelect: false,
+        placeholder: 'Select staff',
+        dropdownParent: 'body'
+    });
+
+    new TomSelect('#weekend-days-select', {
+        plugins: ['remove_button'],
+        maxItems: 7,
+        closeAfterSelect: false,
+        placeholder: 'Select weekend days',
+        dropdownParent: 'body'
+    });
+
+     roleSelect.on('change', function(values) {
+
+        staffSelect.clear();        // remove selected
+        staffSelect.clearOptions(); // remove options
+
+        if(values.length === 0){
+            return;
+        }
+
+        fetch("{{ route('hr.weekends.staff-by-roles') }}?roles[]=" + values.join('&roles[]='))
+
+        .then(res => res.json())
+
+        .then(data => {
+
+            data.forEach(staff => {
+
+                staffSelect.addOption({
+                    value: staff.id,
+                    text: staff.name
+                });
+
             });
+
+            staffSelect.refreshOptions(false);
+
+        });
+
+    });
+
+});
         </script>
     @endpush
 @endsection

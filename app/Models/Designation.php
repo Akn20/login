@@ -1,7 +1,5 @@
 <?php
 
-// app/Models/Designation.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -19,14 +17,20 @@ class Designation extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'designation_code', 'designation_name', 'department_id',
-        'description', 'status', 'created_by', 'updated_by',
+        'id',
+        'designation_code',
+        'designation_name',
+        'department_id',
+        'description',
+        'status',
+        'created_by',
+        'updated_by'
     ];
 
     protected static function booted()
     {
         static::creating(function ($model) {
-            if (! $model->id) {
+            if (!$model->id) {
                 $model->id = Str::upper(Str::random(30));
             }
         });

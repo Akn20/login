@@ -38,7 +38,7 @@ class AppointmentController extends Controller
             ->get();
 
         return view(
-            'admin.receptionist.appointments.create',
+            'admin.Receptionist.appointments.create',
             compact('patients', 'departments', 'doctors')
         );
     }
@@ -90,7 +90,7 @@ class AppointmentController extends Controller
         $appointment = Appointment::with(['patient', 'doctor', 'department'])
             ->findOrFail($id);
 
-        return view('admin.receptionist.appointments.show', compact('appointment'));
+        return view('admin.Receptionist.appointments.show', compact('appointment'));
     }
 
 
@@ -107,7 +107,7 @@ class AppointmentController extends Controller
             ->get();
 
         return view(
-            'admin.receptionist.appointments.edit',
+            'admin.Receptionist.appointments.edit',
             compact('appointment', 'patients', 'departments', 'doctors')
         );
     }
@@ -190,18 +190,19 @@ class AppointmentController extends Controller
 
     /* ================= API FUNCTIONS ================= */
 
-
     public function apiIndex()
     {
-        $appointments = Appointment::with(['patient', 'doctor', 'department'])->get();
+        $appointments = Appointment::with(['patient', 'doctor', 'department'])
+            ->latest()
+            ->get();
 
-        return response()->json($appointments);
+        return ApiResponse::success($appointments, 'Appointments retrieved successfully');
     }
-
 
     public function apiShow($id)
     {
-        $appointment = Appointment::with(['patient', 'doctor', 'department'])->find($id);
+        $appointment = Appointment::with(['patient', 'doctor', 'department'])
+            ->find($id);
 
         if (!$appointment) {
             return ApiResponse::error('Appointment not found');
@@ -210,10 +211,8 @@ class AppointmentController extends Controller
         return ApiResponse::success($appointment, 'Appointment details retrieved successfully');
     }
 
-
     public function apiStore(Request $request)
     {
-
         $request->validate([
             'patient_id' => 'required',
             'doctor_id' => 'required',
@@ -221,6 +220,18 @@ class AppointmentController extends Controller
             'appointment_date' => 'required|date',
             'appointment_time' => 'required'
         ]);
+
+        $exists = Appointment::where('doctor_id', $request->doctor_id)
+            ->where('appointment_date', $request->appointment_date)
+            ->where('appointment_time', $request->appointment_time)
+            ->whereNull('deleted_at')
+            ->exists();
+
+        if ($exists) {
+            return ApiResponse::error('Doctor already has an appointment at this time');
+        }
+
+        $institution = \App\Models\Institution::first();
 
         $appointment = Appointment::create([
             'patient_id' => $request->patient_id,
@@ -230,12 +241,40 @@ class AppointmentController extends Controller
             'appointment_time' => $request->appointment_time,
             'consultation_fee' => $request->consultation_fee,
             'appointment_status' => 'Scheduled',
-            'hospital_id' => 1
+            'institution_id' => $institution->id
         ]);
 
         return ApiResponse::success($appointment, 'Appointment created successfully');
     }
 
+    public function apiUpdate(Request $request, $id)
+    {
+        $appointment = Appointment::find($id);
+
+        if (!$appointment) {
+            return ApiResponse::error('Appointment not found');
+        }
+
+        $request->validate([
+            'patient_id' => 'required',
+            'doctor_id' => 'required',
+            'department_id' => 'required',
+            'appointment_date' => 'required|date',
+            'appointment_time' => 'required'
+        ]);
+
+        $appointment->update([
+            'patient_id' => $request->patient_id,
+            'doctor_id' => $request->doctor_id,
+            'department_id' => $request->department_id,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
+            'consultation_fee' => $request->consultation_fee,
+            'appointment_status' => $request->appointment_status
+        ]);
+
+        return ApiResponse::success($appointment, 'Appointment updated successfully');
+    }
 
     public function apiDestroy($id)
     {
@@ -249,5 +288,64 @@ class AppointmentController extends Controller
 
         return ApiResponse::success(null, 'Appointment deleted successfully');
     }
+
+    public function apiDoctors($department_id)
+    {
+        $doctors = Staff::where('department_id', $department_id)
+            ->whereHas('role', function ($query) {
+                $query->where('name', 'Doctor');
+            })
+            ->get(['id', 'name']);
+
+        return ApiResponse::success($doctors, 'Doctors retrieved successfully');
+    }
+
+    public function apiGetPatients()
+    {
+        $patients = Patient::select('id', 'first_name', 'last_name')->get();
+        return ApiResponse::success($patients, 'Patients retrieved successfully');
+    }
+
+    public function apiGetDepartments()
+    {
+        $departments = Department::select('id', 'department_name as name')->get();
+        return ApiResponse::success($departments, 'Departments retrieved successfully');
+    }
+
+    public function apiTrash()
+    {
+        $appointments = Appointment::onlyTrashed()
+            ->with(['patient', 'doctor', 'department'])
+            ->get();
+
+        return ApiResponse::success($appointments, 'Deleted appointments retrieved successfully');
+    }
+
+    public function apiRestore($id)
+    {
+        $appointment = Appointment::withTrashed()->find($id);
+
+        if (!$appointment) {
+            return ApiResponse::error('Appointment not found');
+        }
+
+        $appointment->restore();
+
+        return ApiResponse::success($appointment, 'Appointment restored successfully');
+    }
+
+    public function apiForceDelete($id)
+    {
+        $appointment = Appointment::withTrashed()->find($id);
+
+        if (!$appointment) {
+            return ApiResponse::error('Appointment not found');
+        }
+
+        $appointment->forceDelete();
+
+        return ApiResponse::success(null, 'Appointment permanently deleted');
+    }
+
 
 }

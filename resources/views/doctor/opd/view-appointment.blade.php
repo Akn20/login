@@ -29,33 +29,61 @@
 
                             <tr>
 
-                                <td class="text-center">{{ $appointment->token_number }}</td>
-                                <td class="text-center">{{ $appointment->patient_name }}</td>
-                                <td class="text-center">{{ $appointment->appointment_time }}</td>
+                                {{-- Token Number --}}
+                                <td class="text-center">
+                                    {{ 100 + $loop->iteration }}
+                                </td>
 
+                                {{-- Patient Name from patients table --}}
+                                <td class="text-center">
+                                    {{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}
+                                </td>
+
+                                {{-- Appointment Time --}}
+                                <td class="text-center">
+                                    {{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}
+                                </td>
+
+                                {{-- Status --}}
                                 <td class="text-center">
 
-                                    @if($appointment->status == 'Waiting')
+                                    @if($appointment->appointment_status == 'Scheduled')
                                         <span class="badge bg-warning">Waiting</span>
 
-                                    @elseif($appointment->status == 'Completed')
+                                    @elseif($appointment->appointment_status == 'Completed')
                                         <span class="badge bg-success">Completed</span>
 
-                                    @else
-                                        <span class="badge bg-primary">{{ $appointment->status }}</span>
+                                    @elseif($appointment->appointment_status == 'Cancelled')
+                                        <span class="badge bg-danger">Cancelled</span>
+
                                     @endif
 
                                 </td>
 
+                                {{-- Actions --}}
                                 <td>
                                     <div class="d-flex gap-2 justify-content-center">
-                                       <a href="{{ route('doctor.consultation', $appointment->token_number) }}" class="btn btn-success btn-sm">
-    Start Consultation
-</a>
 
-                                       <a href="{{ route('doctor.view-patient-profile', $appointment->token_number) }}" class="btn btn-primary btn-sm">
+                                        @if($appointment->appointment_status === 'Completed')
+
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                Consultation Completed
+                                            </button>
+
+                                        @else
+
+                                            <a href="{{ route('doctor.consultation', $appointment->patient_id) }}"
+                                                class="btn btn-success btn-sm">
+                                                Start Consultation
+                                            </a>
+
+                                        @endif
+
+                                        <a href="{{ route('doctor.view-patient-profile', $appointment->patient_id) }}"
+                                            class="btn btn-primary btn-sm">
                                             View Patient Profile
                                         </a>
+
                                     </div>
                                 </td>
 
@@ -76,7 +104,6 @@
                 </table>
 
             </div>
-
         </div>
 
     </div>

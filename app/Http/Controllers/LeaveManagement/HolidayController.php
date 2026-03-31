@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\LeaveManagement;
 
 use App\Http\Controllers\Controller;
+use App\Models\Roles;
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use App\Models\Holiday;
+use Log;
 
 class HolidayController extends Controller
 {
@@ -32,44 +35,58 @@ class HolidayController extends Controller
      */
     public function create()
     {
-        return view('admin.Leave_Management.holidays.create');
+        $roles = Roles::all();
+        $staffs = Staff::all();
+        return view('admin.Leave_Management.holidays.create', compact('staffs', 'roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    
-   public function store(Request $request)
-{
-    $data = $request->validate([
-        'name'       => 'required|string|max:255',
-        'start_date' => 'required|date',
-        'end_date'   => 'required|date|after_or_equal:start_date',
-        'details'    => 'nullable|string',
-        'document'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        'status'     => 'required|in:active,inactive', // Matches Weekend style
-    ],[
-        // Custom error message for the user
-        'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
-    ]);
 
-    if ($request->hasFile('document')) {
-        $data['document'] = $request->file('document')->store('holidays', 'public');
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
+
+            'staff' => 'nullable|array',
+            'staff.*' => 'exists:staff,id',
+            'details' => 'nullable|string',
+            'document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'status' => 'required|in:active,inactive', // Matches Weekend style
+        ], [
+            // Custom error message for the user
+            'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+        ]);
+
+        if ($request->hasFile('document')) {
+            $data['document'] = $request->file('document')->store('holidays', 'public');
+        }
+
+        $holiday = Holiday::create($data);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'data' => $holiday], 201);
+        }
+
+        $holiday = Holiday::create($data);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'data' => $holiday], 201);
+        }
+        return redirect()->route('hr.holidays.index')->with('success', 'Created!');
     }
-
-    $holiday = Holiday::create($data);
-
-    if ($request->wantsJson()) {
-        return response()->json(['success' => true, 'data' => $holiday], 201);
-    }
-    return redirect()->route('admin.holidays.index')->with('success', 'Created!');
-}
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
+        Log::info($id);
         $holiday = Holiday::findOrFail($id);
         if (request()->wantsJson()) {
             return response()->json([
@@ -86,42 +103,58 @@ class HolidayController extends Controller
     public function edit(string $id)
     {
         $holiday = Holiday::findOrFail($id);
-        return view('admin.Leave_Management.holidays.edit', compact('holiday'));
+        $roles = Roles::all();
+        $staffs = Staff::all();
+        return view('admin.Leave_Management.holidays.edit', compact('holiday','staffs','roles'));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-{
-    $holiday = Holiday::findOrFail($id);
+    {
+        $holiday = Holiday::findOrFail($id);
 
-    // Use 'sometimes' so it doesn't fail if you only update one field
-    $data = $request->validate([
-        'name'       => 'sometimes|string|max:255',
-        'start_date' => 'sometimes|date',
-        'end_date'   => 'sometimes|date|after_or_equal:start_date',
-        'status'     => 'sometimes|in:active,inactive',
-        
-    ],[
-        // Custom error message for the user
-        'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
-    ]);
+        // Use 'sometimes' so it doesn't fail if you only update one field
+        $data = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
 
-    // Update the database fields
-    $holiday->update($request->only(['name', 'start_date', 'end_date', 'status', 'details']));
+            'staff' => 'nullable|array',
+            'staff.*' => 'exists:staff,id',
+            'status' => 'sometimes|in:active,inactive',
 
-    // Save document only if a new one is provided
-    if ($request->hasFile('document')) {
-        $holiday->document = $request->file('document')->store('holidays', 'public');
-        $holiday->save();
-    }
+        ], [
+            // Custom error message for the user
+            'end_date.after_or_equal' => 'The end date must be a date after or equal to the start date.',
+        ]);
+
+        // Update the database fields
+        $holiday->update($request->only(['name', 'start_date', 'end_date', 'status', 'details','roles','staff']));
+
+        // Save document only if a new one is provided
+        if ($request->hasFile('document')) {
+            $holiday->document = $request->file('document')->store('holidays', 'public');
+            $holiday->save();
+        }
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Holiday updated successfully!'
+            ]);
+        }
+        return redirect()->route('hr.holidays.index')->with('success', 'Holiday updated successfully!');
+
+    
     if ($request->wantsJson()) {
     return response()->json([
         'success' => true,
         'message' => 'Holiday updated successfully!']);
     }
-    return redirect()->route('admin.holidays.index')->with('success', 'Holiday updated successfully!');
+    return redirect()->route('hr.holidays.index')->with('success', 'Holiday updated successfully!');
 
 }
 
@@ -140,18 +173,18 @@ class HolidayController extends Controller
             ]);
         }
         // You MUST redirect back to the list
-        return redirect()->route('admin.holidays.index')
+        return redirect()->route('hr.holidays.index')
             ->with('success', 'Holiday moved to trash successfully!');
     }
-public function deleted()
-{
-    $holidays = Holiday::onlyTrashed()->latest()->get();
+    public function deleted()
+    {
+        $holidays = Holiday::onlyTrashed()->latest()->get();
 
-    if (request()->wantsJson()) {
-        return response()->json(['success' => true, 'data' => $holidays]);
+        if (request()->wantsJson()) {
+            return response()->json(['success' => true, 'data' => $holidays]);
+        }
+        return view('admin.Leave_Management.holidays.deleted', compact('holidays'));
     }
-    return view('admin.Leave_Management.holidays.deleted', compact('holidays'));
-}
 
     public function restore($id)
     {
@@ -165,7 +198,7 @@ public function deleted()
                 'message' => 'Holiday restored successfully!',
             ]);
         }
-        return redirect()->route('admin.holidays.index')
+        return redirect()->route('hr.holidays.index')
             ->with('success', 'Holiday restored successfully!');
     }
     public function forceDelete($id)
@@ -181,17 +214,17 @@ public function deleted()
                 'message' => 'Holiday permanently deleted.',
             ]);
         }
-        return redirect()->route('admin.holidays.deleted')
+        return redirect()->route('hr.holidays.deleted')
             ->with('success', 'Holiday permanently deleted.');
     }
-   public function toggleStatus($id)
-{
-    $holiday = Holiday::findOrFail($id);
-    
-    // Toggle between the two allowed strings
-    $holiday->status = ($holiday->status === 'active') ? 'inactive' : 'active';
-    $holiday->save();
+    public function toggleStatus($id)
+    {
+        $holiday = Holiday::findOrFail($id);
 
-    return back()->with('success', 'Status updated successfully!');
-}
+        // Toggle between the two allowed strings
+        $holiday->status = ($holiday->status === 'active') ? 'inactive' : 'active';
+        $holiday->save();
+
+        return back()->with('success', 'Status updated successfully!');
+    }
 }
