@@ -6,7 +6,7 @@
 
     @php
         use App\Models\User;
-        $userCount = User::count();
+        $useradmin = User::where('mobile', '9999999999')->exists() ? 1 : 0;
     @endphp
 
     <main class="auth-minimal-wrapper">
@@ -72,7 +72,7 @@
                                     <button type="submit" class="btn btn-lg btn-primary w-100">
                                         Login
                                     </button>
-                                    @if ($userCount === 0)
+                                    @if ($useradmin === 0)
                                         <div class="mt-3">
                                             <a href="{{ route('admin.create.default') }}" class="btn btn-warning w-100"
                                                 onclick="return confirm('Are you sure you want to create a default admin user?');">

@@ -110,6 +110,73 @@
     @enderror
 </div>
 
+{{-- Level 1 Supervisor (Manager) - REQUIRED --}}
+<div class="mb-4">
+    <label class="form-label">
+        Level 1 Supervisor (Manager) <span class="text-danger">*</span>
+    </label>
+
+    <select name="level1_supervisor_id"
+            class="form-select @error('level1_supervisor_id') is-invalid @enderror">
+        <option value="">Select Manager</option>
+        @foreach($level1Supervisors as $supervisor)
+            <option value="{{ $supervisor->id }}"
+                {{ old('level1_supervisor_id', $staffManagement->level1_supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
+                {{ $supervisor->name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('level1_supervisor_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+{{-- Level 2 Supervisor (HR) - OPTIONAL --}}
+<div class="mb-4">
+    <label class="form-label">
+        Level 2 Supervisor (HR)
+    </label>
+
+    <select name="level2_supervisor_id"
+            class="form-select @error('level2_supervisor_id') is-invalid @enderror">
+        <option value="">Select HR</option>
+        @foreach($level2Supervisors as $supervisor)
+            <option value="{{ $supervisor->id }}"
+                {{ old('level2_supervisor_id', $staffManagement->level2_supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
+                {{ $supervisor->name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('level2_supervisor_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+{{-- Level 3 Supervisor (HOD) - OPTIONAL --}}
+<div class="mb-4">
+    <label class="form-label">
+        Level 3 Supervisor (HOD)
+    </label>
+
+    <select name="level3_supervisor_id"
+            class="form-select @error('level3_supervisor_id') is-invalid @enderror">
+        <option value="">Select HOD</option>
+        @foreach($level3Supervisors as $supervisor)
+            <option value="{{ $supervisor->id }}"
+                {{ old('level3_supervisor_id', $staffManagement->level3_supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
+                {{ $supervisor->name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('level3_supervisor_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
 <div class="mb-4">
     <label class="form-label">
         Status <span class="text-danger">*</span>

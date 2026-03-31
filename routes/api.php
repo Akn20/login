@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -26,12 +27,14 @@ use App\Http\Controllers\HR\StaffManagementController;
 // Leave management (masters)
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+// HR
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-// HR
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -42,22 +45,54 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+use App\Http\Controllers\PharmacyDashboardController;
+//use App\Http\Controllers\WorkStatusController;
 
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 
+//added by sushan for api
+use App\Http\Controllers\Admin\PatientController;
+//added by sushan for api
+    Route::get('/patients', [PatientController::class, 'apiIndex']);
+use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 //DOCTOR(OPD)
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 
+//Nurse
+use App\Http\Controllers\NurseNotesController;
+
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    
+    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
+    } 
+});
+    
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -300,22 +335,58 @@ Route::prefix('masters')->group(function () {
     Route::post('/leave-mappings/{id}/restore', [LeaveMappingController::class, 'apiRestore']);
     Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
 
-    /*
+});
+ /*
 |--------------------------------------------------------------------------
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
-    Route::prefix('leave-management')->group(function () {
+Route::prefix('leave-management')->group(function () {
+    
+    // Main Adjustment Routes
+    Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
+    Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
+    Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
+    
+    // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
+    Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
 
-        // Main Adjustment Routes
-        Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
-        Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
-        Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
 
-        // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
-        Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
+    /*
+    |--------------------------------------------------------------------------
+    | Comp Off API
+    |--------------------------------------------------------------------------
+    */
 
-    });
+    Route::get('/compoffs', [CompOffController::class, 'apiIndex']);
+    Route::post('/compoffs', [CompOffController::class, 'apiStore']);
+     Route::get('/compoffs/deleted', [CompOffController::class, 'apiDeleted']);
+    Route::get('/compoffs/{id}', [CompOffController::class, 'apiShow']);
+    Route::patch('/compoffs/{id}', [CompOffController::class, 'apiUpdate']);
+    Route::delete('/compoffs/{id}', [CompOffController::class, 'apiDestroy']);
+
+    Route::post('/compoffs/{id}/restore', [CompOffController::class, 'apiRestore']);
+    Route::delete('/compoffs/{id}/force-delete', [CompOffController::class, 'apiForceDelete']);
+
+    
+});
+
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Leave Approval API
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:sanctum')->prefix('leave-approvals')->group(function () {
+    Route::get('/', [LeaveApprovalController::class, 'apiIndex']);
+    Route::get('/approved', [LeaveApprovalController::class, 'apiApprovedIndex']);
+    Route::get('/{id}', [LeaveApprovalController::class, 'apiShow']);
+    Route::post('/{id}/approve', [LeaveApprovalController::class, 'apiApprove']);
+    Route::post('/{id}/reject', [LeaveApprovalController::class, 'apiReject']);
 });
 
 /*
@@ -392,16 +463,31 @@ Route::prefix('hr')->group(function () {
 
     // Staff Management
     Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
+    //added by sushan for api
+    Route::get('/surgeons', [StaffManagementController::class, 'getSurgeons']);
+    Route::get('/assistant-doctors', [StaffManagementController::class, 'getAssistantDoctors']);
+    Route::get('/anesthetists', [StaffManagementController::class, 'getAnesthetists']);
+
     Route::post('/staff', [StaffManagementController::class, 'apiStore']);
     Route::put('/staff/{id}', [StaffManagementController::class, 'apiUpdate']);
     Route::delete('/staff/{id}', [StaffManagementController::class, 'apiDestroy']);
     Route::get('/staff/deleted', [StaffManagementController::class, 'apiDeleted']);
     Route::post('/staff/{id}/restore', [StaffManagementController::class, 'apiRestore']);
     Route::delete('/staff/{id}/force-delete', [StaffManagementController::class, 'apiForceDelete']);
+    Route::get('/doctors', [StaffManagementController::class, 'apiDoctors']);
 
     // Employee list
     Route::get('/employee', [EmployeeController::class, 'index']);
+
+
 });
+
+/*
+|--------------------------------------------------------------------------
+| Pharmacy dashboard
+|--------------------------------------------------------------------------
+*/
+Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
 /*
 |--------------------------------------------------------------------------
@@ -489,7 +575,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    // Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -509,8 +621,13 @@ Route::prefix('surgery')->group(function () {
 
     // Additional endpoints
     Route::get('/patient/{patientId}', [SurgeryApiController::class, 'getByPatient']); // Get surgeries by patient
-    Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);     // Get surgeries by date
+    Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
+    
+    // Get surgeries by date
 });
+
+
+
 
 Route::prefix('ot')->group(function () {
 
@@ -546,13 +663,34 @@ Route::prefix('post-operative')->group(function () {
 
 // DOCTOR(OPD) API
 Route::prefix('consultations')->group(function () {
+    Route::get('/medicines', [ConsultationController::class, 'apiMedicines']);
 
+    // APPOINTMENTS FIRST
+    Route::prefix('appointments')->group(function () {
+        Route::get('/', [AppointmentController::class, 'apiIndex']);
+        Route::get('/trash', [AppointmentController::class, 'apiTrash']);
+        Route::get('/patients', [AppointmentController::class, 'apiGetPatients']);
+        Route::get('/departments', [AppointmentController::class, 'apiGetDepartments']);
+        Route::get('/doctors/{department_id}', [AppointmentController::class, 'apiDoctors']);
+        Route::get('/{id}', [AppointmentController::class, 'apiShow']);
+        Route::post('/', [AppointmentController::class, 'apiStore']);
+        Route::put('/{id}', [AppointmentController::class, 'apiUpdate']);
+        Route::delete('/{id}', [AppointmentController::class, 'apiDestroy']);
+        Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
+        Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
+    });
+
+    // CONSULTATION ROUTES
     Route::get('/', [ConsultationController::class, 'apiIndex']);
     Route::get('/{id}', [ConsultationController::class, 'apiShow']);
     Route::post('/', [ConsultationController::class, 'apiStore']);
     Route::put('/{id}', [ConsultationController::class, 'apiUpdate']);
     Route::delete('/{id}', [ConsultationController::class, 'apiDelete']);
     Route::get('/{id}/summary', [ConsultationController::class, 'apiSummary']);
+    Route::get('/patient/{patientId}', [ConsultationController::class, 'apiPatientHistory']);
+    Route::get('/{id}/prescriptions', [ConsultationController::class, 'apiPrescriptions']);
+    Route::get('/{id}/tests', [ConsultationController::class, 'apiTests']);
+    Route::get('/{id}/referral', [ConsultationController::class, 'apiReferral']);
 });
 //Apportionment APIs
 

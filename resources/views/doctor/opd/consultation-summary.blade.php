@@ -32,9 +32,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="mb-0">Consultation Summary</h3>
 
-            <button onclick="window.print()" class="btn btn-success">
-                <i class="feather-printer"></i> Print
-            </button>
+            
         </div>
 
 
@@ -69,6 +67,11 @@
                     <div class="col-md-4">
                         <strong>Doctor:</strong>
                         {{ $consultation->doctor->name ?? 'Doctor' }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Referred To:</strong>
+                        {{ $consultation->referralDoctor->name ?? 'None' }}
                     </div>
 
                     <div class="col-md-4">

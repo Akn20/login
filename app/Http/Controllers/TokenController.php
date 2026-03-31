@@ -50,7 +50,7 @@ class TokenController extends Controller
         }
     }
 
-    return view('admin.receptionist.tokens.create', compact(
+    return view('admin.Receptionist.tokens.create', compact(
         'appointments',
         'selectedAppointment',
         'selectedDoctor'
@@ -112,7 +112,7 @@ class TokenController extends Controller
             ->first();
     }
 
-    return view('admin.receptionist.tokens.show', compact('token', 'selectedDoctor'));
+    return view('admin.Receptionist.tokens.show', compact('token', 'selectedDoctor'));
     }
 
 
@@ -121,7 +121,7 @@ class TokenController extends Controller
      */
     public function edit($id)
     {
-       $token = Token::with(['appointment.patient', 'appointment.department', 'appointment.doctor'])
+        $token = Token::with(['appointment.patient', 'appointment.department', 'appointment.doctor'])
         ->findOrFail($id);
 
     $doctors = Staff::join('roles', 'staff.role_id', '=', 'roles.id')

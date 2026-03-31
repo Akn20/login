@@ -11,7 +11,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form action="{{ route('admin.weekends.update', $weekend->id) }}" method="POST">
+        <form action="{{ route('hr.weekends.update', $weekend->id) }}" method="POST">
             @csrf
             @method('PUT')
 

@@ -59,9 +59,6 @@ class LeaveTypeController extends Controller
             'approval_required'   => 'required|in:0,1',
             'approval_level'      => 'required_if:approval_required,1|in:Single,Multi',
 
-            // TC_LTM_006
-            'attendance_code'     => 'nullable|string|max:50',
-
             // Duration
             'max_continuous_days' => 'nullable|integer|min:1|max:365',
 
@@ -74,7 +71,7 @@ class LeaveTypeController extends Controller
             'count_holidays'      => 'required|in:0,1',
 
             // TC_LTM_006
-'attendance_code' => 'required|string|max:10|unique:leave_types,attendance_code',
+            'attendance_code'     => 'required|string|max:10|unique:leave_types,attendance_code',
         ],
         [
             'display_name.unique' => 'Leave Type already exists.',
@@ -100,7 +97,7 @@ class LeaveTypeController extends Controller
         LeaveType::create($validated);
 
         return redirect()
-            ->route('admin.leave-type.index')
+            ->route('hr.leave-type.index')
             ->with('success', 'Leave Type created successfully!');
     }
 
@@ -154,7 +151,7 @@ class LeaveTypeController extends Controller
         $leaveType->update($validated);
 
         return redirect()
-            ->route('admin.leave-type.index')
+            ->route('hr.leave-type.index')
             ->with('success', 'Leave Type updated successfully!');
     }
 
@@ -167,7 +164,7 @@ class LeaveTypeController extends Controller
         $leaveType->delete();
 
         return redirect()
-            ->route('admin.leave-type.index')
+            ->route('hr.leave-type.index')
             ->with('success', 'Leave Type moved to trash successfully!');
     }
 
@@ -195,7 +192,7 @@ class LeaveTypeController extends Controller
         $leaveType->restore();
 
         return redirect()
-            ->route('admin.leave-type.deleted')
+            ->route('hr.leave-type.deleted')
             ->with('success', 'Leave Type restored successfully!');
     }
 
@@ -208,7 +205,7 @@ class LeaveTypeController extends Controller
         $leaveType->forceDelete();
 
         return redirect()
-            ->route('admin.leave-type.deleted')
+            ->route('hr.leave-type.deleted')
             ->with('success', 'Leave Type permanently deleted!');
     }
 

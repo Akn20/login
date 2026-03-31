@@ -8,17 +8,17 @@ return new class extends Migration
 {
     public function up(): void
 {
-    Schema::create('leave_mappings', function (Blueprint $table) {
-        $table->uuid('id')->primary();
-        $table->foreignUuid('leave_type_id')->constrained('leave_types')->onDelete('cascade');
-        $table->integer('priority')->default(1);
+  Schema::create('leave_mappings', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->foreignUuid('leave_type_id')->constrained('leave_types')->onDelete('cascade');
+    $table->integer('priority')->default(1);
+    $table->json('employee_status'); 
+    $table->json('designations');
 
-        // Eligibility Scope
-        $table->json('employee_status'); 
-        $table->json('designations'); // Added to store multiple staff roles
+    
         $table->string('employment_type')->nullable();
         $table->string('employee_category')->nullable();
-
+        
         // Accrual Rules
         $table->string('accrual_frequency'); 
         $table->integer('accrual_value');

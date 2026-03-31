@@ -50,7 +50,7 @@
 
 </table>
 
-<a href="{{ route('admin.leave-adjustments.index') }}" class="btn btn-secondary">
+<a href="{{ route('hr.leave-adjustments.index') }}" class="btn btn-secondary">
 Back
 </a>
 
