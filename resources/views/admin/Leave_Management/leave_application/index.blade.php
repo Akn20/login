@@ -29,6 +29,7 @@
     <form method="GET" action="#" class="d-flex gap-2">
 
         <input type="text"
+               id="leaveSearch"
                name="search"
                class="form-control form-control-sm"
                placeholder="Search Leave..."
@@ -72,7 +73,7 @@
 </tr>
 </thead>
 
-<tbody>
+<tbody id="leaveTable">
 
 @forelse($applications as $key => $application)
 
@@ -133,5 +134,30 @@
 
 </div>
 </div>
+
+{{-- SEARCH SCRIPT --}}
+<script>
+
+document.getElementById("leaveSearch").addEventListener("keyup", function() {
+
+    let value = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("#leaveTable tr");
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(value)){
+            row.style.display = "";
+        }else{
+            row.style.display = "none";
+        }
+
+    });
+
+});
+
+</script>
 
 @endsection

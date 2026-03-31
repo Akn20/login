@@ -186,7 +186,7 @@
                 </a>
             </li>
             <li
-                class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*') ? 'active nxl-trigger' : '' }}">
+                class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*', 'hr/leave-report*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-clock"></i></span>
                     <span class="nxl-mtext">Leave Management</span>

@@ -6,6 +6,10 @@ use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 | Controller Imports
 |--------------------------------------------------------------------------
 */
+
+/**
+ * Admin Controllers
+ */
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
@@ -24,16 +28,25 @@ use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
-use App\http\Controllers\attendance\AttendanceController;
+/**
+ * HR Controllers
+ */
+use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
+/**
+ * Doctor Controllers
+ */
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
+/**
+ * Leave Management Controllers
+ */
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
@@ -44,9 +57,18 @@ use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
+/**
+ * Attendance / Appointment Controllers
+ */
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
+/**
+ * Auth Controllers
+ */
 use App\Http\Controllers\LeaveManagement\HolidayController;
+/**
+ * Master / Configuration Controllers
+ */
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
@@ -60,17 +82,13 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
+/**
+ * Clinical / Nursing / Operations Controllers
+ */
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
-// nurse
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-
-// use App\Http\Controllers\ExpiryController;
-// use App\Http\Controllers\ControlledDrugController;
-// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------

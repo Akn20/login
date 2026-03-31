@@ -2,6 +2,7 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
@@ -35,6 +36,7 @@ use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
+use App\Http\Controllers\LeaveManagement\LeaveReportController;
 // Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OrganizationController;
@@ -71,25 +73,63 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\NurseNotesController;
 
 
-/*|--------------------------------------------------------------------------
-| Biometric (protected by Sanctum)
+
+/*
+|--------------------------------------------------------------------------
+| Public auth APIs (no sanctum)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')
-    ->prefix('biometric')
-    ->group(function () {
+Route::prefix('auth')->group(function () {
+    Route::post('login', [SignInController::class, 'apiLogin']);
+    Route::post('send-otp', [SignInController::class, 'apiSendOtp']);
+    Route::post('resend-otp', [SignInController::class, 'apiResendOtp']);
+    Route::post('verify-otp', [SignInController::class, 'apiVerifyOtp']);
+    Route::post('set-mpin', [SignInController::class, 'apiSetMpin']);
+    Route::post('logout', [SignInController::class, 'apiLogout']);
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+  /* Biometric */  
+Route::prefix('biometric')->group(function () {
         Route::post('/enroll', [BiometricController::class, 'enroll']);
-        Route::post('/match', [BiometricController::class, 'match']);
         Route::post('/check-in', [BiometricController::class, 'checkIn']);
         Route::post('/check-out', [BiometricController::class, 'checkOut']);
         Route::get('/check-status', [BiometricController::class, 'checkStatus']);
     });
-Route::middleware('auth:sanctum')->prefix('users')->group(function () {
-    
-    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
-    } 
+
+
+
+    /*Users*/
+    Route::middleware('role:admin')->group(function () {
+        
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::patch('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/deleted-users', [UserController::class, 'displayDeletedUsers']);
+    Route::post('/restore-user/{id}', [UserController::class, 'restore']);
+    Route::delete('/force-delete-user/{id}', [UserController::class, 'forceDeleteUser']);
+    Route::get('/users/notEnrolled', [UserController::class, 'notEnrolled']);
+
+
+
+    /*Roles*/
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::post('/role', [RoleController::class, 'store']);
+    Route::patch('/roles/{id}', [RoleController::class, 'update']);
+    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+    Route::get('/deleted-roles', [RoleController::class, 'displayDeletedRoles']);
+    Route::post('/restore-role/{id}', [RoleController::class, 'restore']);
+    Route::delete('/force-delete-role/{id}', [RoleController::class, 'forceDeleteRole']);
+    });
 });
     
+
+
+
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -232,17 +272,6 @@ Route::get('/employee', [EmployeeController::class, 'index']);
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
-Route::get('/test-api', function () {
-    return 'API working';
-});
-/*
-|--------------------------------------------------------------------------
-| Public auth APIs (no sanctum)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('auth')->group(function () {
-    Route::post('login', [SignInController::class, 'apiLogin']);
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -365,7 +394,14 @@ Route::prefix('leave-management')->group(function () {
     Route::post('/compoffs/{id}/restore', [CompOffController::class, 'apiRestore']);
     Route::delete('/compoffs/{id}/force-delete', [CompOffController::class, 'apiForceDelete']);
 
-    
+    /*
+|--------------------------------------------------------------------------
+| Leave Report API
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/leave-report', [LeaveReportController::class, 'apiIndex']);
+Route::get('/leave-report/compoff', [LeaveReportController::class, 'apiCompoff']);
 });
 
 
