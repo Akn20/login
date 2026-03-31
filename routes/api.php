@@ -482,46 +482,42 @@ Route::prefix('hr')->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Pharmacy dashboard
-|--------------------------------------------------------------------------
-*/
-Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
-/*
-|--------------------------------------------------------------------------
-| Pharmacy Stock (mobile APIs)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('pharmacy')->group(function () {
+    //Pharmacy dashboard
+    Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'dashboardApi']);
 
-    // Stock
-    Route::get('/stock', [StockController::class, 'apiIndex']);
-    Route::get('/stock/low', [StockController::class, 'apiLowStock']);
-    Route::get('/stock/{id}', [StockController::class, 'apiShow']);
-    Route::post('/stock', [StockController::class, 'apiStore']);
-    Route::put('/stock/{id}', [StockController::class, 'apiUpdate']);
-    Route::delete('/stock/{id}', [StockController::class, 'apiDestroy']);
 
-    Route::get('/stock-trash', [StockController::class, 'apiTrash']);
-    Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
-    Route::delete('/stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+    
+    //Pharmacy Stock (mobile APIs)
 
-    // GRN (PharmacyGrnController)
-    Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);
-    Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);
-    Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);
-    Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']);
-    Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']);
+    Route::prefix('pharmacy')->group(function () {
 
-    Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']);
-    Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']);
-    Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
+        // Stock
+        Route::get('/stock', [StockController::class, 'apiIndex']);
+        Route::get('/stock/low', [StockController::class, 'apiLowStock']);
+        Route::get('/stock/{id}', [StockController::class, 'apiShow']);
+        Route::post('/stock', [StockController::class, 'apiStore']);
+        Route::put('/stock/{id}', [StockController::class, 'apiUpdate']);
+        Route::delete('/stock/{id}', [StockController::class, 'apiDestroy']);
 
-    Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
-    Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
-});
+        Route::get('/stock-trash', [StockController::class, 'apiTrash']);
+        Route::post('/stock-restore/{id}', [StockController::class, 'apiRestore']);
+        Route::delete('/stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
+
+        // GRN (PharmacyGrnController)
+        Route::get('/grn', [PharmacyGrnController::class, 'apiIndex']);
+        Route::post('/grn', [PharmacyGrnController::class, 'apiStore']);
+        Route::get('/grn/{id}', [PharmacyGrnController::class, 'apiShow']);
+        Route::put('/grn/{id}', [PharmacyGrnController::class, 'apiUpdate']);
+        Route::delete('/grn/{id}', [PharmacyGrnController::class, 'apiDestroy']);
+
+        Route::get('/grn-trash', [PharmacyGrnController::class, 'apiTrash']);
+        Route::put('/grn-trash/{id}/restore', [PharmacyGrnController::class, 'apiRestore']);
+        Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
+
+        Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
+        Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
+    });
 
 /*
 |--------------------------------------------------------------------------
