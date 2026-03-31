@@ -2,6 +2,8 @@
 
 
 // Auth
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DashboardController;
 // API Dashboard
 use App\Http\Controllers\Api\Inventory\GrnApiController;
@@ -44,6 +46,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\WorkStatusController;
+
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
@@ -62,6 +67,67 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
+
+//Nurse
+use App\Http\Controllers\NurseNotesController;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Public auth APIs (no sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('auth')->group(function () {
+    Route::post('login', [SignInController::class, 'apiLogin']);
+    Route::post('send-otp', [SignInController::class, 'apiSendOtp']);
+    Route::post('resend-otp', [SignInController::class, 'apiResendOtp']);
+    Route::post('verify-otp', [SignInController::class, 'apiVerifyOtp']);
+    Route::post('set-mpin', [SignInController::class, 'apiSetMpin']);
+    Route::post('logout', [SignInController::class, 'apiLogout']);
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+  /* Biometric */  
+Route::prefix('biometric')->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+
+
+
+    /*Users*/
+    Route::middleware('role:admin')->group(function () {
+        
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::patch('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/deleted-users', [UserController::class, 'displayDeletedUsers']);
+    Route::post('/restore-user/{id}', [UserController::class, 'restore']);
+    Route::delete('/force-delete-user/{id}', [UserController::class, 'forceDeleteUser']);
+    Route::get('/users/notEnrolled', [UserController::class, 'notEnrolled']);
+
+
+
+    /*Roles*/
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::post('/role', [RoleController::class, 'store']);
+    Route::patch('/roles/{id}', [RoleController::class, 'update']);
+    Route::delete('/roles/{id}', [RoleController::class, 'destroy']);
+    Route::get('/deleted-roles', [RoleController::class, 'displayDeletedRoles']);
+    Route::post('/restore-role/{id}', [RoleController::class, 'restore']);
+    Route::delete('/force-delete-role/{id}', [RoleController::class, 'forceDeleteRole']);
+    });
+});
+    
+
+
 
 /* Religion */
 
@@ -205,17 +271,6 @@ Route::get('/employee', [EmployeeController::class, 'index']);
 
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
-Route::get('/test-api', function () {
-    return 'API working';
-});
-/*
-|--------------------------------------------------------------------------
-| Public auth APIs (no sanctum)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('auth')->group(function () {
-    Route::post('login', [SignInController::class, 'apiLogin']);
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -538,7 +593,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    // Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -646,55 +727,5 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-
-
-Route::prefix('hr')->group(function () {
-
-Route::get('/shifts',[ShiftSchedulingAPIController::class,'shiftIndex']);
-Route::post('shifts',[ShiftSchedulingAPIController::class,'shiftStore']);
-Route::get('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftShow']);
-Route::put('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftUpdate']);
-Route::delete('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftDelete']);
-
-Route::post('shift-toggle/{id}',[ShiftSchedulingAPIController::class,'toggleShiftStatus']);
-
-Route::get('assignments',[ShiftSchedulingAPIController::class,'assignmentIndex']);
-Route::post('assignments',[ShiftSchedulingAPIController::class,'assignmentStore']);
-
-Route::get('rotations',[ShiftSchedulingAPIController::class,'rotationIndex']);
-Route::post('rotations',[ShiftSchedulingAPIController::class,'rotationStore']);
-
-Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex']);
-Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
-
-Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
-
-});
-Route::prefix('attendance')->group(function(){
-
-    Route::get('/', [AttendanceApiController::class,'index']);
-
-    Route::post('/', [AttendanceApiController::class,'store']);
-
-    Route::get('/{id}', [AttendanceApiController::class,'show']);
-
-    Route::put('/{id}', [AttendanceApiController::class,'update']);
-
-    Route::delete('/{id}', [AttendanceApiController::class,'destroy']);
-
-    Route::get('/late/list', [AttendanceApiController::class,'lateEntries']);
-
-    Route::get('/overtime/list', [AttendanceApiController::class,'overtime']);
-
-});
-Route::prefix('tokens')->group(function () {
-    Route::get('/', [TokenController::class, 'apiIndex']);
-    Route::post('/', [TokenController::class, 'apiStore']);
-    Route::get('/{id}', [TokenController::class, 'apiShow']);
-    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
-    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
     
-    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-    
-});
-Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+

@@ -8,11 +8,15 @@ use App\Models\User;
 
 use Illuminate\Database\Eloquent\Attributes\UseResource;
 use Illuminate\Http\Request;
+use Log;
 
 class UserController extends Controller
 {
     public function index()
     {
+        if(request()->wantsJson()){
+            return User::with('role')->where('deleted_at', null)->latest()->get();
+        }
         $users = User::with('role')->where('deleted_at', null)->latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
@@ -24,7 +28,6 @@ class UserController extends Controller
     }
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => 'required|string',
             'mobile' => 'required|digits:10|unique:users,mobile',
@@ -39,7 +42,9 @@ class UserController extends Controller
             'role_id' => $request->role_id,
             'status' => $request->status
         ]);
-
+        if(request()->wantsJson()){
+            return response()->json(['message' => 'User created successfully']);
+        }
         return redirect()->route('admin.users.index')->with('success', 'User created successfully');
     }
 
@@ -55,13 +60,15 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string',
-            'mobile' => 'sometimes|required|digits:10|unique:users,mobile,',
+            'mobile' => 'sometimes|required|digits:10|unique:users,mobile,'.$id,
             'role_id' => 'sometimes|required|exists:roles,id',
             'status' => 'sometimes|required|in:active,inactive'
         ]);
 
         $user->update($request->only('name', 'mobile', 'email', 'role_id', 'status'));
-
+        if(request()->wantsJson()){
+            return response()->json(['message' => 'User updated successfully']);
+        }
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully');
     }
 
@@ -72,7 +79,9 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'User not found');
         }
         $user->delete();
-
+        if(request()->wantsJson()){
+            return response()->json(['message' => 'User deleted successfully']);
+        }
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
     }
 
@@ -80,9 +89,9 @@ class UserController extends Controller
     {
 
         $users = User::withTrashed()->where('deleted_at', '!=', null)->latest()->paginate(10);
-        // if($deletedUsers->isEmpty()){
-        //     return redirect()->back()->with('error', 'No deleted users found');
-        // }   
+        if(request()->wantsJson()){
+            return User::withTrashed()->where('deleted_at', '!=', null)->latest()->get();
+        }  
         return view('admin.users.deleted', compact('users'));
     }
 
@@ -93,7 +102,9 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'User not found');
         }
         $user->restore();
-
+        if(request()->wantsJson()){
+            return response()->json(['message' => 'User restored successfully']);
+        }   
         return redirect()->route('admin.users.index')->with('success', 'User restored successfully');
     }
 
@@ -104,6 +115,9 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'User not found');
         }
         $user->forceDelete();
+        if(request()->wantsJson()){
+            return response()->json(['message' => 'User permanently deleted']);
+        }
         return redirect()->route('admin.users.deleted')->with('success', 'User permanently deleted');
     }
 
@@ -124,7 +138,10 @@ class UserController extends Controller
             'status' => $user->status,
         ]);
     }
-
+    public function notEnrolled(){
+        $users = User::where('is_enrolled', false)->get();
+        return response()->json($users);
+    }
     
 
 }
