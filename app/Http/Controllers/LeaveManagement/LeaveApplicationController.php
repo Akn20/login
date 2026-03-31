@@ -47,7 +47,7 @@ class LeaveApplicationController extends Controller
     {
         $leaveTypes = LeaveType::whereNull('deleted_at')->get();
 
-        $staff = Staff::first();
+        $staff = Staff::findOrFail(5);
 
         $leaveBalances = [];
 
@@ -88,7 +88,7 @@ class LeaveApplicationController extends Controller
         ]);
 
 
-        $staff = Staff::first();
+        $staff = Staff::findOrFail(5);
 
         if (!$staff) {
             return back()->with('error', 'No staff found');

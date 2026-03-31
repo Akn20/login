@@ -7,6 +7,7 @@ use App\Models\Weekends;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Roles;
+use Log;
 
 class WeekendController extends Controller
 {
@@ -213,5 +214,23 @@ class WeekendController extends Controller
 
         return back();
     }
+public function getStaffByRoles(Request $request)
+{
+     $roleIds = $request->roles ?? [];
 
+  
+    if (!is_array($roleIds)) {
+        $roleIds = explode(',', $roleIds);
+    }
+
+    Log::info('Roles:', $roleIds);
+
+    $staff = Staff::whereIn('role_id', $roleIds)
+        ->select('id', 'name','employee_id')
+        ->get();
+
+    Log::info('Staff:', $staff->toArray());
+
+    return response()->json($staff);
+}
 }
