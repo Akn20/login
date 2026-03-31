@@ -162,7 +162,7 @@
                 </a>
             </li>
             <li
-                class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*') ? 'active nxl-trigger' : '' }}">
+                class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*', 'hr/leave-report*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-clock"></i></span>
                     <span class="nxl-mtext">Leave Management</span>
@@ -187,6 +187,11 @@
                             up-target="#main-container"><i class="feather-tag me-2"></i>Leave Type</a></li>
                     <li class="nxl-item"><a href="{{ route('hr.leave-mappings.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-map me-2"></i>Leave Mappings</a></li>
+                            <li class="nxl-item">
+    <a href="{{ route('hr.leave-report.index') }}" class="nxl-link" up-follow up-target="#main-container">
+        <i class="feather-bar-chart-2 me-2"></i>Leave Report
+    </a>
+</li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('hr/attendance*') ? 'active nxl-trigger' : '' }}">
