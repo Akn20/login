@@ -16,8 +16,16 @@
 
             {{-- --- 1. MAIN --- --}}
             <li class="nxl-item nxl-caption"><label>Main</label></li>
-            <li class="nxl-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard') }}" class="nxl-link" up-follow up-target="#main-container">
+
+            @php
+                $user = auth()->user();
+                $route = $user && $user->role === 'admin'
+                    ? 'admin.dashboard'
+                    : 'hr.dashboard';
+            @endphp
+
+            <li class="nxl-item {{ request()->routeIs($route) ? 'active' : '' }}">
+                <a href="{{ route($route) }}" class="nxl-link" up-follow up-target="#main-container">
                     <span class="nxl-micon"><i class="feather-activity"></i></span>
                     <span class="nxl-mtext">Dashboard</span>
                 </a>
