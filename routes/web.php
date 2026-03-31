@@ -17,6 +17,24 @@ use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
+use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\doctor\surgery\OTController;
+use App\Http\Controllers\doctor\surgery\PostOperativeController;
+use App\Http\Controllers\doctor\surgery\SurgeryController;
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\HR\ShiftSchedulingController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
@@ -31,26 +49,22 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\Doctor\ConsultationController;
-use App\Http\Controllers\doctor\surgery\OTController;
-use App\Http\Controllers\doctor\surgery\PostOperativeController;
-use App\Http\Controllers\doctor\surgery\SurgeryController;
-use App\Http\Controllers\Doctor\ViewAppointmentController;
-use App\Http\Controllers\Doctor\ViewPatientController;
+
+
+
+
+
+
 use App\Http\Controllers\ExpiryController;
-use App\Http\Controllers\HR\HRDashboardController;
-use App\Http\Controllers\HR\ShiftSchedulingController;
-use App\Http\Controllers\HR\StaffManagementController;
+
+
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
-use App\Http\Controllers\LeaveManagement\CompOffController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
-use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
-use App\Http\Controllers\LeaveManagement\LeaveMappingController;
-use App\Http\Controllers\LeaveManagement\LeaveTypeController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
+
+
+
+
+
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
@@ -1190,6 +1204,12 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
     });
+
+    // Leave report
+ Route::prefix('leave-report')->name('leave-report.')->group(function () {
+    Route::get('/', [LeaveReportController::class, 'index'])->name('index');
+});
+
 });
 
 /*
