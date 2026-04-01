@@ -57,8 +57,19 @@ class LeaveReportController extends Controller
 
         $reports = $query->latest()->paginate(10);
 
-        //  CompOff (optional: filter by date also)
-        $compoffs = Compoff::with('employee')->latest()->get();
+       $compoffs = Compoff::with('employee')->get()->map(function ($comp) {
+
+    $leave = \App\Models\LeaveApplication::where('staff_id', $comp->employee_id)
+        ->whereHas('leaveType', function ($q) {
+            $q->where('display_name', 'Comp Off');
+        })
+        ->latest()
+        ->first();
+
+    $comp->applied_date = $leave ? $leave->created_at : null;
+
+    return $comp;
+});
 
         //  Departments for dropdown
         $departments = Department::all();
