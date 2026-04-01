@@ -15,6 +15,7 @@ class LabRequest extends Model
         'patient_id',
         'consultation_id',
         'test_name',
+        'priority',
         'status'
     ];
 
