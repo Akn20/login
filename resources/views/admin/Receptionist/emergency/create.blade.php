@@ -42,9 +42,9 @@
 
                             {{-- Select Existing Patient --}}
                             <div class="mb-3">
-                                <label class="form-label">Select Existing Patient (Optional)</label>
+                                <label class="form-label">Select Existing Patient </label>
                                 <select name="patient_id" id="patientSelect" class="form-control">
-                                    <option value="">-- New / Unknown Patient --</option>
+                                    <option value="">Select Registered Patient </option>
                                     @foreach($patients as $patient)
                                         <option value="{{ $patient->id }}"
                                             data-name="{{ $patient->first_name }} {{ $patient->last_name }}"
