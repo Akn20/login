@@ -754,9 +754,10 @@ Route::prefix('vitals')->group(function () {
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
 });
 
+    
+    Route::prefix('emergency-cases')->group(function () {
 
-//API for EmergencyCaseController
-Route::prefix('emergency-cases')->group(function () {
-Route::get('/patients', [EmergencyCaseController::class, 'getPatientsApi']);
-Route::post('/emergencys', [EmergencyCaseController::class, 'storeApi']);
-});
+        Route::get('/patients', [EmergencyCaseController::class, 'getPatientsApi']);
+        Route::post('/emergency', [EmergencyCaseController::class, 'storeApi']);
+
+    });

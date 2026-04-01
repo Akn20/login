@@ -45,7 +45,7 @@ class EmergencyCaseController extends Controller
             'last_name',
             'mobile',
             'gender',
-            'age',
+           // 'age',
             'patient_code'
         )->latest()->get();
 
@@ -65,7 +65,7 @@ class EmergencyCaseController extends Controller
             'patient_id' => $request->patient_id,
             'patient_name' => $request->patient_name ?? 'Unknown',
             'gender' => $request->gender,
-            'age' => $request->age,
+           // 'age' => $request->age,
             'mobile' => $request->mobile,
             'emergency_type' => $request->emergency_type,
             'created_by' => Auth::id()
