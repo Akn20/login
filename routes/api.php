@@ -69,7 +69,7 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
-
+use App\Http\Controllers\EmergencyCaseController;
 //Nurse
 use App\Http\Controllers\NurseNotesController;
 
@@ -752,4 +752,11 @@ Route::prefix('vitals')->group(function () {
     Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
     Route::put('/{id}/restore', [PatientMonitoringController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
+});
+
+
+//API for EmergencyCaseController
+Route::prefix('emergency-cases')->group(function () {
+Route::get('/patients', [EmergencyCaseController::class, 'getPatientsApi']);
+Route::post('/emergencys', [EmergencyCaseController::class, 'storeApi']);
 });
