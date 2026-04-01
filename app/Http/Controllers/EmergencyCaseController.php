@@ -36,4 +36,41 @@ class EmergencyCaseController extends Controller
 
         return redirect()->back()->with('success', 'Emergency patient registered successfully!');
     }
+
+    public function getPatientsApi()
+    {
+        $patients = Patient::select(
+            'id',
+            'first_name',
+            'last_name',
+            'mobile',
+            'gender',
+            'age',
+            'patient_code'
+        )->latest()->get();
+
+        return ApiResponse::success($patients, 'Patients fetched successfully');
+    }
+
+    // ===============================
+    // STORE EMERGENCY (API)
+    // ===============================
+    public function storeApi(Request $request)
+    {
+        $request->validate([
+            'emergency_type' => 'required'
+        ]);
+
+        $emergency = EmergencyCase::create([
+            'patient_id' => $request->patient_id,
+            'patient_name' => $request->patient_name ?? 'Unknown',
+            'gender' => $request->gender,
+            'age' => $request->age,
+            'mobile' => $request->mobile,
+            'emergency_type' => $request->emergency_type,
+            'created_by' => Auth::id()
+        ]);
+
+        return ApiResponse::success($emergency, 'Emergency registered successfully');
+    }
 }
