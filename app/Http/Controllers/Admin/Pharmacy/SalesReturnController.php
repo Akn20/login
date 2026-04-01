@@ -37,7 +37,7 @@ public function index(Request $request)
             $q->where('return_number', 'like', "%{$request->q}%");
         });
     }
-    $returns = $query->latest()->paginate(10);
+   $returns = $query->with(['bill','patient'])->latest()->paginate(10);
 
     return view('admin.pharmacy.salesReturn.index', compact('returns'));
 }
@@ -146,53 +146,45 @@ public function update(Request $request, $id)
     DB::beginTransaction();
 
     try {
-
+         
         $salesReturn = SalesReturn::with('items')->findOrFail($id);
 
         $totalRefund = 0;
 
-        foreach ($request->items as $itemId => $itemData) {
+       foreach ($request->items as $itemData) {
 
-            $item = SalesReturnItem::find($itemId);
+    $item = SalesReturnItem::find($itemData['id']);
 
-            if (!$item) {
-                continue;
-            }
+    if (!$item) continue;
 
-            $qty = $itemData['return_qty'];
-            $unitPrice = $itemData['unit_price'];
+    $qty = $itemData['return_qty'] ?? 0;
+    $unitPrice = $itemData['unit_price'] ?? 0;
 
-            // Get original sold quantity
-            $billItem = SalesBillItem::where('sales_bill_id', $salesReturn->bill_id)
-                ->where('medicine_id', $item->medicine_id)
-                ->where('batch_id', $item->batch_id)
-                ->first();
+    // Get original sold quantity
+    $billItem = SalesBillItem::where('sales_bill_id', $salesReturn->bill_id)
+        ->where('medicine_id', $item->medicine_id)
+        ->where('batch_id', $item->batch_id)
+        ->first();
 
-            if (!$billItem) {
-                throw new \Exception("Invalid bill item.");
-            }
+    if (!$billItem) {
+        throw new \Exception("Invalid bill item.");
+    }
 
-            //  Prevent return greater than sold quantity
-            if ($qty > $billItem->quantity) {
-                throw new \Exception("Return quantity cannot exceed sold quantity.");
-            }
+   if ($qty > $billItem->quantity) {
+    throw new \Exception("Return qty exceeds sold qty");
+}
 
-            // Calculate refund
-            $refund = $qty * $unitPrice;
+    $refund = $qty * $unitPrice;
 
-            // Update batch stock difference
-            $batch = MedicineBatch::find($item->batch_id);
+    $item->update([
+        'quantity' => $qty,
+        'refund_amount' => $refund,
+        'reason' => $itemData['reason'] ?? null
+    ]);
 
-            // Update return item
-            $item->update([
-                'quantity' => $qty,
-                'refund_amount' => $refund,
-                'reason' => $itemData['reason'] ?? null
-            ]);
-
-            $totalRefund += $refund;
-        }
-
+    $totalRefund += $refund;
+}
+        
         // Update sales return
         $salesReturn->update([
             'total_refund' => $totalRefund,
@@ -210,30 +202,34 @@ public function update(Request $request, $id)
 
     } catch (\Exception $e) {
 
-        DB::rollback();
+    DB::rollback();
 
-        return back()->with('error',$e->getMessage());
-    }
+    dd($e->getMessage()); // 👈 ADD THIS
+
+    return back()->with('error',$e->getMessage());
 }
-public function edit($id)
+}
+public function edit(SalesReturn $salesReturn)
 {
-    $salesReturn = SalesReturn::with([
+    $salesReturn->load([
         'items.medicine',
         'items.batch',
-        'bill'
-    ])->findOrFail($id);
+        'bill',
+         'patient'
+    ]);
 
     return view('admin.pharmacy.salesReturn.edit', compact('salesReturn'));
 }
 
-public function show($id)
+public function show(SalesReturn $salesReturn)
 {
-    $salesReturn = SalesReturn::with([
+    $salesReturn->load([
         'items.medicine',
         'items.batch',
         'bill',
+        'patient',
         'creator'
-    ])->findOrFail($id);
+    ]);
 
     return view('admin.pharmacy.salesReturn.show', compact('salesReturn'));
 }

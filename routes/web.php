@@ -61,10 +61,10 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 
-use App\Http\Controllers\TokenController;
+// use App\Http\Controllers\TokenController;
 //nurse
 use App\Http\Controllers\NurseNotesController;
-use Illuminate\Support\Facades\Route;
+// use Illuminate\Support\Facades\Route;
 
 use App\http\Controllers\attendance\AttendanceController;
 //use App\Http\Controllers\ExpiryController;
@@ -1052,8 +1052,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     });
 
     // --- Admin Pharmacy & Sales Return ---
-    Route::resource('salesReturn', SalesReturnController::class);
-    Route::post('salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])->name('salesReturn.approve');
+
     
     Route::prefix('prescriptions')->name('prescriptions.')->group(function() {
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
@@ -1249,7 +1248,7 @@ Route::prefix('admin')
 
         
         Route::resource('salesReturn', SalesReturnController::class);
-
+   
         Route::get(
             'salesReturn/{id}/print',
             [SalesReturnController::class, 'print']
@@ -1260,8 +1259,6 @@ Route::prefix('admin')
             [SalesReturnController::class, 'approve']
         )->name('salesReturn.approve');
 
-        Route::get('admin/salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])
-            ->name('admin.salesReturn.approve');
 
         Route::post(
             'salesReturn/{id}/reject',
