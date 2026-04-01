@@ -2,163 +2,164 @@
 
 @section('content')
 
-<div class="card">
-    <div class="card-header">
-        <h4>Sample Collection</h4>
-    </div>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3>Sample Collection</h4>
+        </div>
 
-    <div class="card-body">
-        <!-- TABLE -->
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>SL No.</th>
-                    <th>Patient Name</th>
-                    <th>Test Name</th>
-                    <th>Sample ID</th>
-                    <th>Collection Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @if($samples->isEmpty())
+        <div class="card-body">
+            <!-- TABLE -->
+            <table class="table table-bordered table-striped">            
+                <thead>
                     <tr>
-                        <td colspan="7" class="text-center">No samples found</td>
+                        <th>SL No.</th>
+                        <th>Patient Name</th>
+                        <th>Test Name</th>
+                        <th>Sample ID</th>
+                        <th>Collection Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                @endif
-                @foreach($samples as $key => $sample)
-                <tr>
+                </thead>
 
-                    <td>{{ $key + 1 }}</td>
+                <tbody>
+                    @if($samples->isEmpty())
+                        <tr>
+                            <td colspan="7" class="text-center">No samples found</td>
+                        </tr>
+                    @endif
+                    @foreach($samples as $key => $sample)
+                    <tr style="font-size: 14px;">
 
-                    <!-- Patient -->
-                    <td>
-                        {{ ($sample->labRequest->patient->first_name ?? '') . ' ' . ($sample->labRequest->patient->last_name ?? '') }}                    </td>
+                        <td>{{ $key + 1 }}</td>
 
-                    <!-- Test -->
-                    <td>
-                        {{ $sample->labRequest->test_name ?? '' }}
-                    </td>
+                        <!-- Patient -->
+                        <td>
+                            {{ ($sample->labRequest->patient->first_name ?? '') . ' ' . ($sample->labRequest->patient->last_name ?? '') }}                    </td>
 
-                    <!-- Sample ID -->
-                    <td>{{ $sample->sample_id ?? '-' }}</td>
+                        <!-- Test -->
+                        <td>
+                            {{ $sample->labRequest->test_name ?? '' }}
+                        </td>
 
-                    <!-- Time -->
-                    <td>{{ $sample->collection_time ?? '-' }}</td>
+                        <!-- Sample ID -->
+                        <td>{{ $sample->sample_id ?? '-' }}</td>
 
-                    <!-- STATUS -->
-                    <td>
-                        <span class="badge 
-                            @if($sample->status=='Pending') bg-warning
-                            @elseif($sample->status=='Collected') bg-primary
-                            @elseif($sample->status=='In Process') bg-info
-                            @elseif($sample->status=='Completed') bg-success
-                            @else bg-danger @endif">
-                            {{ $sample->status }}
-                        </span>
-                    </td>
+                        <!-- Time -->
+                        <td>{{ $sample->collection_time ?? '-' }}</td>
 
-                    <!-- ACTIONS -->
-                    <td>
+                        <!-- STATUS -->
+                        <td>
+                            <span class="badge 
+                                @if($sample->status=='Pending') bg-warning
+                                @elseif($sample->status=='Collected') bg-primary
+                                @elseif($sample->status=='In Process') bg-info
+                                @elseif($sample->status=='Completed') bg-success
+                                @else bg-danger @endif">
+                                {{ $sample->status }}
+                            </span>
+                        </td>
 
-                        <!-- Collect -->
-                       
+                        <!-- ACTIONS -->
+                        <td>
 
-                        @if($sample->status == 'Pending')
-                            <form action="{{ route('admin.laboratory.sample.collect', $sample->id) }}" method="POST">
-                                @csrf
-                                <button class="btn btn-success btn-sm">Collect</button>
-                            </form>
+                            <!-- Collect -->
+                        
 
-                        @elseif($sample->status == 'Collected')
-                            <form action="{{ route('admin.laboratory.sample.process', $sample->id) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="status" value="In Process">
-                                <button class="btn btn-primary btn-sm">Start Processing</button>
-                            </form>
+                            @if($sample->status == 'Pending')
+                                <form action="{{ route('admin.laboratory.sample.collect', $sample->id) }}" method="POST">
+                                    @csrf
+                                    <button class="btn btn-success btn-sm">Collect</button>
+                                </form>
 
-                        @elseif($sample->status == 'In Process')
-                            <form action="{{ route('admin.laboratory.sample.complete', $sample->id) }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="status" value="Completed">
-                                <button class="btn btn-success btn-sm">Complete</button>
-                            </form>
-                        @endif
+                            @elseif($sample->status == 'Collected')
+                                <form action="{{ route('admin.laboratory.sample.process', $sample->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="In Process">
+                                    <button class="btn btn-primary btn-sm">Start Processing</button>
+                                </form>
 
-                        <!-- Reject -->
-                         @if($sample->status == 'Rejected')
-                            <button class="btn btn-primary btn-sm" 
-                                    onclick="openReasonModal('{{ $sample->id }}')">
-                                View Reason
-                            </button>
-                        @elseif($sample->status != 'Completed')
-                            <button class="btn btn-danger btn-sm"
-                                onclick="openModal('{{ $sample->id }}')">
-                                Reject
-                            </button>
-                        @endif
+                            @elseif($sample->status == 'In Process')
+                                <form action="{{ route('admin.laboratory.sample.complete', $sample->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="Completed">
+                                    <button class="btn btn-success btn-sm">Complete</button>
+                                </form>
+                            @endif
 
-                    </td>
-
-                </tr>
-
-                <!-- MODAL -->
-                <div id="rejectModal{{ $sample->id }}" class="custom-modal">
-
-                    <div class="custom-modal-content">
-
-                        <h5>Reject Sample</h5>
-
-                        <form method="POST" action="{{ route('admin.laboratory.sample.reject', $sample->id) }}">
-                            @csrf
-
-                            <textarea name="reason" class="form-control mb-4" required placeholder="Enter reason"></textarea>
-
-                            <div  style="display: flex; gap: 30px; justify-content: flex-end; margin-top: 10px;">
-                                <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="closeModal('{{ $sample->id }}')">
-                                    Cancel
+                            <!-- Reject -->
+                            @if($sample->status == 'Rejected')
+                                <button class="btn btn-primary btn-sm" 
+                                        onclick="openReasonModal('{{ $sample->id }}')">
+                                    View Reason
                                 </button>
+                            @elseif($sample->status != 'Completed')
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="openModal('{{ $sample->id }}')">
+                                    Reject
+                                </button>
+                            @endif
 
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Submit
+                        </td>
+
+                    </tr>
+
+                    <!-- MODAL -->
+                    <div id="rejectModal{{ $sample->id }}" class="custom-modal">
+
+                        <div class="custom-modal-content">
+
+                            <h5>Reject Sample</h5>
+
+                            <form method="POST" action="{{ route('admin.laboratory.sample.reject', $sample->id) }}">
+                                @csrf
+
+                                <textarea name="reason" class="form-control mb-2" required placeholder="Enter reason"></textarea>
+
+                                <div  style="display: flex; gap: 30px; justify-content: flex-end; margin-top: 10px;">
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                            onclick="closeModal('{{ $sample->id }}')">
+                                        Cancel
+                                    </button>
+
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Submit
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <!-- REASON MODAL -->
+                    <div id="reasonModal{{ $sample->id }}" class="custom-modal">
+
+                        <div class="custom-modal-content">
+
+                            <h5>Rejection Reason</h5>
+
+                            <textarea class="form-control mb-2" readonly>
+                                {{ $sample->rejection_reason }}
+                            </textarea>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-primary btn-sm"
+                                        onclick="closeReasonModal('{{ $sample->id }}')">
+                                    Close
                                 </button>
                             </div>
 
-                        </form>
-
-                    </div>
-                </div>
-
-                <!-- REASON MODAL -->
-                <div id="reasonModal{{ $sample->id }}" class="custom-modal">
-
-                    <div class="custom-modal-content">
-
-                        <h5>Rejection Reason</h5>
-
-                        <textarea class="form-control mb-2" readonly>
-                            {{ $sample->rejection_reason }}
-                        </textarea>
-
-                        <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-primary btn-sm"
-                                    onclick="closeReasonModal('{{ $sample->id }}')">
-                                Close
-                            </button>
                         </div>
-
                     </div>
-                </div>
-                @endforeach
-            </tbody>
-        </table>
+                    @endforeach
+                </tbody>
+            </table>
 
+        </div>
     </div>
 </div>
-
 @endsection
 <script>
 function openModal(id) {
