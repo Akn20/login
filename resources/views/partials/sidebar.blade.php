@@ -267,14 +267,38 @@
                     <span class="nxl-mtext">Payroll</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
-                <ul class="nxl-submenu">
-                    <li class="nxl-item"><a href="{{ route('hr.payroll.allowance.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-plus-circle me-2"></i>Allowances</a>
-                    </li>
-                    <li class="nxl-item"><a href="{{ route('hr.payroll.deduction.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-minus-circle me-2"></i>Deductions</a>
-                    </li>
-                </ul>
+             <ul class="nxl-submenu">
+
+  
+
+    <li class="nxl-item {{ request('type') == 'fixed' ? 'active' : '' }}">
+        <a href="{{ route('hr.payroll.allowance.index',['type' => 'fixed']) }}"
+           class="nxl-link">
+            <i class="feather-dollar-sign me-2"></i>
+            Fixed Allowances
+        </a>
+    </li>
+
+    <li class="nxl-item {{ request('type') == 'variable' ? 'active' : '' }}">
+        <a href="{{ route('hr.payroll.allowance.index',['type' => 'variable']) }}"
+           class="nxl-link">
+            <i class="feather-repeat me-2"></i>
+            Variable Allowances
+        </a>
+    </li>
+
+
+
+    {{-- DEDUCTION --}}
+    <li class="nxl-item">
+        <a href="{{ route('hr.payroll.deduction.index') }}"
+           class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
+           up-follow up-target="#main-container">
+            <i class="feather-minus-circle me-2"></i>Deductions
+        </a>
+    </li>
+
+</ul>
             </li>
 
 

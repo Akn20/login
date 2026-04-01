@@ -24,6 +24,8 @@ class Allowance extends Model
     protected $fillable = [
         'name',
         'display_name',
+        'description',
+        'type',
         'nature',
         'pay_frequency',
         'start_date',

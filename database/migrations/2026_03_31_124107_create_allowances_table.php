@@ -12,52 +12,55 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('allowances', function (Blueprint $table) {
-           $table->uuid('id')->primary();
+    $table->uuid('id')->primary();
 
-            // ================= BASIC =================
-            $table->string('name')->unique(); // internal unique name
-            $table->string('display_name');
-            // ================= CLASSIFICATION =================
-            $table->enum('type', ['fixed', 'variable'])->default('fixed');
-            $table->enum('nature', ['fixed', 'variable'])->default('fixed');
-            $table->enum('pay_frequency', ['monthly', 'quarterly', 'yearly', 'one_time'])->default('monthly');
-            $table->date('start_date')->nullable();
+    // ================= BASIC =================
+    $table->string('name')->unique();
+    $table->string('display_name');
+    $table->string('description')->nullable();
 
-            // ================= CALCULATION =================
-            $table->enum('calculation_type', ['fixed', 'percentage', 'balancing']);
-            $table->enum('calculation_base', ['basic', 'gross'])->nullable();
-            $table->decimal('calculation_value', 12, 2)->nullable();
+    // ================= CLASSIFICATION =================
+    $table->enum('type', ['fixed', 'variable'])->default('fixed');
+    $table->enum('nature',['fixed', 'variable'])->default('fixed');
+    $table->date('start_date')->nullable();
+  
+    $table->enum('pay_frequency', ['monthly', 'quarterly', 'yearly', 'one_time'])->nullable();
 
-            $table->enum('rounding_rule', ['nearest', 'up', 'down', 'none'])->default('nearest');
-            $table->decimal('max_limit', 12, 2)->nullable();
+    // ================= CALCULATION =================
+    $table->enum('calculation_type', ['fixed', 'percentage', 'balancing'])->nullable();
+    $table->enum('calculation_base', ['basic', 'gross'])->nullable();
+    $table->decimal('calculation_value', 12, 2)->nullable();
 
-            // ================= ATTENDANCE =================
-            $table->boolean('lop_impact')->default(true);
-            $table->boolean('prorata')->default(true);
+    $table->enum('rounding_rule', ['nearest', 'up', 'down', 'none'])->nullable();
+    $table->decimal('max_limit', 12, 2)->nullable();
 
-            // ================= TAX & STATUTORY =================
-            $table->boolean('taxable')->default(true);
-            $table->string('tax_exemption_section')->nullable();
+    // ================= ATTENDANCE =================
+    $table->boolean('lop_impact')->default(false);
+    $table->boolean('prorata')->default(false);
 
-            $table->boolean('pf_applicable')->default(true);
-            $table->boolean('esi_applicable')->default(true);
-            $table->boolean('pt_applicable')->default(false);
-            $table->boolean('tds_applicable')->default(false);
+    // ================= TAX & STATUTORY =================
+    $table->boolean('taxable')->default(false);
+    $table->string('tax_exemption_section')->nullable();
 
-            // ================= PAYSLIP =================
-            $table->boolean('show_in_payslip')->default(true);
-            $table->integer('display_order')->nullable();
+    $table->boolean('pf_applicable')->default(false);
+    $table->boolean('esi_applicable')->default(false);
+    $table->boolean('pt_applicable')->default(false);
+    $table->boolean('tds_applicable')->default(false);
 
-            // ================= POLICY =================
-            $table->date('effective_from')->nullable();
-            $table->date('effective_to')->nullable();
+    // ================= PAYSLIP =================
+    $table->boolean('show_in_payslip')->default(true);
+    $table->integer('display_order')->nullable();
 
-            // ================= CONTROL =================
-            $table->boolean('status')->default(true); // active/inactive
+    // ================= POLICY =================
+    $table->date('effective_from')->nullable();
+    $table->date('effective_to')->nullable();
 
-            // ================= SYSTEM =================
-            $table->timestamps();
-            $table->softDeletes(); // for deleted page
+    // ================= CONTROL =================
+    $table->boolean('status')->default(true);
+
+    // ================= SYSTEM =================
+    $table->timestamps();
+    $table->softDeletes();
 
         });
     }
@@ -67,6 +70,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fixed_allowances');
+        Schema::dropIfExists('allowances');
     }
 };

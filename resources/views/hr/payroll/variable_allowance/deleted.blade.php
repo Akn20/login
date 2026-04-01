@@ -15,7 +15,7 @@
 <div class="page-header mb-4 d-flex align-items-center justify-content-between">
     <div>
         <h5 class="mb-1">
-            <i class="feather-trash-2 me-2"></i>Deleted Allowances
+            <i class="feather-trash-2 me-2"></i>Deleted Variable Allowances
         </h5>
 
         <ul class="breadcrumb mb-0">
@@ -23,11 +23,11 @@
                 <a href="{{ route('admin.dashboard') }}">Dashboard</a>
             </li>
             <li class="breadcrumb-item">Payroll</li>
-            <li class="breadcrumb-item">Deleted Allowances</li>
+            <li class="breadcrumb-item">Deleted Variable Allowances</li>
         </ul>
     </div>
 
-    <a href="{{ route('hr.payroll.allowance.index',['type' => 'fixed']) }}" class="btn btn-light">
+    <a href="{{ route('hr.payroll.allowance.index',['type' => 'variable']) }}" class="btn btn-light">
         Back to Allowances
     </a>
 </div>
@@ -67,7 +67,7 @@
                                     <form method="POST"
                                           action="{{ route('hr.payroll.allowance.restore', $allowance->id) }}">
                                         @csrf
-                                        <input type="hidden" name="type" value="fixed">
+                                        <input type="hidden" name="type" value="variable">
                                         <button type="submit"
                                                 class="btn btn-outline-success btn-icon rounded-circle"
                                                 onclick="return confirm('Restore this allowance?')">
@@ -80,7 +80,7 @@
                                           action="{{ route('hr.payroll.allowance.forceDelete', $allowance->id) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <input type="hidden" name="type" value="fixed">
+                                        <input type="hidden" name="type" value="variable">
                                         <button type="submit"
                                                 class="btn btn-outline-danger btn-icon rounded-circle"
                                                 onclick="return confirm('Delete permanently? This cannot be undone!')">

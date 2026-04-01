@@ -9,169 +9,240 @@ use Illuminate\Support\Facades\Log;
 
 class PayrollAllowanceController extends Controller
 {
-
     // ================= INDEX =================
-    public function index()
+    public function index(Request $request)
     {
-        $allowances = Allowance::where('type', 'fixed')->paginate(10);
-        return view('hr.Payroll.fixed_allowance.index', compact('allowances'));
+        $type = $request->type;
+
+        $allowances = Allowance::where('type', $type)
+            ->latest()
+            ->paginate(10);
+
+        if ($type === 'fixed') {
+            return view('hr.payroll.fixed_allowance.index', compact('allowances', 'type'));
+        } else {
+            return view('hr.payroll.variable_allowance.index', compact('allowances', 'type'));
+        }
     }
 
     // ================= CREATE =================
-    public function create()
+    public function create(Request $request)
     {
-        $type = request('type', 'fixed');
-        return view('hr.Payroll.fixed_allowance.form', compact('type'));
+        $type = $request->type ?? 'fixed';
+
+        if ($type === 'fixed') {
+            return view('hr.payroll.fixed_allowance.form', compact('type'));
+        } else {
+            return view('hr.payroll.variable_allowance.form', compact('type'));
+        }
     }
 
     // ================= STORE =================
     public function store(Request $request)
-{
-   $validated = $request->validate([
-    'name' => 'required|unique:allowances,name',
-    'display_name' => 'required|string',
-
-    'pay_frequency' => 'required',
-    'start_date' => 'nullable|date',
-
-    'calculation_type' => 'required',
-    'calculation_base' => 'nullable',
-    'calculation_value' => 'nullable|numeric',
-    'rounding_rule' => 'nullable|in:nearest,up,down,none',
-    'max_limit' => 'nullable|numeric',
-
-    'effective_from' => 'nullable|date',
-    'effective_to' => 'nullable|date',
-
-    'lop_impact' => 'nullable|boolean',
-    'prorata' => 'nullable|boolean',
-
-    'taxable' => 'nullable|boolean',
-    'tax_exemption_section' => 'nullable|string',
-
-    'pf_applicable' => 'nullable|boolean',
-    'esi_applicable' => 'nullable|boolean',
-    'pt_applicable' => 'nullable|boolean',
-    'tds_applicable' => 'nullable|boolean',
-
-    'show_in_payslip' => 'nullable|boolean',
-    'display_order' => 'nullable|integer',
-
-    'status' => 'nullable|boolean',
-]);
-
-    // ✅ Default boolean values
-    $validated = array_merge([
-        'lop_impact' => 0,
-        'prorata' => 0,
-        'taxable' => 0,
-        'pf_applicable' => 0,
-        'esi_applicable' => 0,
-        'show_in_payslip' => 0,
-        'type' => 'fixed', 
-    ], $validated);
-
-    Allowance::create($validated);
-
-    return redirect()
-        ->route('hr.payroll.allowance.index')
-        ->with('success', 'Allowance created successfully');
-}
-    // ================= SHOW =================
-    public function show($id)
     {
-        $allowance = Allowance::findOrFail($id);
-        return view('hr.Payroll.fixed_allowance.show', compact('allowance'));
+        $type = $request->type;
+
+        // 🔥 BASE RULES
+        $rules = [
+            'name' => 'required|unique:allowances,name',
+            'display_name' => 'required|string',
+            'description' => 'nullable|string', 
+
+            'taxable' => 'nullable|boolean',
+            'tax_exemption_section' => 'nullable|string',
+
+            'pf_applicable' => 'nullable|boolean',
+            'esi_applicable' => 'nullable|boolean',
+            'pt_applicable' => 'nullable|boolean',
+            'tds_applicable' => 'nullable|boolean',
+
+            'show_in_payslip' => 'nullable|boolean',
+            'status' => 'nullable|boolean',
+        ];
+
+        // 🔥 FIXED ONLY
+        if ($type === 'fixed') {
+            $rules = array_merge($rules, [
+                'pay_frequency' => 'required',
+                'start_date' => 'nullable|date',
+
+                'calculation_type' => 'required',
+                'calculation_base' => 'nullable',
+                'calculation_value' => 'nullable|numeric',
+                'rounding_rule' => 'nullable|in:nearest,up,down,none',
+                'max_limit' => 'nullable|numeric',
+
+                'effective_from' => 'nullable|date',
+                'effective_to' => 'nullable|date',
+
+                'lop_impact' => 'nullable|boolean',
+                'prorata' => 'nullable|boolean',
+
+                'display_order' => 'nullable|integer',
+            ]);
+        }
+
+        $validated = $request->validate($rules);
+
+        // 🔥 DEFAULTS
+        $validated = array_merge([
+            'lop_impact' => 0,
+            'prorata' => 0,
+            'taxable' => 0,
+            'pf_applicable' => 0,
+            'esi_applicable' => 0,
+            'pt_applicable' => 0,
+            'tds_applicable' => 0,
+            'show_in_payslip' => 0,
+            'status' => 1,
+            'type' => $type,
+        ], $validated);
+
+        // 🔥 CLEAN VARIABLE
+        if ($type === 'variable') {
+            $validated['calculation_type'] = null;
+            $validated['calculation_base'] = null;
+            $validated['calculation_value'] = null;
+            $validated['rounding_rule'] = null;
+            $validated['max_limit'] = null;
+            $validated['lop_impact'] = 0;
+            $validated['prorata'] = 0;
+            $validated['pay_frequency'] = null;
+            $validated['effective_from'] = null;
+            $validated['effective_to'] = null;
+        }
+
+        Allowance::create($validated);
+
+        return redirect()
+            ->route('hr.payroll.allowance.index', ['type' => $type])
+            ->with('success', ucfirst($type) . ' allowance created successfully');
     }
 
     // ================= EDIT =================
     public function edit($id)
     {
-        Log::info($id);
         $allowance = Allowance::findOrFail($id);
-        return view('hr.Payroll.fixed_allowance.form', compact('allowance'));
+
+        if ($allowance->type === 'fixed') {
+            return view('hr.payroll.fixed_allowance.form', compact('allowance'));
+        } else {
+            return view('hr.payroll.variable_allowance.form', compact('allowance'));
+        }
     }
 
     // ================= UPDATE =================
-   public function update(Request $request, $id)
-{
-    $allowance = Allowance::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        $allowance = Allowance::findOrFail($id);
+        $type = $allowance->type;
 
-$validated = $request->validate([
-    'name' => 'required|unique:allowances,name,' . $id,
-    'display_name' => 'required|string',
+        $rules = [
+            'name' => 'required|unique:allowances,name,' . $id,
+            'display_name' => 'required|string',
+            'description' => 'nullable|string',
+            
+            'taxable' => 'nullable|boolean',
+            'tax_exemption_section' => 'nullable|string',
 
-    'pay_frequency' => 'required',
-    'start_date' => 'nullable|date',
+            'pf_applicable' => 'nullable|boolean',
+            'esi_applicable' => 'nullable|boolean',
+            'pt_applicable' => 'nullable|boolean',
+            'tds_applicable' => 'nullable|boolean',
 
-    'calculation_type' => 'required',
-    'calculation_base' => 'nullable',
-    'calculation_value' => 'nullable|numeric',
-    'rounding_rule' => 'nullable|in:nearest,up,down,none',
-    'max_limit' => 'nullable|numeric',
+            'show_in_payslip' => 'nullable|boolean',
+            'status' => 'nullable|boolean',
+        ];
 
-    'effective_from' => 'nullable|date',
-    'effective_to' => 'nullable|date',
+        if ($type === 'fixed') {
+            $rules = array_merge($rules, [
+                'pay_frequency' => 'required',
+                'start_date' => 'nullable|date',
 
-    'lop_impact' => 'nullable|boolean',
-    'prorata' => 'nullable|boolean',
+                'calculation_type' => 'required',
+                'calculation_base' => 'nullable',
+                'calculation_value' => 'nullable|numeric',
+            ]);
+        }
 
-    'taxable' => 'nullable|boolean',
-    'tax_exemption_section' => 'nullable|string',
+        $validated = $request->validate($rules);
 
-    'pf_applicable' => 'nullable|boolean',
-    'esi_applicable' => 'nullable|boolean',
-    'pt_applicable' => 'nullable|boolean',
-    'tds_applicable' => 'nullable|boolean',
+        $validated = array_merge([
+            'lop_impact' => 0,
+            'prorata' => 0,
+            'taxable' => 0,
+            'pf_applicable' => 0,
+            'esi_applicable' => 0,
+            'pt_applicable' => 0,
+            'tds_applicable' => 0,
+            'show_in_payslip' => 0,
+            'status' => 1,
+        ], $validated);
 
-    'show_in_payslip' => 'nullable|boolean',
-    'display_order' => 'nullable|integer',
+        if ($type === 'variable') {
+            $validated['calculation_type'] = null;
+            $validated['calculation_base'] = null;
+            $validated['calculation_value'] = null;
 
-    'status' => 'nullable|boolean',
-]);
-    $validated = array_merge([
-        'lop_impact' => 0,
-        'prorata' => 0,
-        'taxable' => 0,
-        'pf_applicable' => 0,
-        'esi_applicable' => 0,
-        'show_in_payslip' => 0,
-    ], $validated);
+        }
 
-    $allowance->update($validated);
+        $allowance->update($validated);
 
-    return redirect()
-        ->route('hr.payroll.allowance.index')
-        ->with('success', 'Allowance updated successfully');
-}
+        return redirect()
+            ->route('hr.payroll.allowance.index', ['type' => $type])
+            ->with('success', ucfirst($type) . ' allowance updated successfully');
+    }
+
     // ================= DELETE =================
     public function destroy($id)
     {
-        Allowance::findOrFail($id)->delete();
+        $allowance = Allowance::findOrFail($id);
+        $type = $allowance->type;
 
-        return back()->with('success', 'Allowance deleted');
+        $allowance->delete();
+
+        return redirect()
+            ->route('hr.payroll.allowance.index', ['type' => $type])
+            ->with('success', 'Allowance deleted');
     }
 
     // ================= TRASH =================
-    public function deleted()
+    public function deleted(Request $request)
     {
-        $allowances = Allowance::onlyTrashed()->get();
-        return view('hr.Payroll.fixed_allowance.deleted', compact('allowances'));
+        $type = $request->type;
+
+        $allowances = Allowance::onlyTrashed()
+            ->where('type', $type)
+            ->get();
+        if($type === 'fixed') {
+            return view('hr.payroll.fixed_allowance.deleted', compact('allowances', 'type'));
+        }
+        return view('hr.payroll.variable_allowance.deleted', compact('allowances', 'type'));
     }
 
     // ================= RESTORE =================
     public function restore($id)
     {
-        Allowance::withTrashed()->findOrFail($id)->restore();
+        $allowance = Allowance::withTrashed()->findOrFail($id);
+        $type = $allowance->type;
 
-        return back()->with('success', 'Allowance restored');
+        $allowance->restore();
+
+        return redirect()
+            ->route('hr.payroll.allowance.deleted', ['type' => $type])
+            ->with('success', 'Allowance restored');
     }
 
     // ================= FORCE DELETE =================
     public function forceDelete($id)
     {
-        Allowance::withTrashed()->findOrFail($id)->forceDelete();
+        $allowance = Allowance::withTrashed()->findOrFail($id);
+        $type = $allowance->type;
 
-        return back()->with('success', 'Allowance permanently deleted');
+        $allowance->forceDelete();
+
+        return redirect()
+            ->route('hr.payroll.allowance.deleted', ['type' => $type])
+            ->with('success', 'Allowance permanently deleted');
     }
 }
