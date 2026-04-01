@@ -85,7 +85,7 @@ class SampleCollectionController extends Controller
     
    public function apiIndex()
     {
-        $samples = SampleCollection::all();
+        $samples = SampleCollection::select('id','sample_id','barcode','status')->get();
 
         return response()->json([
             'status' => true,
