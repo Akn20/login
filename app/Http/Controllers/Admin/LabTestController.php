@@ -7,6 +7,8 @@ use App\Models\LabTest;
 use Illuminate\Http\Request;
 use App\Models\LabRequest;
 use App\Models\Department;
+use illuminate\Support\Str;
+
 class LabTestController extends Controller
 {
 
@@ -81,7 +83,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiIndex()
     {
-        $tests = LabRequest::latest()->get();
+        $tests = LabTest::select('id', 'test_name')->get();
 
         return response()->json([
             'status' => true,
