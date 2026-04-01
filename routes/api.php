@@ -677,6 +677,8 @@ Route::prefix('tokens')->group(function () {
     Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
 
 });
+
+
 Route::get('/doctors', [TokenController::class, 'apiDoctors']);
 
 // Laboratory API
@@ -686,7 +688,7 @@ Route::prefix('laboratories')->group(function () {
 
     Route::get('/requests', [LabTestController::class, 'apiLabRequests']);
 
-    Route::get('/{id}', [LabTestController::class, 'apiShow']);
+   
 
     Route::post('/', [LabTestController::class, 'apiStore']);
 
@@ -705,6 +707,7 @@ Route::prefix('laboratories')->group(function () {
         Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
 
     });
+     Route::get('/{id}', [LabTestController::class, 'apiShow']);
 });
 
 

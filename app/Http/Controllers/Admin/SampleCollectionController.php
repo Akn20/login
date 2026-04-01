@@ -82,13 +82,15 @@ class SampleCollectionController extends Controller
 
     //API METHODS
     // API GET all samples
-    public function apiIndex()
+    
+   public function apiIndex()
     {
-        $samples = SampleCollection::with('labRequest.patient')
-                    ->latest()
-                    ->get();
+        $samples = SampleCollection::all();
 
-        return response()->json($samples);
+        return response()->json([
+            'status' => true,
+            'data' => $samples
+        ]);
     }
 
     // API GET pending samples
