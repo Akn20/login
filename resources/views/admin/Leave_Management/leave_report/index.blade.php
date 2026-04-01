@@ -70,7 +70,7 @@
     <th>From Date</th>
     <th>To Date</th>
     <th>Status</th>
-    <th>Approved By</th>
+    <th>Approved / Rejected By</th>
     <th>Days</th>
 </tr>
 </thead>
