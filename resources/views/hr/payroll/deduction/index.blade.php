@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div class="col-lg-1 col-md-12">
-                                    <button type="button" id="clearFilters" class="btn btn-light w-200 h-120">
+                                    <button type="button" id="clearFilters" class="btn btn-light w-200">
                                         Clear
                                     </button>
                                 </div>
@@ -227,10 +227,10 @@
             function renderRows(items, from) {
                 if (!items.length) {
                     tableBody.innerHTML = `
-                                                <tr>
-                                                    <td colspan="8" class="text-center py-4">No deduction records found.</td>
-                                                </tr>
-                                            `;
+                                            <tr>
+                                                <td colspan="8" class="text-center py-4">No deduction records found.</td>
+                                            </tr>
+                                        `;
                     return;
                 }
 
@@ -247,42 +247,42 @@
                     const policy = item.rule_set_code ? escapeHtml(item.rule_set_code) : '-';
 
                     return `
-                                                <tr>
-                                                    <td>${serial}</td>
-                                                    <td class="fw-semibold">${escapeHtml(item.display_name)}</td>
-                                                    <td>${natureText}</td>
-                                                    <td>${categoryText}</td>
-                                                    <td>${prorataBadge}</td>
-                                                    <td>${policy}</td>
-                                                    <td>${statusBadge}</td>
-                                                    <td class="text-end">
-                                                        <div class="hstack gap-2 justify-content-end">
-                                                            <a href="${showBaseUrl}/${item.id}/show"
-                                                               class="avatar-text avatar-md action-icon" title="View">
-                                                                <i class="feather-eye"></i>
-                                                            </a>
+                                            <tr>
+                                                <td>${serial}</td>
+                                                <td class="fw-semibold">${escapeHtml(item.display_name)}</td>
+                                                <td>${natureText}</td>
+                                                <td>${categoryText}</td>
+                                                <td>${prorataBadge}</td>
+                                                <td>${policy}</td>
+                                                <td>${statusBadge}</td>
+                                                <td class="text-end">
+                                                    <div class="hstack gap-2 justify-content-end">
+                                                        <a href="${showBaseUrl}/${item.id}/show"
+                                                           class="avatar-text avatar-md action-icon" title="View">
+                                                            <i class="feather-eye"></i>
+                                                        </a>
 
-                                                            <a href="${editBaseUrl}/${item.id}/edit"
-                                                               class="avatar-text avatar-md action-icon action-edit" title="Edit">
-                                                                <i class="feather-edit"></i>
-                                                            </a>
+                                                        <a href="${editBaseUrl}/${item.id}/edit"
+                                                           class="avatar-text avatar-md action-icon action-edit" title="Edit">
+                                                            <i class="feather-edit"></i>
+                                                        </a>
 
-                                                            <form action="${deleteBaseUrl}/${item.id}"
-                                                                  method="POST"
-                                                                  class="d-inline"
-                                                                  onsubmit="return confirm('Are you sure you want to delete this deduction?');">
-                                                                <input type="hidden" name="_token" value="${csrfToken}">
-                                                                <input type="hidden" name="_method" value="DELETE">
-                                                                <button type="submit"
-                                                                        class="avatar-text avatar-md action-icon action-delete"
-                                                                        title="Delete">
-                                                                    <i class="feather-trash-2"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            `;
+                                                        <form action="${deleteBaseUrl}/${item.id}"
+                                                              method="POST"
+                                                              class="d-inline"
+                                                              onsubmit="return confirm('Are you sure you want to delete this deduction?');">
+                                                            <input type="hidden" name="_token" value="${csrfToken}">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <button type="submit"
+                                                                    class="avatar-text avatar-md action-icon action-delete"
+                                                                    title="Delete">
+                                                                <i class="feather-trash-2"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
                 }).join('');
 
                 if (window.feather) {
@@ -300,26 +300,26 @@
 
                 const prevDisabled = meta.current_page === 1 ? ' disabled' : '';
                 html += `
-                                            <li class="page-item${prevDisabled}">
-                                                <a class="page-link" href="#" data-page="${meta.current_page - 1}">‹</a>
-                                            </li>
-                                        `;
+                                        <li class="page-item${prevDisabled}">
+                                            <a class="page-link" href="#" data-page="${meta.current_page - 1}">‹</a>
+                                        </li>
+                                    `;
 
                 for (let page = 1; page <= meta.last_page; page++) {
                     const active = page === meta.current_page ? ' active' : '';
                     html += `
-                                                <li class="page-item${active}">
-                                                    <a class="page-link" href="#" data-page="${page}">${page}</a>
-                                                </li>
-                                            `;
+                                            <li class="page-item${active}">
+                                                <a class="page-link" href="#" data-page="${page}">${page}</a>
+                                            </li>
+                                        `;
                 }
 
                 const nextDisabled = meta.current_page === meta.last_page ? ' disabled' : '';
                 html += `
-                                            <li class="page-item${nextDisabled}">
-                                                <a class="page-link" href="#" data-page="${meta.current_page + 1}">›</a>
-                                            </li>
-                                        `;
+                                        <li class="page-item${nextDisabled}">
+                                            <a class="page-link" href="#" data-page="${meta.current_page + 1}">›</a>
+                                        </li>
+                                    `;
 
                 html += '</ul></nav>';
                 paginationWrapper.innerHTML = html;
