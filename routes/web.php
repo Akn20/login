@@ -71,6 +71,7 @@ use App\Http\Controllers\WorkStatusController;
 // use App\http\Controllers\attendance\AttendanceController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
+use App\Http\Controllers\EmergencyCaseController;
 #use App\Http\Controllers\ControlledDrugController;
 #use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 #use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -748,6 +749,14 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
             ->name('tokens.complete');
 
+        
+        /*
+        |--------------------------------------------------------------------------
+        | Reception: Emergency Handling
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/emergency/create', [EmergencyCaseController::class, 'create'])->name('emergency.create');
+        Route::post('/emergency/store', [EmergencyCaseController::class, 'store'])->name('emergency.store');    
     });
 
 // Appointments routes
