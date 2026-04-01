@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 
 @section('content')
@@ -17,6 +18,7 @@
                         <th>Patient Name</th>
                         <th>Test Name</th>
                         <th>Sample ID</th>
+                        <th>BarCode</th>
                         <th>Collection Time</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -46,6 +48,10 @@
                         <!-- Sample ID -->
                         <td>{{ $sample->sample_id ?? '-' }}</td>
 
+                        <!-- BarCode -->
+                         <td>
+   
+</td>
                         <!-- Time -->
                         <td>{{ $sample->collection_time ?? '-' }}</td>
 
