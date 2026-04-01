@@ -64,6 +64,7 @@ use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
+use App\Http\Controllers\attendance\AttendanceController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
@@ -235,6 +236,15 @@ Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 Route::get('/test-api', function () {
     return 'API working';
 });
+//added by sushan for api
+Route::get('/attendance', [AttendanceApiController::class, 'index']);
+Route::post('/attendance', [AttendanceApiController::class, 'store']);
+Route::delete('/attendance/{id}', [AttendanceApiController::class, 'destroy']);
+Route::put('/attendance/{id}', [AttendanceApiController::class, 'update']);
+Route::get('/attendance/late-entries', [AttendanceApiController::class, 'lateEntries']);
+Route::get('/attendance/overtime',[AttendanceController::class, 'overtimeRecords']);
+Route::get('/attendance/report', [AttendanceApiController::class, 'report']);
+
 /*
 |--------------------------------------------------------------------------
 | Public auth APIs (no sanctum)
@@ -460,6 +470,8 @@ Route::prefix('hr')->group(function () {
 
     // Staff Management
     Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
+    //added by sushan for api
+    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftindex']);
     //added by sushan for api
     Route::get('/surgeons', [StaffManagementController::class, 'getSurgeons']);
     Route::get('/assistant-doctors', [StaffManagementController::class, 'getAssistantDoctors']);
