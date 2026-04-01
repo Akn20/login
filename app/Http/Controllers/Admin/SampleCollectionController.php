@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SampleCollection;
+use Illuminate\Support\Str;
 
 class SampleCollectionController extends Controller
 {
@@ -27,7 +28,7 @@ class SampleCollectionController extends Controller
             'status' => 'Collected',
             'collection_time' => now(),
             'sample_id' => 'SMP-' . rand(1000,9999),
-            'barcode' => uniqid()
+            'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
         return back()->with('success', 'Sample Collected Successfully');
@@ -77,5 +78,66 @@ class SampleCollectionController extends Controller
         ]);
 
         return back()->with('error', 'Sample Rejected');
+    }
+
+    //API METHODS
+    // API GET all samples
+    public function apiIndex()
+    {
+        $samples = SampleCollection::with('labRequest.patient')
+                    ->latest()
+                    ->get();
+
+        return response()->json($samples);
+    }
+
+    // API GET pending samples
+    public function apiPending()
+    {
+        $samples = SampleCollection::with('labRequest.patient')
+                    ->where('status', 'Pending')
+                    ->get();
+
+        return response()->json($samples);
+    }
+
+    // API COLLECT sample
+    public function apiCollect($id)
+    {
+        $sample = SampleCollection::findOrFail($id);
+
+        $sample->update([
+            'status' => 'Collected',
+            'collection_time' => now(),
+            'sample_id' => 'SMP-' . rand(1000,9999),
+            'barcode' => 'LAB-' . strtoupper(Str::random(6))
+        ]);
+
+        return response()->json(['message' => 'Sample Collected']);
+    }
+
+    // API UPDATE status
+    public function apiUpdateStatus(Request $request, $id)
+    {
+        $sample = SampleCollection::findOrFail($id);
+
+        $sample->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json(['message' => 'Status Updated']);
+    }
+
+    // API REJECT sample
+    public function apiReject(Request $request, $id)
+    {
+        $sample = SampleCollection::findOrFail($id);
+
+        $sample->update([
+            'status' => 'Rejected',
+            'rejection_reason' => $request->reason
+        ]);
+
+        return response()->json(['message' => 'Sample Rejected']);
     }
 }

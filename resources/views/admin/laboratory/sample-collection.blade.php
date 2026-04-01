@@ -17,6 +17,7 @@
                         <th>Patient Name</th>
                         <th>Test Name</th>
                         <th>Sample ID</th>
+                        <th>BarCode</th>
                         <th>Collection Time</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -46,6 +47,14 @@
                         <!-- Sample ID -->
                         <td>{{ $sample->sample_id ?? '-' }}</td>
 
+                        <!-- BarCode -->
+                         <td>
+                            @if($sample->barcode)
+                                {!! app('Milon\Barcode\DNS1D')->getBarcodeHTML($sample->barcode, 'C128',1,40) !!}
+                                <br>
+                                <small>{{ $sample->barcode }}</small>
+                            @endif
+                        </td>
                         <!-- Time -->
                         <td>{{ $sample->collection_time ?? '-' }}</td>
 

@@ -64,7 +64,7 @@ use App\Http\Controllers\TokenController;
 
 // Lab Tests
 use App\Http\Controllers\Admin\LabTestController;
-
+use App\Http\Controllers\Admin\SampleCollectionController;
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -694,4 +694,18 @@ Route::prefix('laboratories')->group(function () {
 
     Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
 
+     // SAMPLE COLLECTION API
+    Route::prefix('samples')->group(function () {
+
+        Route::get('/', [SampleCollectionController::class, 'apiIndex']);
+        Route::get('/pending', [SampleCollectionController::class, 'apiPending']);
+
+        Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
+        Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
+        Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
+
+    });
 });
+
+
+
