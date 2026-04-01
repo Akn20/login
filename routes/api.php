@@ -695,7 +695,3 @@ Route::prefix('laboratories')->group(function () {
     Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
 
 });
-
-
-
-

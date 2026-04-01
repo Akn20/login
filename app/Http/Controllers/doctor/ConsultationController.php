@@ -30,7 +30,7 @@ class ConsultationController extends Controller
             ->whereDate('appointment_date', today())
             ->first();
 
-        
+
 
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
@@ -39,8 +39,8 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
-        $labTests = LabTest::where('status',1)->get();
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors','labTests'));
+        $labTests = LabTest::where('status', 1)->get();
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests'));
     }
 
 
@@ -74,7 +74,7 @@ class ConsultationController extends Controller
         $appointment->update([
             'appointment_status' => 'Completed'
         ]);
-       $tests = [];
+        $tests = [];
 
         if (!empty($request->tests)) {
             foreach ($request->tests as $testId) {
@@ -106,8 +106,8 @@ class ConsultationController extends Controller
 
         }
 
-       
-       // Lab Requests
+
+        // Lab Requests
         if (!empty($request->tests)) {
 
             foreach ($request->tests as $index => $testId) {
@@ -158,7 +158,7 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
-        $labTests = LabTest::where('status',1)->get();
+        $labTests = LabTest::where('status', 1)->get();
 
         return view(
             'doctor.opd.edit-consultation',
@@ -202,7 +202,7 @@ class ConsultationController extends Controller
         LabRequest::where('consultation_id', $consultation->id)->delete();
 
         // Labrequests
-       if (!empty($request->tests)) {
+        if (!empty($request->tests)) {
 
             foreach ($request->tests as $testId) {
 
@@ -254,7 +254,7 @@ class ConsultationController extends Controller
     ==========================*/
     public function summary($id)
     {
-        $consultation = Consultation::with(['patient', 'medicines','labRequests'])
+        $consultation = Consultation::with(['patient', 'medicines', 'labRequests'])
             ->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
@@ -443,7 +443,7 @@ class ConsultationController extends Controller
     ==========================*/
     public function apiSummary($id)
     {
-        $consultation = Consultation::with('patient')->find($id);
+        $consultation = Consultation::with('patient', 'medicines', 'labRequests')->find($id);
 
         if (!$consultation) {
             return response()->json([
@@ -522,6 +522,13 @@ class ConsultationController extends Controller
             'status' => true,
             'message' => 'Referral doctor fetched successfully',
             'data' => $consultation->referralDoctor
+        ]);
+    }
+    public function apiMedicines()
+    {
+        return response()->json([
+            'status' => true,
+            'data' => Medicine::where('status', 1)->get()
         ]);
     }
 

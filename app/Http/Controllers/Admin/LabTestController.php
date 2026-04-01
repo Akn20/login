@@ -7,6 +7,8 @@ use App\Models\LabTest;
 use Illuminate\Http\Request;
 use App\Models\LabRequest;
 use App\Models\Department;
+use Illuminate\Support\Str;
+
 class LabTestController extends Controller
 {
 
@@ -14,6 +16,8 @@ class LabTestController extends Controller
     {
         return view('admin.laboratory.tests.create');
     }
+
+    
 
     public function store(Request $request)
     {
@@ -73,7 +77,7 @@ class LabTestController extends Controller
     ===================================== */
     public function apiIndex()
     {
-        $tests = LabRequest::latest()->get();
+        $tests = LabTest::select('id', 'test_name')->get();
 
         return response()->json([
             'status' => true,
@@ -153,16 +157,42 @@ class LabTestController extends Controller
     /* =====================================
        API: LIST LAB REQUESTS
     ===================================== */
-    public function apiLabRequests()
-    {
-        $requests = LabRequest::with(['patient', 'consultation'])
-            ->latest()
-            ->get();
 
-        return response()->json([
-            'status' => true,
-            'data' => $requests
-        ]);
+
+    public function apiLabRequests(Request $request)
+    {
+        try {
+
+            $query = LabRequest::with(['patient', 'consultation']);
+
+            //  PRIORITY FILTER
+            if ($request->filled('priority')) {
+                $query->whereRaw('LOWER(priority) = ?', [strtolower($request->priority)]);
+            }
+
+            // DEPARTMENT FILTER (FIXED: follow same relation as web index)
+            if ($request->filled('department')) {
+                $query->whereHas('consultation.doctor', function ($q) use ($request) {
+                    $q->where('department_id', $request->department);
+                });
+            }
+
+            $requests = $query->latest()->get();
+
+            $departments = Department::all();
+
+            return response()->json([
+                'status' => true,
+                'data' => $requests,
+                'departments' => $departments
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => $e->getMessage()   // 👈 VERY IMPORTANT for debugging
+            ], 500);
+        }
     }
     public function apiStore(Request $request)
     {
@@ -177,7 +207,7 @@ class LabTestController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $test = LabRequest::create($request->all());
+        $test = LabTest::create($request->all());
 
         return response()->json([
             'status' => true,
