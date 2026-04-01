@@ -206,6 +206,7 @@ public function apiIndex(Request $request)
             return [
                 'employee' => $comp->employee->name ?? null,
                 'worked_on' => $comp->worked_on,
+                'applied_date' => $comp->applied_date,
                 'expiry_date' => $comp->expiry_date
             ];
         })
