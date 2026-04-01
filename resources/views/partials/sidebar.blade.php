@@ -37,6 +37,8 @@
                             up-target="#main-container"><i class="feather-calendar me-2"></i>Appointments</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.tokens.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-list me-2"></i>Token & Queue</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.emergency.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-activity me-2"></i>Emergency Cases</a></li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patients*') ? 'active nxl-trigger' : '' }}">
