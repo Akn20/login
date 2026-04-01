@@ -69,7 +69,7 @@ class LeaveReportController extends Controller
 
 
     //  API for leave report
-   public function apiIndex(Request $request)
+   /*public function apiIndex(Request $request)
 {
     $query = LeaveApplication::with([
         'staff.department',
@@ -135,7 +135,43 @@ class LeaveReportController extends Controller
             ];
         })
     ]);
+}*/
+public function apiIndex(Request $request)
+{
+    try {
+        $query = LeaveApplication::with([
+            'staff.department',
+            'leaveType',
+            'approvals.user'
+        ]);
+
+        $reports = $query->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $reports->map(function ($leave) {
+                return [
+                    'employee' => $leave->staff->name ?? null,
+                    'department' => $leave->staff->department->department_name ?? null,
+                    'leave_type' => $leave->leaveType->display_name ?? null,
+                    'from_date' => $leave->from_date,
+                    'to_date' => $leave->to_date,
+                    'status' => $leave->status,
+                    'approved_by' => optional($leave->approvals->last())->user->name ?? null,
+                    'days' => $leave->leave_days
+                ];
+            })
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([        // 👈 this will tell us exactly what's wrong
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => basename($e->getFile())
+        ], 500);
+    }
 }
+
     //  API for compoff report
  public function apiCompoff(Request $request)
 {
