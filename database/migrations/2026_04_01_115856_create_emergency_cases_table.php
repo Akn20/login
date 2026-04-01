@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emergency_cases', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->unsignedBigInteger('patient_id')->nullable();
+            $table->uuid('patient_id')->nullable();
             $table->string('patient_name')->nullable();
 
             $table->string('gender')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
 
             $table->string('status')->default('pending');
 
-            $table->unsignedBigInteger('created_by')->nullable();
+            $table->uuid('created_by')->nullable();
 
             $table->timestamps();
 
