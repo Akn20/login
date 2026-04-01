@@ -11,6 +11,7 @@ use App\Models\Staff;
 use App\Models\Roles;
 use App\Models\LabRequest;
 use App\Models\LabTest;
+use App\Models\SampleCollection;
 use Illuminate\Support\Str;
 
 class ConsultationController extends Controller
@@ -115,16 +116,24 @@ class ConsultationController extends Controller
 
                 if ($labTest) {
 
-                    LabRequest::create([
+                    $labRequest = LabRequest::create([
                         'id' => Str::uuid(),
                         'patient_id' => $request->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
                         'priority' => is_array($request->priority)
-    ? $request->priority[0]
-    : ($request->priority ?? 'routine'),
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
                         'status' => 'pending'
                     ]);
+
+                    SampleCollection::create([
+                        'id' => Str::uuid(),
+                        'lab_request_id' => $labRequest->id,
+                        'patient_id' => $request->patient_id,
+                        'status' => 'Pending'
+                    ]);
+                     
 
                 }
 
@@ -207,8 +216,8 @@ class ConsultationController extends Controller
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
                         'priority' => is_array($request->priority)
-    ? $request->priority[0]
-    : ($request->priority ?? 'routine'),
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
                         'status' => 'pending'
                     ]);
 

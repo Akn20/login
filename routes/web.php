@@ -64,6 +64,7 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\SampleCollectionController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -1084,10 +1085,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
 
+        Route::get('/sample-collection', [SampleCollectionController::class, 'index'])->name('sample-collection');
 
+        Route::post('/sample/collect/{id}', [SampleCollectionController::class, 'collect'])->name('sample.collect');
 
+        Route::post('/sample/process/{id}', [SampleCollectionController::class, 'startProcessing'])->name('sample.process');
+
+        Route::post('/sample/complete/{id}', [SampleCollectionController::class, 'complete'])->name('sample.complete');
+
+        Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
     });
+   
 });
 
 /*
@@ -1232,14 +1241,11 @@ Route::prefix('stock')->group(function () {
     Route::post('stock', [StockController::class, 'apiStore']);
 });
 
-//Laboratory routes
-Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
-    Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
 
-    Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
 
-    Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
 
-});
+   
+
+
 

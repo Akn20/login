@@ -177,6 +177,15 @@
                         </a>
                     </li>
                 </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.sample-collection') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            Sample Collection    
+                        </a>
+                    </li>       
+                </ul>
             </li>
 
             {{-- --- 5. HR MANAGEMENT --- --}}
