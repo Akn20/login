@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SampleCollection;
+use Illuminate\Support\Str;
 
 class SampleCollectionController extends Controller
 {
@@ -27,7 +28,7 @@ class SampleCollectionController extends Controller
             'status' => 'Collected',
             'collection_time' => now(),
             'sample_id' => 'SMP-' . rand(1000,9999),
-            'barcode' => uniqid()
+            'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
         return back()->with('success', 'Sample Collected Successfully');
@@ -109,7 +110,7 @@ class SampleCollectionController extends Controller
             'status' => 'Collected',
             'collection_time' => now(),
             'sample_id' => 'SMP-' . rand(1000,9999),
-            'barcode' => uniqid()
+            'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
         return response()->json(['message' => 'Sample Collected']);
@@ -127,7 +128,7 @@ class SampleCollectionController extends Controller
         return response()->json(['message' => 'Status Updated']);
     }
 
-    // APIREJECT sample
+    // API REJECT sample
     public function apiReject(Request $request, $id)
     {
         $sample = SampleCollection::findOrFail($id);

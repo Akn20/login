@@ -50,8 +50,12 @@
 
                         <!-- BarCode -->
                          <td>
-   
-</td>
+                            @if($sample->barcode)
+                                {!! app('Milon\Barcode\DNS1D')->getBarcodeHTML($sample->barcode, 'C128',1,40) !!}
+                                <br>
+                                <small>{{ $sample->barcode }}</small>
+                            @endif
+                        </td>
                         <!-- Time -->
                         <td>{{ $sample->collection_time ?? '-' }}</td>
 
