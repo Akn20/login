@@ -36,20 +36,18 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 // Leave Management
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
-use App\Http\Controllers\WorkStatusController;
-
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
-// Attendance
 use App\Http\Controllers\InstitutionController;
-// Root-level Controllers (alphabetical)
+// Attendance
 use App\Http\Controllers\JobTypeController;
+// Root-level Controllers (alphabetical)
 use App\Http\Controllers\LeaveManagement\CompOffController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
@@ -65,6 +63,7 @@ use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -803,5 +802,6 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::put('/{id}', [PayrollDeductionController::class, 'apiUpdate']);
     Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
     Route::post('/{id}/restore', [PayrollDeductionController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'apiForceDelete']);
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
 });
