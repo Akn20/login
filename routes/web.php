@@ -6,6 +6,10 @@ use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 | Controller Imports
 |--------------------------------------------------------------------------
 */
+
+/**
+ * Admin Controllers
+ */
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
@@ -24,31 +28,52 @@ use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
-use App\http\Controllers\attendance\AttendanceController;
+/**
+ * HR Controllers
+ */
+use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
+/**
+ * Doctor Controllers
+ */
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
+/**
+ * Leave Management Controllers
+ */
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
+/**
+ * Attendance / Appointment Controllers
+ */
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
+/**
+ * Auth Controllers
+ */
 use App\Http\Controllers\LeaveManagement\HolidayController;
+/**
+ * Master / Configuration Controllers
+ */
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
 use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
@@ -57,17 +82,13 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
+/**
+ * Clinical / Nursing / Operations Controllers
+ */
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
-// nurse
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-
-// use App\Http\Controllers\ExpiryController;
-// use App\Http\Controllers\ControlledDrugController;
-// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -1192,26 +1213,62 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     });
 
     // Employee Document Management (EDM)
-Route::prefix('edm')->name('edm.')->group(function () {
+    Route::prefix('edm')->name('edm.')->group(function () {
 
-    Route::get('/', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'index'])
-        ->name('index');
+        Route::get('/', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'index'])
+            ->name('index');
 
-    Route::get('/create', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'create'])
-        ->name('create');
+        Route::get('/create', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'create'])
+            ->name('create');
 
-    Route::post('/store', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'store'])
-        ->name('store');
+        Route::post('/store', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'store'])
+            ->name('store');
 
-    Route::get('/download/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'download'])
-        ->name('download');
+        Route::get('/download/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'download'])
+            ->name('download');
 
-    Route::delete('/delete/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'destroy'])
-        ->name('delete');
+        Route::delete('/delete/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'destroy'])
+            ->name('delete');
 
         Route::get('/edit/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'edit'])->name('edit');
-    Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
-});
+        Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
+    });
+    // Leave report
+    Route::prefix('leave-report')->name('leave-report.')->group(function () {
+        Route::get('/', [LeaveReportController::class, 'index'])->name('index');
+    });
+
+    // Payroll - Allowance
+
+    Route::prefix('payroll/allowance')
+        ->name('payroll.allowance.')
+        ->group(function () {
+
+            Route::get('/', [PayrollAllowanceController::class, 'index'])->name('index');
+            Route::get('/create', [PayrollAllowanceController::class, 'create'])->name('create');
+            Route::post('/', [PayrollAllowanceController::class, 'store'])->name('store');
+            Route::get('/deleted/list', [PayrollAllowanceController::class, 'deleted'])->name('deleted');
+            Route::post('/restore/{id}', [PayrollAllowanceController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [PayrollAllowanceController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/{id}/edit', [PayrollAllowanceController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [PayrollAllowanceController::class, 'update'])->name('update');
+            Route::delete('/{id}', [PayrollAllowanceController::class, 'destroy'])->name('destroy');
+        });
+
+    // Payroll - Deduction
+    Route::prefix('payroll/deduction')->name('payroll.deduction.')->group(function () {
+        Route::get('/', [PayrollDeductionController::class, 'index'])->name('index');
+        Route::get('/create', [PayrollDeductionController::class, 'create'])->name('create');
+        Route::post('/store', [PayrollDeductionController::class, 'store'])->name('store');
+        Route::get('/deleted', [PayrollDeductionController::class, 'deleted'])->name('deleted');
+        Route::get('/{id}/show', [PayrollDeductionController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PayrollDeductionController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [PayrollDeductionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PayrollDeductionController::class, 'destroy'])->name('delete');
+        Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
+    });
+
 });
 
 /*
