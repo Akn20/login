@@ -98,6 +98,7 @@ class ConsultationController extends Controller
         ]);
         foreach ($request->medicine as $index => $medicineId) {
             $consultation->medicines()->attach($medicineId, [
+                'id' =>(string) Str::uuid(),
                 'dosage' => $request->dosage[$index],
                 'frequency' => $request->frequency[$index],
                 'duration' => $request->duration[$index],
@@ -233,6 +234,7 @@ class ConsultationController extends Controller
             if ($medicine) {
 
                 $consultation->medicines()->attach($medicine, [
+                    'id' =>(string) Str::uuid(),
                     'dosage' => $request->dosage[$index],
                     'frequency' => $request->frequency[$index],
                     'duration' => $request->duration[$index],
