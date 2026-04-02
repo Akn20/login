@@ -73,6 +73,7 @@ use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 //Nurse
 use App\Http\Controllers\NurseNotesController;
 
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -752,4 +753,21 @@ Route::prefix('vitals')->group(function () {
     Route::delete('/{id}', [PatientMonitoringController::class, 'apiDestroy']);
     Route::put('/{id}/restore', [PatientMonitoringController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
+});
+
+
+
+//Pharmacy Billing Module
+Route::prefix('pharmacy')->group(function () {
+
+    Route::get('billing', [PharmacyBillingController::class, 'apiIndex']);
+
+    Route::post('billing/store', [PharmacyBillingController::class, 'apiStore']);
+
+    Route::get('billing/view/{id}', [PharmacyBillingController::class, 'apiView']);
+
+    Route::post('billing/update/{id}', [PharmacyBillingController::class, 'apiUpdate']);
+
+    Route::get('billing/print/{id}', [PharmacyBillingController::class, 'apiPrint']);
+
 });

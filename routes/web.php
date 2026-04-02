@@ -63,7 +63,11 @@ use App\Http\Controllers\PharmacyDashboardController;
 //nurse
 use App\Http\Controllers\WorkStatusController;
 
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 //nurse
 // use App\Http\Controllers\NurseNotesController;
 // use Illuminate\Support\Facades\Route;
@@ -1410,5 +1414,41 @@ Route::prefix('admin/medication')->name('admin.medication.')->group(function () 
     Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
 
     Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
+
+});
+
+
+/* ----------------------------------
+        Pharmacy Billing 
+        -----------------------------------*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('pharmacy')->name('pharmacy.')->group(function () {
+
+        Route::get('billing', [PharmacyBillingController::class, 'index'])
+            ->name('billing.index');
+
+        Route::get('billing/create', [PharmacyBillingController::class, 'create'])
+            ->name('billing.create');
+
+        Route::post('billing/store', [PharmacyBillingController::class, 'store'])
+            ->name('billing.store');
+
+        Route::get('billing/view/{id}', [PharmacyBillingController::class, 'view'])
+            ->name('billing.view');
+
+        Route::get('/billing/{bill_id}/edit', [PharmacyBillingController::class, 'edit'])
+            ->name('billing.edit');
+
+        Route::put('/billing/{bill_id}', [PharmacyBillingController::class, 'update'])
+            ->name('billing.update');
+
+        Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
+            ->name('billing.print');
+
+
+
+    });
 
 });

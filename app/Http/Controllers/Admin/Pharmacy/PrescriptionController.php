@@ -538,10 +538,25 @@ public function storeDispense(Request $request,$id)
 
 $bill_id = \Illuminate\Support\Str::uuid();
 
+// 🔥 ADD HERE (before insert)
+    $patientName = null;
+
+    // ONLINE
+    if ($request->patient_id) {
+        $patient = \App\Models\Patient::find($request->patient_id);
+        $patientName = $patient->name ?? null;
+    }
+    // OFFLINE
+    else {
+        $offline = \App\Models\OfflinePrescription::where('id', $id)->first();
+        $patientName = $offline->patient_name ?? null;
+    }
+
 DB::table('sales_bills')->insert([
     'bill_id' => $bill_id,
     'bill_number' => 'BILL'.time(),
     'patient_id' => $request->patient_id ?? null,
+    'patient_name' => $patientName, // ✅ ADD THIS
     'prescription_id' => $id,
     'total_amount' => 0,
     'created_at' => now(),
@@ -573,6 +588,18 @@ if($request->has('medicine_id')){
             ->where('id',$batch_id)
             ->decrement('quantity',$qty);
     }
+    // ✅ CALCULATE TOTAL
+$total = DB::table('sales_bill_items')
+    ->where('sales_bill_id', $bill_id)
+    ->sum('total_price');
+ 
+// ✅ UPDATE BILL
+DB::table('sales_bills')
+    ->where('bill_id', $bill_id)
+    ->update([
+        'total_amount' => $total,
+        'balance_amount' => $total
+    ]);
 
 }
 
