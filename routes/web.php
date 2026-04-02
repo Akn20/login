@@ -1282,7 +1282,67 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
 
-});
+// Payroll - Hourly Pay Approval
+
+Route::prefix('payroll/hourly-pay-approval')
+    ->name('payroll.hourly-pay-approval.')
+    ->group(function () {
+
+        // INDEX
+        Route::get('/', function () {
+
+            $entries = new \Illuminate\Pagination\LengthAwarePaginator(
+                [], // items
+                0,  // total
+                10  // per page
+            );
+
+            return view(
+                'hr.payroll.hourly_pay_approval.index',
+                compact('entries')
+            );
+
+        })->name('index');
+
+
+        // CREATE
+        Route::get('/create', function () {
+            return view('hr.payroll.hourly_pay_approval.create');
+        })->name('create');
+
+
+        // STORE  ✅ (Fix for your current error)
+        Route::post('/store', function () {
+            return redirect()
+                ->route('hr.payroll.hourly-pay-approval.index')
+                ->with('success', 'Saved successfully');
+        })->name('store');
+
+
+        // EDIT
+        Route::get('/edit/{id}', function ($id) {
+
+            $entry = null;
+
+            return view(
+                'hr.payroll.hourly_pay_approval.edit',
+                compact('entry')
+            );
+
+        })->name('edit');
+
+
+        // UPDATE
+        Route::put('/update/{id}', function ($id) {
+            return redirect()
+                ->route('hr.payroll.hourly-pay-approval.index')
+                ->with('success', 'Updated successfully');
+        })->name('update');
+
+    });
+
+
+            });
 
 /*
 |--------------------------------------------------------------------------
