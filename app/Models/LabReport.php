@@ -5,20 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class SampleCollection extends Model
+class LabReport extends Model
 {
-        protected $keyType = 'string';
+    // UUID settings
+    protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
         'id',
-        'lab_request_id',
-        'patient_id',
         'sample_id',
-        'barcode',
-        'collection_time',
+        'result_data',
         'status',
-        'rejection_reason'
+        'entered_at'
+    ];
+
+    // JSON casting
+    protected $casts = [
+        'result_data' => 'array'
     ];
 
     // Auto-generate UUID
@@ -33,14 +36,9 @@ class SampleCollection extends Model
         });
     }
 
-    public function labRequest()
+    // 🔗 Relationship
+    public function sample()
     {
-        return $this->belongsTo(LabRequest::class, 'lab_request_id');
+        return $this->belongsTo(SampleCollection::class, 'sample_id');
     }
-
-    public function labReport()
-    {
-        return $this->hasOne(LabReport::class, 'sample_id');
-    }
-
 }

@@ -21,11 +21,13 @@ use App\Http\Controllers\Admin\Inventory\ReportController;
 // Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Admin\LabTestController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// Admin > Laboratory
+use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\ResultEntryController;
 // Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -1105,6 +1107,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+         // ✅ RESULT ENTRY ROUTES
+        Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
+
+        Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
+
+        Route::post('/result/submit/{id}', [ResultEntryController::class, 'submit'])->name('result.submit');
     });
 
 });

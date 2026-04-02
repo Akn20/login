@@ -239,10 +239,20 @@
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.sample-collection') }}" class="nxl-link" up-follow
                             up-target="#main-container">
-                            <i class="feather-list me-2"></i>
+                            <i class="feather-droplet"></i>
                             Sample Collection    
                         </a>
                     </li>       
+                </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.result-entry') }}" class="nxl-link">
+                            <span class="nxl-micon">
+                                <i class="feather-edit"></i>
+                            </span>
+                            <span class="nxl-mtext">Result Entry</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 
