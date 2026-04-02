@@ -129,6 +129,28 @@
             position: relative;
             z-index: 2;
         }
+
+       .custom-modal {
+    display: none;
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* NO BLUR */
+    z-index: 9999;
+}
+
+.custom-modal-content {
+    background: #fff;
+    padding: 20px;
+    width: 500px;
+    height: auto;
+    margin: 10% auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
     </style>
 </head>
 
@@ -242,6 +264,16 @@
             });
         });
     </script>
+
+    <script>
+function openModal(id) {
+    document.getElementById('rejectModal' + id).style.display = 'block';
+}
+
+function closeModal(id) {
+    document.getElementById('rejectModal' + id).style.display = 'none';
+}
+</script>
 </body>
 
 </html>

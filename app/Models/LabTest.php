@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LabTest extends Model
 {
-   protected $table = 'lab_tests';
+    protected $table = 'lab_tests';
 
     protected $fillable = [
         'test_name',

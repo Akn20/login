@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -9,55 +8,60 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth
-use App\Http\Controllers\Auth\SignInController;
-
-// Admin
-use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 use App\Http\Controllers\Admin\DashboardController;
+// Admin
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
-use App\Http\Controllers\Admin\PatientController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
-
-// Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
+// Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
-
-// Admin > Nurse
+use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
-
-// Admin > Pharmacy
+use App\Http\Controllers\Admin\PatientController;
+// Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+// Admin > Pharmacy
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SampleCollectionController;
 // Attendance
-use App\Http\Controllers\Attendance\AttendanceController;
-
+use App\Http\Controllers\Admin\UserController;
 // Doctor
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Attendance\AttendanceController;
+use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\ControlledDrugController;
+// HR
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
-use App\Http\Controllers\Doctor\ViewAppointmentController;
-use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
+// Leave Management
 use App\Http\Controllers\doctor\surgery\SurgeryController;
-
-// HR
+use App\Http\Controllers\Doctor\ViewAppointmentController;
+use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
+// Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
-
-// Leave Management
+use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
@@ -67,18 +71,6 @@ use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
-
-// Root-level Controllers (alphabetical)
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\BloodGroupController;
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\EmergencyCaseController;
-use App\Http\Controllers\ExpiryController;
-use App\Http\Controllers\InstitutionController;
-use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
@@ -89,6 +81,19 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+use Illuminate\Support\Facades\Route;
+
+// use App\Http\Controllers\ExpiryController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+// use App\Http\Controllers\ExpiryController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -1075,6 +1080,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::delete('/delete/{id}', [AppointmentController::class, 'delete'])->name('delete');
         Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
         Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
@@ -1092,6 +1098,28 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])->name('bill');
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
+
+    // Laboratory Management
+    Route::prefix('laboratory')->name('laboratory.')->group(function () {
+
+        Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
+
+        Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
+
+        Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
+
+        Route::get('/sample-collection', [SampleCollectionController::class, 'index'])->name('sample-collection');
+
+        Route::post('/sample/collect/{id}', [SampleCollectionController::class, 'collect'])->name('sample.collect');
+
+        Route::post('/sample/process/{id}', [SampleCollectionController::class, 'startProcessing'])->name('sample.process');
+
+        Route::post('/sample/complete/{id}', [SampleCollectionController::class, 'complete'])->name('sample.complete');
+
+        Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
+
+    });
+
 });
 
 /*
@@ -1293,9 +1321,7 @@ Route::prefix('stock')->group(function () {
     Route::get('stock/low', [StockController::class, 'apiLowStock']);
     Route::post('stock', [StockController::class, 'apiStore']);
     Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
-
     Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
-
     Route::get('stock-trash', [StockController::class, 'apiTrash']);
     Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
     Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
@@ -1479,5 +1505,22 @@ Route::prefix('admin/medication')->name('admin.medication.')->group(function () 
     Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
 
     Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
+
+});
+
+Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
+
+    Route::get('/', [InfectionControlController::class, 'index'])->name('index');
+    Route::get('/create', [InfectionControlController::class, 'create'])->name('create');
+    Route::post('/store', [InfectionControlController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [InfectionControlController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [InfectionControlController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [InfectionControlController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
 
 });
