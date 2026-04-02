@@ -16,6 +16,7 @@ class SalesBill extends Model
     'bill_id',
     'bill_number',
     'patient_id',
+    'patient_name',
     'prescription_id',
     'total_amount',
     'paid_amount',
