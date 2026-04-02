@@ -65,6 +65,8 @@ use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+use App\Http\Controllers\Admin\Nurse\InfectionControlController;
+
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 #use App\Http\Controllers\ControlledDrugController;
@@ -391,13 +393,13 @@ Route::middleware(['auth', 'role:admin'])
             ->name('hospitals.toggleStatus');
 
         Route::resource('hospitals', HospitalController::class)->except(['show']);
-        
+
         /*
         |--------------------------------------------------------------------------
         | Pharmacy: Dashboard
         |--------------------------------------------------------------------------
         */
-        
+
         Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'index'])->name('pharmacy.dashboard');
 
         /*
@@ -1409,5 +1411,22 @@ Route::prefix('admin/medication')->name('admin.medication.')->group(function () 
     Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
 
     Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
+
+});
+
+Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
+
+    Route::get('/', [InfectionControlController::class, 'index'])->name('index');
+    Route::get('/create', [InfectionControlController::class, 'create'])->name('create');
+    Route::post('/store', [InfectionControlController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [InfectionControlController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [InfectionControlController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [InfectionControlController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
 
 });

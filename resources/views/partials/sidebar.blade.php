@@ -119,7 +119,7 @@
                 </a>
                 <ul class="nxl-submenu">
                     <li class="nxl-item"><a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="fas fa-chart-line"></i>  Dashboard</a></li>
+                            up-target="#main-container"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-truck me-2"></i>Vendors</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow
@@ -138,14 +138,14 @@
             </li>
 
             {{-- ================= Nurse Module ================= --}}
-                <li class="nxl-item nxl-hasmenu">
-                    <a href="javascript:void(0);" class="nxl-link">
-                        <span class="nxl-micon"><i class="feather-heart"></i></span>
-                        <span class="nxl-mtext">Nurse</span>
-                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                    </a>
+            <li class="nxl-item nxl-hasmenu">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-heart"></i></span>
+                    <span class="nxl-mtext">Nurse</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
 
-                    <ul class="nxl-submenu">
+                <ul class="nxl-submenu">
                     <li class="nxl-item">
                         <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
                             <span class="nxl-micon">
@@ -156,28 +156,39 @@
                     </li>
                 </ul>
 
-                    <ul class="nxl-submenu">
+                <ul class="nxl-submenu">
 
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-activity"></i></span>
-                                <span class="nxl-mtext">Patient Monitoring</span>
-                            </a>
-                        </li>
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-activity"></i></span>
+                            <span class="nxl-mtext">Patient Monitoring</span>
+                        </a>
+                    </li>
 
-                    </ul>
+                </ul>
 
-                    <ul class="nxl-submenu">
+                <ul class="nxl-submenu">
 
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.medication.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="feather-activity"></i></span>
-                                <span class="nxl-mtext">Medication Administration</span>
-                            </a>
-                        </li>
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.medication.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-activity"></i></span>
+                            <span class="nxl-mtext">Medication Administration</span>
+                        </a>
+                    </li>
 
-                    </ul>
-                </li>   
+                </ul>
+
+                <ul class="nxl-submenu">
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.infection.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-activity"></i></span>
+                            <span class="nxl-mtext">Infection Logs</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-package"></i></span>
