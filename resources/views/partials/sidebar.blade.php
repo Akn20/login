@@ -104,7 +104,7 @@
                 </ul>
             </li>
 
-            {{-- --- 4. CLINICAL MANAGEMENT (PHARMACY/INVENTORY) --- --}}
+            {{-- --- 4. CLINICAL MANAGEMENT (PHARMACY/INVENTORY/Laboratory) --- --}}
             <li class="nxl-item nxl-caption"><label>Clinical Management</label></li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('admin/pharmacy*', 'admin/vendors*', 'admin/stock*', 'admin/expiry*', 'admin/controlledDrug*', 'admin/prescriptions*', 'admin/salesReturn*') ? 'active nxl-trigger' : '' }}">
@@ -149,6 +149,42 @@
                             up-target="#main-container"><i class="feather-file-text me-2"></i>GRN List</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.inventory.reports') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-pie-chart me-2"></i>Inv. Reports</a></li>
+                </ul>
+            </li>
+
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-flask"></i></span>
+                    <span class="nxl-mtext">Laboratory</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Lab Test
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            View Lab Requests   
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.sample-collection') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            Sample Collection    
+                        </a>
+                    </li>       
                 </ul>
             </li>
 
@@ -265,6 +301,9 @@
                             up-target="#main-container"><i class="feather-briefcase me-2"></i>Organizations</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.institutions.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-aperture me-2"></i>Institutions</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.users.biometrics') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-aperture me-2"></i>Biometrics</a>
+                    </li>
                 </ul>
             </li>
             <li

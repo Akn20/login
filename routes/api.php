@@ -51,7 +51,7 @@ use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
 //added by sushan for api
 use App\Http\Controllers\Admin\PatientController;
 //added by sushan for api
-    Route::get('/patients', [PatientController::class, 'apiIndex']);
+Route::get('/patients', [PatientController::class, 'apiIndex']);
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 //DOCTOR(OPD)
 use App\Http\Controllers\Doctor\ConsultationController;
@@ -62,6 +62,9 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
+// Lab Tests
+use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\SampleCollectionController;
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -305,21 +308,21 @@ Route::prefix('masters')->group(function () {
     Route::delete('/leave-mappings/{id}/force-delete', [LeaveMappingController::class, 'apiForceDelete']);
 
 });
- /*
+/*
 |--------------------------------------------------------------------------
 | Leave Adjustments API
 |--------------------------------------------------------------------------
 */
 Route::prefix('leave-management')->group(function () {
-    
+
     // Main Adjustment Routes
     Route::get('/adjustments', [LeaveAdjustmentController::class, 'apiIndex']);
     Route::post('/adjustments', [LeaveAdjustmentController::class, 'apiStore']);
     Route::get('/adjustments/{id}', [LeaveAdjustmentController::class, 'apiShow']);
-    
+
     // The "Smart-Link" endpoint used by the UI to fetch balances when staff is selected
     Route::get('/adjustments/mapping/{staff_id}', [LeaveAdjustmentController::class, 'getLeaveMapping']);
-    
+
 });
 
 /*
@@ -536,7 +539,7 @@ Route::prefix('surgery')->group(function () {
     // Additional endpoints
     Route::get('/patient/{patientId}', [SurgeryApiController::class, 'getByPatient']); // Get surgeries by patient
     Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
-    
+
     // Get surgeries by date
 });
 
@@ -627,41 +630,41 @@ Route::prefix('appointments')->group(function () {
 
 Route::prefix('hr')->group(function () {
 
-Route::get('/shifts',[ShiftSchedulingAPIController::class,'shiftIndex']);
-Route::post('shifts',[ShiftSchedulingAPIController::class,'shiftStore']);
-Route::get('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftShow']);
-Route::put('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftUpdate']);
-Route::delete('shifts/{id}',[ShiftSchedulingAPIController::class,'shiftDelete']);
+    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftIndex']);
+    Route::post('shifts', [ShiftSchedulingAPIController::class, 'shiftStore']);
+    Route::get('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftShow']);
+    Route::put('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftUpdate']);
+    Route::delete('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftDelete']);
 
-Route::post('shift-toggle/{id}',[ShiftSchedulingAPIController::class,'toggleShiftStatus']);
+    Route::post('shift-toggle/{id}', [ShiftSchedulingAPIController::class, 'toggleShiftStatus']);
 
-Route::get('assignments',[ShiftSchedulingAPIController::class,'assignmentIndex']);
-Route::post('assignments',[ShiftSchedulingAPIController::class,'assignmentStore']);
+    Route::get('assignments', [ShiftSchedulingAPIController::class, 'assignmentIndex']);
+    Route::post('assignments', [ShiftSchedulingAPIController::class, 'assignmentStore']);
 
-Route::get('rotations',[ShiftSchedulingAPIController::class,'rotationIndex']);
-Route::post('rotations',[ShiftSchedulingAPIController::class,'rotationStore']);
+    Route::get('rotations', [ShiftSchedulingAPIController::class, 'rotationIndex']);
+    Route::post('rotations', [ShiftSchedulingAPIController::class, 'rotationStore']);
 
-Route::get('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffIndex']);
-Route::post('weekly-offs',[ShiftSchedulingAPIController::class,'weeklyOffStore']);
+    Route::get('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffIndex']);
+    Route::post('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffStore']);
 
-Route::get('conflicts',[ShiftSchedulingAPIController::class,'conflictIndex']);
+    Route::get('conflicts', [ShiftSchedulingAPIController::class, 'conflictIndex']);
 
 });
-Route::prefix('attendance')->group(function(){
+Route::prefix('attendance')->group(function () {
 
-    Route::get('/', [AttendanceApiController::class,'index']);
+    Route::get('/', [AttendanceApiController::class, 'index']);
 
-    Route::post('/', [AttendanceApiController::class,'store']);
+    Route::post('/', [AttendanceApiController::class, 'store']);
 
-    Route::get('/{id}', [AttendanceApiController::class,'show']);
+    Route::get('/{id}', [AttendanceApiController::class, 'show']);
 
-    Route::put('/{id}', [AttendanceApiController::class,'update']);
+    Route::put('/{id}', [AttendanceApiController::class, 'update']);
 
-    Route::delete('/{id}', [AttendanceApiController::class,'destroy']);
+    Route::delete('/{id}', [AttendanceApiController::class, 'destroy']);
 
-    Route::get('/late/list', [AttendanceApiController::class,'lateEntries']);
+    Route::get('/late/list', [AttendanceApiController::class, 'lateEntries']);
 
-    Route::get('/overtime/list', [AttendanceApiController::class,'overtime']);
+    Route::get('/overtime/list', [AttendanceApiController::class, 'overtime']);
 
 });
 Route::prefix('tokens')->group(function () {
@@ -670,8 +673,42 @@ Route::prefix('tokens')->group(function () {
     Route::get('/{id}', [TokenController::class, 'apiShow']);
     Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
     Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
-    
+
     Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-    
+
 });
+
+
 Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+
+// Laboratory API
+Route::prefix('laboratories')->group(function () {
+
+    Route::get('/', [LabTestController::class, 'apiIndex']);
+
+    Route::get('/requests', [LabTestController::class, 'apiLabRequests']);
+
+   
+
+    Route::post('/', [LabTestController::class, 'apiStore']);
+
+    Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
+
+     // SAMPLE COLLECTION API
+    Route::prefix('samples')->group(function () {
+
+        Route::get('/', [SampleCollectionController::class, 'apiIndex']);
+        Route::get('/pending', [SampleCollectionController::class, 'apiPending']);
+
+        Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
+        Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
+        Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
+
+    });
+     Route::get('/{id}', [LabTestController::class, 'apiShow']);
+});
+
+
+

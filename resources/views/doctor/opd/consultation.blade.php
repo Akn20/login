@@ -210,7 +210,7 @@
 
                         <label><strong>Test Priority</strong></label>
 
-                        <select name="priority[]" class="form-control">
+                        <select name="priority" class="form-control">
                             <option value="">Select Priority</option>
                             <option value="routine">Routine</option>
                             <option value="urgent">Urgent</option>

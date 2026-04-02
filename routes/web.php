@@ -63,7 +63,8 @@ use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\attendance\AttendanceController;
-
+use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\SampleCollectionController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -1050,6 +1051,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::delete('/delete/{id}', [AppointmentController::class, 'delete'])->name('delete');
         Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
         Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
+        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [AppointmentController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
+
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
@@ -1069,6 +1075,28 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])->name('bill');
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
+
+    // Laboratory Management
+    Route::prefix('laboratory')->name('laboratory.')->group(function () {
+
+        Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
+
+        Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
+
+        Route::post('/tests/store', [LabTestController::class, 'store'])->name('tests.store');
+
+        Route::get('/sample-collection', [SampleCollectionController::class, 'index'])->name('sample-collection');
+
+        Route::post('/sample/collect/{id}', [SampleCollectionController::class, 'collect'])->name('sample.collect');
+
+        Route::post('/sample/process/{id}', [SampleCollectionController::class, 'startProcessing'])->name('sample.process');
+
+        Route::post('/sample/complete/{id}', [SampleCollectionController::class, 'complete'])->name('sample.complete');
+
+        Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
+
+    });
+   
 });
 
 /*
@@ -1114,6 +1142,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [WeekendController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [WeekendController::class, 'forceDelete'])->name('forceDelete');
         Route::patch('/{id}/toggle-status', [WeekendController::class, 'toggleStatus'])->name('toggleStatus');
+        Route::get('/staff-by-roles', [WeekendController::class, 'getStaffByRoles'])->name('staff-by-roles');
         Route::get('/', [WeekendController::class, 'index'])->name('index');
         Route::get('/create', [WeekendController::class, 'create'])->name('create');
         Route::post('/', [WeekendController::class, 'store'])->name('store');
@@ -1130,7 +1159,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::delete('/{id}/force-delete', [HolidayController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/', [HolidayController::class, 'index'])->name('index');
         Route::get('/create', [HolidayController::class, 'create'])->name('create');
-        Route::get('/show', [HolidayController::class, 'show'])->name('show');
+        Route::get('/show/{id}', [HolidayController::class, 'show'])->name('show');
         Route::post('/', [HolidayController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [HolidayController::class, 'edit'])->name('edit');
         Route::put('/{id}', [HolidayController::class, 'update'])->name('update');
@@ -1195,6 +1224,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     Route::prefix('leave-approvals')->name('leave-approvals.')->group(function () {
         Route::get('/', [LeaveApprovalController::class, 'index'])->name('index');
+        Route::get('/{id}/show', [LeaveApprovalController::class, 'show'])->name('show');
         Route::get('/approved', [LeaveApprovalController::class, 'approvedIndex'])->name('approved');
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
@@ -1212,3 +1242,12 @@ Route::prefix('stock')->group(function () {
     Route::get('stock/low', [StockController::class, 'apiLowStock']);
     Route::post('stock', [StockController::class, 'apiStore']);
 });
+
+
+
+
+
+   
+
+
+
