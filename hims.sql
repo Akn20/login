@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+USE `hims`;
+=======
 USE `hims_app`;
+>>>>>>> 1e6922fdc9b7b1327d96ce86894d9710b52a16ff
 
 -- Helpful: disable FK checks while seeding
 SET

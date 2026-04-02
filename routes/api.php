@@ -71,6 +71,8 @@ use App\Http\Controllers\TokenController;
 //Nurse
 use App\Http\Controllers\NurseNotesController;
 
+use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
+
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -710,6 +712,16 @@ Route::prefix('appointments')->group(function () {
     Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
+Route::prefix('edm')->group(function () {
 
+    Route::get('/', [EmployeeDocumentApiController::class, 'index']);
+    Route::post('/', [EmployeeDocumentApiController::class, 'store']);
+    Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
+    Route::post('/update/{id}', [EmployeeDocumentApiController::class, 'update']);
+    Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+
+    Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
+    Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
+});
     
 

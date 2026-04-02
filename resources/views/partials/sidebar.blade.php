@@ -185,6 +185,12 @@
                     <span class="nxl-mtext">Staff Directory</span>
                 </a>
             </li>
+            <li class="nxl-item {{ request()->is('hr/edm*') ? 'active' : '' }}">
+                <a href="{{ route('hr.edm.index') }}" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-folder"></i></span>
+                    <span class="nxl-mtext">Employee Documents</span>
+                </a>
+            </li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">

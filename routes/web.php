@@ -1190,6 +1190,28 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
     });
+
+    // Employee Document Management (EDM)
+Route::prefix('edm')->name('edm.')->group(function () {
+
+    Route::get('/', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'create'])
+        ->name('create');
+
+    Route::post('/store', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'store'])
+        ->name('store');
+
+    Route::get('/download/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'download'])
+        ->name('download');
+
+    Route::delete('/delete/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'destroy'])
+        ->name('delete');
+
+        Route::get('/edit/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
+});
 });
 
 /*
