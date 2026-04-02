@@ -86,8 +86,8 @@
 
 <td>{{ $application->balance_after }}</td>
 
-<td>{{ \Carbon\Carbon::parse($application->from_date)->format('d/m/Y') }}</td>
-
+<!-- <td>{{ \Carbon\Carbon::parse($application->from_date)->format('d/m/Y') }}</td> -->
+<td>{{ \Carbon\Carbon::parse($application->created_at)->format('d/m/Y') }}</td>
 <td>
 @if($application->status == 'pending')
 <span class="badge bg-warning">Pending</span>

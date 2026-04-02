@@ -70,7 +70,7 @@
     <th>From Date</th>
     <th>To Date</th>
     <th>Status</th>
-    <th>Approved By</th>
+    <th>Approved / Rejected By</th>
     <th>Days</th>
 </tr>
 </thead>
@@ -142,7 +142,7 @@
 <tr>
     <th>Employee</th>
     <th>Date of Work on Holiday</th>
-    <th>Expiry date</th>
+    <th>comp off applied  date</th>
 </tr>
 </thead>
 
@@ -153,7 +153,11 @@
 <tr>
     <td>{{ $comp->employee->name ?? '-' }}</td>
    <td>{{ \Carbon\Carbon::parse($comp->worked_on)->format('d-m-Y') }}</td>
-<td>{{ $comp->expiry_date ? \Carbon\Carbon::parse($comp->expiry_date)->format('d-m-Y') : '-' }}</td>
+   <td>
+    {{ $comp->applied_date 
+        ? \Carbon\Carbon::parse($comp->applied_date)->format('d-m-Y') 
+        : '-' }}
+</td>
 </tr>
 
 @empty
