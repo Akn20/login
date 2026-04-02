@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Department;
+use App\Models\Designation;
+use Illuminate\Http\Request;
 
 class AttendanceRecord extends Model
 {
@@ -29,5 +32,20 @@ class AttendanceRecord extends Model
     {
         return $this->belongsTo(Shift::class);
     }
+    //added by sushan for api
+    public function department()
+{
+    return $this->belongsTo(
+        Department::class,
+        'department_id'
+    );
+}
+public function designation()
+{
+    return $this->belongsTo(
+        Designation::class,
+        'designation_id'
+    );
+}
 
 }
