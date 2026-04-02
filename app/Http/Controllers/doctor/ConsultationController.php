@@ -28,7 +28,7 @@ class ConsultationController extends Controller
             ->whereDate('appointment_date', today())
             ->first();
 
-        
+
 
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
@@ -37,8 +37,8 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
-        $labTests = LabTest::where('status',1)->get();
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors','labTests'));
+        $labTests = LabTest::where('status', 1)->get();
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests'));
     }
 
 
@@ -72,7 +72,7 @@ class ConsultationController extends Controller
         $appointment->update([
             'appointment_status' => 'Completed'
         ]);
-       $tests = [];
+        $tests = [];
 
         if (!empty($request->tests)) {
             foreach ($request->tests as $testId) {
@@ -104,8 +104,8 @@ class ConsultationController extends Controller
 
         }
 
-       
-       // Lab Requests
+
+        // Lab Requests
         if (!empty($request->tests)) {
 
             foreach ($request->tests as $index => $testId) {
@@ -142,13 +142,17 @@ class ConsultationController extends Controller
 
         $medicines = Medicine::all();
 
+        $labTests = LabTest::all();
+
         $doctorRole = Roles::where('name', 'doctor')->first();
+
+        $priority = optional($consultation->labRequests->first())->priority ?? 'routine';
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
         return view(
             'doctor.opd.edit-consultation',
-            compact('consultation', 'patient', 'medicines', 'doctors')
+            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests', 'priority')
         );
     }
     // =========================
@@ -196,18 +200,22 @@ class ConsultationController extends Controller
                     }
                 }
             }
+            foreach ($request->tests as $testId) {
 
-            foreach ($tests as $index => $test) {
+                $labTest = LabTest::find($testId);
 
-                LabRequest::create([
-                    'id' => Str::uuid(),
-                    'patient_id' => $consultation->patient_id,
-                    'consultation_id' => $consultation->id,
-                    'test_name' => $test,
-                    'priority' => $request->priority[$index] ?? 'routine',
-                    'status' => 'pending'
-                ]);
+                if ($labTest) {
 
+                    LabRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $consultation->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'test_name' => $labTest->test_name,
+                        'priority' => $request->priority ?? 'routine',
+                        'status' => 'pending'
+                    ]);
+
+                }
             }
 
         }
