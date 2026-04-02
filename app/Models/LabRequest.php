@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\Patient;
+use App\Models\Consultation;
+use App\Models\LabTest;
 
 class LabRequest extends Model
 {
@@ -36,4 +39,11 @@ class LabRequest extends Model
     {
         return $this->belongsTo(Consultation::class);
     }
+
+
+    public function labTest()
+    {
+        return $this->belongsTo(LabTest::class);
+    }
+
 }

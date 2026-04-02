@@ -12,30 +12,30 @@
             addBtn.addEventListener("click", function () {
 
                 let newRow = `
-                    <tr>
+                                                <tr>
 
-                    <td>
-                        <select name="medicine[]" class="form-control">
-                            <option value="">Select</option>
-                            @foreach($medicines as $medicine)
-                                <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                            @endforeach
-                        </select>
-                    </td>
+                                                <td>
+                                                    <select name="medicine[]" class="form-control">
+                                                        <option value="">Select</option>
+                                                        @foreach($medicines as $medicine)
+                                                            <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
 
-                    <td><input type="text" class="form-control" name="dosage[]"></td>
-                    <td><input type="text" class="form-control" name="frequency[]"></td>
-                    <td><input type="text" class="form-control" name="duration[]"></td>
-                    <td><input type="text" class="form-control" name="instructions[]"></td>
+                                                <td><input type="text" class="form-control" name="dosage[]"></td>
+                                                <td><input type="text" class="form-control" name="frequency[]"></td>
+                                                <td><input type="text" class="form-control" name="duration[]"></td>
+                                                <td><input type="text" class="form-control" name="instructions[]"></td>
 
-                    <td>
-                        <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                            <i class="feather-trash-2"></i> Remove
-                        </button>
-                    </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                                                        <i class="feather-trash-2"></i> Remove
+                                                    </button>
+                                                </td>
 
-                    </tr>
-                    `;
+                                                </tr>
+                                                `;
 
                 table.insertAdjacentHTML("beforeend", newRow);
 
@@ -47,6 +47,13 @@
             btn.closest("tr").remove();
         }
 
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "Select Tests"
+            });
+        });
     </script>
     <div class="container-fluid">
         @if(session('success'))
@@ -189,28 +196,43 @@
 
 
                     <!-- Recommended Tests -->
-                    <div class="mb-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <strong>Recommended Tests</strong>
+                        </div>
 
-                    <label><strong>Recommended Tests</strong></label>
+                        <div class="card-body">
+                            <div class="row">
 
-                    <select name="tests[]" class="form-control" multiple>
+                                {{-- 🧪 LABORATORY TESTS ONLY --}}
+                                <div class="col-md-6">
+                                    <label><strong>Laboratory Tests</strong></label>
 
-                        <option value="">Select Test</option>
+                                    <select name="tests[]" class="form-control" multiple>
+                                        @foreach($labTests as $test)
+                                            <option value="{{ $test->id }}">
+                                                {{ $test->test_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                        @foreach($labTests as $test)
-                        <option value="{{ $test->id }}">
-                        {{ $test->test_name }}
-                        </option>
-                        @endforeach
+                                {{-- 🩻 RADIOLOGY (Coming Later) --}}
+                                <div class="col-md-6">
+                                    <label><strong>Radiology Tests</strong></label>
 
-                    </select>
+                                    <input type="text" class="form-control" value="">
+                                </div>
 
+                            </div>
+
+                        </div>
                     </div>
                     <div class="mb-3">
 
                         <label><strong>Test Priority</strong></label>
 
-                        <select name="priority[]" class="form-control">
+                        <select name="priority" class="form-control">
                             <option value="">Select Priority</option>
                             <option value="routine">Routine</option>
                             <option value="urgent">Urgent</option>
