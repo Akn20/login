@@ -13,8 +13,8 @@ class SampleCollectionController extends Controller
     public function index()
     {
         $samples = SampleCollection::with('labRequest.patient', 'labRequest.labTest')
-                    ->latest()
-                    ->get();
+            ->latest()
+            ->get();
 
         return view('admin.laboratory.sample-collection', compact('samples'));
     }
@@ -27,7 +27,7 @@ class SampleCollectionController extends Controller
         $sample->update([
             'status' => 'Collected',
             'collection_time' => now(),
-            'sample_id' => 'SMP-' . rand(1000,9999),
+            'sample_id' => 'SMP-' . rand(1000, 9999),
             'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
@@ -82,10 +82,13 @@ class SampleCollectionController extends Controller
 
     //API METHODS
     // API GET all samples
-    
-   public function apiIndex()
+
+    public function apiIndex()
     {
-        $samples = SampleCollection::select('id','sample_id','barcode','status')->get();
+        $samples = SampleCollection::with([
+            'labRequest.patient',
+            'labRequest'
+        ])->get();
 
         return response()->json([
             'status' => true,
@@ -97,8 +100,8 @@ class SampleCollectionController extends Controller
     public function apiPending()
     {
         $samples = SampleCollection::with('labRequest.patient')
-                    ->where('status', 'Pending')
-                    ->get();
+            ->where('status', 'Pending')
+            ->get();
 
         return response()->json($samples);
     }
@@ -111,7 +114,7 @@ class SampleCollectionController extends Controller
         $sample->update([
             'status' => 'Collected',
             'collection_time' => now(),
-            'sample_id' => 'SMP-' . rand(1000,9999),
+            'sample_id' => 'SMP-' . rand(1000, 9999),
             'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
