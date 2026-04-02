@@ -22,9 +22,12 @@ class HourlyPay extends Model
         'name',
         'code',
         'category',
-        'taxable',
-        'pf',
-        'esi',
+       'is_taxable',
+    'pf_applicable',
+    'esi_applicable',
+    'pt_applicable',
+    'is_prorata',
+    'lop_impact',
         'earning_type',
         'show_in_payslip',
         'display_order',
@@ -32,9 +35,12 @@ class HourlyPay extends Model
 
     // 🔹 Casts (VERY IMPORTANT for checkboxes)
     protected $casts = [
-        'taxable' => 'boolean',
-        'pf' => 'boolean',
-        'esi' => 'boolean',
+        'is_taxable' => 'boolean',
+        'pf_applicable' => 'boolean',
+        'esi_applicable' => 'boolean',
+         'pt_applicable' => 'boolean',
+          'is_prorata' => 'boolean',
+           'lop_impact' => 'boolean',
         'show_in_payslip' => 'boolean',
     ];
 }

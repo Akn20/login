@@ -22,9 +22,12 @@ return new class extends Migration
             $table->string('category');
 
             // 🔹 Payroll Behaviour
-            $table->boolean('taxable')->default(false);
-            $table->boolean('pf')->default(false);
-            $table->boolean('esi')->default(false);
+            $table->boolean('is_taxable')->default(false);
+            $table->boolean('pf_applicable')->default(false);
+            $table->boolean('esi_applicable')->default(false);
+            $table->boolean('pt_applicable')->default(false);
+            $table->boolean('is_prorata')->default(false);
+            $table->boolean('lop_impact')->default(false);
 
             // 🔹 Earnings Config
             $table->enum('earning_type', ['fixed', 'variable'])->default('fixed');

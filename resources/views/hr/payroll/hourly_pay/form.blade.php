@@ -3,6 +3,14 @@
     <div class="card-body">
 
         <div class="row">
+            {{-- Work Type Code --}}
+<div class="mb-3">
+    <label class="form-label">Work Type Code *</label>
+    <input type="text" name="code" class="form-control"
+        value="{{ old('code', $hourlyPay->code ?? '') }}" required>
+
+    <small class="text-muted">Example: OT001, HRLY01</small>
+</div>
          {{-- Work Type Name --}}
 <div class="mb-3">
     <label class="form-label">Work Type Name *</label>

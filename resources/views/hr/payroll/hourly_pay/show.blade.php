@@ -16,7 +16,10 @@
     <div class="card-body">
 
         <div class="row">
-
+<div class="col-md-6 mb-3">
+    <label class="text-muted">Work Type Code</label>
+    <div class="fw-bold">{{ $hourlyPay->code }}</div>
+</div>
             <div class="col-md-6 mb-3">
                 <label class="text-muted">Work Type</label>
                 <div class="fw-bold">{{ $hourlyPay->name }}</div>
