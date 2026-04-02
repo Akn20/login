@@ -15,7 +15,7 @@
         </div>
 
         <div>
-            <a href="{{ route('admin.prescriptions.offline.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.prescriptions.create') }}" class="btn btn-primary">
                 <i class="feather-plus"></i> Add Offline Prescription
             </a>
         </div>
@@ -29,12 +29,6 @@
             <form method="GET">
 
                 <div class="row">
-
-                    <div class="col-md-3">
-                        <label>Prescription Number</label>
-                        <input type="text" name="prescription_no" class="form-control">
-                    </div>
-
                     <div class="col-md-3">
                         <label>Patient Name</label>
                         <input type="text" name="patient_name" class="form-control">
@@ -52,23 +46,23 @@
                             <option>Pending</option>
                             <option>Verified</option>
                             <option>Dispensed</option>
+                            <option>Rejected</option>
                         </select>
                     </div>
 
                 </div>
 
-                <div class="mt-3">
+                <div class="mt-3 d-flex gap-2">
 
-                    <button class="btn btn-success">
-                        <i class="feather-search"></i> Search
-                    </button>
+    <button type="submit" class="btn btn-success">
+        <i class="feather-search"></i> Search
+    </button>
 
-                    <a href="{{ route('admin.prescriptions.index') }}" class="btn btn-secondary">
-                        Reset
-                    </a>
+    <a href="{{ route('admin.prescriptions.index') }}" class="btn btn-secondary">
+        <i class="feather-refresh-ccw"></i> Reset
+    </a>
 
-                </div>
-
+</div>
             </form>
 
         </div>
@@ -89,7 +83,7 @@
 
                         <tr>
                             <th>#</th>
-                            <th>Prescription No</th>
+                            
                             <th>Patient</th>
                             <th>Doctor</th>
                             <th>Date</th>
@@ -108,16 +102,14 @@
 
                             <td>{{ $key+1 }}</td>
 
+                            
+
                             <td>
-                                {{ $prescription->prescription_number }}
+                                {{ $prescription->patient_name ?? '-' }}
                             </td>
 
                             <td>
-                                {{ $prescription->patient->name ?? '-' }}
-                            </td>
-
-                            <td>
-                                {{ $prescription->doctor->name ?? 'Offline Doctor' }}
+                                {{ $prescription->doctor_name ?? 'Offline Doctor' }}
                             </td>
 
                             <td>
@@ -132,32 +124,48 @@
 
                             <td>
 
-                                @if($prescription->status == 'Pending')
+                               @if($prescription->status == 'Pending')
                                 <span class="badge bg-warning">Pending</span>
-
-                                @elseif($prescription->status == 'Verified')
+                               @elseif($prescription->status == 'Verified')
                                 <span class="badge bg-primary">Verified</span>
-
                                 @elseif($prescription->status == 'Dispensed')
                                 <span class="badge bg-success">Dispensed</span>
+
+                                @elseif($prescription->status == 'Rejected')
+                                <span class="badge bg-danger">Rejected</span>
 
                                 @endif
 
                             </td>
 
-                            <td>
+          <td>
 
-                                <a href="{{ route('admin.prescriptions.show',$prescription->id) }}"
-                                   class="btn btn-sm btn-info">
-                                   View
-                                </a>
+<!-- View -->
+<a href="{{ route('admin.prescriptions.show',$prescription->id) }}"
+   class="text-primary me-2"
+   title="View Prescription">
+   <i class="feather-eye"></i>
+</a>
 
-                                <a href="{{ route('admin.prescriptions.dispense',$prescription->id) }}"
-                                   class="btn btn-sm btn-success">
-                                   Dispense
-                                </a>
 
-                            </td>
+<!-- Dispense -->
+
+@if(in_array($prescription->status,['Pending','Verified']))
+
+<a href="{{ route('admin.prescriptions.dispense',$prescription->id) }}"
+   class="text-success"
+   title="Dispense Medicines">
+   <i class="feather-shopping-cart"></i>
+</a>
+
+@else
+
+<i class="feather-shopping-cart text-muted"
+   title="Dispense Disabled"></i>
+
+@endif
+
+</td>
 
                         </tr>
 
