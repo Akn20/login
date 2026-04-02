@@ -13,6 +13,7 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    
 
     public function index()
         {
@@ -26,7 +27,85 @@ class AttendanceController extends Controller
             compact('attendance')
         );
 }
+public function destroy($id)
+{
+    try {
 
+        $attendance = AttendanceRecord::findOrFail($id);
+
+        $attendance->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance deleted successfully'
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+
+    }
+}public function overtimeRecords(Request $request)
+{
+    try {
+
+        $query = AttendanceRecord::with([
+            'staff',
+            'shift',
+            'department',
+            'designation'
+        ]);
+
+        // Filter by department
+        if ($request->department_id) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        // Filter by designation
+        if ($request->designation_id) {
+            $query->where('designation_id', $request->designation_id);
+        }
+
+        // Optional: only overtime employees
+        $query->where('overtime_minutes', '>', 0);
+
+        $records = $query->get();
+
+        $data = $records->map(function ($item) {
+
+            $minutes = $item->overtime_minutes ?? 0;
+
+            return [
+                'id' => $item->id,
+                'employeeName' => $item->staff->name ?? '',
+                'department' => $item->department->department_name ?? '',
+                'designation' => $item->designation->designation_name ?? '',
+                'shiftEnd' => $item->shift->end_time ?? '',
+                'checkOut' => $item->check_out ?? '',
+                'overtimeMinutes' => $minutes,
+                'overtimeDuration' =>
+                    floor($minutes / 60) . "h " .
+                    ($minutes % 60) . "m",
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'count' => $data->count(),
+            'data' => $data
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
     public function create()
     {
         $departments = Department::pluck('department_name','id');
@@ -111,9 +190,10 @@ AttendanceRecord::create([
 
 ]);
 
-return redirect()
-->route('hr.attendance.index')
-->with('success','Attendance recorded successfully');
+return response()->json([
+        'success' => true,
+        'message' => 'Attendance recorded successfully'
+    ]);
 
 }
         public function getDesignations($department_id)
@@ -331,18 +411,4 @@ public function update(Request $request, $id)
         ->with('success','Attendance updated successfully');
 
 }
-public function destroy($id)
-{
-
-    $attendance = AttendanceRecord::findOrFail($id);
-
-    $attendance->delete();
-
-    return redirect()
-        ->route('hr.attendance.index')
-        ->with('success','Attendance deleted successfully');
-
-}
-
-
 }

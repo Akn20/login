@@ -43,7 +43,12 @@
 
                 <div class="col-md-3">
                     <small class="text-muted d-block">Patient</small>
-                    <strong>{{ $salesReturn->patient->id ?? '-' }}</strong>
+                   <strong>
+{{ $salesReturn->patient 
+    ? $salesReturn->patient->first_name . ' ' . $salesReturn->patient->last_name 
+    : '-' 
+}}
+</strong>
                 </div>
 
                 <div class="col-md-3">

@@ -12,11 +12,19 @@ class SalesBill extends Model
     protected $keyType = 'string';  // UUID
     public $incrementing = false;   // UUID not auto increment
 
-    protected $fillable = [
-        'id',
-        'bill_number',
-        'total_amount'
-    ];
+   protected $fillable = [
+    'bill_id',
+    'bill_number',
+    'patient_id',
+    'prescription_id',
+    'total_amount',
+    'paid_amount',
+    'balance_amount',
+    'payment_status',
+    'invoice_status',
+    'payment_mode',
+    'remarks'
+];
 
    public function items()
 {
