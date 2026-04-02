@@ -82,14 +82,9 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
-use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
-use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
-use App\Http\Controllers\Admin\Nurse\InfectionControlController;
+
 use App\Http\Controllers\Admin\Nurse\IsolationController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
-=======
->>>>>>> e54271a7190042b3d6694cb17a71b5703a3135d5
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1532,7 +1527,6 @@ Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
     Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
 
 });
-<<<<<<< HEAD
 
 Route::prefix('admin/isolation')->name('admin.isolation.')->group(function () {
 
@@ -1566,5 +1560,3 @@ Route::prefix('admin/ppe')->name('admin.ppe.')->group(function () {
     Route::get('/restore/{id}', [PpeComplianceController::class, 'restore'])->name('restore');
     Route::get('/force-delete/{id}', [PpeComplianceController::class, 'forceDelete'])->name('forceDelete');
 });
-=======
->>>>>>> e54271a7190042b3d6694cb17a71b5703a3135d5
