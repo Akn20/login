@@ -19,7 +19,7 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\WorkStatusController;
-
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -43,6 +43,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+//use App\Http\Controllers\WorkStatusController;
+
 //surgery
 use App\Http\Controllers\Api\Surgery\OTApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryApiController;
@@ -59,12 +62,38 @@ use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
+use App\Http\Controllers\attendance\AttendanceController;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
 // Lab Tests
 use App\Http\Controllers\Admin\LabTestController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+//Nurse
+use App\Http\Controllers\NurseNotesController;
+
+use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
+
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')
+    ->prefix('biometric')
+    ->group(function () {
+        Route::post('/enroll', [BiometricController::class, 'enroll']);
+        Route::post('/match', [BiometricController::class, 'match']);
+        Route::post('/check-in', [BiometricController::class, 'checkIn']);
+        Route::post('/check-out', [BiometricController::class, 'checkOut']);
+        Route::get('/check-status', [BiometricController::class, 'checkStatus']);
+    });
+Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+    
+    Route::get('/notEnrolled', [UserController::class, 'notEnrolled']);{
+    } 
+});
+    
 /* Religion */
 
 Route::get('/religions', [ReligionController::class, 'apiIndex']);
@@ -210,6 +239,15 @@ Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 Route::get('/test-api', function () {
     return 'API working';
 });
+//added by sushan for api
+Route::get('/attendance', [AttendanceApiController::class, 'index']);
+Route::post('/attendance', [AttendanceApiController::class, 'store']);
+Route::delete('/attendance/{id}', [AttendanceApiController::class, 'destroy']);
+Route::put('/attendance/{id}', [AttendanceApiController::class, 'update']);
+Route::get('/attendance/late-entries', [AttendanceApiController::class, 'lateEntries']);
+Route::get('/attendance/overtime',[AttendanceController::class, 'overtimeRecords']);
+Route::get('/attendance/report', [AttendanceApiController::class, 'report']);
+
 /*
 |--------------------------------------------------------------------------
 | Public auth APIs (no sanctum)
@@ -414,6 +452,8 @@ Route::prefix('hr')->group(function () {
     // Staff Management
     Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
     //added by sushan for api
+    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftindex']);
+    //added by sushan for api
     Route::get('/surgeons', [StaffManagementController::class, 'getSurgeons']);
     Route::get('/assistant-doctors', [StaffManagementController::class, 'getAssistantDoctors']);
     Route::get('/anesthetists', [StaffManagementController::class, 'getAnesthetists']);
@@ -518,7 +558,33 @@ Route::prefix('controlled-drugs')->group(function () {
 
     // Helper for create screen: search bill by bill number
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+
 });
+
+    // Prescription APIs
+    
+
+
+
+    Route::prefix('prescriptions')->group(function () {
+
+        // List prescriptions
+        Route::get('/', [PrescriptionController::class,'apiIndex']);
+
+        // View prescription
+        Route::get('/{id}', [PrescriptionController::class,'apiShow']);
+
+        // Dispense medicines
+        Route::post('/dispense/{id}', [PrescriptionController::class,'apiDispense']);
+
+        // Reject prescription
+        Route::post('/reject/{id}', [PrescriptionController::class,'apiReject']);
+
+        // Bill details
+        Route::get('/bill/{id}', [PrescriptionController::class,'apiBill']);
+
+    });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -625,7 +691,13 @@ Route::prefix('appointments')->group(function () {
     Route::put('/{id}/restore', [AppointmentController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
+Route::prefix('edm')->group(function () {
 
+    Route::get('/', [EmployeeDocumentApiController::class, 'index']);
+    Route::post('/', [EmployeeDocumentApiController::class, 'store']);
+    Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
+    Route::post('/update/{id}', [EmployeeDocumentApiController::class, 'update']);
+    Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
 
 
 Route::prefix('hr')->group(function () {
@@ -711,4 +783,8 @@ Route::prefix('laboratories')->group(function () {
 });
 
 
+    Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
+    Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
+});
+    
 

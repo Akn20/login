@@ -263,6 +263,9 @@
 
 
                     <!-- Recommended Tests -->
+                    @php
+                        $selectedTests = $consultation->labRequests->pluck('test_name')->toArray();
+                    @endphp
 
                     <div class="mb-3">
                         <label><strong>Recommended Tests</strong></label>
@@ -286,27 +289,43 @@
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                            <label><strong>Test Priority</strong></label>
+                        <div class="card-body">
+                            <div class="row">
 
-                            <select name="priority" class="form-control">
+                                {{--  LAB TESTS --}}
+                                <div class="col-md-6">
+                                    <label><strong>Laboratory Tests</strong></label>
 
-                                <option value="routine" {{ optional($consultation->labRequests->first())->priority == 'routine' ? 'selected' : '' }}>
-                                    Routine
-                                </option>
+                                    <select name="tests[]" class="form-select" multiple>
+                                        @foreach($labTests as $test)
+                                            <option value="{{ $test->id }}" {{ in_array($test->test_name, $selectedTests) ? 'selected' : '' }}>
+                                                {{ $test->test_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                <option value="urgent" {{ optional($consultation->labRequests->first())->priority == 'urgent' ? 'selected' : '' }}>
-                                    Urgent
-                                </option>
+                                {{--  RADIOLOGY --}}
+                                <div class="col-md-6">
+                                    <label><strong>Radiology Tests</strong></label>
 
-                                <option value="stat" {{ optional($consultation->labRequests->first())->priority == 'stat' ? 'selected' : '' }}>
-                                    STAT
-                                </option>
+                                    <input type="text" class="form-control" placeholder="Enter Radiology Tests">
+                                </div>
 
-                            </select>
+                            </div>
                         </div>
+                    </div>
 
+                    {{-- PRIORITY (Single for now) --}}
+                    <div class="mb-3">
+                        <label><strong>Test Priority</strong></label>
 
+                        <select name="priority" class="form-control">
+                            <option value="routine" {{ $priority == 'routine' ? 'selected' : '' }}>Routine</option>
+                            <option value="urgent" {{ $priority == 'urgent' ? 'selected' : '' }}>Urgent</option>
+                            <option value="stat" {{ $priority == 'stat' ? 'selected' : '' }}>STAT</option>
+                        </select>
+                    </div>
 
                     <!-- Referral Doctor -->
 

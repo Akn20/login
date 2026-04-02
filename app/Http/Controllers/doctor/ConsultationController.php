@@ -155,7 +155,11 @@ class ConsultationController extends Controller
 
         $medicines = Medicine::all();
 
+        $labTests = LabTest::all();
+
         $doctorRole = Roles::where('name', 'doctor')->first();
+
+        $priority = optional($consultation->labRequests->first())->priority ?? 'routine';
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
@@ -163,7 +167,7 @@ class ConsultationController extends Controller
 
         return view(
             'doctor.opd.edit-consultation',
-            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests')
+            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests', 'priority')
         );
     }
     // =========================
@@ -224,6 +228,24 @@ class ConsultationController extends Controller
 
                 }
             }
+            foreach ($request->tests as $testId) {
+
+                $labTest = LabTest::find($testId);
+
+                if ($labTest) {
+
+                    LabRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $consultation->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'test_name' => $labTest->test_name,
+                        'priority' => $request->priority ?? 'routine',
+                        'status' => 'pending'
+                    ]);
+
+                }
+            }
+
         }
 
         // update prescription

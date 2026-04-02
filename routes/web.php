@@ -1,27 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
-use App\Http\Controllers\InstitutionController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\Admin\PatientController;
-use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
-use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
-use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
@@ -29,42 +17,62 @@ use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Doctor\ConsultationController;
-use App\Http\Controllers\Doctor\ViewAppointmentController;
-use App\Http\Controllers\Doctor\ViewPatientController;
-use App\Http\Controllers\doctor\surgery\OTController;
-use App\Http\Controllers\doctor\surgery\PostOperativeController;
-use App\Http\Controllers\doctor\surgery\SurgeryController;
-use App\Http\Controllers\HR\HRDashboardController;
-use App\Http\Controllers\HR\StaffManagementController;
-use App\Http\Controllers\HR\ShiftSchedulingController;
-use App\Http\Controllers\LeaveManagement\HolidayController;
-use App\Http\Controllers\LeaveManagement\LeaveMappingController;
-use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
-use App\Http\Controllers\LeaveManagement\CompOffController;
-use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
-use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
-use App\Http\Controllers\LeaveManagement\LeaveTypeController;
-use App\Http\Controllers\LeaveManagement\WeekendController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AppointmentController;
+use App\http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\doctor\surgery\OTController;
+use App\Http\Controllers\doctor\surgery\PostOperativeController;
+use App\Http\Controllers\doctor\surgery\SurgeryController;
+use App\Http\Controllers\Doctor\ViewAppointmentController;
+use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\ShiftSchedulingController;
+use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\LeaveManagement\CompOffController;
+use App\Http\Controllers\LeaveManagement\HolidayController;
+use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
+use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
+use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
+use App\Http\Controllers\LeaveManagement\LeaveMappingController;
+use App\Http\Controllers\LeaveManagement\LeaveTypeController;
+use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\NurseNotesController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
+// nurse
 use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
-use App\Http\Controllers\attendance\AttendanceController;
+//use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Admin\LabTestController;
 use App\Http\Controllers\Admin\SampleCollectionController; 
+use Illuminate\Support\Facades\Route;
+
+// use App\Http\Controllers\ExpiryController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -712,16 +720,6 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
-        | Reception: Appointments
-        |--------------------------------------------------------------------------
-        */
-
-
-
-
-
-        /*
-        |--------------------------------------------------------------------------
         | Reception: Tokens / Queue
         |--------------------------------------------------------------------------
         */
@@ -736,17 +734,13 @@ Route::middleware(['auth', 'role:admin'])
 
     });
 
-
-
-//Appointments routes 
-
+// Appointments routes
 
 // --------------------------------------------------------------------------
 // End of initial Admin/HR/Doctor sections. Redundant intermediate blocks removed.
 // --------------------------------------------------------------------------
 
-
-//shift scheduling
+// shift scheduling
 
 /*
 |--------------------------------------------------------------------------
@@ -805,7 +799,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Conflicts
     Route::get('/shift-conflicts', [ShiftSchedulingController::class, 'conflictIndex'])->name('shift-conflicts.index');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -1229,6 +1222,28 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/approve', [LeaveApprovalController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [LeaveApprovalController::class, 'reject'])->name('reject');
     });
+
+    // Employee Document Management (EDM)
+Route::prefix('edm')->name('edm.')->group(function () {
+
+    Route::get('/', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'create'])
+        ->name('create');
+
+    Route::post('/store', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'store'])
+        ->name('store');
+
+    Route::get('/download/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'download'])
+        ->name('download');
+
+    Route::delete('/delete/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'destroy'])
+        ->name('delete');
+
+        Route::get('/edit/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
+});
 });
 
 /*
@@ -1241,13 +1256,149 @@ Route::prefix('stock')->group(function () {
     Route::get('stock', [StockController::class, 'apiIndex']);
     Route::get('stock/low', [StockController::class, 'apiLowStock']);
     Route::post('stock', [StockController::class, 'apiStore']);
+    Route::put('stock/{id}', [StockController::class, 'apiUpdate']);
+
+    Route::delete('stock/{id}', [StockController::class, 'apiDestroy']);
+
+    Route::get('stock-trash', [StockController::class, 'apiTrash']);
+    Route::post('stock-restore/{id}', [StockController::class, 'apiRestore']);
+    Route::delete('stock-force-delete/{id}', [StockController::class, 'apiForceDelete']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Nursing Notes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nursing-notes')->name('nursing-notes.')->group(function () {
+        Route::get('/', [NurseNotesController::class, 'index'])->name('index');
+        Route::get('/create', [NurseNotesController::class, 'create'])->name('create');
+        Route::post('/', [NurseNotesController::class, 'store'])->name('store');
 
+        Route::get('/trash', [NurseNotesController::class, 'trash'])->name('trash');
+        Route::patch('/restore/{id}', [NurseNotesController::class, 'restore'])->name('restore');
 
+        Route::get('/{id}/edit', [NurseNotesController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [NurseNotesController::class, 'update'])->name('update');
+        Route::delete('/{id}', [NurseNotesController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}', [NurseNotesController::class, 'show'])->name('show');
+    });
+});
 
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
 
-   
+        /*
+        |--------------------------------------------------------------------------
+        | Sales Return Module
+        |--------------------------------------------------------------------------
+        */
 
+        Route::resource('salesReturn', SalesReturnController::class);
 
+        Route::get(
+            'salesReturn/{id}/print',
+            [SalesReturnController::class, 'print']
+        )->name('salesReturn.print');
 
+        Route::post(
+            'salesReturn/{id}/approve',
+            [SalesReturnController::class, 'approve']
+        )->name('salesReturn.approve');
+
+        Route::get('admin/salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])
+            ->name('admin.salesReturn.approve');
+
+        Route::post(
+            'salesReturn/{id}/reject',
+            [SalesReturnController::class, 'reject']
+        )->name('salesReturn.reject');
+
+    });
+
+/*
+|--------------------------------------------------------------------------
+| surgery routes (doctor)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('doctor')->group(function () {
+
+    Route::get('/surgery', [SurgeryController::class, 'index'])->name('surgery.index');
+
+    Route::get('/surgery/create', [SurgeryController::class, 'create'])->name('surgery.create');
+
+    Route::post('/surgery/store', [SurgeryController::class, 'store'])->name('surgery.store');
+
+    Route::get('/surgery/{id}/edit', [SurgeryController::class, 'edit'])->name('surgery.edit');
+
+    Route::delete('/surgery/{id}', [SurgeryController::class, 'destroy'])->name('surgery.destroy');
+
+    Route::put('/surgery/{id}', [SurgeryController::class, 'update'])->name('surgery.update');
+
+    Route::get('/ot', [OTController::class, 'index'])->name('ot.index');
+
+    Route::get('/ot/create', [OTController::class, 'create'])->name('ot.create');
+
+    Route::post('/ot/store', [OTController::class, 'store'])->name('ot.store');
+
+    Route::get('/ot/{id}/edit', [OTController::class, 'edit'])->name('ot.edit');
+
+    Route::put('/ot/{id}', [OTController::class, 'update'])->name('ot.update');
+
+    Route::delete('/ot/{id}', [OTController::class, 'destroy'])->name('ot.destroy');
+
+    Route::post('/ot/{id}/toggle-status', [OTController::class, 'toggleStatus'])->name('ot.toggle-status');
+
+    Route::get('/postoperative', [PostOperativeController::class, 'index'])->name('post.index');
+    Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+
+        Route::get('/surgery/{id}/postoperative', [PostOperativeController::class, 'create'])->name('post.create');
+
+        Route::post('/post/store', [PostOperativeController::class, 'store'])->name('post.store');
+
+        Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
+
+        Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
+
+        Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Prescripion
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+
+        Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
+
+            Route::get('/', [PrescriptionController::class, 'index'])
+                ->name('index');
+            Route::get('/create', [PrescriptionController::class, 'createOffline'])
+                ->name('create');
+            Route::post('/store', [PrescriptionController::class, 'storeOffline'])
+                ->name('offline.store');
+            Route::get('/verify/{id}', [PrescriptionController::class, 'verify'])
+                ->name('verify');
+            Route::post('/reject/{id}', [PrescriptionController::class, 'reject'])
+                ->name('reject');
+            Route::get('/dispense/{id}', [PrescriptionController::class, 'dispense'])
+                ->name('dispense');
+            Route::post('/dispense/{id}', [PrescriptionController::class, 'storeDispense'])
+                ->name('dispense.store');
+            Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])
+                ->name('bill');
+            Route::get('/print/{id}', [PrescriptionController::class, 'print'])
+                ->name('print');
+            Route::get('/{id}', [PrescriptionController::class, 'show'])
+                ->name('show');
+
+        });
+
+    });
+});

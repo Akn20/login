@@ -20,7 +20,7 @@
     </div>
 
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" action="{{ route('admin.prescriptions.offline.store') }}" enctype="multipart/form-data">
 
 @csrf
 
@@ -120,7 +120,6 @@ Add Medicine
 <th>Dosage</th>
 <th>Frequency</th>
 <th>Duration</th>
-<th>Quantity</th>
 <th>Instructions</th>
 <th width="50">Action</th>
 </tr>
@@ -149,10 +148,6 @@ Add Medicine
 </td>
 
 <td>
-<input type="number" name="quantity[]" class="form-control" placeholder="Qty">
-</td>
-
-<td>
 <input type="text" name="instructions[]" class="form-control" placeholder="Instructions">
 </td>
 
@@ -178,7 +173,7 @@ X
 
 <!-- Save Button -->
 
-<div class="mt-3">
+<div class="mt-3 d-flex gap-2">
 
 <button type="submit" class="btn btn-success">
 Save Prescription
