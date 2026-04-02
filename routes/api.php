@@ -20,6 +20,7 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\WorkStatusController;
 
 use App\Http\Controllers\ExpiryController;
@@ -735,5 +736,14 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
-    
+Route::prefix('payroll/allowance')->group(function () {
+    Route::get('/', [PayrollAllowanceController::class, 'index']);
+    Route::post('/', [PayrollAllowanceController::class, 'store']);
+    Route::get('/deleted', [PayrollAllowanceController::class, 'deleted']);
+    Route::post('/{id}/restore', [PayrollAllowanceController::class, 'restore']);
+    Route::delete('/{id}/force-delete', [PayrollAllowanceController::class, 'forceDelete']);
+    Route::put('/{id}', [PayrollAllowanceController::class, 'update']);
+    Route::delete('/{id}', [PayrollAllowanceController::class, 'destroy']);
+    Route::patch('/{id}/toggle-status', [PayrollAllowanceController::class, 'toggleStatus']);
+});
 
