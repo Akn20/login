@@ -52,6 +52,7 @@ use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1218,6 +1219,20 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     // Payroll - Allowance
 
+Route::prefix('payroll/allowance')
+    ->name('payroll.allowance.')
+    ->group(function () {
+
+    Route::get('/', [PayrollAllowanceController::class, 'index'])->name('index');
+    Route::get('/create', [PayrollAllowanceController::class, 'create'])->name('create');
+    Route::post('/', [PayrollAllowanceController::class, 'store'])->name('store');
+    Route::get('/deleted/list', [PayrollAllowanceController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}', [PayrollAllowanceController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [PayrollAllowanceController::class, 'forceDelete'])->name('forceDelete');
+    Route::get('/{id}/edit', [PayrollAllowanceController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PayrollAllowanceController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PayrollAllowanceController::class, 'destroy'])->name('destroy');
+});
     // Payroll - Deduction
     Route::prefix('payroll/deduction')->name('payroll.deduction.')->group(function () {
         Route::get('/', [PayrollDeductionController::class, 'index'])->name('index');
@@ -1231,6 +1246,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+
 
 });
 
