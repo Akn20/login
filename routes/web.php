@@ -1,19 +1,27 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminBiometricEnrollController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
 |--------------------------------------------------------------------------
 */
 
-/**
- * Admin Controllers
- */
+// Auth
+use App\Http\Controllers\Auth\SignInController;
+
+// Admin
+use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
+
+// Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
@@ -21,54 +29,37 @@ use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
-use App\Http\Controllers\Admin\PatientController;
+
+// Admin > Nurse
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+
+// Admin > Pharmacy
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\AppointmentController;
-/**
- * HR Controllers
- */
+
+// Attendance
 use App\Http\Controllers\Attendance\AttendanceController;
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\BedController;
-use App\Http\Controllers\BloodGroupController;
-/**
- * Doctor Controllers
- */
-use App\Http\Controllers\ControlledDrugController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DesignationController;
+
+// Doctor
 use App\Http\Controllers\Doctor\ConsultationController;
-use App\Http\Controllers\doctor\surgery\OTController;
-use App\Http\Controllers\doctor\surgery\PostOperativeController;
-/**
- * Leave Management Controllers
- */
-use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
-use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\doctor\surgery\OTController;
+use App\Http\Controllers\doctor\surgery\PostOperativeController;
+use App\Http\Controllers\doctor\surgery\SurgeryController;
+
+// HR
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
-use App\Http\Controllers\InstitutionController;
-/**
- * Attendance / Appointment Controllers
- */
-use App\Http\Controllers\JobTypeController;
+
+// Leave Management
 use App\Http\Controllers\LeaveManagement\CompOffController;
-/**
- * Auth Controllers
- */
 use App\Http\Controllers\LeaveManagement\HolidayController;
-/**
- * Master / Configuration Controllers
- */
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
@@ -76,19 +67,28 @@ use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
+
+// Root-level Controllers (alphabetical)
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BedController;
+use App\Http\Controllers\BloodGroupController;
+use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
-/**
- * Clinical / Nursing / Operations Controllers
- */
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -406,6 +406,14 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
+        | Pharmacy: Dashboard
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/pharmacy/dashboard', [PharmacyDashboardController::class, 'index'])->name('pharmacy.dashboard');
+
+        /*
+        |--------------------------------------------------------------------------
         | Pharmacy: Vendor Management
         |--------------------------------------------------------------------------
         */
@@ -494,11 +502,11 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
             Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
 
-            Route::delete('/delete/{id>', [StockController::class, 'destroy'])->name('delete');
+            Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
 
             Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-            Route::get('/restore/{id>', [StockController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id>', [StockController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/restore/{id}', [StockController::class, 'restore'])->name('restore');
+            Route::get('/force-delete/{id}', [StockController::class, 'forceDelete'])->name('forceDelete');
 
             Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
         });
@@ -748,6 +756,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('tokens/{id}/complete', [TokenController::class, 'complete'])
             ->name('tokens.complete');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Reception: Emergency Handling
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/emergency/create', [EmergencyCaseController::class, 'create'])->name('emergency.create');
+        Route::post('/emergency/store', [EmergencyCaseController::class, 'store'])->name('emergency.store');
     });
 
 // Appointments routes
@@ -944,7 +959,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/edit/{id}', [StockController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [StockController::class, 'update'])->name('update');
         Route::get('/trash', [StockController::class, 'trash'])->name('trash');
-        Route::delete('/delete/{id}', [StockController::class, 'delete'])->name('delete');
+        Route::delete('/delete/{id}', [StockController::class, 'destroy'])->name('delete');
         Route::put('/toggle-status/{id}', [StockController::class, 'toggleStatus'])->name('toggleStatus');
         Route::get('/low-stock', [StockController::class, 'lowStock'])->name('low');
     });
@@ -1067,8 +1082,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     });
 
     // --- Admin Pharmacy & Sales Return ---
-    Route::resource('salesReturn', SalesReturnController::class);
-    Route::post('salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])->name('salesReturn.approve');
 
     Route::prefix('prescriptions')->name('prescriptions.')->group(function () {
         Route::get('/', [PrescriptionController::class, 'index'])->name('index');
@@ -1243,7 +1256,6 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::prefix('payroll/allowance')
         ->name('payroll.allowance.')
         ->group(function () {
-
             Route::get('/', [PayrollAllowanceController::class, 'index'])->name('index');
             Route::get('/create', [PayrollAllowanceController::class, 'create'])->name('create');
             Route::post('/', [PayrollAllowanceController::class, 'store'])->name('store');
@@ -1254,7 +1266,6 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
             Route::put('/{id}', [PayrollAllowanceController::class, 'update'])->name('update');
             Route::delete('/{id}', [PayrollAllowanceController::class, 'destroy'])->name('destroy');
         });
-
     // Payroll - Deduction
     Route::prefix('payroll/deduction')->name('payroll.deduction.')->group(function () {
         Route::get('/', [PayrollDeductionController::class, 'index'])->name('index');
@@ -1333,9 +1344,6 @@ Route::prefix('admin')
             'salesReturn/{id}/approve',
             [SalesReturnController::class, 'approve']
         )->name('salesReturn.approve');
-
-        Route::get('admin/salesReturn/{id}/approve', [SalesReturnController::class, 'approve'])
-            ->name('admin.salesReturn.approve');
 
         Route::post(
             'salesReturn/{id}/reject',
@@ -1426,4 +1434,50 @@ Route::prefix('doctor')->group(function () {
         });
 
     });
+});
+
+// Nurse: Patient Monitoring routes
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('patientMonitoring', [PatientMonitoringController::class, 'index'])
+        ->name('patientMonitoring.index');
+
+    Route::get('patientMonitoring/create', [PatientMonitoringController::class, 'create'])
+        ->name('patientMonitoring.create');
+
+    Route::post('patientMonitoring/store', [PatientMonitoringController::class, 'store'])
+        ->name('patientMonitoring.store');
+
+    Route::get('patientMonitoring/show/{id}', [PatientMonitoringController::class, 'show'])
+        ->name('patientMonitoring.show');
+
+    Route::get('patientMonitoring/edit/{id}', [PatientMonitoringController::class, 'edit'])
+        ->name('patientMonitoring.edit');
+
+    Route::post('patientMonitoring/update/{id}', [PatientMonitoringController::class, 'update'])
+        ->name('patientMonitoring.update');
+
+    Route::delete('patientMonitoring/delete/{id}', [PatientMonitoringController::class, 'delete'])
+        ->name('patientMonitoring.delete');
+
+    Route::get('patientMonitoring/trash', [PatientMonitoringController::class, 'trash'])
+        ->name('patientMonitoring.trash');
+
+    Route::get('patientMonitoring/restore/{id}', [PatientMonitoringController::class, 'restore'])
+        ->name('patientMonitoring.restore');
+
+    Route::get('patientMonitoring/forceDelete/{id}', [PatientMonitoringController::class, 'forceDelete'])
+        ->name('patientMonitoring.forceDelete');
+
+});
+
+Route::prefix('admin/medication')->name('admin.medication.')->group(function () {
+
+    Route::get('/', [MedicationAdministrationController::class, 'index'])->name('index');
+
+    Route::post('/administer', [MedicationAdministrationController::class, 'administer'])->name('administer');
+
+    Route::post('/missed', [MedicationAdministrationController::class, 'markMissed'])->name('missed');
+
 });

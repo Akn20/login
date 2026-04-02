@@ -83,7 +83,10 @@
     <td>{{ $returns->firstItem() + $key }}</td>
     <td>{{ $return->return_number }}</td>
     <td>{{ $return->bill->bill_number ?? '-' }}</td>
-    <td>{{ $return->patient->name ?? '-' }}</td>
+    <td>{{ $return->patient 
+    ? $return->patient->first_name . ' ' . $return->patient->last_name 
+    : '-' 
+}}</td>
     <td>{{ $return->created_at->format('Y-m-d') }}</td>
     <td>₹ {{ number_format($return->total_refund, 2) }}</td>
 
