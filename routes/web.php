@@ -1123,6 +1123,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+       
     });
    
 });
