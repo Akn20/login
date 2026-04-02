@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 class MedicineBatch extends Model
 {
     use HasUuids, SoftDeletes;
-
+    
     protected $keyType = 'string';
     public $incrementing = false;
 
