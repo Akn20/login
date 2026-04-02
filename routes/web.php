@@ -1208,6 +1208,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/store', [LeaveApplicationController::class, 'store'])->name('store');
         Route::post('/withdraw/{id}', [LeaveApplicationController::class, 'withdraw'])->name('withdraw');
         Route::get('/show/{id}', [LeaveApplicationController::class, 'show'])->name('show');
+
+        
     });
 
     Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
