@@ -71,8 +71,9 @@ use App\Http\Controllers\TokenController;
 //Nurse
 use App\Http\Controllers\NurseNotesController;
 
+//employee management
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
-
+use App\Models\Staff;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -489,7 +490,15 @@ Route::prefix('hr')->group(function () {
 
     // Employee list
     Route::get('/employee', [EmployeeController::class, 'index']);
+      Route::get('/employees', function () {
+    $employees = \App\Models\Staff::select('id', 'name')->get();
 
+    return response()->json([
+        'status' => true,
+        'message' => 'Employees fetched successfully',
+        'data' => $employees
+    ]);
+});
 
 });
 
@@ -714,14 +723,63 @@ Route::prefix('appointments')->group(function () {
 });
 Route::prefix('edm')->group(function () {
 
-    Route::get('/', [EmployeeDocumentApiController::class, 'index']);
-    Route::post('/', [EmployeeDocumentApiController::class, 'store']);
-    Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
-    Route::post('/update/{id}', [EmployeeDocumentApiController::class, 'update']);
-    Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+    // GET ALL DOCUMENTS
+    Route::get('/documents', [EmployeeDocumentApiController::class, 'index']);
 
-    Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
-    Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
+    // GET SINGLE DOCUMENT
+    Route::get('/documents/{id}', [EmployeeDocumentApiController::class, 'show']);
+
+    // CREATE
+    Route::post('/documents', [EmployeeDocumentApiController::class, 'store']);
+
+    // UPDATE
+    Route::post('/documents/{id}', [EmployeeDocumentApiController::class, 'update']);
+
+    // DELETE
+    Route::delete('/documents/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+
+    // VIEW
+    Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
+
+    // DOWNLOAD
+    Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
+
 });
     
 
+
+
+// ===============================
+// EMPLOYEE DOCUMENT (EDM)
+// ===============================
+Route::prefix('edm')->group(function () {
+
+    // 📄 GET ALL DOCUMENTS
+    // GET /api/edm/documents
+    Route::get('/documents', [EmployeeDocumentApiController::class, 'index']);
+
+    // 📄 GET SINGLE DOCUMENT
+    // GET /api/edm/documents/{id}
+    Route::get('/documents/{id}', [EmployeeDocumentApiController::class, 'show']);
+
+    // 📄 STORE DOCUMENT
+    // POST /api/edm/documents
+    Route::post('/documents', [EmployeeDocumentApiController::class, 'store']);
+
+    // 📄 UPDATE DOCUMENT
+    // POST /api/edm/documents/{id}
+    Route::post('/documents/{id}', [EmployeeDocumentApiController::class, 'update']);
+
+    // 📄 DELETE DOCUMENT
+    // DELETE /api/edm/documents/{id}
+    Route::delete('/documents/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+
+    // 📄 VIEW FILE (for mobile preview)
+    // GET /api/edm/documents/{id}/view
+    Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
+
+    // 📄 DOWNLOAD FILE
+    // GET /api/edm/documents/{id}/download
+    Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
+
+});
