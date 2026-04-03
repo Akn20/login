@@ -84,8 +84,7 @@ use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 //use App\Http\Controllers\attendance\AttendanceController;
-use App\Http\Controllers\Admin\LabTestController;
-use App\Http\Controllers\Admin\SampleCollectionController; 
+
 
 use Illuminate\Support\Facades\Route;
 
