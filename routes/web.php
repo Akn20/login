@@ -81,6 +81,12 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
+//use App\Http\Controllers\ExpiryController;
+use App\Http\Controllers\ReturnController;
+//use App\Http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\SampleCollectionController; 
+
 use Illuminate\Support\Facades\Route;
 
 // use App\Http\Controllers\ExpiryController;
@@ -1080,6 +1086,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::delete('/delete/{id}', [AppointmentController::class, 'delete'])->name('delete');
         Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
         Route::post('/store', [AppointmentController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AppointmentController::class, 'edit'])->name('edit');
+        Route::get('/show/{id}', [AppointmentController::class, 'show'])->name('show');
+        Route::put('/update/{id}', [AppointmentController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [AppointmentController::class, 'destroy'])->name('delete');
 
         Route::get('/trash', [AppointmentController::class, 'trash'])->name('trash');
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
