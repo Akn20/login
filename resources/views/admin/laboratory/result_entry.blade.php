@@ -11,6 +11,12 @@
 
         <div class="card-body">
 
+            <!-- SUCCESS MESSAGE -->
+            @if(session('success'))  
+                <div id="successMessage" class="alert alert-success">
+                    {{ session('success') }}
+                </div>  
+            @endif
             <!-- TABLE -->
             <table class="table table-bordered table-striped">
                 <thead>
@@ -138,7 +144,7 @@
             </div>
 
             <!-- Buttons -->
-            <div class="text-end">
+            <div class="d-flex justify-content-end gap-2">
 
                 <button type="button" class="btn btn-secondary"
                     onclick="closeResultModal('{{ $sample->id }}')">
@@ -166,8 +172,13 @@
 
 @endsection
 <script>
+
+/* ===============================
+   INITIALIZE ALL FUNCTIONS
+================================= */
 function initResultEntry() {
 
+    /* 🔹 OPEN MODAL */
     window.openResultModal = function(id) {
         let modal = document.getElementById('resultModal' + id);
         if (modal) {
@@ -177,11 +188,15 @@ function initResultEntry() {
         }
     };
 
+    /* 🔹 CLOSE MODAL */
     window.closeResultModal = function(id) {
         let modal = document.getElementById('resultModal' + id);
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.style.display = 'none';
+        }
     };
 
+    /* 🔹 RANGE CHECK */
     window.checkRange = function(input, min, max, statusId) {
         let value = parseFloat(input.value);
         let status = document.getElementById(statusId);
@@ -190,6 +205,7 @@ function initResultEntry() {
 
         if (isNaN(value)) {
             status.innerHTML = "-";
+            status.style.color = "";
             return;
         }
 
@@ -204,15 +220,49 @@ function initResultEntry() {
             status.style.color = "green";
         }
     };
+
+    /* 🔥 AUTO HIDE SUCCESS MESSAGE */
+    let msg = document.getElementById('successMessage');
+
+    if (msg) {
+        setTimeout(function () {
+            msg.style.transition = "opacity 0.5s";
+            msg.style.opacity = "0";
+
+            setTimeout(() => {
+                msg.remove();
+            }, 500);
+
+        }, 3000);
+    }
 }
 
-/* 🔥 RUN ON NORMAL LOAD */
+/* ===============================
+   NORMAL PAGE LOAD
+================================= */
 document.addEventListener('DOMContentLoaded', function () {
     initResultEntry();
 });
 
-/* 🔥 RUN AFTER UNPOLY LOAD */
+/* ===============================
+   UNPOLY AJAX LOAD
+================================= */
 up.on('up:content:updated', function () {
     initResultEntry();
 });
+
+
+/* ===============================
+   CLICK OUTSIDE MODAL TO CLOSE
+================================= */
+window.onclick = function(event) {
+    let modals = document.getElementsByClassName('custom-modal');
+
+    for (let modal of modals) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+};
+
 </script>
