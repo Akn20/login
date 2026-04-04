@@ -100,6 +100,29 @@ use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+
+//use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+
+//use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+//nurse
+// use App\Http\Controllers\NurseNotesController;
+// use Illuminate\Support\Facades\Route;
+
+// use App\http\Controllers\attendance\AttendanceController;
+//use App\Http\Controllers\ExpiryController;
+
+#use App\Http\Controllers\ControlledDrugController;
+#use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+#use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+#use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+// use App\Http\Controllers\ExpiryController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
 /*
 |--------------------------------------------------------------------------
 | 1. Public & Guest Routes
@@ -1531,5 +1554,38 @@ Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
     Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
     Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
     Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
+});
+/* ----------------------------------
+        Pharmacy Billing 
+        -----------------------------------*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('pharmacy')->name('pharmacy.')->group(function () {
+
+        Route::get('billing', [PharmacyBillingController::class, 'index'])
+            ->name('billing.index');
+
+        Route::get('billing/create', [PharmacyBillingController::class, 'create'])
+            ->name('billing.create');
+
+        Route::post('billing/store', [PharmacyBillingController::class, 'store'])
+            ->name('billing.store');
+
+        Route::get('billing/view/{id}', [PharmacyBillingController::class, 'view'])
+            ->name('billing.view');
+
+        Route::get('/billing/{bill_id}/edit', [PharmacyBillingController::class, 'edit'])
+            ->name('billing.edit');
+
+        Route::put('/billing/{bill_id}', [PharmacyBillingController::class, 'update'])
+            ->name('billing.update');
+
+        Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
+            ->name('billing.print');
+
+
+
+    });
 
 });

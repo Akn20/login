@@ -142,6 +142,8 @@
                             up-target="#main-container"><i class="feather-lock me-2"></i>Controlled Drug</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-edit-3 me-2"></i>Prescriptions</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
                 </ul>
