@@ -38,4 +38,9 @@ class SampleCollection extends Model
         return $this->belongsTo(LabRequest::class, 'lab_request_id');
     }
 
+    public function labReport()
+    {
+        return $this->hasOne(LabReport::class, 'sample_id');
+    }
+
 }

@@ -158,7 +158,7 @@ let dept_id = $(this).val();
 
 $('#designation').html('<option>Loading...</option>');
 
-$.get('/hr/get-designations/' + dept_id, function(data){
+$.get('/hr/attendance/get-designations/' + dept_id, function(data){
 
 let options = '<option value="">Select Designation</option>';
 
@@ -184,7 +184,7 @@ $('#designation').change(function(){
 
     $('#employee').html('<option>Loading...</option>');
 
-    $.get('/hr/get-employees/' + designation_id, function(data){
+    $.get('/hr/attendance/get-employees/' + designation_id, function(data){
 
         let options = '<option value="">Select Employee</option>';
 
@@ -209,7 +209,7 @@ let shift_id = $(this).val();
 
 if(shift_id){
 
-$.get('/hr/get-shift-time/' + shift_id, function(data){
+$.get('/hr/attendance/get-shift-time/' + shift_id, function(data){
 
 $('#shift_start').val(data.start_time);
 $('#shift_end').val(data.end_time);

@@ -29,6 +29,7 @@
     <form method="GET" action="#" class="d-flex gap-2">
 
         <input type="text"
+               id="leaveSearch"
                name="search"
                class="form-control form-control-sm"
                placeholder="Search Leave..."
@@ -72,7 +73,7 @@
 </tr>
 </thead>
 
-<tbody>
+<tbody id="leaveTable">
 
 @forelse($applications as $key => $application)
 
@@ -85,8 +86,8 @@
 
 <td>{{ $application->balance_after }}</td>
 
-<td>{{ \Carbon\Carbon::parse($application->from_date)->format('d/m/Y') }}</td>
-
+<!-- <td>{{ \Carbon\Carbon::parse($application->from_date)->format('d/m/Y') }}</td> -->
+<td>{{ \Carbon\Carbon::parse($application->created_at)->format('d/m/Y') }}</td>
 <td>
 @if($application->status == 'pending')
 <span class="badge bg-warning">Pending</span>
@@ -133,5 +134,30 @@
 
 </div>
 </div>
+
+{{-- SEARCH SCRIPT --}}
+<script>
+
+document.getElementById("leaveSearch").addEventListener("keyup", function() {
+
+    let value = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("#leaveTable tr");
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toLowerCase();
+
+        if(text.includes(value)){
+            row.style.display = "";
+        }else{
+            row.style.display = "none";
+        }
+
+    });
+
+});
+
+</script>
 
 @endsection

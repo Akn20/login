@@ -14,7 +14,7 @@ return new class extends Migration {
 
             $table->uuid('controlled_drug_id')->primary();
 
-            $table->integer('drug_id');
+            // $table->integer('drug_id');
 
             $table->string('batch_number');
 
