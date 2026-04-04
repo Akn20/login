@@ -14,14 +14,15 @@ class SalesBillItem extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'sales_bill_id',
-        'medicine_id',
-        'batch_id',
-        'quantity',
-        'unit_price',
-        'total_price'
-    ];
+   protected $fillable = [
+    'id',
+    'sales_bill_id',
+    'medicine_id',
+    'batch_id',
+    'quantity',
+    'unit_price',
+    'total_price'
+];
 
 
 
