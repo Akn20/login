@@ -12,7 +12,6 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 // Admin
-use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -81,8 +80,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TokenController;
 
 // Lab Tests
-use App\Http\Controllers\Admin\LabTestController;
-use App\Http\Controllers\Admin\SampleCollectionController;
+
 
 // added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
