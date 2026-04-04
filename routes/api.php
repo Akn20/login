@@ -966,3 +966,19 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'apiForceDelete']);
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
 });
+
+Route::prefix('edm')->group(function () {
+
+    // ✅ FIRST: LIST (no params)
+    Route::get('/documents', [EmployeeDocumentApiController::class, 'index']);
+
+    // ✅ THEN: OTHER ROUTES
+    Route::post('/documents', [EmployeeDocumentApiController::class, 'store']);
+
+    Route::get('/documents/{id}', [EmployeeDocumentApiController::class, 'show']);
+    Route::post('/documents/{id}', [EmployeeDocumentApiController::class, 'update']);
+    Route::delete('/documents/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+
+    Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
+    Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
+});
