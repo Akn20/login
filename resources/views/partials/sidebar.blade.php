@@ -154,7 +154,7 @@
 
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-flask"></i></span>
+                    <span class="nxl-micon"><i class="feather-activity"></i></span>
                     <span class="nxl-mtext">Laboratory</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
@@ -186,6 +186,101 @@
                         </a>
                     </li>       
                 </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.equipment.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-cpu me-2"></i>
+                            All Equipment
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.equipment.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Equipment
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.maintenance.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-tool me-2"></i>
+                            All Maintenance
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.maintenance.create') }}" class="nxl-link" up-follow
+                        up-target="#main-container">
+                        <i class="feather-plus-circle me-2"></i>
+                            Add Maintenance
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.calibration.index') }}" class="nxl-link">
+                            <i class="feather-activity me-2"></i>
+                            All Calibration
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.calibration.create') }}" class="nxl-link">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Calibration
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.breakdown.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-alert-triangle me-2"></i>
+                            All Breakdown
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.breakdown.create') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Breakdown
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.preventive.index') }}" class="nxl-link">
+                            <i class="feather-calendar me-2"></i>
+                            All Preventive
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.preventive.create') }}" class="nxl-link">
+                            <i class="feather-plus-circle me-2"></i>
+                            Add Preventive
+                        </a>
+                    </li>
+                </ul>
+                
             </li>
 
             {{-- --- 5. HR MANAGEMENT --- --}}
