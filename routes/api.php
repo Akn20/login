@@ -651,8 +651,20 @@ Route::prefix('surgery')->group(function () {
     
     // Get surgeries by date
 });
+// Hourly Pay APIs
+// Route::prefix('hourly-pay')->group(function () {
 
+//     Route::get('/', [HourlyPayController::class, 'apiIndex']);
+//     Route::post('/', [HourlyPayController::class, 'apiStore']);
+//     Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
 
+//     Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
+//     Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
+//     Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
+
+//     Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
+//     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
+// });
 
 
 Route::prefix('ot')->group(function () {
