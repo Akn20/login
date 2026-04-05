@@ -386,6 +386,14 @@
             <i class="feather-minus-circle me-2"></i>Deductions
         </a>
     </li>
+    {{-- HOURLY PAY --}}
+    <li class="nxl-item">
+    <a href="{{ route('hr.payroll.hourly-pay.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-clock me-2"></i>Hourly Pay
+    </a>
+</li>
 
 </ul>
             </li>
