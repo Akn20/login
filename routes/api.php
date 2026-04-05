@@ -8,10 +8,12 @@ use App\Http\Controllers\Admin\LabTestController;
 */
 
 // Auth
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 // Admin
+
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -79,7 +81,7 @@ use Illuminate\Support\Facades\Route;
 //Receptionist
 use App\Http\Controllers\TokenController;
 
-// Lab Tests
+
 
 
 // added by sushan for api
@@ -95,6 +97,10 @@ Route::get('/patients', [PatientController::class, 'apiIndex']);
 /*
 |--------------------------------------------------------------------------
 | Test / Misc
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+
+/*|--------------------------------------------------------------------------
+| Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
 */
 
@@ -963,6 +969,21 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::post('/{id}/restore', [PayrollDeductionController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'apiForceDelete']);
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
+
+});
+//Pharmacy Billing Module
+Route::prefix('pharmacy')->group(function () {
+
+    Route::get('billing', [PharmacyBillingController::class, 'apiIndex']);
+
+    Route::post('billing/store', [PharmacyBillingController::class, 'apiStore']);
+
+    Route::get('billing/view/{id}', [PharmacyBillingController::class, 'apiView']);
+
+    Route::post('billing/update/{id}', [PharmacyBillingController::class, 'apiUpdate']);
+
+    Route::get('billing/print/{id}', [PharmacyBillingController::class, 'apiPrint']);
+
 });
 
 Route::prefix('edm')->group(function () {

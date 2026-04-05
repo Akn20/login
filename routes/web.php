@@ -58,6 +58,7 @@ use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
@@ -100,6 +101,29 @@ use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+// use App\Http\Controllers\ExpiryController;
+// use App\Http\Controllers\ControlledDrugController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+// use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+
+//use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+
+//use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+//nurse
+// use App\Http\Controllers\NurseNotesController;
+// use Illuminate\Support\Facades\Route;
+
+// use App\http\Controllers\attendance\AttendanceController;
+//use App\Http\Controllers\ExpiryController;
+
+#use App\Http\Controllers\ControlledDrugController;
+#use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+#use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
+#use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1321,6 +1345,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/store', [LeaveApplicationController::class, 'store'])->name('store');
         Route::post('/withdraw/{id}', [LeaveApplicationController::class, 'withdraw'])->name('withdraw');
         Route::get('/show/{id}', [LeaveApplicationController::class, 'show'])->name('show');
+
+        
     });
 
     Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
@@ -1393,6 +1419,25 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+    // Payroll - Hourly Pay
+
+    Route::prefix('payroll/hourly-pay')
+        ->name('payroll.hourly-pay.')
+        ->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'index'])->name('index');
+    Route::get('/create', [HourlyPayController::class, 'create'])->name('create');
+    Route::post('/', [HourlyPayController::class, 'store'])->name('store');
+      Route::get('/{id}', [HourlyPayController::class, 'show'])->name('show');
+
+    Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])->name('forceDelete');
+
+    Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
+    Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
+});
 
 });
 
@@ -1608,5 +1653,38 @@ Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
     Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
     Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
     Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
+});
+/* ----------------------------------
+        Pharmacy Billing 
+        -----------------------------------*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('pharmacy')->name('pharmacy.')->group(function () {
+
+        Route::get('billing', [PharmacyBillingController::class, 'index'])
+            ->name('billing.index');
+
+        Route::get('billing/create', [PharmacyBillingController::class, 'create'])
+            ->name('billing.create');
+
+        Route::post('billing/store', [PharmacyBillingController::class, 'store'])
+            ->name('billing.store');
+
+        Route::get('billing/view/{id}', [PharmacyBillingController::class, 'view'])
+            ->name('billing.view');
+
+        Route::get('/billing/{bill_id}/edit', [PharmacyBillingController::class, 'edit'])
+            ->name('billing.edit');
+
+        Route::put('/billing/{bill_id}', [PharmacyBillingController::class, 'update'])
+            ->name('billing.update');
+
+        Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
+            ->name('billing.print');
+
+
+
+    });
 
 });
