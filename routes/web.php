@@ -26,8 +26,10 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\PatientController;
-// Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// Admin > Laboratory
+use App\Http\Controllers\Admin\ResultEntryController;
+// Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -88,6 +90,11 @@ use App\Http\Controllers\ReturnController;
 
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\EquipmentController;
+use App\Http\Controllers\Admin\EquipmentMaintenanceController;
+use App\Http\Controllers\Admin\EquipmentCalibrationController;
+use App\Http\Controllers\Admin\EquipmentBreakdownController;
+use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1151,6 +1158,76 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+        // Equipment Management
+
+        Route::get('/equipment/deleted', [EquipmentController::class, 'deleted'])
+            ->name('equipment.deleted');
+
+        Route::put('/equipment/{id}/restore', [EquipmentController::class, 'restore'])
+            ->name('equipment.restore');
+
+        Route::delete('/equipment/{id}/force-delete', [EquipmentController::class, 'forceDelete'])
+            ->name('equipment.forceDelete');
+
+        Route::post('/equipment/{id}/toggle-status', [EquipmentController::class, 'toggleStatus'])
+            ->name('equipment.toggleStatus');
+
+        Route::resource('equipment', EquipmentController::class);
+
+        // 🔧 Equipment Maintenance
+        Route::get('/maintenance/deleted', [EquipmentMaintenanceController::class, 'deleted'])
+            ->name('maintenance.deleted');
+
+        Route::put('/maintenance/{id}/restore', [EquipmentMaintenanceController::class, 'restore'])
+            ->name('maintenance.restore');
+
+        Route::delete('/maintenance/{id}/force-delete', [EquipmentMaintenanceController::class, 'forceDelete'])
+            ->name('maintenance.forceDelete');
+
+        Route::resource('maintenance', EquipmentMaintenanceController::class);
+
+
+
+        Route::get('/calibration/deleted', [EquipmentCalibrationController::class, 'deleted'])
+            ->name('calibration.deleted');
+
+        Route::put('/calibration/{id}/restore', [EquipmentCalibrationController::class, 'restore'])
+            ->name('calibration.restore');
+
+        Route::delete('/calibration/{id}/force-delete', [EquipmentCalibrationController::class, 'forceDelete'])
+            ->name('calibration.forceDelete');
+
+        Route::resource('calibration', EquipmentCalibrationController::class);
+
+
+        Route::get('/breakdown/deleted', [EquipmentBreakdownController::class, 'deleted'])
+            ->name('breakdown.deleted');
+
+        Route::put('/breakdown/{id}/restore', [EquipmentBreakdownController::class, 'restore'])
+            ->name('breakdown.restore');
+
+        Route::delete('/breakdown/{id}/force-delete', [EquipmentBreakdownController::class, 'forceDelete'])
+            ->name('breakdown.forceDelete');
+
+        Route::resource('breakdown', EquipmentBreakdownController::class);
+
+
+        Route::get('/preventive/deleted', [PreventiveMaintenanceController::class, 'deleted'])
+            ->name('preventive.deleted');
+
+        Route::put('/preventive/{id}/restore', [PreventiveMaintenanceController::class, 'restore'])
+            ->name('preventive.restore');
+
+        Route::delete('/preventive/{id}/force-delete', [PreventiveMaintenanceController::class, 'forceDelete'])
+            ->name('preventive.forceDelete');
+
+        Route::resource('preventive', PreventiveMaintenanceController::class);
+         // ✅ RESULT ENTRY ROUTES
+        Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
+
+        Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
+
+        Route::post('/result/submit/{id}', [ResultEntryController::class, 'submit'])->name('result.submit');
     });
 
 });
