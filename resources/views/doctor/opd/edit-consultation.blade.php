@@ -12,30 +12,30 @@
             addBtn.addEventListener("click", function () {
 
                 let newRow = `
-                                                        <tr>
+                                                                                        <tr>
 
-                                                        <td>
-                                                            <select name="medicine[]" class="form-control" required>
-                                                                <option value="">Select</option>
-                                                                @foreach($medicines as $medicine)
-                                                                    <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </td>
+                                                                                        <td>
+                                                                                            <select name="medicine[]" class="form-control" required>
+                                                                                                <option value="">Select</option>
+                                                                                                @foreach($medicines as $medicine)
+                                                                                                    <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                                                                                                @endforeach
+                                                                                            </select>
+                                                                                        </td>
 
-                                                        <td><input type="text" class="form-control" name="dosage[]" required></td>
-                                                        <td><input type="text" class="form-control" name="frequency[]" required></td>
-                                                        <td><input type="text" class="form-control" name="duration[]" required></td>
-                                                        <td><input type="text" class="form-control" name="instructions[]" required></td>
+                                                                                        <td><input type="text" class="form-control" name="dosage[]" required></td>
+                                                                                        <td><input type="text" class="form-control" name="frequency[]" required></td>
+                                                                                        <td><input type="text" class="form-control" name="duration[]" required></td>
+                                                                                        <td><input type="text" class="form-control" name="instructions[]" required></td>
 
-                                                        <td>
-                                                            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                                                                <i class="feather-trash-2"></i> Remove
-                                                            </button>
-                                                        </td>
+                                                                                        <td>
+                                                                                            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                                                                                                <i class="feather-trash-2"></i> Remove
+                                                                                            </button>
+                                                                                        </td>
 
-                                                        </tr>
-                                                        `;
+                                                                                        </tr>
+                                                                                        `;
 
                 table.insertAdjacentHTML("beforeend", newRow);
 
@@ -242,36 +242,53 @@
 
 
                     <!-- Recommended Tests -->
+                    @php
+                        $selectedTests = $consultation->labRequests->pluck('test_name')->toArray();
+                    @endphp
 
-                    @foreach($consultation->labRequests as $labRequest)
-                        <div class="mb-3">
-                            <label><strong>Recommended Test</strong></label>
-                            <input type="text" name="tests[]" class="form-control" value="{{ $labRequest->test_name }}">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>Recommended Tests</strong>
                         </div>
 
-                        <div class="mb-3">
-                            <label><strong>Test Priority</strong></label>
+                        <div class="card-body">
+                            <div class="row">
 
-                            <select name="priority[]" class="form-control">
+                                {{-- 🧪 LAB TESTS --}}
+                                <div class="col-md-6">
+                                    <label><strong>Laboratory Tests</strong></label>
 
-                                <option value="routine" {{ $labRequest->priority == 'routine' ? 'selected' : '' }}>
-                                    Routine
-                                </option>
+                                    <select name="tests[]" class="form-select" multiple>
+                                        @foreach($labTests as $test)
+                                            <option value="{{ $test->id }}" {{ in_array($test->test_name, $selectedTests) ? 'selected' : '' }}>
+                                                {{ $test->test_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                <option value="urgent" {{ $labRequest->priority == 'urgent' ? 'selected' : '' }}>
-                                    Urgent
-                                </option>
+                                {{-- 🩻 RADIOLOGY --}}
+                                <div class="col-md-6">
+                                    <label><strong>Radiology Tests</strong></label>
 
-                                <option value="stat" {{ $labRequest->priority == 'stat' ? 'selected' : '' }}>
-                                    STAT
-                                </option>
+                                    <input type="text" class="form-control" placeholder="Enter Radiology Tests">
+                                </div>
 
-                            </select>
+                            </div>
                         </div>
+                    </div>
 
+                    {{-- PRIORITY (Single for now) --}}
+                    <div class="mb-3">
+                        <label><strong>Test Priority</strong></label>
 
+                        <select name="priority" class="form-control">
+                            <option value="routine" {{ $priority == 'routine' ? 'selected' : '' }}>Routine</option>
+                            <option value="urgent" {{ $priority == 'urgent' ? 'selected' : '' }}>Urgent</option>
+                            <option value="stat" {{ $priority == 'stat' ? 'selected' : '' }}>STAT</option>
+                        </select>
+                    </div>
 
-                    @endforeach
 
 
 

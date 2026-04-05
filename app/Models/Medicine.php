@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 class Medicine extends Model
 {
     use HasUuids;
-
+    
     protected $keyType = 'string';
     public $incrementing = false;
 
