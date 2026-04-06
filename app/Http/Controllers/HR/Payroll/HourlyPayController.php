@@ -60,7 +60,7 @@ class HourlyPayController extends Controller
             'payslip_label'   => $request->payslip_label,
             'display_order'   => $request->display_order ?? 0,
 
-            'status' => $request->status ?? 'active',
+            'status' => $request->input('status', 'active'),
         ]);
 
         return redirect()
@@ -121,7 +121,7 @@ class HourlyPayController extends Controller
             'payslip_label'   => $request->payslip_label,
             'display_order'   => $request->display_order ?? 0,
 
-            'status' => $request->status ?? 'active',
+            'status' => $request->input('status', 'active'),
         ]);
 
         return redirect()
