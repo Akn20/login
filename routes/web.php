@@ -53,6 +53,7 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 // HR
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1281,6 +1282,25 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+    // Payroll - Hourly Pay
+
+    Route::prefix('payroll/hourly-pay')
+        ->name('payroll.hourly-pay.')
+        ->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'index'])->name('index');
+    Route::get('/create', [HourlyPayController::class, 'create'])->name('create');
+    Route::post('/', [HourlyPayController::class, 'store'])->name('store');
+      Route::get('/{id}', [HourlyPayController::class, 'show'])->name('show');
+
+    Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])->name('forceDelete');
+
+    Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
+    Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
+});
 
 // Payroll - Hourly Pay Approval
 

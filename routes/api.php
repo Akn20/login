@@ -36,11 +36,15 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 // Leave Management
 use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\WorkStatusController;
+
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 // Attendance
@@ -62,7 +66,6 @@ use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
-use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -605,11 +608,15 @@ Route::prefix('surgery')->group(function () {
     Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
 });
 
+
+
+
 /*
 |--------------------------------------------------------------------------
 | 16. OT (Operation Theatre)
 |--------------------------------------------------------------------------
 */
+
 
 Route::prefix('ot')->group(function () {
     Route::get('/', [OTApiController::class, 'index']);
@@ -693,6 +700,16 @@ Route::prefix('appointments')->group(function () {
     Route::delete('/{id}/force-delete', [AppointmentController::class, 'apiForceDelete']);
 });
 
+Route::prefix('payroll/allowance')->group(function () {
+    Route::get('/', [PayrollAllowanceController::class, 'index']);
+    Route::post('/', [PayrollAllowanceController::class, 'store']);
+    Route::get('/deleted', [PayrollAllowanceController::class, 'deleted']);
+    Route::post('/{id}/restore', [PayrollAllowanceController::class, 'restore']);
+    Route::delete('/{id}/force-delete', [PayrollAllowanceController::class, 'forceDelete']);
+    Route::put('/{id}', [PayrollAllowanceController::class, 'update']);
+    Route::delete('/{id}', [PayrollAllowanceController::class, 'destroy']);
+    Route::patch('/{id}/toggle-status', [PayrollAllowanceController::class, 'toggleStatus']);
+});
 /*
 |--------------------------------------------------------------------------
 | 20. Employee Document Management (EDM)
@@ -792,4 +809,29 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
     Route::post('/{id}/restore', [PayrollDeductionController::class, 'apiRestore']);
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: Hourly Pay
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::prefix('hourly-pay')->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'apiIndex']);
+    Route::post('/', [HourlyPayController::class, 'apiStore']);
+
+
+    Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
+    Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
+    Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
 });
