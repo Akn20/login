@@ -81,14 +81,14 @@
 
 <div class="row">
 
-    <div class="col-md-3 form-check mb-3">
+    <div class="col-md-2 form-check mb-3">
         <input type="checkbox" name="is_prorata" value="1"
             class="form-check-input"
             {{ old('is_prorata', $hourlyPay->is_prorata ?? 0) ? 'checked' : '' }}>
         <label class="form-check-label">Prorata</label>
     </div>
 
-    <div class="col-md-3 form-check mb-3">
+    <div class="col-md-2 form-check mb-3">
         <input type="checkbox" name="lop_impact" value="1"
             class="form-check-input"
             {{ old('lop_impact', $hourlyPay->lop_impact ?? 0) ? 'checked' : '' }}>

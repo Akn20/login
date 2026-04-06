@@ -44,6 +44,7 @@ use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 // Attendance
@@ -606,21 +607,8 @@ Route::prefix('surgery')->group(function () {
     Route::get('/patient/{patientId}', [SurgeryApiController::class, 'getByPatient']);
     Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
 });
-// Hourly Pay APIs
-// Route::prefix('hourly-pay')->group(function () {
 
 
-//     Route::get('/', [HourlyPayController::class, 'apiIndex']);
-//     Route::post('/', [HourlyPayController::class, 'apiStore']);
-//     Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
-
-//     Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
-//     Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
-//     Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
-
-//     Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
-//     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
-// });
 
 
 /*
@@ -821,4 +809,29 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
     Route::post('/{id}/restore', [PayrollDeductionController::class, 'apiRestore']);
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: Hourly Pay
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::prefix('hourly-pay')->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'apiIndex']);
+    Route::post('/', [HourlyPayController::class, 'apiStore']);
+
+
+    Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
+    Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
+    Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
 });

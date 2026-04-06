@@ -106,7 +106,7 @@ class HourlyPayController extends Controller
             'name' => $request->name,
             'category' => $request->category,
 
-            // ✅ CHECKBOX FIX
+            //  CHECKBOX FIX
             'is_taxable'   => $request->has('is_taxable'),
             'pf_applicable'=> $request->has('pf_applicable'),
             'esi_applicable'=> $request->has('esi_applicable'),
@@ -170,4 +170,129 @@ class HourlyPayController extends Controller
             ->route('hr.payroll.hourly-pay.index')
             ->with('success', 'Work Type deleted successfully');
     }
+
+
+
+    //Api Methods 
+    public function apiIndex()
+{
+    return response()->json([
+        'data' => HourlyPay::latest()->get()
+    ]);
+}
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'code' => 'required|unique:hourly_pays,code',
+        'name' => 'required|string|max:255|unique:hourly_pays,name',
+        'category' => 'required',
+        'earning_type' => 'required|in:fixed,variable',
+        'display_order' => 'nullable|numeric',
+    ]);
+
+    $data = HourlyPay::create([
+        'id' => (string) \Illuminate\Support\Str::uuid(),
+
+        'code' => $request->code,
+        'name' => $request->name,
+        'category' => $request->category,
+
+        'is_taxable' => (bool) $request->is_taxable,
+        'pf_applicable' => (bool) $request->pf_applicable,
+        'esi_applicable' => (bool) $request->esi_applicable,
+        'pt_applicable' => (bool) $request->pt_applicable,
+        'is_prorata' => (bool) $request->is_prorata,
+        'lop_impact' => (bool) $request->lop_impact,
+
+        'earning_type' => $request->earning_type,
+
+        'show_in_payslip' => (bool) $request->show_in_payslip,
+        'payslip_label' => $request->payslip_label,
+        'display_order' => $request->display_order ?? 0,
+
+        'status' => $request->status ?? 'active',
+    ]);
+
+    return response()->json([
+        'message' => 'Created successfully',
+        'data' => $data
+    ]);
+}
+public function apiShow($id)
+{
+    return response()->json([
+        'data' => HourlyPay::findOrFail($id)
+    ]);
+}
+public function apiUpdate(Request $request, $id)
+{
+    $data = HourlyPay::findOrFail($id);
+
+    $request->validate([
+        'code' => 'required|unique:hourly_pays,code,' . $id,
+        'name' => 'required|string|max:255|unique:hourly_pays,name,' . $id,
+        'category' => 'required',
+        'earning_type' => 'required|in:fixed,variable',
+        'display_order' => 'nullable|numeric',
+    ]);
+
+    $data->update([
+        'code' => $request->code,
+        'name' => $request->name,
+        'category' => $request->category,
+
+        'is_taxable' => (bool) $request->is_taxable,
+        'pf_applicable' => (bool) $request->pf_applicable,
+        'esi_applicable' => (bool) $request->esi_applicable,
+        'pt_applicable' => (bool) $request->pt_applicable,
+        'is_prorata' => (bool) $request->is_prorata,
+        'lop_impact' => (bool) $request->lop_impact,
+
+        'earning_type' => $request->earning_type,
+
+        'show_in_payslip' => (bool) $request->show_in_payslip,
+        'payslip_label' => $request->payslip_label,
+        'display_order' => $request->display_order ?? 0,
+
+        'status' => $request->status ?? 'active',
+    ]);
+
+    return response()->json([
+        'message' => 'Updated successfully',
+        'data' => $data
+    ]);
+}
+public function apiDestroy($id)
+{
+    \Log::info("Deleting ID: " . $id);
+
+    $data = HourlyPay::findOrFail($id);
+    $data->delete();
+
+    return response()->json([
+        'message' => 'Deleted successfully'
+    ]);
+}
+public function apiDeleted()
+{
+    return response()->json([
+        'data' => HourlyPay::onlyTrashed()->get()
+    ]);
+}
+public function apiRestore($id)
+{
+    HourlyPay::withTrashed()->findOrFail($id)->restore();
+
+    return response()->json([
+        'message' => 'Restored successfully'
+    ]);
+}
+public function apiForceDelete($id)
+{
+    HourlyPay::withTrashed()->findOrFail($id)->forceDelete();
+
+    return response()->json([
+        'message' => 'Deleted permanently'
+    ]);
+}
 }
