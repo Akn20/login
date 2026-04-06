@@ -66,6 +66,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ResultEntryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -766,6 +767,7 @@ Route::prefix('laboratories')->group(function () {
     Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
     Route::get('/{id}', [LabTestController::class, 'apiShow']);
 
+
     // Sample Collection API
     Route::prefix('samples')->group(function () {
         Route::get('/', [SampleCollectionController::class, 'apiIndex']);
@@ -773,6 +775,14 @@ Route::prefix('laboratories')->group(function () {
         Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
         Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
         Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
+
+        // Result Entry API
+        Route::prefix('results')->group(function () {
+            Route::get('/', [ResultEntryController::class, 'apiIndex']);
+            Route::get('/{id}/results', [ResultEntryController::class, 'apiResults']);
+            Route::post('/save-draft/{id}', [ResultEntryController::class, 'apiSaveDraft']);
+            Route::post('/submit/{id}', [ResultEntryController::class, 'apiSubmit']);
+        });
     });
 });
 

@@ -19,7 +19,7 @@ class LabReport extends Model
         'entered_at'
     ];
 
-    // JSON casting
+
     protected $casts = [
         'result_data' => 'array'
     ];
