@@ -26,8 +26,10 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\PatientController;
-// Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+// Admin > Laboratory
+use App\Http\Controllers\Admin\ResultEntryController;
+// Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
@@ -56,6 +58,7 @@ use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
@@ -87,6 +90,11 @@ use App\Http\Controllers\ReturnController;
 
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\EquipmentController;
+use App\Http\Controllers\Admin\EquipmentMaintenanceController;
+use App\Http\Controllers\Admin\EquipmentCalibrationController;
+use App\Http\Controllers\Admin\EquipmentBreakdownController;
+use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1150,6 +1158,76 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+        // Equipment Management
+
+        Route::get('/equipment/deleted', [EquipmentController::class, 'deleted'])
+            ->name('equipment.deleted');
+
+        Route::put('/equipment/{id}/restore', [EquipmentController::class, 'restore'])
+            ->name('equipment.restore');
+
+        Route::delete('/equipment/{id}/force-delete', [EquipmentController::class, 'forceDelete'])
+            ->name('equipment.forceDelete');
+
+        Route::post('/equipment/{id}/toggle-status', [EquipmentController::class, 'toggleStatus'])
+            ->name('equipment.toggleStatus');
+
+        Route::resource('equipment', EquipmentController::class);
+
+        // 🔧 Equipment Maintenance
+        Route::get('/maintenance/deleted', [EquipmentMaintenanceController::class, 'deleted'])
+            ->name('maintenance.deleted');
+
+        Route::put('/maintenance/{id}/restore', [EquipmentMaintenanceController::class, 'restore'])
+            ->name('maintenance.restore');
+
+        Route::delete('/maintenance/{id}/force-delete', [EquipmentMaintenanceController::class, 'forceDelete'])
+            ->name('maintenance.forceDelete');
+
+        Route::resource('maintenance', EquipmentMaintenanceController::class);
+
+
+
+        Route::get('/calibration/deleted', [EquipmentCalibrationController::class, 'deleted'])
+            ->name('calibration.deleted');
+
+        Route::put('/calibration/{id}/restore', [EquipmentCalibrationController::class, 'restore'])
+            ->name('calibration.restore');
+
+        Route::delete('/calibration/{id}/force-delete', [EquipmentCalibrationController::class, 'forceDelete'])
+            ->name('calibration.forceDelete');
+
+        Route::resource('calibration', EquipmentCalibrationController::class);
+
+
+        Route::get('/breakdown/deleted', [EquipmentBreakdownController::class, 'deleted'])
+            ->name('breakdown.deleted');
+
+        Route::put('/breakdown/{id}/restore', [EquipmentBreakdownController::class, 'restore'])
+            ->name('breakdown.restore');
+
+        Route::delete('/breakdown/{id}/force-delete', [EquipmentBreakdownController::class, 'forceDelete'])
+            ->name('breakdown.forceDelete');
+
+        Route::resource('breakdown', EquipmentBreakdownController::class);
+
+
+        Route::get('/preventive/deleted', [PreventiveMaintenanceController::class, 'deleted'])
+            ->name('preventive.deleted');
+
+        Route::put('/preventive/{id}/restore', [PreventiveMaintenanceController::class, 'restore'])
+            ->name('preventive.restore');
+
+        Route::delete('/preventive/{id}/force-delete', [PreventiveMaintenanceController::class, 'forceDelete'])
+            ->name('preventive.forceDelete');
+
+        Route::resource('preventive', PreventiveMaintenanceController::class);
+         // ✅ RESULT ENTRY ROUTES
+        Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
+
+        Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
+
+        Route::post('/result/submit/{id}', [ResultEntryController::class, 'submit'])->name('result.submit');
     });
 
 });
@@ -1267,6 +1345,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/store', [LeaveApplicationController::class, 'store'])->name('store');
         Route::post('/withdraw/{id}', [LeaveApplicationController::class, 'withdraw'])->name('withdraw');
         Route::get('/show/{id}', [LeaveApplicationController::class, 'show'])->name('show');
+
+        
     });
 
     Route::prefix('leave-adjustments')->name('leave-adjustments.')->group(function () {
@@ -1339,6 +1419,25 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+    // Payroll - Hourly Pay
+
+    Route::prefix('payroll/hourly-pay')
+        ->name('payroll.hourly-pay.')
+        ->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'index'])->name('index');
+    Route::get('/create', [HourlyPayController::class, 'create'])->name('create');
+    Route::post('/', [HourlyPayController::class, 'store'])->name('store');
+      Route::get('/{id}', [HourlyPayController::class, 'show'])->name('show');
+
+    Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
+    Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])->name('forceDelete');
+
+    Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
+    Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
+});
 
 });
 

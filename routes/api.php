@@ -985,3 +985,19 @@ Route::prefix('pharmacy')->group(function () {
     Route::get('billing/print/{id}', [PharmacyBillingController::class, 'apiPrint']);
 
 });
+
+Route::prefix('edm')->group(function () {
+
+    // ✅ FIRST: LIST (no params)
+    Route::get('/documents', [EmployeeDocumentApiController::class, 'index']);
+
+    // ✅ THEN: OTHER ROUTES
+    Route::post('/documents', [EmployeeDocumentApiController::class, 'store']);
+
+    Route::get('/documents/{id}', [EmployeeDocumentApiController::class, 'show']);
+    Route::post('/documents/{id}', [EmployeeDocumentApiController::class, 'update']);
+    Route::delete('/documents/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+
+    Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
+    Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
+});
