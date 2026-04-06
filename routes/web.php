@@ -54,6 +54,7 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1301,68 +1302,58 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
     Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
 });
-
+// ----------------------------------------
 // Payroll - Hourly Pay Approval
+// ----------------------------------------
 
 Route::prefix('payroll/hourly-pay-approval')
     ->name('payroll.hourly-pay-approval.')
     ->group(function () {
 
-        // INDEX
-        Route::get('/', function () {
+        Route::get('/',
+            [HourlyPayApprovalController::class, 'index']
+        )->name('index');
 
-            $entries = new \Illuminate\Pagination\LengthAwarePaginator(
-                [], // items
-                0,  // total
-                10  // per page
-            );
+        Route::get('/create',
+            [HourlyPayApprovalController::class, 'create']
+        )->name('create');
 
-            return view(
-                'hr.payroll.hourly_pay_approval.index',
-                compact('entries')
-            );
+        Route::post('/store',
+            [HourlyPayApprovalController::class, 'store']
+        )->name('store');
 
-        })->name('index');
+        Route::get('/edit/{id}',
+            [HourlyPayApprovalController::class, 'edit']
+        )->name('edit');
 
+        Route::put('/update/{id}',
+            [HourlyPayApprovalController::class, 'update']
+        )->name('update');
 
-        // CREATE
-        Route::get('/create', function () {
-            return view('hr.payroll.hourly_pay_approval.create');
-        })->name('create');
-
-
-        // STORE  ✅ (Fix for your current error)
-        Route::post('/store', function () {
-            return redirect()
-                ->route('hr.payroll.hourly-pay-approval.index')
-                ->with('success', 'Saved successfully');
-        })->name('store');
+        Route::delete('/delete/{id}',
+            [HourlyPayApprovalController::class, 'destroy']
+        )->name('destroy');
 
 
-        // EDIT
-        Route::get('/edit/{id}', function ($id) {
-
-            $entry = null;
-
-            return view(
-                'hr.payroll.hourly_pay_approval.edit',
-                compact('entry')
-            );
-
-        })->name('edit');
+        // Trash View
+        Route::get('/trash',
+            [HourlyPayApprovalController::class, 'trash']
+        )->name('trash');
 
 
-        // UPDATE
-        Route::put('/update/{id}', function ($id) {
-            return redirect()
-                ->route('hr.payroll.hourly-pay-approval.index')
-                ->with('success', 'Updated successfully');
-        })->name('update');
+        // Restore
+        Route::post('/restore/{id}',
+            [HourlyPayApprovalController::class, 'restore']
+        )->name('restore');
+
+
+        // ✅ NEW — Permanent Delete
+        Route::delete('/force-delete/{id}',
+            [HourlyPayApprovalController::class, 'forceDelete']
+        )->name('forceDelete');
 
     });
-
-
-            });
+  });
 
 /*
 |--------------------------------------------------------------------------
