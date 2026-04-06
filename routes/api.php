@@ -191,7 +191,7 @@ Route::put('job-types/{id}/restore', [JobTypeController::class, 'apiRestore']);
 Route::delete('job-types/{id}/force-delete', [JobTypeController::class, 'apiForceDelete']);
 
 /* Work Status */
-Route::get('/work-status', [WorkStatusController::class, 'apiIndex']);
+Route::get('/work-tatus', [WorkStatusController::class, 'apiIndex']);
 Route::post('/work-status', [WorkStatusController::class, 'apiStore']);
 Route::put('/work-status/{id}', [WorkStatusController::class, 'apiUpdate']);
 Route::delete('/work-status/{id}', [WorkStatusController::class, 'apiDelete']);
