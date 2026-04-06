@@ -119,6 +119,7 @@
                 <th>Value</th>
                 <th>Unit</th>
                 <th>Range</th>
+                <th>Status</th>
             </tr>
         </thead>
 
@@ -130,23 +131,35 @@
                 @endphp
 
                 <tr>
-                    <td>{{ $name }}</td>
+    <td>{{ $name }}</td>
 
-                    <td>
-                        <input type="number"
-                            name="parameters[{{ $name }}]"
-                            value="{{ $data[$name] ?? '' }}"
-                            class="form-control"
-                            {{ $sample->status == 'Completed' ? 'readonly' : '' }}>
-                    </td>
+    <td>
+        <input type="number"
+            name="parameters[{{ $name }}]"
+            value="{{ $data[$name] ?? '' }}"
+            class="form-control"
+            data-min="{{ $param->parameter->min_value }}"
+            data-max="{{ $param->parameter->max_value }}"
+            data-status="status{{ $sample->id }}{{ $loop->index }}"
+            oninput="checkRange(this,
+                {{ $param->parameter->min_value }},
+                {{ $param->parameter->max_value }},
+                'status{{ $sample->id }}{{ $loop->index }}'
+            )"
+            {{ $sample->status == 'Completed' ? 'readonly' : '' }}>
+    </td>
 
-                    <td>{{ $param->parameter->unit }}</td>
+    <td>{{ $param->parameter->unit }}</td>
 
-                    <td>
-                        {{ $param->parameter->min_value }} -
-                        {{ $param->parameter->max_value }}
-                    </td>
-                </tr>
+    <td>
+        {{ $param->parameter->min_value }} -
+        {{ $param->parameter->max_value }}
+    </td>
+
+    <td id="status{{ $sample->id }}{{ $loop->index }}">
+        -
+    </td>
+</tr>
 
             @endforeach
         </tbody>
@@ -168,60 +181,8 @@
 
 @endif
 
-                        <table class="table table-bordered text-center">
-                            <thead>
-                                <tr>
-                                    <th>Parameter</th>
-                                    <th>Value</th>
-                                    <th>Unit</th>
-                                    <th>Range</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-
-                                <tr>
-                                    <td>Hemoglobin</td>
-                                    <td>
-                                        <input type="number" name="hemoglobin" value="{{ $data['hemoglobin'] ?? '' }}"
-                                            class="form-control" required {{ $sample->status == 'Completed' ? 'readonly' : '' }}
-                                            data-min="12" data-max="16" data-status="status{{ $sample->id }}1"
-                                            oninput="checkRange(this, 12, 16, 'status{{ $sample->id }}1')">
-                                    </td>
-                                    <td>g/dL</td>
-                                    <td>12 - 16</td>
-                                    <td id="status{{ $sample->id }}1">-</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Glucose</td>
-                                    <td>
-                                        <input type="number" name="glucose" value="{{ $data['glucose'] ?? '' }}"
-                                            class="form-control" required {{ $sample->status == 'Completed' ? 'readonly' : '' }}
-                                            data-min="70" data-max="110" data-status="status{{ $sample->id }}2"
-                                            oninput="checkRange(this, 70, 110, 'status{{ $sample->id }}2')">
-                                    </td>
-                                    <td>mg/dL</td>
-                                    <td>70 - 110</td>
-                                    <td id="status{{ $sample->id }}2">-</td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-
-                        {{-- ================= ALL OTHER TESTS ================= --}}
-                    @else
-
-                        <div>
-                            <label><strong>Test Report</strong></label>
-
-                            <textarea name="report" class="form-control" rows="4" required {{ $sample->status == 'Completed' ? 'readonly' : '' }}>
-                                    {{ $data['report'] ?? '' }}
-                                    </textarea>
-                        </div>
-
-                    @endif
+                       
+                    
 
                     {{-- ================= FILE UPLOAD ================= --}}
                     @if($sample->status != 'Completed')

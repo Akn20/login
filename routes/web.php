@@ -90,6 +90,9 @@ use App\Http\Controllers\Admin\EquipmentCalibrationController;
 use App\Http\Controllers\Admin\EquipmentBreakdownController;
 use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
+use App\Http\Controllers\Admin\ParameterController;
+use App\Http\Controllers\Admin\TestParameterController;
+
 /*
 |--------------------------------------------------------------------------
 | 1. Public & Guest Routes
@@ -1113,6 +1116,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+
         // Equipment Management
 
         Route::get('/equipment/deleted', [EquipmentController::class, 'deleted'])
@@ -1177,7 +1181,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('preventive.forceDelete');
 
         Route::resource('preventive', PreventiveMaintenanceController::class);
-         // ✅ RESULT ENTRY ROUTES
+
+        // ================= PARAMETERS =================
+        Route::resource('parameters', ParameterController::class);
+
+
+        // ================= TEST PARAMETER MAPPING =================
+        Route::resource('test-parameters', TestParameterController::class);
+
+        // ✅ PARAMETER MAPPING (ONLY ONE MODULE)
+        Route::get('/parameter-mapping', [TestParameterController::class, 'create'])
+            ->name('test-parameters.index');
+
+        Route::post('/parameter-mapping/store', [TestParameterController::class, 'store'])
+            ->name('test-parameters.store');
+        // ✅ RESULT ENTRY ROUTES
         Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
 
         Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
