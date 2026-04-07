@@ -54,7 +54,9 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 
@@ -1302,6 +1304,42 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
 });
 
+//Payroll -Deduction rule set
+
+
+// Route::prefix('payroll/deduction-rule-set')
+//     ->name('payroll.deduction-rule-set.')
+//     ->group(function () {
+
+//     Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
+//     Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
+//     Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
+
+//     Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
+//     Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
+
+//     Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+
+//     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
+//     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
+//     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+// });
+
+Route::prefix('payroll/deduction-rule-set')
+    ->name('payroll.deduction-rule-set.')
+    ->group(function () {
+    Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
+    Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
+    Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
+    Route::get('/{id}/show', [DeductionRuleSetController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
+    Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+    Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
+    Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+
+});
 });
 
 /*
