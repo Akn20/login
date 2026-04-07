@@ -67,7 +67,7 @@ public function create()
     public function store(Request $request)
     {
         $request->validate([
-            'vendor_id'    => 'required|exists:vendors,id',
+           // 'vendor_id'    => 'required|exists:vendors,id',
             'grn_date'     => 'required|date',
             'invoice_no'   => 'required|string|max:255',
             'invoice_date' => 'required|date',
@@ -99,7 +99,7 @@ public function create()
                 'grn_date'     => $request->grn_date,
 
                 // ✅ THIS is where vendor_id is saved
-                'vendor_id'    => $vendor->id,
+               // 'vendor_id'    => $vendor->id,
                 'vendor_name'  => $vendor->vendor_name,
 
                 'invoice_no'   => $request->invoice_no,
@@ -212,7 +212,7 @@ public function update(Request $request, $id)
 
     $request->validate([
         'grn_date'     => 'required|date',
-        'vendor_id'    => 'required|exists:vendors,id',
+      //  'vendor_id'    => 'required|exists:vendors,id',
         'invoice_no'   => 'required|string|max:255',
         'invoice_date' => 'required|date',
         'po_no'        => 'nullable|string|max:255',
@@ -239,7 +239,7 @@ public function update(Request $request, $id)
         // ✅ Update header
         $grn->update([
             'grn_date'     => $request->grn_date,
-            'vendor_id'    => $vendor->id,
+         //   'vendor_id'    => $vendor->id,
             'vendor_name'  => $vendor->vendor_name,
             'invoice_no'   => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
@@ -542,7 +542,7 @@ public function apiStore(Request $request)
 {
     $request->validate([
         'grn_date' => 'required|date',
-        'vendor_id' => 'required|exists:vendors,id',
+      //  'vendor_id' => 'required|exists:vendors,id',
         'invoice_no' => 'required|string|max:255',
         'invoice_date' => 'required|date',
         'po_no' => 'nullable|string|max:255',
@@ -570,7 +570,7 @@ public function apiStore(Request $request)
             'grn_no' => $grnNo,
             'grn_date' => $request->grn_date,
             'vendor_name' => $vendor->vendor_name,
-            'vendor_id' => $vendor->id,
+         //   'vendor_id' => $vendor->id,
             'invoice_no' => $request->invoice_no,
             'invoice_date' => $request->invoice_date,
             'po_no' => $request->po_no,
@@ -645,7 +645,7 @@ public function apiUpdate(Request $request, $id)
 
     $request->validate([
         'grn_date' => 'required|date',
-        'vendor_id' => 'required|exists:vendors,id',
+     //   'vendor_id' => 'required|exists:vendors,id',
         'invoice_no' => 'required|string|max:255',
         'invoice_date' => 'required|date',
         'po_no' => 'nullable|string|max:255',

@@ -127,26 +127,110 @@
                     <span class="nxl-mtext">Pharmacy</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
-                <ul class="nxl-submenu">
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="fas fa-chart-line"></i>  Dashboard</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-truck me-2"></i>Vendors</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-file-text me-2"></i>GRN Entry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.stock.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-box me-2"></i>Stock</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.expiry.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-alert-triangle me-2"></i>Expiry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-lock me-2"></i>Controlled Drug</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-edit-3 me-2"></i>Prescriptions</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
-                </ul>
+               <ul class="nxl-submenu">
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-truck me-2"></i> Vendors
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-file-text me-2"></i> GRN Entry
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.stock.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-box me-2"></i> Stock
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.expiry.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-alert-triangle me-2"></i> Expiry
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-lock me-2"></i> Controlled Drug
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-edit-3 me-2"></i> Prescriptions
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-dollar-sign"></i> Billing
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-rotate-ccw me-2"></i> Sales Return
+        </a>
+    </li>
+    <!-- ✅ REPORTS DROPDOWN -->
+    <li class="nxl-item has-submenu">
+        <a href="javascript:void(0);" class="nxl-link">
+            <i class="feather-bar-chart-2"></i> Reports
+        </a>
+
+        <ul class="nxl-submenu">
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.sales') }}" class="nxl-link">Sales Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.medicine') }}" class="nxl-link">Medicine Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.batch') }}" class="nxl-link">Batch Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.expiry') }}" class="nxl-link">Expiry Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.lowstock') }}" class="nxl-link">Low Stock</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.controlled') }}" class="nxl-link">Controlled Drugs</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.vendor') }}" class="nxl-link">Vendor Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.grn') }}" class="nxl-link">GRN Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.billing') }}" class="nxl-link">Billing Report</a>
+            </li>
+
+        </ul>
+    </li>
+    
+
+</ul>
             </li>
 
             {{-- ================= Nurse Module ================= --}}
