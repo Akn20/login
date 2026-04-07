@@ -111,5 +111,22 @@ class TestParameterController extends Controller
             'data' => LabTest::all()
         ]);
     }
+    public function apiAddParameter(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'unit' => 'nullable',
+        'min_value' => 'nullable|numeric',
+        'max_value' => 'nullable|numeric',
+    ]);
+
+    $param = Parameter::create($request->all());
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Parameter added successfully',
+        'data' => $param
+    ]);
+}
 
 }
