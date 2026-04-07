@@ -24,6 +24,12 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
+use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
+use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
+use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
+use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
+use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
+use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
 
@@ -1000,4 +1006,45 @@ Route::prefix('edm')->group(function () {
 
     Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
     Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
+});
+
+
+Route::prefix('radiology')->group(function () {
+
+    // Requests
+    Route::get('/requests', [ScanRequestApiController::class, 'index']);
+    Route::get('/requests/pending', [ScanRequestApiController::class, 'pending']);
+    Route::get('/requests/scheduled', [ScanRequestApiController::class, 'scheduled']);
+    Route::get('/requests/uploaded', [ScanRequestApiController::class, 'uploaded']);
+    Route::get('/requests/{id}', [ScanRequestApiController::class, 'show']);
+    Route::get('/requests/{id}/full', [ScanRequestApiController::class, 'fullDetails']);
+    Route::post('/requests', [ScanRequestApiController::class, 'store']);
+    Route::put('/requests/{id}', [ScanRequestApiController::class, 'update']);
+    Route::delete('/requests/{id}', [ScanRequestApiController::class, 'destroy']);
+
+    // Upload
+    Route::post('/upload', [ScanUploadApiController::class, 'store']);
+    Route::get('/uploads', [ScanUploadApiController::class, 'index']);
+    Route::get('/uploads/{request_id}', [ScanUploadApiController::class, 'byRequest']);
+
+    // Review
+    Route::get('/review', [RadiologyReviewApiController::class, 'index']);
+    Route::post('/review/{id}', [RadiologyReviewApiController::class, 'updateStatus']);
+
+    // Reports
+    Route::post('/reports', [RadiologyReportApiController::class, 'store']);
+    Route::get('/reports', [RadiologyReportApiController::class, 'index']);
+    Route::get('/reports/{id}', [RadiologyReportApiController::class, 'show']);
+    Route::get('/reports/{id}/download', [RadiologyReportApiController::class, 'download']);
+
+    // Schedule
+    Route::post('/schedule', [ScanScheduleApiController::class, 'store']);
+    Route::post('/schedule/quick', [ScanScheduleApiController::class, 'quickSchedule']);
+    Route::get('/schedule', [ScanScheduleApiController::class, 'index']);
+    Route::put('/schedule/{id}', [ScanScheduleApiController::class, 'update']);
+    Route::delete('/schedule/{id}', [ScanScheduleApiController::class, 'destroy']);
+
+    // Dashboard
+    Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
+
 });

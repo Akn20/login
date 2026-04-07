@@ -28,6 +28,14 @@ use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
+use App\Http\Controllers\Admin\Radiology\RadiologyController;
+use App\Http\Controllers\Admin\Radiology\RadiologyHistoryController;
+use App\Http\Controllers\Admin\Radiology\RadiologyReportController;
+use App\Http\Controllers\Admin\Radiology\RadiologyReviewController;
+use App\Http\Controllers\Admin\Radiology\ScanRequestController;
+use App\Http\Controllers\Admin\Radiology\ScanScheduleController;
+use App\Http\Controllers\Admin\Radiology\ScanTypeController;
+use App\Http\Controllers\Admin\Radiology\ScanUploadController;
 use App\Http\Controllers\Admin\ResultEntryController;
 // Admin > Nurse
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
@@ -1684,6 +1692,66 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('billing.print');
 
 
+
+    });
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Radiology Module
+|--------------------------------------------------------------------------
+*/
+
+    Route::prefix('radiology')->name('radiology.')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [RadiologyController::class, 'dashboard'])->name('dashboard');
+
+        // Scan Type
+        Route::get('/scan-types', [ScanTypeController::class, 'index'])->name('scan-types.index');
+        Route::get('/scan-types/create', [ScanTypeController::class, 'create'])->name('scan-types.create');
+        Route::post('/scan-types/store', [ScanTypeController::class, 'store'])->name('scan-types.store');
+        Route::get('/scan-types/edit/{id}', [ScanTypeController::class, 'edit'])->name('scan-types.edit');
+        Route::post('/scan-types/update/{id}', [ScanTypeController::class, 'update'])->name('scan-types.update');
+        Route::delete('/scan-types/delete/{id}', [ScanTypeController::class, 'destroy'])->name('scan-types.delete');
+        
+        // Scan Request
+        Route::get('/scan-requests', [ScanRequestController::class, 'index'])->name('scan-requests.index');
+        Route::get('/scan-requests/create', [ScanRequestController::class, 'create'])->name('scan-requests.create');
+        Route::post('/scan-requests/store', [ScanRequestController::class, 'store'])->name('scan-requests.store');
+        Route::get('/scan-requests/edit/{id}', [ScanRequestController::class, 'edit'])->name('scan-requests.edit');
+        Route::post('/scan-requests/update/{id}', [ScanRequestController::class, 'update'])->name('scan-requests.update');
+        Route::delete('/scan-requests/delete/{id}', [ScanRequestController::class, 'destroy'])->name('scan-requests.delete');
+
+        // Scheduling
+        Route::get('/schedule', [ScanScheduleController::class, 'index'])->name('schedule.index');
+        Route::post('/schedule/store', [ScanScheduleController::class, 'store'])->name('schedule.store');
+        Route::get('/schedule/edit/{id}', [ScanScheduleController::class, 'edit'])->name('schedule.edit');
+        Route::post('/schedule/update/{id}', [ScanScheduleController::class, 'update'])->name('schedule.update');
+        Route::delete('/schedule/delete/{id}', [ScanScheduleController::class, 'destroy'])->name('schedule.delete');
+        Route::post('/schedule/quick', [ScanScheduleController::class, 'quickSchedule'])
+            ->name('schedule.quick');
+
+        // Upload
+        Route::get('/upload', [ScanUploadController::class, 'index'])->name('upload.index');
+        Route::post('/upload/store', [ScanUploadController::class, 'store'])->name('upload.store');
+        Route::get('/upload/view/{id}', [ScanUploadController::class, 'view'])->name('upload.view');
+
+        
+        // Review
+       
+        Route::get('/review', [RadiologyReviewController::class, 'index'])->name('review.index');
+       Route::get('/review/{id}', [RadiologyReviewController::class, 'show'])->name('review.show');
+        Route::post('/review/store', [RadiologyReviewController::class, 'store'])->name('review.store');
+
+        // Report
+        Route::get('/reports', [RadiologyReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{id}', [RadiologyReportController::class, 'show'])->name('reports.show');
+
+        // History
+        Route::get('/history', [RadiologyHistoryController::class, 'index'])->name('history.index');
 
     });
 
