@@ -1046,6 +1046,57 @@ $bill->prescription_number = $bill->prescription_number ?? '-';
 
     return view('admin.pharmacy.prescriptions.bill',compact('bill'));
 }
+
+//added
+public function apiStoreOffline(Request $request)
+{
+    $request->validate([
+        'patient_name' => 'required',
+        'prescription_date' => 'required'
+    ]);
+
+    $count = DB::table('consultations')->count()
+        + DB::table('offline_prescriptions')->count() + 1;
+
+    $prescription_number = 'PR-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+    $imagePath = null;
+
+    if ($request->hasFile('prescription_image')) {
+        $imagePath = $request->file('prescription_image')
+            ->store('prescriptions', 'public');
+    }
+
+    $prescription = OfflinePrescription::create([
+        'id' => Str::uuid(),
+        'prescription_number' => $prescription_number,
+        'patient_name' => $request->patient_name,
+        'patient_phone' => $request->patient_phone,
+        'doctor_name' => $request->doctor_name,
+        'clinic_name' => $request->clinic_name,
+        'prescription_date' => $request->prescription_date,
+        'uploaded_prescription' => $imagePath,
+        'status' => 'Pending'
+    ]);
+
+    foreach ($request->medicine_name as $key => $medicine) {
+        OfflinePrescriptionItem::create([
+            'id' => Str::uuid(),
+            'offline_prescription_id' => $prescription->id,
+            'medicine_name' => $medicine,
+            'dosage' => $request->dosage[$key],
+            'frequency' => $request->frequency[$key],
+            'duration' => $request->duration[$key],
+            'instructions' => $request->instructions[$key]
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Offline Prescription Created',
+        'data' => $prescription
+    ]);
+}
  
 }
  
