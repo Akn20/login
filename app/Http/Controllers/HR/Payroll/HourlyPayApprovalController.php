@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\HourlyPayApproval;
 use App\Models\Staff;
 use App\Models\HourlyPay;
+use App\Models\Shift;
 
 class HourlyPayApprovalController extends Controller
 {
@@ -18,7 +19,6 @@ public function index(Request $request)
 {
     $query = HourlyPayApproval::with('staff');
 
-    // SEARCH FILTER
     if ($request->search) {
 
         $query->whereHas('staff', function ($q) use ($request) {
@@ -40,7 +40,6 @@ public function index(Request $request)
 }
 
 
-
 /* ================= CREATE ================= */
 
 public function create()
@@ -51,16 +50,20 @@ public function create()
 
     $approvers = Staff::orderBy('name')->get();
 
+    $shifts = Shift::where('status',1)
+                    ->orderBy('shift_name')
+                    ->get();
+
     return view(
         'hr.payroll.hourly_pay_approval.create',
         compact(
             'staffs',
             'workTypes',
-            'approvers'
+            'approvers',
+            'shifts'
         )
     );
 }
-
 
 
 /* ================= STORE ================= */
@@ -82,25 +85,16 @@ public function store(Request $request)
 
         'source_type' => 'required',
 
+        'approval_status' => 'required',
+
+        'approved_by' =>
+            'required_if:approval_status,Approved',
+
+        'approved_date' =>
+            'required_if:approval_status,Approved|nullable|date',
+
     ]);
 
-
-    /* Approved Validation */
-
-    if ($request->approval_status == 'Approved') {
-
-        $request->validate([
-
-            'approved_by' => 'required',
-
-            'approved_date' => 'required|date',
-
-        ]);
-
-    }
-
-
-    /* Prepare Data */
 
     $data = [
 
@@ -116,22 +110,25 @@ public function store(Request $request)
 
         'shift_code' => $request->shift_code,
 
-        'day_type' => $request->day_type ?? 'Working',
+        'day_type' =>
+            $request->day_type ?? 'Working',
 
         'source_type' => $request->source_type,
 
-        'approval_status' => $request->approval_status ?? 'Pending',
+        'approval_status' =>
+            $request->approval_status ?? 'Pending',
 
-        'approved_by' => $request->approved_by,
+        'approved_by' =>
+            $request->approved_by,
 
-        'approved_date' => $request->approved_date,
+        'approved_date' =>
+            $request->approved_date,
 
-        'locked_for_payroll' => $request->locked_for_payroll ?? 0,
+        'locked_for_payroll' =>
+            $request->locked_for_payroll ?? 0,
 
     ];
 
-
-    /* Rejected Logic */
 
     if ($request->approval_status == 'Rejected') {
 
@@ -163,8 +160,6 @@ public function edit($id)
 
     $entry = HourlyPayApproval::findOrFail($id);
 
-    /* Prevent editing locked */
-
     if ($entry->locked_for_payroll == 1) {
 
         return redirect()
@@ -183,6 +178,10 @@ public function edit($id)
 
     $approvers = Staff::orderBy('name')->get();
 
+    $shifts = Shift::where('status',1)
+                    ->orderBy('shift_name')
+                    ->get();
+
 
     return view(
         'hr.payroll.hourly_pay_approval.create',
@@ -190,7 +189,8 @@ public function edit($id)
             'entry',
             'staffs',
             'workTypes',
-            'approvers'
+            'approvers',
+            'shifts'
         )
     );
 
@@ -205,9 +205,6 @@ public function update(Request $request, $id)
 
     $entry = HourlyPayApproval::findOrFail($id);
 
-
-    /* Prevent update if locked */
-
     if ($entry->locked_for_payroll == 1) {
 
         return redirect()
@@ -219,8 +216,6 @@ public function update(Request $request, $id)
 
     }
 
-
-    /* Base Validation */
 
     $request->validate([
 
@@ -236,25 +231,16 @@ public function update(Request $request, $id)
 
         'source_type' => 'required',
 
+        'approval_status' => 'required',
+
+        'approved_by' =>
+            'required_if:approval_status,Approved',
+
+        'approved_date' =>
+            'required_if:approval_status,Approved|nullable|date',
+
     ]);
 
-
-    /* Approved Validation */
-
-    if ($request->approval_status == 'Approved') {
-
-        $request->validate([
-
-            'approved_by' => 'required',
-
-            'approved_date' => 'required|date',
-
-        ]);
-
-    }
-
-
-    /* Prepare Data */
 
     $data = [
 
@@ -280,12 +266,11 @@ public function update(Request $request, $id)
 
         'approved_date' => $request->approved_date,
 
-        'locked_for_payroll' => $request->locked_for_payroll ?? 0,
+        'locked_for_payroll' =>
+            $request->locked_for_payroll ?? 0,
 
     ];
 
-
-    /* Rejected Logic */
 
     if ($request->approval_status == 'Rejected') {
 
@@ -308,13 +293,13 @@ public function update(Request $request, $id)
 
 }
 
+
+
 /* ================= DELETE ================= */
 
 public function destroy($id)
 {
     $entry = HourlyPayApproval::findOrFail($id);
-
-    /* Prevent delete if locked */
 
     if ($entry->locked_for_payroll == 1) {
 
@@ -327,8 +312,6 @@ public function destroy($id)
 
     }
 
-    /* Soft Delete */
-
     $entry->delete();
 
     return redirect()
@@ -339,14 +322,16 @@ public function destroy($id)
         );
 }
 
+
+
 /* ================= TRASH ================= */
 
 public function trash()
 {
     $entries = HourlyPayApproval::onlyTrashed()
-        ->with('staff')
-        ->latest()
-        ->paginate(10);
+                    ->with('staff')
+                    ->latest()
+                    ->get();
 
     return view(
         'hr.payroll.hourly_pay_approval.trash',
@@ -361,7 +346,7 @@ public function trash()
 public function restore($id)
 {
     $entry = HourlyPayApproval::onlyTrashed()
-        ->findOrFail($id);
+                ->findOrFail($id);
 
     $entry->restore();
 
@@ -374,6 +359,7 @@ public function restore($id)
 }
 
 /* ================= PERMANENT DELETE ================= */
+
 public function forceDelete($id)
 {
     $entry = HourlyPayApproval::onlyTrashed()
@@ -385,7 +371,8 @@ public function forceDelete($id)
         ->route('hr.payroll.hourly-pay-approval.trash')
         ->with(
             'success',
-            'Entry permanently deleted.'
+            'Entry permanently deleted successfully.'
         );
 }
+
 }

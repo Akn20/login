@@ -77,7 +77,6 @@ action="{{ isset($entry)
 @method('PUT')
 @endif
 
-
 {{-- BASIC DETAILS --}}
 
 <h6 class="fw-bold mb-3">Basic Details</h6>
@@ -109,7 +108,6 @@ required>
 
 </div>
 
-
 <div class="col-md-6 mb-3">
 
 <label class="form-label">Work Type *</label>
@@ -137,9 +135,7 @@ required>
 
 </div>
 
-
 <hr>
-
 
 {{-- TIME DETAILS --}}
 
@@ -158,7 +154,6 @@ value="{{ old('payroll_month', $entry->payroll_month ?? '') }}">
 
 </div>
 
-
 <div class="col-md-4 mb-3">
 
 <label class="form-label">Attendance Date *</label>
@@ -169,7 +164,6 @@ class="form-control"
 value="{{ old('attendance_date', $entry->attendance_date ?? '') }}">
 
 </div>
-
 
 <div class="col-md-4 mb-3">
 
@@ -185,9 +179,7 @@ value="{{ old('approved_hours', $entry->approved_hours ?? '') }}">
 
 </div>
 
-
 <hr>
-
 
 {{-- CONTEXT --}}
 
@@ -195,17 +187,31 @@ value="{{ old('approved_hours', $entry->approved_hours ?? '') }}">
 
 <div class="row">
 
+{{-- ✅ FIXED SHIFT DROPDOWN --}}
+
 <div class="col-md-4 mb-3">
 
 <label class="form-label">Shift Code</label>
 
-<input type="text"
-name="shift_code"
-class="form-control"
-value="{{ old('shift_code', $entry->shift_code ?? '') }}">
+<select name="shift_code"
+class="form-control">
+
+<option value="">Select Shift</option>
+
+@foreach($shifts as $shift)
+
+<option value="{{ $shift->shift_name }}"
+{{ old('shift_code', $entry->shift_code ?? '') == $shift->shift_name ? 'selected' : '' }}>
+
+{{ $shift->shift_name }}
+
+</option>
+
+@endforeach
+
+</select>
 
 </div>
-
 
 <div class="col-md-4 mb-3">
 
@@ -239,7 +245,6 @@ Holiday
 
 </div>
 
-
 <div class="col-md-4 mb-3">
 
 <label class="form-label">Source Type *</label>
@@ -267,9 +272,7 @@ Manual
 
 </div>
 
-
 <hr>
-
 
 {{-- APPROVAL --}}
 
@@ -293,9 +296,6 @@ class="form-control">
 </select>
 
 </div>
-
-
-{{-- 🔥 FIXED APPROVED BY DROPDOWN --}}
 
 <div class="col-md-4 mb-3">
 
@@ -321,7 +321,6 @@ class="form-control">
 
 </div>
 
-
 <div class="col-md-4 mb-3">
 
 <label class="form-label">Approved Date</label>
@@ -335,9 +334,7 @@ value="{{ old('approved_date', $entry->approved_date ?? '') }}">
 
 </div>
 
-
 <hr>
-
 
 {{-- PAYROLL LOCK --}}
 
