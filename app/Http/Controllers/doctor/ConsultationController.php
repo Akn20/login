@@ -132,6 +132,14 @@ class ConsultationController extends Controller
                         'status' => 'Pending',
                     ]);
 
+                    SampleCollection::create([
+                        'id' => Str::uuid(),
+                        'lab_request_id' => $labRequest->id,
+                        'patient_id' => $request->patient_id,
+                        'status' => 'Pending'
+                    ]);
+                     
+
                 }
 
             }
@@ -624,6 +632,13 @@ class ConsultationController extends Controller
             'status' => true,
             'message' => 'Referral doctor fetched successfully',
             'data' => $consultation->referralDoctor,
+        ]);
+    }
+    public function apiMedicines()
+    {
+        return response()->json([
+            'status' => true,
+            'data' => Medicine::where('status', 1)->get()
         ]);
     }
 

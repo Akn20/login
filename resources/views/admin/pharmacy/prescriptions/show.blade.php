@@ -52,7 +52,7 @@
             {{-- Dispensed --}}
             @elseif($prescription->status == 'Dispensed')
 
-                <a href="{{ route('admin.prescriptions.print',$prescription->id) }}"
+                <a href="{{ route('admin.prescriptions.print', $prescription->id) }}"
                    class="btn btn-info">
                     Print Bill
                 </a>
