@@ -1,88 +1,103 @@
 <div class="card mb-3">
     <div class="card-header">Deduction Rule Details</div>
     <div class="card-body">
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         <div class="row">
 
             <!-- Rule Code -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Rule Code *</label>
                 <input type="text" name="rule_set_code" class="form-control"
-                    value="{{ old('rule_set_code', $rule->rule_set_code ?? '') }}" required>
+    value="{{ old('rule_set_code', $rule->rule_set_code ?? '') }}">
+
+@error('rule_set_code')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             <!-- Rule Name -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Rule Name *</label>
-                <input type="text" name="rule_set_name" class="form-control"
-                    value="{{ old('rule_set_name', $rule->rule_set_name ?? '') }}" required>
+               <input type="text" name="rule_set_name" class="form-control"
+    value="{{ old('rule_set_name', $rule->rule_set_name ?? '') }}">
+
+@error('rule_set_name')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             <!-- Category -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Category *</label>
-                <select name="rule_category" class="form-select" required>
+         <div class="col-md-6 mb-3">
+    <label class="form-label">Category *</label>
 
-    <option value=""
-        {{ old('rule_category', $rule->rule_category ?? '') == '' ? 'selected' : '' }}>
-        Select
-    </option>
+    <select name="rule_category" class="form-select">
+        <option value="">Select</option>
 
-    <option value="Statutory"
-        {{ old('rule_category', $rule->rule_category ?? '') == 'Statutory' ? 'selected' : '' }}>
-        Statutory
-    </option>
+        <option value="Statutory"
+            {{ old('rule_category', $rule->rule_category ?? '') == 'Statutory' ? 'selected' : '' }}>
+            Statutory
+        </option>
 
-    <option value="Loan"
-        {{ old('rule_category', $rule->rule_category ?? '') == 'Loan' ? 'selected' : '' }}>
-        Loan
-    </option>
+        <option value="Loan"
+            {{ old('rule_category', $rule->rule_category ?? '') == 'Loan' ? 'selected' : '' }}>
+            Loan
+        </option>
 
-    <option value="Recovery"
-        {{ old('rule_category', $rule->rule_category ?? '') == 'Recovery' ? 'selected' : '' }}>
-        Recovery
-    </option>
+        <option value="Recovery"
+            {{ old('rule_category', $rule->rule_category ?? '') == 'Recovery' ? 'selected' : '' }}>
+            Recovery
+        </option>
 
-    <option value="Ad-hoc"
-        {{ old('rule_category', $rule->rule_category ?? '') == 'Ad-hoc' ? 'selected' : '' }}>
-        Ad-hoc
-    </option>
+        <option value="Ad-hoc"
+            {{ old('rule_category', $rule->rule_category ?? '') == 'Ad-hoc' ? 'selected' : '' }}>
+            Ad-hoc
+        </option>
+    </select>
 
-</select>
-            </div>
+    @error('rule_category')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
 
-            <!-- Calculation Type -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Calculation Type *</label>
-            <select name="calculation_type" class="form-select" required>
+ <div class="col-md-6 mb-3">
+    <label class="form-label">Calculation Type *</label>
 
-    <option value=""
-        {{ old('calculation_type', $rule->calculation_type ?? '') == '' ? 'selected' : '' }}>
-        Select
-    </option>
+    <select name="calculation_type" class="form-select">
+        <option value="">Select</option>
 
-    <option value="Fixed"
-        {{ old('calculation_type', $rule->calculation_type ?? '') == 'Fixed' ? 'selected' : '' }}>
-        Fixed
-    </option>
+        <option value="Fixed"
+            {{ old('calculation_type', $rule->calculation_type ?? '') == 'Fixed' ? 'selected' : '' }}>
+            Fixed
+        </option>
 
-    <option value="Percentage"
-        {{ old('calculation_type', $rule->calculation_type ?? '') == 'Percentage' ? 'selected' : '' }}>
-        Percentage
-    </option>
+        <option value="Percentage"
+            {{ old('calculation_type', $rule->calculation_type ?? '') == 'Percentage' ? 'selected' : '' }}>
+            Percentage
+        </option>
 
-    <option value="Slab"
-        {{ old('calculation_type', $rule->calculation_type ?? '') == 'Slab' ? 'selected' : '' }}>
-        Slab
-    </option>
+        <option value="Slab"
+            {{ old('calculation_type', $rule->calculation_type ?? '') == 'Slab' ? 'selected' : '' }}>
+            Slab
+        </option>
 
-    <option value="EMI"
-        {{ old('calculation_type', $rule->calculation_type ?? '') == 'EMI' ? 'selected' : '' }}>
-        EMI
-    </option>
+        <option value="EMI"
+            {{ old('calculation_type', $rule->calculation_type ?? '') == 'EMI' ? 'selected' : '' }}>
+            EMI
+        </option>
+    </select>
 
-</select>
-            </div>
+    @error('calculation_type')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
 
             <!-- Calculation Base -->
             <div class="col-md-6 mb-3">
@@ -101,60 +116,69 @@
 
 </select>
             </div>
+           
+<div class="col-md-6 mb-3">
+    <label class="form-label">Slab Reference</label>
 
+    <input type="text" name="slab_reference" class="form-control"
+        value="{{ old('slab_reference', $rule->slab_reference ?? '') }}">
+
+    @error('slab_reference')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
             <!-- Calculation Value -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Calculation Value</label>
                 <input type="number" name="calculation_value" class="form-control"
                     value="{{ old('calculation_value', $rule->calculation_value ?? '') }}">
             </div>
+            <!-- Maximum Limit -->
+<div class="col-md-6 mb-3">
+    <label class="form-label">Maximum Limit</label>
 
+    <input type="number" name="maximum_limit" class="form-control"
+        value="{{ old('maximum_limit', $rule->maximum_limit ?? '') }}">
+
+    @error('maximum_limit')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
+
+<!-- Minimum Limit -->
+<div class="col-md-6 mb-3">
+    <label class="form-label">Minimum Limit</label>
+
+    <input type="number" name="minimum_limit" class="form-control"
+        value="{{ old('minimum_limit', $rule->minimum_limit ?? '') }}">
+
+    @error('minimum_limit')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
             <!-- Applies On -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Applies On *</label>
-              <select name="calculation_applies_on" class="form-select" required>
+           
+           <div class="col-md-6 mb-3">
+    <label class="form-label">Applies On *</label>
 
-    <option value=""
-        {{ old('calculation_applies_on', $rule->calculation_applies_on ?? '') == '' ? 'selected' : '' }}>
-        Select
-    </option>
+    <select name="calculation_applies_on" class="form-select">
+        <option value="">Select</option>
 
-    <option value="Pre"
-        {{ old('calculation_applies_on', $rule->calculation_applies_on ?? '') == 'Pre' ? 'selected' : '' }}>
-        Gross (Pre-Allowance)
-    </option>
+        <option value="Pre"
+            {{ old('calculation_applies_on', $rule->calculation_applies_on ?? '') == 'Pre' ? 'selected' : '' }}>
+            Gross (Pre-Allowance)
+        </option>
 
-    <option value="Post"
-        {{ old('calculation_applies_on', $rule->calculation_applies_on ?? '') == 'Post' ? 'selected' : '' }}>
-        Gross (Post-Allowance)
-    </option>
+        <option value="Post"
+            {{ old('calculation_applies_on', $rule->calculation_applies_on ?? '') == 'Post' ? 'selected' : '' }}>
+            Gross (Post-Allowance)
+        </option>
+    </select>
 
-</select>
-            </div>
-
-            <!-- Slab Reference -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Slab Reference</label>
-             <input type="text" name="slab_reference" class="form-control"
-    value="{{ old('slab_reference', $rule->slab_reference ?? '') }}">
-            </div>
-
-            <!-- Max Limit -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Maximum Limit</label>
-          
-<input type="number" name="maximum_limit" class="form-control"
-    value="{{ old('maximum_limit', $rule->maximum_limit ?? '') }}">
-            </div>
-
-            <!-- Min Limit -->
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Minimum Limit</label>
-               <input type="number" name="minimum_limit" class="form-control"
-    value="{{ old('minimum_limit', $rule->minimum_limit ?? '') }}">
-
-            </div>
-
+    @error('calculation_applies_on')
+        <small class="text-danger">{{ $message }}</small>
+    @enderror
+</div>
             <!-- Rounding -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Rounding</label>
@@ -177,7 +201,10 @@
                 <label class="form-label">Effective From *</label>
                <input type="date" name="effective_from" class="form-control"
     value="{{ old('effective_from', isset($rule) ? \Carbon\Carbon::parse($rule->effective_from)->format('Y-m-d') : '') }}">
-            </div>
+           @error('effective_from')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
+</div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Effective To</label>
@@ -238,7 +265,7 @@
 
             <!-- Status -->
             <div class="col-md-4 mb-3">
-                <label class="form-label">Status</label>
+                <label class="form-label">Status*</label>
                 <select name="status" class="form-select">
 
     <option value=""
@@ -250,6 +277,9 @@
     <option value="inactive" {{ old('status', $rule->status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
 
 </select>
+@error('status')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
         </div>

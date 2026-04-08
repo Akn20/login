@@ -22,17 +22,44 @@ class DeductionRuleSetController extends Controller
     }
 
     // STORE
-    public function store(Request $request)
-    {
-        $request->validate([
-            'rule_set_code' => 'required|unique:deduction_rule_sets,rule_set_code',
-            'rule_set_name' => 'required',
-            'rule_category' => 'required',
-            'calculation_type' => 'required',
-            'calculation_applies_on' => 'required',
-            'effective_from' => 'required|date',
-            'status' => 'required',
-        ]);
+  public function store(Request $request)
+{
+   $request->validate([
+    'rule_set_code' => 'required|string|max:50|unique:deduction_rule_sets,rule_set_code',
+    'rule_set_name' => 'required|string|max:100',
+
+    'rule_category' => 'required|in:Statutory,Loan,Recovery,Ad-hoc',
+    'calculation_type' => 'required|in:Fixed,Percentage,Slab,EMI',
+
+    'calculation_base' => 'nullable|required_if:calculation_type,Percentage|in:Basic,Gross,CTC,Net',
+
+    'calculation_value' => 'nullable|numeric|min:0',
+
+    'calculation_applies_on' => 'required|in:Pre,Post',
+
+    'slab_reference' => 'nullable|string|max:100',
+
+    'maximum_limit' => 'nullable|numeric|min:0',
+    'minimum_limit' => 'nullable|numeric|min:0|lte:maximum_limit',
+
+    'rounding_rule' => 'nullable|in:Nearest,Up,Down',
+
+    'prorata_applicable' => 'nullable|boolean',
+    'lop_impact' => 'nullable|boolean',
+    'editable_at_payroll' => 'nullable|boolean',
+    'skip_if_insufficient_salary' => 'nullable|boolean',
+
+    'priority' => 'nullable|integer|min:0|max:100',
+
+    'max_percent_net_salary' => 'nullable|numeric|min:0|max:100',
+
+    'effective_from' => 'required|date',
+    'effective_to' => 'nullable|date|after_or_equal:effective_from',
+
+    'status' => 'required|in:active,inactive',
+
+    'remarks' => 'nullable|string|max:500',
+]);
 
         DeductionRuleSet::create([
             'rule_set_code' => $request->rule_set_code,
@@ -81,10 +108,42 @@ class DeductionRuleSetController extends Controller
     {
         $rule = DeductionRuleSet::findOrFail($id);
 
-        $request->validate([
-            'rule_set_code' => 'required|unique:deduction_rule_sets,rule_set_code,' . $id,
-            'rule_set_name' => 'required',
-        ]);
+     $request->validate([
+    'rule_set_code' => 'required|string|max:50|unique:deduction_rule_sets,rule_set_code,' . $id,
+    'rule_set_name' => 'required|string|max:100',
+
+    'rule_category' => 'required|in:Statutory,Loan,Recovery,Ad-hoc',
+    'calculation_type' => 'required|in:Fixed,Percentage,Slab,EMI',
+
+    'calculation_base' => 'nullable|required_if:calculation_type,Percentage|in:Basic,Gross,CTC,Net',
+
+    'calculation_value' => 'nullable|numeric|min:0',
+
+    'calculation_applies_on' => 'required|in:Pre,Post',
+
+    'slab_reference' => 'nullable|string|max:100',
+
+    'maximum_limit' => 'nullable|numeric|min:0',
+    'minimum_limit' => 'nullable|numeric|min:0|lte:maximum_limit',
+
+    'rounding_rule' => 'nullable|in:Nearest,Up,Down',
+
+    'prorata_applicable' => 'nullable|boolean',
+    'lop_impact' => 'nullable|boolean',
+    'editable_at_payroll' => 'nullable|boolean',
+    'skip_if_insufficient_salary' => 'nullable|boolean',
+
+    'priority' => 'nullable|integer|min:0|max:100',
+
+    'max_percent_net_salary' => 'nullable|numeric|min:0|max:100',
+
+    'effective_from' => 'required|date',
+    'effective_to' => 'nullable|date|after_or_equal:effective_from',
+
+    'status' => 'required|in:active,inactive',
+
+    'remarks' => 'nullable|string|max:500',
+]);
 
         $rule->update([
             'rule_set_code' => $request->rule_set_code,
