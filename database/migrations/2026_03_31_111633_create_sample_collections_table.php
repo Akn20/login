@@ -18,7 +18,7 @@ return new class extends Migration
             $table->uuid('lab_request_id');
             $table->uuid('patient_id');
 
-            $table->string('sample_id')->nullable();
+            $table->string('sample_id')->nullable();    
             $table->string('barcode')->nullable();
             $table->dateTime('collection_time')->nullable();
 

@@ -220,14 +220,31 @@
                 </a>
 
                 <ul class="nxl-submenu">
+
                     <li class="nxl-item">
-                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link" up-follow
-                            up-target="#main-container">
+                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">
                             <i class="feather-plus-circle me-2"></i>
                             Add Lab Test
                         </a>
                     </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.parameters.index') }}" class="nxl-link">
+                            <i class="feather-sliders me-2"></i>
+                            Test Parameters
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.test-parameters.create') }}" class="nxl-link">
+                            <i class="feather-link me-2"></i>
+                            Parameter Mapping
+                        </a>
+                    </li>
+
                 </ul>
+
+
                 <ul class="nxl-submenu">
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
@@ -348,6 +365,15 @@
                                 <i class="feather-edit"></i>
                             </span>
                             <span class="nxl-mtext">Result Entry</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.report.index') }}" class="nxl-link">
+                            <i class="feather-upload me-2"></i>
+                            Report Upload
                         </a>
                     </li>
                 </ul>

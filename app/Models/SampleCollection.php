@@ -13,7 +13,7 @@ class SampleCollection extends Model
     protected $fillable = [
         'id',
         'lab_request_id',
-        'patient_id',
+        'patient_id',   
         'sample_id',
         'barcode',
         'collection_time',

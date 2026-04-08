@@ -104,6 +104,9 @@ use App\Http\Controllers\Admin\EquipmentCalibrationController;
 use App\Http\Controllers\Admin\EquipmentBreakdownController;
 use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
+use App\Http\Controllers\Admin\ParameterController;
+use App\Http\Controllers\Admin\TestParameterController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -1166,6 +1169,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+
         // Equipment Management
 
         Route::get('/equipment/deleted', [EquipmentController::class, 'deleted'])
@@ -1230,12 +1234,40 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('preventive.forceDelete');
 
         Route::resource('preventive', PreventiveMaintenanceController::class);
-         // ✅ RESULT ENTRY ROUTES
+
+        // ================= PARAMETERS =================
+        Route::resource('parameters', ParameterController::class);
+
+
+        // ================= TEST PARAMETER MAPPING =================
+        Route::resource('test-parameters', TestParameterController::class);
+
+        // ✅ PARAMETER MAPPING (ONLY ONE MODULE)
+        Route::get('/parameter-mapping', [TestParameterController::class, 'create'])
+            ->name('test-parameters.index');
+
+        Route::post('/parameter-mapping/store', [TestParameterController::class, 'store'])
+            ->name('test-parameters.store');
+        // ✅ RESULT ENTRY ROUTES
         Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
 
         Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
 
         Route::post('/result/submit/{id}', [ResultEntryController::class, 'submit'])->name('result.submit');
+
+        // ================= REPORT UPLOAD =================
+
+        Route::get('/report', [AdminReportController::class, 'index'])->name('report.index');
+        Route::get('/report/create', [AdminReportController::class, 'create'])->name('report.create');
+        Route::post('/report/store', [AdminReportController::class, 'store'])->name('report.store');
+        Route::get('/report/deleted', [AdminReportController::class, 'deleted'])->name('report.deleted');
+        Route::get('/report/{id}', [AdminReportController::class, 'show'])->name('report.show');
+        Route::get('/report/{id}/edit', [AdminReportController::class, 'edit'])->name('report.edit');
+        Route::post('/report/{id}/update-files', [AdminReportController::class, 'updateFiles'])->name('report.updateFiles');
+        Route::delete('/report/{id}', [AdminReportController::class, 'destroy'])->name('report.destroy');
+
+        Route::put('/report/{id}/restore', [AdminReportController::class, 'restore'])->name('report.restore');
+        Route::delete('/report/{id}/force-delete', [AdminReportController::class, 'forceDelete'])->name('report.forceDelete');
     });
 
 });
