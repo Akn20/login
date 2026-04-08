@@ -772,6 +772,7 @@ Route::prefix('laboratories')->group(function () {
     Route::post('/test-parameters', [TestParameterController::class, 'apiStore']);
     Route::get('/parameters', [TestParameterController::class, 'apiParameters']);
     Route::get('/tests', [TestParameterController::class, 'apiTests']);
+    Route::post('/parameters', [TestParameterController::class, 'apiAddParameter']);
 
     // Sample Collection
     Route::prefix('samples')->group(function () {
