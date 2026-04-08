@@ -189,6 +189,15 @@
                         </li>
 
                     </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
+                                <span class="nxl-mtext">Shift Management</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>   
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
