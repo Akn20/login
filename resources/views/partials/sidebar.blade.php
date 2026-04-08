@@ -366,6 +366,15 @@
                         </a>
                     </li>
                 </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.report.index') }}" class="nxl-link">
+                            <i class="feather-upload me-2"></i>
+                            Report Upload
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             {{-- --- 5. HR MANAGEMENT --- --}}
