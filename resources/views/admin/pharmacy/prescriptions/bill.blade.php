@@ -87,7 +87,7 @@ Hospital Pharmacy Invoice
 
 <p>
 
-Prescription No: {{ $bill->prescription_number ?? '-' }} <br>
+Prescription No:{{ $bill->prescription_number }} <br>
 
 Bill No: {{ $bill->bill_number }} <br>
 

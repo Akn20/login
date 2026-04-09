@@ -48,17 +48,24 @@ class LeaveApplicationController extends Controller
     {
         $leaveTypes = LeaveType::whereNull('deleted_at')->get();
 
-        $staff = Staff::findOrFail(5);
+        $staffList = Staff::whereNull('deleted_at')->get();
+
+       $staffId = request('staff_id');
+
+    if ($staffId) {
+        $staff = Staff::find($staffId);
+    } else {
+        $staff = Staff::first(); // default first load
+    }
 
         $leaveBalances = [];
 
         foreach ($leaveTypes as $type) {
 
-            $mapping = DB::table('leave_mappings')
-                ->where('leave_type_id', $type->id)
-                ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
-                ->whereJsonContains('designations', $staff->designation_id ?? null)
-                ->first();
+                $mapping = DB::table('leave_mappings')
+                    ->where('leave_type_id', $type->id)
+                    ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
+                    ->first();
 
             if (!$mapping) {
                 $mapping = DB::table('leave_mappings')
@@ -80,13 +87,18 @@ class LeaveApplicationController extends Controller
 
             $balance = $default + $credit - $debit;
 
-            $leaveBalances[$type->display_name] = $balance;
+            $leaveBalances[$type->id] = $balance;
         }
 
         return view(
-            'admin.Leave_Management.leave_application.create',
-            compact('leaveTypes', 'leaveBalances')
-        );
+    'admin.Leave_Management.leave_application.create',
+    compact(
+        'leaveTypes',
+        'leaveBalances',
+        'staffList',
+        'staffId'
+    )
+);
     }
 
 
@@ -95,6 +107,7 @@ class LeaveApplicationController extends Controller
     {
 
         $request->validate([
+            'staff_id' => 'required|exists:staff,id',
             'leave_type_id' => 'required',
             'leave_duration' => 'required|in:full_day,first_half,second_half',
             'from_date' => 'required|date',
@@ -104,7 +117,7 @@ class LeaveApplicationController extends Controller
         ]);
 
 
-        $staff = Staff::findOrFail(5);
+        $staff = Staff::findOrFail($request->staff_id);
 
         if (!$staff) {
             return back()->with('error', 'No staff found');
@@ -228,10 +241,19 @@ class LeaveApplicationController extends Controller
 
 
         /* ---------------- BALANCE CALCULATION ---------------- */
+            $mapping = DB::table('leave_mappings')
+                ->where('leave_type_id', $request->leave_type_id)
+                ->whereJsonContains(
+                    'employee_status',
+                    $staff->employment_status ?? 'Permanent'
+                )
+                ->first();
 
-        $mapping = DB::table('leave_mappings')
-            ->where('leave_type_id', $request->leave_type_id)
-            ->first();
+            if (!$mapping) {
+                $mapping = DB::table('leave_mappings')
+                    ->where('leave_type_id', $request->leave_type_id)
+                    ->first();
+            }
 
         $default = $mapping ? $mapping->accrual_value : 0;
 
@@ -249,14 +271,20 @@ class LeaveApplicationController extends Controller
 
         $lastApplication = LeaveApplication::where('staff_id', $staff->id)
             ->where('leave_type_id', $request->leave_type_id)
-            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->first();
 
         if ($lastApplication) {
-            $balanceBefore = $lastApplication->balance_after;
-        } else {
-            $balanceBefore = $actualBalance;
-        }
+
+    // Use last remaining balance
+    $balanceBefore = $lastApplication->balance_after;
+
+} else {
+
+    // First time calculation
+    $balanceBefore = $actualBalance;
+
+}
 
         $balanceAfter = $balanceBefore - $days;
 
@@ -333,3 +361,4 @@ class LeaveApplicationController extends Controller
     }
 
 }
+

@@ -13,7 +13,7 @@ class SampleCollection extends Model
     protected $fillable = [
         'id',
         'lab_request_id',
-        'patient_id',
+        'patient_id',   
         'sample_id',
         'barcode',
         'collection_time',
@@ -36,6 +36,11 @@ class SampleCollection extends Model
     public function labRequest()
     {
         return $this->belongsTo(LabRequest::class, 'lab_request_id');
+    }
+
+    public function labReport()
+    {
+        return $this->hasOne(LabReport::class, 'sample_id');
     }
 
 }
