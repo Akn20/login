@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LabReport extends Model
 {
     // UUID settings
+    use SoftDeletes;
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -19,7 +21,7 @@ class LabReport extends Model
         'entered_at'
     ];
 
-    // JSON casting
+
     protected $casts = [
         'result_data' => 'array'
     ];
@@ -37,6 +39,11 @@ class LabReport extends Model
     }
 
     // 🔗 Relationship
+    public function files()
+    {
+        return $this->hasMany(ReportFile::class, 'lab_report_id');
+    }
+
     public function sample()
     {
         return $this->belongsTo(SampleCollection::class, 'sample_id');

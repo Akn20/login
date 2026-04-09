@@ -220,14 +220,31 @@
                 </a>
 
                 <ul class="nxl-submenu">
+
                     <li class="nxl-item">
-                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link" up-follow
-                            up-target="#main-container">
+                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">
                             <i class="feather-plus-circle me-2"></i>
                             Add Lab Test
                         </a>
                     </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.parameters.index') }}" class="nxl-link">
+                            <i class="feather-sliders me-2"></i>
+                            Test Parameters
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.test-parameters.create') }}" class="nxl-link">
+                            <i class="feather-link me-2"></i>
+                            Parameter Mapping
+                        </a>
+                    </li>
+
                 </ul>
+
+
                 <ul class="nxl-submenu">
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
@@ -348,6 +365,73 @@
                                 <i class="feather-edit"></i>
                             </span>
                             <span class="nxl-mtext">Result Entry</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.report.index') }}" class="nxl-link">
+                            <i class="feather-upload me-2"></i>
+                            Report Upload
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            {{-- Radiology Module --}}
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/radiology*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-camera"></i></span>
+                    <span class="nxl-mtext">Radiology</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.dashboard') }}" class="nxl-link">
+                            <i class="feather-home me-2"></i>Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.scan-types.index') }}" class="nxl-link">
+                            <i class="feather-settings me-2"></i>Scan Types
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.scan-requests.index') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i>Scan Requests
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.schedule.index') }}" class="nxl-link">
+                            <i class="feather-calendar me-2"></i>Scheduling
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.upload.index') }}" class="nxl-link">
+                            <i class="feather-upload me-2"></i>Upload Scans
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.review.index') }}" class="nxl-link">
+                            <i class="feather-eye me-2"></i>Review
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.reports.index') }}" class="nxl-link">
+                            <i class="feather-file me-2"></i>Reports
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.radiology.history.index') }}" class="nxl-link">
+                            <i class="feather-clock me-2"></i>History
                         </a>
                     </li>
                 </ul>
