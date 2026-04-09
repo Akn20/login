@@ -1357,6 +1357,9 @@ Route::prefix('payroll/hourly-pay-approval')
         )->name('forceDelete');
 
     });
+
+    //---------Payroll -Deduction rule set-----------//
+
 Route::prefix('payroll/deduction-rule-set')
     ->name('payroll.deduction-rule-set.')
     ->group(function () {
@@ -1374,42 +1377,6 @@ Route::prefix('payroll/deduction-rule-set')
 });
 
   });
-//Payroll -Deduction rule set
-
-
-// Route::prefix('payroll/deduction-rule-set')
-//     ->name('payroll.deduction-rule-set.')
-//     ->group(function () {
-
-//     Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
-//     Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
-//     Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
-
-//     Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
-//     Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
-
-//     Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
-
-//     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
-//     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
-//     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
-// });
-
-// Route::prefix('payroll/deduction-rule-set')
-//     ->name('payroll.deduction-rule-set.')
-//     ->group(function () {
-//     Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
-//     Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
-//     Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
-//     Route::get('/{id}/show', [DeductionRuleSetController::class, 'show'])->name('show');
-//     Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
-//     Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
-//     Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
-//     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
-//     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
-//     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
-
-// });
 
 
 /*
