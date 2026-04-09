@@ -117,6 +117,7 @@
         <label class="form-label">Payslip Label</label>
         <input type="text" name="payslip_label" class="form-control"
             value="{{ old('payslip_label', $hourlyPay->payslip_label ?? '') }}">
+            
     </div>
 
     <div class="col-md-4 mb-3">
