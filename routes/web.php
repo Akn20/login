@@ -115,6 +115,9 @@ use App\Http\Controllers\Admin\ReportController as AdminReportController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
+use App\Http\Controllers\Admin\Nurse\IsolationController;
+use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -1733,6 +1736,39 @@ Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
     Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
     Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
     Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
+});
+
+Route::prefix('admin/isolation')->name('admin.isolation.')->group(function () {
+
+    Route::get('/', [IsolationController::class, 'index'])->name('index');
+    Route::get('/create', [IsolationController::class, 'create'])->name('create');
+    Route::post('/store', [IsolationController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [IsolationController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [IsolationController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [IsolationController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [IsolationController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [IsolationController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [IsolationController::class, 'forceDelete'])->name('forceDelete');
+});
+
+
+Route::prefix('admin/ppe')->name('admin.ppe.')->group(function () {
+
+    Route::get('/', [PpeComplianceController::class, 'index'])->name('index');
+    Route::get('/create', [PpeComplianceController::class, 'create'])->name('create');
+    Route::post('/store', [PpeComplianceController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [PpeComplianceController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [PpeComplianceController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [PpeComplianceController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [PpeComplianceController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [PpeComplianceController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [PpeComplianceController::class, 'forceDelete'])->name('forceDelete');
 });
 /* ----------------------------------
         Pharmacy Billing 

@@ -12,6 +12,10 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+use App\Http\Controllers\Admin\Nurse\IsolationController;
+use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 // Admin
 
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -1095,6 +1099,88 @@ Route::prefix('hourly-pay')->group(function () {
 
     Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| 27. Medication Administration (Nurse)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('medication-administration')->group(function () {
+    // Specific routes FIRST (before /{id} wildcard)
+    Route::get('/patients-list', [MedicationAdministrationController::class, 'apiGetPatients']);
+    Route::get('/deleted', [MedicationAdministrationController::class, 'apiTrash']);
+    Route::get('/prescriptions/{patientId}', [MedicationAdministrationController::class, 'apiPrescriptionsByPatient']);
+    
+    // Dynamic routes SECOND
+    Route::get('/', [MedicationAdministrationController::class, 'apiIndex']);
+    Route::post('/', [MedicationAdministrationController::class, 'apiStore']);
+    Route::get('/patient/{patientId}', [MedicationAdministrationController::class, 'apiGetByPatient']);
+    Route::get('/nurse/{nurseId}', [MedicationAdministrationController::class, 'apiGetByNurse']);
+    Route::get('/status/{status}', [MedicationAdministrationController::class, 'apiGetByStatus']);
+    Route::get('/{id}', [MedicationAdministrationController::class, 'apiShow']);
+    Route::put('/{id}', [MedicationAdministrationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [MedicationAdministrationController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [MedicationAdministrationController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [MedicationAdministrationController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| 28. Isolation Tracking (Nurse)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('isolation-records')->group(function () {
+    Route::get('/', [IsolationController::class, 'apiIndex']);
+    Route::post('/', [IsolationController::class, 'apiStore']);
+    Route::get('/deleted', [IsolationController::class, 'apiTrash']);
+    Route::get('/active', [IsolationController::class, 'apiGetActive']);
+    Route::get('/patient/{patientId}', [IsolationController::class, 'apiGetByPatient']);
+    Route::get('/status/{status}', [IsolationController::class, 'apiGetByStatus']);
+    Route::get('/{id}', [IsolationController::class, 'apiShow']);
+    Route::put('/{id}', [IsolationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [IsolationController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [IsolationController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [IsolationController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| 29. PPE Compliance (Nurse)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('ppe-compliance')->group(function () {
+    Route::get('/', [PpeComplianceController::class, 'apiIndex']);
+    Route::post('/', [PpeComplianceController::class, 'apiStore']);
+    Route::get('/deleted', [PpeComplianceController::class, 'apiTrash']);
+    Route::get('/patient/{patientId}', [PpeComplianceController::class, 'apiGetByPatient']);
+    Route::get('/status/{status}', [PpeComplianceController::class, 'apiGetByStatus']);
+    Route::get('/report', [PpeComplianceController::class, 'apiGetReport']);
+    Route::get('/{id}', [PpeComplianceController::class, 'apiShow']);
+    Route::put('/{id}', [PpeComplianceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PpeComplianceController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [PpeComplianceController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PpeComplianceController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| 30. Infection Control / Infection Logs (Nurse)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('infection-logs')->group(function () {
+    Route::get('/', [InfectionControlController::class, 'apiIndex']);
+    Route::post('/', [InfectionControlController::class, 'apiStore']);
+    Route::get('/deleted', [InfectionControlController::class, 'apiTrash']);
+    Route::get('/{id}', [InfectionControlController::class, 'apiShow']);
+    Route::put('/{id}', [InfectionControlController::class, 'apiUpdate']);
+    Route::delete('/{id}', [InfectionControlController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [InfectionControlController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [InfectionControlController::class, 'apiForceDelete']);
 });
 /*
 |--------------------------------------------------------------------------
