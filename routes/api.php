@@ -1077,6 +1077,7 @@ Route::prefix('radiology')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
+});
 /*
 |--------------------------------------------------------------------------
 | 26. Payroll: Hourly Pay
