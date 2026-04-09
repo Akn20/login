@@ -67,8 +67,12 @@
                                     </td>
 
                                     <!-- Status -->
-                                    <td>
-                                        <span class="text-success">Active</span>
+                                   <td>
+                                    @if($item->status == 'active')
+                                    <span class="text-success">Active</span>
+                                    @else
+                                    <span class="text-danger">Inactive</span>
+                                    @endif
                                     </td>
 
                                     <!-- Actions -->
