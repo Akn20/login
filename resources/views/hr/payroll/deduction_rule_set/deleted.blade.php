@@ -23,6 +23,8 @@
                         <th>Code</th>
                         <th>Name</th>
                         <th>Category</th>
+                        <th>Calculation Type</th>
+                        <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -31,10 +33,36 @@
                     @forelse($deleted as $item)
                         <tr>
 
+                            <!-- Code -->
                             <td>{{ $item->rule_set_code }}</td>
-                            <td>{{ $item->rule_set_name }}</td>
+
+                            <!-- Name -->
+                            <td>
+                                <span class="badge bg-soft-primary text-primary">
+                                    {{ $item->rule_set_name }}
+                                </span>
+                            </td>
+
+                            <!-- Category -->
                             <td>{{ $item->rule_category }}</td>
 
+                            <!-- Calculation Type -->
+                            <td>
+                                <span class="badge bg-soft-info text-info">
+                                    {{ $item->calculation_type }}
+                                </span>
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+                                @if($item->status == 'active')
+                                    <span class="text-success">Active</span>
+                                @else
+                                    <span class="text-danger">Inactive</span>
+                                @endif
+                            </td>
+
+                            <!-- Actions -->
                             <td class="text-end">
                                 <div class="d-flex gap-2 justify-content-end">
 
@@ -47,7 +75,8 @@
                                     </form>
 
                                     <!-- Permanent Delete -->
-                                    <form action="{{ route('hr.payroll.deduction-rule-set.forceDelete', $item->id) }}" method="POST"
+                                    <form action="{{ route('hr.payroll.deduction-rule-set.forceDelete', $item->id) }}"
+                                          method="POST"
                                           onsubmit="return confirm('Permanently delete?')">
                                         @csrf
                                         @method('DELETE')
@@ -63,7 +92,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">
+                            <td colspan="6" class="text-center text-muted">
                                 No deleted records
                             </td>
                         </tr>

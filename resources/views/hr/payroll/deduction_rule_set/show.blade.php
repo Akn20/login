@@ -34,7 +34,7 @@
 
             <div class="col-md-6 mb-3">
                 <label class="text-muted">Calculation Type</label>
-                <div>{{ $rule->calculation_type }}</div>
+              <div>{{ $rule->calculation_value ?? '-' }}</div>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -54,13 +54,40 @@
 
             <div class="col-md-6 mb-3">
                 <label class="text-muted">Max Limit</label>
-                <div>{{ $rule->maximum_limit }}</div>
+             <div>{{ $rule->maximum_limit ?? '-' }}</div>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="text-muted">Min Limit</label>
-                <div>{{ $rule->minimum_limit }}</div>
+     <div>{{ $rule->minimum_limit ?? '-' }}</div>
             </div>
+            <!-- Slab Reference -->
+<div class="col-md-6 mb-3">
+    <label class="text-muted">Slab Reference</label>
+    <div>{{ $rule->slab_reference ?? '-' }}</div>
+</div>
+
+<!-- Rounding Rule -->
+<div class="col-md-6 mb-3">
+    <label class="text-muted">Rounding Rule</label>
+    <div>{{ $rule->rounding_rule ?? '-' }}</div>
+</div>
+
+<!-- Effective From -->
+<div class="col-md-6 mb-3">
+    <label class="text-muted">Effective From</label>
+    <div>
+        {{ $rule->effective_from ? \Carbon\Carbon::parse($rule->effective_from)->format('d-m-Y') : '-' }}
+    </div>
+</div>
+
+<!-- Effective To -->
+<div class="col-md-6 mb-3">
+    <label class="text-muted">Effective To</label>
+    <div>
+        {{ $rule->effective_to ? \Carbon\Carbon::parse($rule->effective_to)->format('d-m-Y') : '-' }}
+    </div>
+</div>
 
         </div>
 
@@ -84,7 +111,10 @@
                 Editable:
                 <strong>{{ $rule->editable_at_payroll ? 'Yes' : 'No' }}</strong>
             </div>
-
+        <div class="col-md-4 mb-2">
+    Skip If Insufficient:
+    <strong>{{ $rule->skip_if_insufficient_salary ? 'Yes' : 'No' }}</strong>
+</div>
         </div>
 
         <hr>
@@ -93,12 +123,12 @@
 
             <div class="col-md-4 mb-3">
                 <label class="text-muted">Priority</label>
-                <div>{{ $rule->priority }}</div>
+                <div>{{ $rule->priority ?? '-' }}</div>
             </div>
 
             <div class="col-md-4 mb-3">
                 <label class="text-muted">Max % of Net Salary</label>
-                <div>{{ $rule->max_percent_net_salary }}</div>
+                <div>{{ $rule->max_percent_net_salary ?? '-' }}</div>
             </div>
 
             <div class="col-md-4 mb-3">
@@ -118,7 +148,7 @@
 
         <div>
             <label class="text-muted">Remarks</label>
-            <div>{{ $rule->remarks }}</div>
+            <div>{{ $rule->remarks ?? '-' }}</div>
         </div>
 
     </div>

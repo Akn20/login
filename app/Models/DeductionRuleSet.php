@@ -10,11 +10,11 @@ class DeductionRuleSet extends Model
 {
     use SoftDeletes;
 
-    // ✅ REQUIRED FOR UUID
+    //  REQUIRED FOR UUID
     protected $keyType = 'string';
     public $incrementing = false;
 
-    // ✅ AUTO GENERATE UUID
+    // AUTO GENERATE UUID
     protected static function boot()
     {
         parent::boot();
