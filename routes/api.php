@@ -588,8 +588,8 @@ Route::prefix('prescriptions')->group(function () {
     Route::post('/dispense/{id}', [PrescriptionController::class, 'apiDispense']);
     Route::post('/reject/{id}', [PrescriptionController::class, 'apiReject']);
     Route::get('/bill/{id}', [PrescriptionController::class, 'apiBill']);
-    
     Route::post('/offline', [PrescriptionController::class, 'apiStoreOffline']);
+    Route::get('/{id}/dispense-data', [PrescriptionController::class, 'apiDispenseData']);
 });
 
 /*
