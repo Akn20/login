@@ -634,13 +634,7 @@ class ConsultationController extends Controller
             'data' => $consultation->referralDoctor,
         ]);
     }
-    public function apiMedicines()
-    {
-        return response()->json([
-            'status' => true,
-            'data' => Medicine::where('status', 1)->get()
-        ]);
-    }
+    
 
     public function apiMedicines()
     {

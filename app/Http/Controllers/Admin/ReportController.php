@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Str;
 use App\Models\LabReport;
 use App\Models\ReportFile;
 use App\Models\FileAuditLog;
@@ -184,4 +185,162 @@ class ReportController extends Controller
             'timestamp' => now()
         ]);
     }
+    // ================= API: LIST REPORTS =================
+public function apiIndex()
+    {
+        $reports = LabReport::with([
+            'sample',
+            'files' => function ($q) {
+                $q->orderBy('version', 'asc');
+            }
+        ])->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $reports
+        ]);
+    }
+
+    // ================= GET SINGLE =================
+    public function apiShow($id)
+    {
+        $report = LabReport::with([
+            'sample',
+            'files' => function ($q) {
+                $q->orderBy('version', 'asc');
+            }
+        ])->findOrFail($id);
+
+        return response()->json([
+            'status' => true,
+            'data' => $report
+        ]);
+    }
+
+    // ================= STORE =================
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'sample_id' => 'required|exists:sample_collections,id',
+            'report_file' => 'required|mimes:pdf|max:2048',
+            'supporting_files.*' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048'
+        ]);
+
+        $report = LabReport::firstOrCreate(
+            ['sample_id' => $request->sample_id],
+            [
+                'status' => 'Completed',
+                'entered_at' => now()
+            ]
+        );
+
+        // MAIN FILE
+        if ($request->hasFile('report_file')) {
+            $this->storeFile($request->file('report_file'), $report, true);
+        }
+
+        // SUPPORTING FILES
+        if ($request->hasFile('supporting_files')) {
+            foreach ($request->file('supporting_files') as $file) {
+                $this->storeFile($file, $report, false);
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Report uploaded successfully'
+        ]);
+    }
+
+    // ================= UPDATE FILES =================
+    public function apiUpdateFiles(Request $request, $id)
+    {
+        $request->validate([
+            'report_file' => 'nullable|mimes:pdf|max:2048',
+            'supporting_files.*' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048'
+        ]);
+
+        $report = LabReport::findOrFail($id);
+
+        // UPDATE STATUS
+        if ($request->has('status')) {
+            $report->update([
+                'status' => $request->status
+            ]);
+        }
+
+        // MAIN FILE (NEW VERSION)
+        if ($request->hasFile('report_file')) {
+            $this->storeFile($request->file('report_file'), $report, true);
+        }
+
+        // SUPPORTING FILES
+        if ($request->hasFile('supporting_files')) {
+            foreach ($request->file('supporting_files') as $file) {
+                $this->storeFile($file, $report, false);
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Files updated successfully'
+        ]);
+    }
+
+    // ================= DELETE (SOFT) =================
+    public function apiDelete($id)
+    {
+        $report = LabReport::findOrFail($id);
+        $report->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Report deleted successfully'
+        ]);
+    }
+
+    // ================= DELETED LIST =================
+    public function apiDeleted()
+    {
+        $reports = LabReport::onlyTrashed()
+            ->with('sample')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $reports
+        ]);
+    }
+
+    // ================= RESTORE =================
+    public function apiRestore($id)
+    {
+        $report = LabReport::onlyTrashed()->findOrFail($id);
+        $report->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Report restored successfully'
+        ]);
+    }
+
+    // ================= FORCE DELETE =================
+    public function apiForceDelete($id)
+    {
+        $report = LabReport::onlyTrashed()->findOrFail($id);
+
+        // delete files also
+        foreach ($report->files as $file) {
+            Storage::delete($file->file_path);
+        }
+
+        $report->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Report permanently deleted'
+        ]);
+    }
+
+
 }
