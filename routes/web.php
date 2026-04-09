@@ -1114,6 +1114,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])->name('staff-management.deleted');
     Route::post('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])->name('staff-management.restore');
+    Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+    ->name('staff-management.forceDelete');
     Route::resource('staff-management', StaffManagementController::class);
 
     // --- Attendance ---
