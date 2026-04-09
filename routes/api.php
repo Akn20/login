@@ -64,7 +64,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 /*|--------------------------------------------------------------------------
@@ -767,3 +767,20 @@ Route::prefix('pharmacy')->group(function () {
     Route::get('billing/print/{id}', [PharmacyBillingController::class, 'apiPrint']);
 
 });
+
+
+   Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('sales', [PharmacyReportController::class, 'salesApi']);
+    Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
+    Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
+    Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
+    Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
+    Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
+    Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
+    Route::get('grn', [PharmacyReportController::class, 'grnApi']);
+    Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+
+});
+
+
