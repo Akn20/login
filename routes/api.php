@@ -45,6 +45,7 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 // Attendance
@@ -834,4 +835,25 @@ Route::prefix('hourly-pay')->group(function () {
 
     Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
+});
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: deduction rule set
+|--------------------------------------------------------------------------
+*/
+Route::prefix('deduction-rule-sets')->group(function () {
+
+    Route::get('/', [DeductionRuleSetController::class, 'apiIndex']);
+    Route::post('/', [DeductionRuleSetController::class, 'apiStore']);
+
+    // ✅ MUST be before /{id}
+    Route::get('/deleted', [DeductionRuleSetController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [DeductionRuleSetController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [DeductionRuleSetController::class, 'apiForceDelete']);
+
+    // ✅ These LAST, no whereNumber
+    Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
+    Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
+    Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
+
 });

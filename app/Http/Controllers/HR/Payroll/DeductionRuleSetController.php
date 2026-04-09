@@ -141,4 +141,138 @@ class DeductionRuleSetController extends Controller
         DeductionRuleSet::onlyTrashed()->findOrFail($id)->forceDelete();
         return redirect()->back()->with('success', 'Permanently Deleted');
     }
+
+public function apiIndex()
+{
+    $rules = DeductionRuleSet::latest()->get();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Deduction Rule Sets fetched successfully',
+        'data' => $rules
+    ]);
+}
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'rule_set_code' => 'required|unique:deduction_rule_sets,rule_set_code',
+        'rule_set_name' => 'required',
+        'rule_category' => 'required',
+        'calculation_type' => 'required',
+        'calculation_applies_on' => 'required',
+        'effective_from' => 'required|date',
+        'status' => 'required',
+    ]);
+
+    $rule = DeductionRuleSet::create($request->all());
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Rule created successfully',
+        'data' => $rule
+    ]);
+}
+public function apiShow($id)
+{
+    $rule = DeductionRuleSet::find($id);
+
+    if (!$rule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Rule not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $rule
+    ]);
+}
+public function apiUpdate(Request $request, $id)
+{
+    $rule = DeductionRuleSet::find($id);
+
+    if (!$rule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Rule not found'
+        ], 404);
+    }
+
+    $request->validate([
+        'rule_set_code' => 'required|unique:deduction_rule_sets,rule_set_code,' . $id,
+        'rule_set_name' => 'required',
+    ]);
+
+    $rule->update($request->all());
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Rule updated successfully',
+        'data' => $rule
+    ]);
+}
+public function apiDestroy($id)
+{
+    $rule = DeductionRuleSet::find($id);
+
+    if (!$rule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Rule not found'
+        ], 404);
+    }
+
+    $rule->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Rule deleted successfully'
+    ]);
+}
+public function apiDeleted()
+{
+    $rules = DeductionRuleSet::onlyTrashed()->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $rules
+    ]);
+}
+public function apiRestore($id)
+{
+    $rule = DeductionRuleSet::onlyTrashed()->find($id);
+
+    if (!$rule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Rule not found in trash'
+        ], 404);
+    }
+
+    $rule->restore();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Rule restored successfully'
+    ]);
+}
+public function apiForceDelete($id)
+{
+    $rule = DeductionRuleSet::onlyTrashed()->find($id);
+
+    if (!$rule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Rule not found in trash'
+        ], 404);
+    }
+
+    $rule->forceDelete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Rule permanently deleted'
+    ]);
+}
 }
