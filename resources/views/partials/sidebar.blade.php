@@ -345,6 +345,14 @@
         <i class="feather-clock me-2"></i>Hourly Pay
     </a>
 </li>
+{{-- DEDUCTION RULE SET --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-minus-circle me-2"></i>Deduction Rule Set
+    </a>
+</li>
 
 
         {{-----Hourly Pay Approval------}}
