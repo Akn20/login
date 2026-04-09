@@ -55,6 +55,8 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 // Root-level Controllers (alphabetical)
@@ -670,11 +672,15 @@ Route::prefix('surgery')->group(function () {
     Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
 });
 
+
+
+
 /*
 |--------------------------------------------------------------------------
 | 16. OT (Operation Theatre)
 |--------------------------------------------------------------------------
 */
+
 
 Route::prefix('ot')->group(function () {
     Route::get('/', [OTApiController::class, 'index']);
@@ -1067,5 +1073,47 @@ Route::prefix('radiology')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: Hourly Pay
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::prefix('hourly-pay')->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'apiIndex']);
+    Route::post('/', [HourlyPayController::class, 'apiStore']);
+
+
+    Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
+    Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
+    Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
+});
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: deduction rule set
+|--------------------------------------------------------------------------
+*/
+Route::prefix('deduction-rule-sets')->group(function () {
+
+    Route::get('/', [DeductionRuleSetController::class, 'apiIndex']);
+    Route::post('/', [DeductionRuleSetController::class, 'apiStore']);
+
+    // ✅ MUST be before /{id}
+    Route::get('/deleted', [DeductionRuleSetController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [DeductionRuleSetController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [DeductionRuleSetController::class, 'apiForceDelete']);
+
+    // ✅ These LAST, no whereNumber
+    Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
+    Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
+    Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
 
 });

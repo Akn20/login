@@ -31,6 +31,9 @@ class HourlyPay extends Model
         'earning_type',
         'show_in_payslip',
         'display_order',
+        'payslip_label',
+      
+        'status',
     ];
 
     // 🔹 Casts (VERY IMPORTANT for checkboxes)
