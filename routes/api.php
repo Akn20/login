@@ -66,6 +66,7 @@ use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -784,3 +785,15 @@ Route::prefix('pharmacy')->group(function () {
 });
 
 
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
+
+    Route::get('/', [NurseShiftsController::class, 'apiIndex']);
+    Route::get('/{id}', [NurseShiftsController::class, 'apiShow']);
+    Route::post('/store', [NurseShiftsController::class, 'apiStore']);
+    Route::post('/{id}/complete', [NurseShiftsController::class, 'apiMarkComplete']);
+});
