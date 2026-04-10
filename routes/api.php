@@ -1184,7 +1184,7 @@ Route::get(
     '/history',
     [ScanRequestApiController::class, 'history']
 );
-});
+
 Route::prefix('ppe-compliance')->group(function () {
     Route::get('/', [PpeComplianceController::class, 'apiIndex']);
     Route::post('/', [PpeComplianceController::class, 'apiStore']);
