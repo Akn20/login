@@ -354,6 +354,18 @@
     </a>
 </li>
 
+{{-- STATUTORY CONTRIBUTION --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.statutory-contribution.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.statutory-contribution.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Statutory Contribution
+
+    </a>
+</li>
+
 
         {{-----Hourly Pay Approval------}}
             

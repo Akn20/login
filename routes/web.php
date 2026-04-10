@@ -57,6 +57,8 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
+
 
 use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1375,6 +1377,42 @@ Route::prefix('payroll/deduction-rule-set')
     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
 
 });
+
+// --- Payroll Statutory Contribution (UI ONLY) ---
+Route::prefix('payroll/statutory-contribution')
+    ->name('payroll.statutory-contribution.')
+    ->group(function () {
+
+    Route::get('/',
+        [StatutoryContributionController::class, 'index']
+    )->name('index');
+
+    Route::get('/create',
+        [StatutoryContributionController::class, 'create']
+    )->name('create');
+
+    Route::post('/store',
+        [StatutoryContributionController::class, 'store']
+    )->name('store');
+
+    Route::get('/{id}/show',
+        [StatutoryContributionController::class, 'show']
+    )->name('show');
+
+    Route::get('/{id}/edit',
+        [StatutoryContributionController::class, 'edit']
+    )->name('edit');
+
+    Route::put('/{id}',
+        [StatutoryContributionController::class, 'update']
+    )->name('update');
+
+    Route::delete('/{id}',
+        [StatutoryContributionController::class, 'destroy']
+    )->name('destroy');
+
+});
+
 
   });
 
