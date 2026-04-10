@@ -19,7 +19,7 @@
 
             @php
                 $user = auth()->user();
-                $route = $user && $user->role === 'admin'
+                $route = $user && $user->hasRole('admin')
                     ? 'admin.dashboard'
                     : 'hr.dashboard';
             @endphp
@@ -142,8 +142,8 @@
                             up-target="#main-container"><i class="feather-lock me-2"></i>Controlled Drug</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-edit-3 me-2"></i>Prescriptions</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link"
+                            up-follow up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
                 </ul>
@@ -587,30 +587,30 @@
 
 
 
-    {{-- DEDUCTION --}}
-    <li class="nxl-item">
-        <a href="{{ route('hr.payroll.deduction.index') }}"
-           class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
-           up-follow up-target="#main-container">
-            <i class="feather-minus-circle me-2"></i>Deductions
-        </a>
-    </li>
-    {{-- HOURLY PAY --}}
-    <li class="nxl-item">
-    <a href="{{ route('hr.payroll.hourly-pay.index') }}"
-       class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
-       up-follow up-target="#main-container">
-        <i class="feather-clock me-2"></i>Hourly Pay
-    </a>
-</li>
-{{-- DEDUCTION RULE SET --}}
-<li class="nxl-item">
-    <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
-       class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
-       up-follow up-target="#main-container">
-        <i class="feather-minus-circle me-2"></i>Deduction Rule Set
-    </a>
-</li>
+                    {{-- DEDUCTION --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.deduction.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-minus-circle me-2"></i>Deductions
+                        </a>
+                    </li>
+                    {{-- HOURLY PAY --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.hourly-pay.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-clock me-2"></i>Hourly Pay
+                        </a>
+                    </li>
+                    {{-- DEDUCTION RULE SET --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-minus-circle me-2"></i>Deduction Rule Set
+                        </a>
+                    </li>
 
                 </ul>
             </li>
