@@ -62,6 +62,7 @@ use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -764,4 +765,28 @@ Route::prefix('pharmacy')->group(function () {
 
     Route::get('billing/print/{id}', [PharmacyBillingController::class, 'apiPrint']);
 
+});
+
+Route::prefix('receptionist/ipd')->group(function () {
+
+    // =========================
+    // MASTER APIs (TOP)
+    // =========================
+    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
+    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
+    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
+    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
+    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
+    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
+
+    // =========================
+    // MAIN IPD APIs
+    // =========================
+    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
+    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
+
+    // ⚠️ KEEP THESE AT LAST
+    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
+    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
+    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
 });
