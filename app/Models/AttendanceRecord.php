@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\Request;
 
+
 class AttendanceRecord extends Model
 {
 

@@ -33,6 +33,8 @@ use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
 use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
+use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
 
@@ -82,7 +84,8 @@ use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\WorkStatusController;
 
-// added by sushan for api
+use App\Models\User;
+//added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 use App\Http\Controllers\Admin\ResultEntryController;
@@ -1056,11 +1059,30 @@ Route::prefix('radiology')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
-    /*
-    |--------------------------------------------------------------------------
-    | 26. Payroll: Hourly Pay
-    |--------------------------------------------------------------------------
-    */
+});
+/*
+|--------------------------------------------------------------------------
+| 26. Payroll: Hourly Pay
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::prefix('hourly-pay')->group(function () {
+
+    Route::get('/', [HourlyPayController::class, 'apiIndex']);
+    Route::post('/', [HourlyPayController::class, 'apiStore']);
+
+
+    Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
+    Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
+    Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
+});
 
     Route::prefix('hourly-pay')->group(function () {
 
@@ -1072,10 +1094,52 @@ Route::prefix('radiology')->group(function () {
         Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
         Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
         Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
-
         Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
         Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
     });
+
+    // Scan Types
+Route::get('/scan-types', [ScanTypeApiController::class, 'index']);
+
+Route::post('/scan-types', [ScanTypeApiController::class, 'store']);
+
+Route::put('/scan-types/{id}', [ScanTypeApiController::class, 'update']);
+
+Route::delete('/scan-types/{id}', [ScanTypeApiController::class, 'destroy']);
+Route::get('/doctors', function () {
+
+    $doctors = DB::table('users')
+        ->join('roles', 'users.role_id', '=', 'roles.id')
+        ->where('roles.name', 'like', '%doctor%')
+        ->select(
+            'users.id',
+            'users.name'
+        )
+        ->get();
+
+    return [
+        'status' => true,
+        'data' => $doctors
+    ];
+});
+Route::get(
+    '/history',
+    [ScanRequestApiController::class, 'history']
+);
+});
+Route::prefix('ppe-compliance')->group(function () {
+    Route::get('/', [PpeComplianceController::class, 'apiIndex']);
+    Route::post('/', [PpeComplianceController::class, 'apiStore']);
+    Route::get('/deleted', [PpeComplianceController::class, 'apiTrash']);
+    Route::get('/patient/{patientId}', [PpeComplianceController::class, 'apiGetByPatient']);
+    Route::get('/status/{status}', [PpeComplianceController::class, 'apiGetByStatus']);
+    Route::get('/report', [PpeComplianceController::class, 'apiGetReport']);
+    Route::get('/{id}', [PpeComplianceController::class, 'apiShow']);
+    Route::put('/{id}', [PpeComplianceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PpeComplianceController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [PpeComplianceController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PpeComplianceController::class, 'apiForceDelete']);
+});
 
     /*
     |--------------------------------------------------------------------------
