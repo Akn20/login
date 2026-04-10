@@ -665,11 +665,23 @@
                             <i class="feather-minus-circle me-2"></i>Deduction Rule Set
                         </a>
                     </li>
+                    {{-----Hourly Pay Approval------}}
+                        
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
+                        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
+                        up-follow up-target="#main-container">
+
+                            <i class="feather-clock me-2"></i>
+                            Hourly Pay Approval
+
+                        </a>
+                    </li>
 
                 </ul>
-            </li>
+    
 
-
+</li>   
 
             {{-- --- 7. SYSTEM ADMINISTRATION --- --}}
             <li class="nxl-item nxl-caption"><label>Administration</label></li>

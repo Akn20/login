@@ -67,6 +67,7 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
@@ -378,7 +379,7 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('/delete/{id}', [DesignationController::class, 'destroy'])->name('delete');
             Route::get('/trash', [DesignationController::class, 'trash'])->name('trash');
             Route::get('/restore/{id}', [DesignationController::class, 'restore'])->name('restore');
-            Route::get('/force-delete/{id>', [DesignationController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/force-delete/{id}', [DesignationController::class, 'forceDelete'])->name('forceDelete');
         });
 
         /*
@@ -1488,27 +1489,59 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
     Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
 });
+// ----------------------------------------
+// Payroll - Hourly Pay Approval
+// ----------------------------------------
 
-//Payroll -Deduction rule set
+Route::prefix('payroll/hourly-pay-approval')
+    ->name('payroll.hourly-pay-approval.')
+    ->group(function () {
+
+        Route::get('/',
+            [HourlyPayApprovalController::class, 'index']
+        )->name('index');
+
+        Route::get('/create',
+            [HourlyPayApprovalController::class, 'create']
+        )->name('create');
+
+        Route::post('/store',
+            [HourlyPayApprovalController::class, 'store']
+        )->name('store');
+
+        Route::get('/edit/{id}',
+            [HourlyPayApprovalController::class, 'edit']
+        )->name('edit');
+
+        Route::put('/update/{id}',
+            [HourlyPayApprovalController::class, 'update']
+        )->name('update');
+
+        Route::delete('/delete/{id}',
+            [HourlyPayApprovalController::class, 'destroy']
+        )->name('destroy');
 
 
-// Route::prefix('payroll/deduction-rule-set')
-//     ->name('payroll.deduction-rule-set.')
-//     ->group(function () {
+        // Trash View
+        Route::get('/trash',
+            [HourlyPayApprovalController::class, 'trash']
+        )->name('trash');
 
-//     Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
-//     Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
-//     Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
 
-//     Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
-//     Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
+        // Restore
+        Route::post('/restore/{id}',
+            [HourlyPayApprovalController::class, 'restore']
+        )->name('restore');
 
-//     Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
 
-//     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
-//     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
-//     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
-// });
+        // ✅ NEW — Permanent Delete
+        Route::delete('/force-delete/{id}',
+            [HourlyPayApprovalController::class, 'forceDelete']
+        )->name('forceDelete');
+
+    });
+
+    //---------Payroll -Deduction rule set-----------//
 
 Route::prefix('payroll/deduction-rule-set')
     ->name('payroll.deduction-rule-set.')
@@ -1525,7 +1558,9 @@ Route::prefix('payroll/deduction-rule-set')
     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
 
 });
-});
+
+  });
+
 
 /*
 |--------------------------------------------------------------------------
