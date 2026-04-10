@@ -1059,33 +1059,53 @@ Route::prefix('radiology')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
-});
+
+
+    
+    // Scan Types
+        Route::get('/scan-types', [ScanTypeApiController::class, 'index']);
+
+        Route::post('/scan-types', [ScanTypeApiController::class, 'store']);
+
+        Route::put('/scan-types/{id}', [ScanTypeApiController::class, 'update']);
+
+        Route::delete('/scan-types/{id}', [ScanTypeApiController::class, 'destroy']);
+
+        Route::get('/doctors', function () {
+
+            $doctors = DB::table('users')
+                ->join('roles', 'users.role_id', '=', 'roles.id')
+                ->where('roles.name', 'like', '%doctor%')
+                ->select(
+                    'users.id',
+                    'users.name'
+                )
+                ->get();
+
+            return [
+                'status' => true,
+                'data' => $doctors
+            ];
+        });
+        Route::get(
+            '/history',
+            [ScanRequestApiController::class, 'history']
+        );
+
+    });
+
+
 /*
 |--------------------------------------------------------------------------
 | 26. Payroll: Hourly Pay
 |--------------------------------------------------------------------------
 */
+Route::prefix('hourly-pay')->group(function () {
 
-    Route::prefix('hourly-pay')->group(function () {
+    Route::get('/', [HourlyPayController::class, 'apiIndex']);
+    Route::post('/', [HourlyPayController::class, 'apiStore']);
 
-        Route::get('/', [HourlyPayController::class, 'apiIndex']);
-        Route::post('/', [HourlyPayController::class, 'apiStore']);
-
-        Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
-
-        Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
-        Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
-        Route::delete('/{id}', [HourlyPayController::class, 'apiDestroy']);
-
-        Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
-        Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | 27. Medication Administration (Nurse)
-    |--------------------------------------------------------------------------
-    */
+    Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
 
     Route::get('/{id}', [HourlyPayController::class, 'apiShow']);
     Route::put('/{id}', [HourlyPayController::class, 'apiUpdate']);
@@ -1095,19 +1115,18 @@ Route::prefix('radiology')->group(function () {
     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | 27. Medication Administration (Nurse)
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('medication-administration')->group(function () {
-    // Specific routes FIRST (before /{id} wildcard)
+
     Route::get('/patients-list', [MedicationAdministrationController::class, 'apiGetPatients']);
     Route::get('/deleted', [MedicationAdministrationController::class, 'apiTrash']);
     Route::get('/prescriptions/{patientId}', [MedicationAdministrationController::class, 'apiPrescriptionsByPatient']);
-    
-    // Dynamic routes SECOND
+
     Route::get('/', [MedicationAdministrationController::class, 'apiIndex']);
     Route::post('/', [MedicationAdministrationController::class, 'apiStore']);
     Route::get('/patient/{patientId}', [MedicationAdministrationController::class, 'apiGetByPatient']);
@@ -1120,13 +1139,14 @@ Route::prefix('medication-administration')->group(function () {
     Route::delete('/{id}/force-delete', [MedicationAdministrationController::class, 'apiForceDelete']);
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | 28. Isolation Tracking (Nurse)
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('isolation-records')->group(function () {
+
     Route::get('/', [IsolationController::class, 'apiIndex']);
     Route::post('/', [IsolationController::class, 'apiStore']);
     Route::get('/deleted', [IsolationController::class, 'apiTrash']);
@@ -1140,42 +1160,14 @@ Route::prefix('isolation-records')->group(function () {
     Route::delete('/{id}/force-delete', [IsolationController::class, 'apiForceDelete']);
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | 29. PPE Compliance (Nurse)
 |--------------------------------------------------------------------------
 */
-
-    // Scan Types
-Route::get('/scan-types', [ScanTypeApiController::class, 'index']);
-
-Route::post('/scan-types', [ScanTypeApiController::class, 'store']);
-
-Route::put('/scan-types/{id}', [ScanTypeApiController::class, 'update']);
-
-Route::delete('/scan-types/{id}', [ScanTypeApiController::class, 'destroy']);
-Route::get('/doctors', function () {
-
-    $doctors = DB::table('users')
-        ->join('roles', 'users.role_id', '=', 'roles.id')
-        ->where('roles.name', 'like', '%doctor%')
-        ->select(
-            'users.id',
-            'users.name'
-        )
-        ->get();
-
-    return [
-        'status' => true,
-        'data' => $doctors
-    ];
-});
-Route::get(
-    '/history',
-    [ScanRequestApiController::class, 'history']
-);
-
 Route::prefix('ppe-compliance')->group(function () {
+
     Route::get('/', [PpeComplianceController::class, 'apiIndex']);
     Route::post('/', [PpeComplianceController::class, 'apiStore']);
     Route::get('/deleted', [PpeComplianceController::class, 'apiTrash']);
@@ -1189,13 +1181,14 @@ Route::prefix('ppe-compliance')->group(function () {
     Route::delete('/{id}/force-delete', [PpeComplianceController::class, 'apiForceDelete']);
 });
 
+
 /*
 |--------------------------------------------------------------------------
-| 30. Infection Control / Infection Logs (Nurse)
+| 30. Infection Logs (Nurse)
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('infection-logs')->group(function () {
+
     Route::get('/', [InfectionControlController::class, 'apiIndex']);
     Route::post('/', [InfectionControlController::class, 'apiStore']);
     Route::get('/deleted', [InfectionControlController::class, 'apiTrash']);
@@ -1205,9 +1198,11 @@ Route::prefix('infection-logs')->group(function () {
     Route::post('/{id}/restore', [InfectionControlController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [InfectionControlController::class, 'apiForceDelete']);
 });
+
+
 /*
 |--------------------------------------------------------------------------
-| 26. Payroll: deduction rule set
+| 31. Payroll: Deduction Rule Sets
 |--------------------------------------------------------------------------
 */
 Route::prefix('deduction-rule-sets')->group(function () {
@@ -1215,130 +1210,31 @@ Route::prefix('deduction-rule-sets')->group(function () {
     Route::get('/', [DeductionRuleSetController::class, 'apiIndex']);
     Route::post('/', [DeductionRuleSetController::class, 'apiStore']);
 
-    // ✅ MUST be before /{id}
     Route::get('/deleted', [DeductionRuleSetController::class, 'apiDeleted']);
     Route::post('/restore/{id}', [DeductionRuleSetController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [DeductionRuleSetController::class, 'apiForceDelete']);
 
-    // ✅ These LAST, no whereNumber
     Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
     Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
     Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
-    Route::prefix('medication-administration')->group(function () {
-        // Specific routes FIRST (before /{id} wildcard)
-        Route::get('/patients-list', [MedicationAdministrationController::class, 'apiGetPatients']);
-        Route::get('/deleted', [MedicationAdministrationController::class, 'apiTrash']);
-        Route::get('/prescriptions/{patientId}', [MedicationAdministrationController::class, 'apiPrescriptionsByPatient']);
+});
 
-        // Dynamic routes SECOND
-        Route::get('/', [MedicationAdministrationController::class, 'apiIndex']);
-        Route::post('/', [MedicationAdministrationController::class, 'apiStore']);
-        Route::get('/patient/{patientId}', [MedicationAdministrationController::class, 'apiGetByPatient']);
-        Route::get('/nurse/{nurseId}', [MedicationAdministrationController::class, 'apiGetByNurse']);
-        Route::get('/status/{status}', [MedicationAdministrationController::class, 'apiGetByStatus']);
-        Route::get('/{id}', [MedicationAdministrationController::class, 'apiShow']);
-        Route::put('/{id}', [MedicationAdministrationController::class, 'apiUpdate']);
-        Route::delete('/{id}', [MedicationAdministrationController::class, 'apiDestroy']);
-        Route::post('/{id}/restore', [MedicationAdministrationController::class, 'apiRestore']);
-        Route::delete('/{id}/force-delete', [MedicationAdministrationController::class, 'apiForceDelete']);
-    });
 
-    /*
-    |--------------------------------------------------------------------------
-    | 28. Isolation Tracking (Nurse)
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| 32. Payroll: Deductions
+|--------------------------------------------------------------------------
+*/
+Route::prefix('deductions')->group(function () {
 
-    Route::prefix('isolation-records')->group(function () {
-        Route::get('/', [IsolationController::class, 'apiIndex']);
-        Route::post('/', [IsolationController::class, 'apiStore']);
-        Route::get('/deleted', [IsolationController::class, 'apiTrash']);
-        Route::get('/active', [IsolationController::class, 'apiGetActive']);
-        Route::get('/patient/{patientId}', [IsolationController::class, 'apiGetByPatient']);
-        Route::get('/status/{status}', [IsolationController::class, 'apiGetByStatus']);
-        Route::get('/{id}', [IsolationController::class, 'apiShow']);
-        Route::put('/{id}', [IsolationController::class, 'apiUpdate']);
-        Route::delete('/{id}', [IsolationController::class, 'apiDestroy']);
-        Route::post('/{id}/restore', [IsolationController::class, 'apiRestore']);
-        Route::delete('/{id}/force-delete', [IsolationController::class, 'apiForceDelete']);
-    });
+    Route::get('/', [PayrollDeductionController::class, 'apiIndex']);
+    Route::post('/', [PayrollDeductionController::class, 'apiStore']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | 29. PPE Compliance (Nurse)
-    |--------------------------------------------------------------------------
-    */
+    Route::get('/deleted', [PayrollDeductionController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [PayrollDeductionController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [PayrollDeductionController::class, 'apiForceDelete']);
 
-    Route::prefix('ppe-compliance')->group(function () {
-        Route::get('/', [PpeComplianceController::class, 'apiIndex']);
-        Route::post('/', [PpeComplianceController::class, 'apiStore']);
-        Route::get('/deleted', [PpeComplianceController::class, 'apiTrash']);
-        Route::get('/patient/{patientId}', [PpeComplianceController::class, 'apiGetByPatient']);
-        Route::get('/status/{status}', [PpeComplianceController::class, 'apiGetByStatus']);
-        Route::get('/report', [PpeComplianceController::class, 'apiGetReport']);
-        Route::get('/{id}', [PpeComplianceController::class, 'apiShow']);
-        Route::put('/{id}', [PpeComplianceController::class, 'apiUpdate']);
-        Route::delete('/{id}', [PpeComplianceController::class, 'apiDestroy']);
-        Route::post('/{id}/restore', [PpeComplianceController::class, 'apiRestore']);
-        Route::delete('/{id}/force-delete', [PpeComplianceController::class, 'apiForceDelete']);
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | 30. Infection Control / Infection Logs (Nurse)
-    |--------------------------------------------------------------------------
-    */
-
-    Route::prefix('infection-logs')->group(function () {
-        Route::get('/', [InfectionControlController::class, 'apiIndex']);
-        Route::post('/', [InfectionControlController::class, 'apiStore']);
-        Route::get('/deleted', [InfectionControlController::class, 'apiTrash']);
-        Route::get('/{id}', [InfectionControlController::class, 'apiShow']);
-        Route::put('/{id}', [InfectionControlController::class, 'apiUpdate']);
-        Route::delete('/{id}', [InfectionControlController::class, 'apiDestroy']);
-        Route::post('/{id}/restore', [InfectionControlController::class, 'apiRestore']);
-        Route::delete('/{id}/force-delete', [InfectionControlController::class, 'apiForceDelete']);
-    });
-    /*
-    |--------------------------------------------------------------------------
-    | 26. Payroll: deduction rule set
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('deduction-rule-sets')->group(function () {
-
-        Route::get('/', [DeductionRuleSetController::class, 'apiIndex']);
-        Route::post('/', [DeductionRuleSetController::class, 'apiStore']);
-
-        // ✅ MUST be before /{id}
-        Route::get('/deleted', [DeductionRuleSetController::class, 'apiDeleted']);
-        Route::post('/restore/{id}', [DeductionRuleSetController::class, 'apiRestore']);
-        Route::delete('/force-delete/{id}', [DeductionRuleSetController::class, 'apiForceDelete']);
-
-        // ✅ These LAST, no whereNumber
-        Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
-        Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
-        Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
-
-    });
-    /*
-    |--------------------------------------------------------------------------
-    | 27. Payroll: deduction
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('deductions')->group(function () {
-
-        Route::get('/', [PayrollDeductionController::class, 'apiIndex']);
-        Route::post('/', [PayrollDeductionController::class, 'apiStore']);
-
-        // ✅ MUST be before /{id}
-        Route::get('/deleted', [PayrollDeductionController::class, 'apiDeleted']);
-        Route::post('/restore/{id}', [PayrollDeductionController::class, 'apiRestore']);
-        Route::delete('/force-delete/{id}', [PayrollDeductionController::class, 'apiForceDelete']);
-
-        // ✅ These LAST, no whereNumber
-        Route::get('/{id}', [PayrollDeductionController::class, 'apiShow']);
-        Route::put('/{id}', [PayrollDeductionController::class, 'apiUpdate']);
-        Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
-
-    });
+    Route::get('/{id}', [PayrollDeductionController::class, 'apiShow']);
+    Route::put('/{id}', [PayrollDeductionController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
 });
