@@ -12,7 +12,7 @@ return new class extends Migration
 
            // $table->uuid('patient_id')->nullable()->after('bill_number');
 
-           // $table->uuid('prescription_id')->nullable()->after('patient_id');
+            //$table->uuid('prescription_id')->nullable()->after('patient_id');
 
         });
     }

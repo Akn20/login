@@ -65,8 +65,9 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -589,6 +590,8 @@ Route::prefix('prescriptions')->group(function () {
     Route::post('/dispense/{id}', [PrescriptionController::class, 'apiDispense']);
     Route::post('/reject/{id}', [PrescriptionController::class, 'apiReject']);
     Route::get('/bill/{id}', [PrescriptionController::class, 'apiBill']);
+    Route::post('/offline', [PrescriptionController::class, 'apiStoreOffline']);
+    Route::get('/{id}/dispense-data', [PrescriptionController::class, 'apiDispenseData']);
 });
 
 /*
@@ -789,4 +792,33 @@ Route::prefix('receptionist/ipd')->group(function () {
     Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
     Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
     Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
+
+});
+
+   Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('sales', [PharmacyReportController::class, 'salesApi']);
+    Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
+    Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
+    Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
+    Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
+    Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
+    Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
+    Route::get('grn', [PharmacyReportController::class, 'grnApi']);
+    Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
+
+    Route::get('/', [NurseShiftsController::class, 'apiIndex']);
+    Route::get('/{id}', [NurseShiftsController::class, 'apiShow']);
+    Route::post('/store', [NurseShiftsController::class, 'apiStore']);
+    Route::post('/{id}/complete', [NurseShiftsController::class, 'apiMarkComplete']);
 });

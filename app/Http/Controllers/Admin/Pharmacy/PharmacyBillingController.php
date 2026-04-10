@@ -264,7 +264,7 @@ public function update(Request $request, $bill_id)
 
     $validated = $request->validate([
         //'patient_id' => 'required|string|max:255',
-        'prescription_id' => 'required|string|max:255',
+        //'prescription_id' => 'required|string|max:255',
         'remarks' => 'nullable|string',
         'payment_status' => 'required|in:Paid,Partially Paid,Unpaid',
         'payment_mode' => 'required|string',
@@ -274,7 +274,7 @@ public function update(Request $request, $bill_id)
     
 
     $bill->update([
-        'prescription_id' => $validated['prescription_id'],
+        //'prescription_id' => $validated['prescription_id'],
         'remarks' => $validated['remarks'] ?? null,
         'payment_status' => $validated['payment_status'],
         'payment_mode' => $validated['payment_mode'],
