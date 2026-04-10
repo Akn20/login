@@ -90,6 +90,9 @@ Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 use App\Http\Controllers\Admin\ResultEntryController;
 use App\Http\Controllers\Admin\TestParameterController;
+use App\Http\Controllers\Admin\ReportController;
+
+//Receptionist
 use App\Http\Controllers\TokenController;
 // Receptionist
 use Illuminate\Support\Facades\Route;
@@ -779,6 +782,10 @@ Route::prefix('edm')->group(function () {
     Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
     Route::post('/update/{id}', [EmployeeDocumentApiController::class, 'update']);
     Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
+   Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
+    Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
+});
+
 
     Route::prefix('hr')->group(function () {
 
@@ -844,6 +851,8 @@ Route::prefix('edm')->group(function () {
         Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
 
         Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
+       Route::get('/{id}', [LabTestController::class, 'apiShow']);
+    });
 
         // SAMPLE COLLECTION API
         Route::prefix('samples')->group(function () {
@@ -856,13 +865,9 @@ Route::prefix('edm')->group(function () {
             Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
 
         });
-        Route::get('/{id}', [LabTestController::class, 'apiShow']);
-    });
+       
 
-    Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
-    Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
-});
-
+   
 /*
 |--------------------------------------------------------------------------
 | 21. Reception: Tokens & Doctors
@@ -899,6 +904,16 @@ Route::prefix('laboratories')->group(function () {
     Route::get('/parameters', [TestParameterController::class, 'apiParameters']);
     Route::get('/tests', [TestParameterController::class, 'apiTests']);
     Route::post('/parameters', [TestParameterController::class, 'apiAddParameter']);
+
+    // ================= REPORTS ================= 
+    Route::prefix('reports')->group(function () { Route::get('/', [ReportController::class, 'apiIndex']); 
+    Route::get('/deleted', [ReportController::class, 'apiDeleted']); 
+    Route::get('/{id}', [ReportController::class, 'apiShow']); 
+    Route::post('/', [ReportController::class, 'apiStore']); 
+    Route::post('/{id}/update-files', [ReportController::class, 'apiUpdateFiles']); 
+    Route::delete('/{id}', [ReportController::class, 'apiDelete']); 
+    Route::put('/{id}/restore', [ReportController::class, 'apiRestore']); 
+    Route::delete('/{id}/force-delete', [ReportController::class, 'apiForceDelete']); });
 
     // Sample Collection
     Route::prefix('samples')->group(function () {
