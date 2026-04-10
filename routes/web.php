@@ -67,7 +67,9 @@ use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
+use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
@@ -104,11 +106,17 @@ use App\Http\Controllers\Admin\EquipmentCalibrationController;
 use App\Http\Controllers\Admin\EquipmentBreakdownController;
 use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
+use App\Http\Controllers\Admin\ParameterController;
+use App\Http\Controllers\Admin\TestParameterController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
+
+use App\Http\Controllers\Admin\Nurse\IsolationController;
+use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1166,6 +1174,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/sample/reject/{id}', [SampleCollectionController::class, 'reject'])->name('sample.reject');
 
+
         // Equipment Management
 
         Route::get('/equipment/deleted', [EquipmentController::class, 'deleted'])
@@ -1230,12 +1239,40 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('preventive.forceDelete');
 
         Route::resource('preventive', PreventiveMaintenanceController::class);
-         // ✅ RESULT ENTRY ROUTES
+
+        // ================= PARAMETERS =================
+        Route::resource('parameters', ParameterController::class);
+
+
+        // ================= TEST PARAMETER MAPPING =================
+        Route::resource('test-parameters', TestParameterController::class);
+
+        // ✅ PARAMETER MAPPING (ONLY ONE MODULE)
+        Route::get('/parameter-mapping', [TestParameterController::class, 'create'])
+            ->name('test-parameters.index');
+
+        Route::post('/parameter-mapping/store', [TestParameterController::class, 'store'])
+            ->name('test-parameters.store');
+        // ✅ RESULT ENTRY ROUTES
         Route::get('/result-entry', [ResultEntryController::class, 'index'])->name('result-entry');
 
         Route::post('/result/save-draft/{id}', [ResultEntryController::class, 'saveDraft'])->name('result.saveDraft');
 
         Route::post('/result/submit/{id}', [ResultEntryController::class, 'submit'])->name('result.submit');
+
+        // ================= REPORT UPLOAD =================
+
+        Route::get('/report', [AdminReportController::class, 'index'])->name('report.index');
+        Route::get('/report/create', [AdminReportController::class, 'create'])->name('report.create');
+        Route::post('/report/store', [AdminReportController::class, 'store'])->name('report.store');
+        Route::get('/report/deleted', [AdminReportController::class, 'deleted'])->name('report.deleted');
+        Route::get('/report/{id}', [AdminReportController::class, 'show'])->name('report.show');
+        Route::get('/report/{id}/edit', [AdminReportController::class, 'edit'])->name('report.edit');
+        Route::post('/report/{id}/update-files', [AdminReportController::class, 'updateFiles'])->name('report.updateFiles');
+        Route::delete('/report/{id}', [AdminReportController::class, 'destroy'])->name('report.destroy');
+
+        Route::put('/report/{id}/restore', [AdminReportController::class, 'restore'])->name('report.restore');
+        Route::delete('/report/{id}/force-delete', [AdminReportController::class, 'forceDelete'])->name('report.forceDelete');
     });
 
 });
@@ -1257,6 +1294,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
     Route::get('staff-management/deleted', [StaffManagementController::class, 'deleted'])->name('staff-management.deleted');
     Route::post('staff-management/{id}/restore', [StaffManagementController::class, 'restore'])->name('staff-management.restore');
+    Route::delete('staff-management/{id}/force-delete', [StaffManagementController::class, 'forceDelete'])
+    ->name('staff-management.forceDelete');
     Route::resource('staff-management', StaffManagementController::class);
 
     // --- Attendance ---
@@ -1447,6 +1486,42 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
 });
 
+//Payroll -Deduction rule set
+
+
+// Route::prefix('payroll/deduction-rule-set')
+//     ->name('payroll.deduction-rule-set.')
+//     ->group(function () {
+
+//     Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
+//     Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
+//     Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
+
+//     Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
+//     Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
+
+//     Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+
+//     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
+//     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
+//     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+// });
+
+Route::prefix('payroll/deduction-rule-set')
+    ->name('payroll.deduction-rule-set.')
+    ->group(function () {
+    Route::get('/', [DeductionRuleSetController::class, 'index'])->name('index');
+    Route::get('/create', [DeductionRuleSetController::class, 'create'])->name('create');
+    Route::post('/store', [DeductionRuleSetController::class, 'store'])->name('store');
+    Route::get('/{id}/show', [DeductionRuleSetController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
+    Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+    Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
+    Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+
+});
 });
 
 /*
@@ -1661,6 +1736,39 @@ Route::prefix('admin/infection')->name('admin.infection.')->group(function () {
     Route::get('/trash', [InfectionControlController::class, 'trash'])->name('trash');
     Route::get('/restore/{id}', [InfectionControlController::class, 'restore'])->name('restore');
     Route::get('/force-delete/{id}', [InfectionControlController::class, 'forceDelete'])->name('forceDelete');
+});
+
+Route::prefix('admin/isolation')->name('admin.isolation.')->group(function () {
+
+    Route::get('/', [IsolationController::class, 'index'])->name('index');
+    Route::get('/create', [IsolationController::class, 'create'])->name('create');
+    Route::post('/store', [IsolationController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [IsolationController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [IsolationController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [IsolationController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [IsolationController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [IsolationController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [IsolationController::class, 'forceDelete'])->name('forceDelete');
+});
+
+
+Route::prefix('admin/ppe')->name('admin.ppe.')->group(function () {
+
+    Route::get('/', [PpeComplianceController::class, 'index'])->name('index');
+    Route::get('/create', [PpeComplianceController::class, 'create'])->name('create');
+    Route::post('/store', [PpeComplianceController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [PpeComplianceController::class, 'edit'])->name('edit');
+    Route::post('/update/{id}', [PpeComplianceController::class, 'update'])->name('update');
+
+    Route::post('/delete/{id}', [PpeComplianceController::class, 'destroy'])->name('delete');
+
+    Route::get('/trash', [PpeComplianceController::class, 'trash'])->name('trash');
+    Route::get('/restore/{id}', [PpeComplianceController::class, 'restore'])->name('restore');
+    Route::get('/force-delete/{id}', [PpeComplianceController::class, 'forceDelete'])->name('forceDelete');
 });
 /* ----------------------------------
         Pharmacy Billing 

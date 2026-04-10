@@ -189,6 +189,39 @@
                     </li>
 
                 </ul>
+
+                <ul class="nxl-submenu">
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.infection.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-activity"></i></span>
+                            <span class="nxl-mtext">Infection Logs</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+                <ul class="nxl-submenu">
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.isolation.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-shield"></i></span>
+                            <span class="nxl-mtext">Isolation Tracking</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+                <ul class="nxl-submenu">
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.ppe.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-user-check"></i></span>
+                            <span class="nxl-mtext">PPE Compliance</span>
+                        </a>
+                    </li>
+
+                </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
@@ -220,14 +253,31 @@
                 </a>
 
                 <ul class="nxl-submenu">
+
                     <li class="nxl-item">
-                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link" up-follow
-                            up-target="#main-container">
+                        <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">
                             <i class="feather-plus-circle me-2"></i>
                             Add Lab Test
                         </a>
                     </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.parameters.index') }}" class="nxl-link">
+                            <i class="feather-sliders me-2"></i>
+                            Test Parameters
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.test-parameters.create') }}" class="nxl-link">
+                            <i class="feather-link me-2"></i>
+                            Parameter Mapping
+                        </a>
+                    </li>
+
                 </ul>
+
+
                 <ul class="nxl-submenu">
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.index') }}" class="nxl-link" up-follow
@@ -348,6 +398,15 @@
                                 <i class="feather-edit"></i>
                             </span>
                             <span class="nxl-mtext">Result Entry</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.report.index') }}" class="nxl-link">
+                            <i class="feather-upload me-2"></i>
+                            Report Upload
                         </a>
                     </li>
                 </ul>
@@ -542,6 +601,14 @@
        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
        up-follow up-target="#main-container">
         <i class="feather-clock me-2"></i>Hourly Pay
+    </a>
+</li>
+{{-- DEDUCTION RULE SET --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-minus-circle me-2"></i>Deduction Rule Set
     </a>
 </li>
 
