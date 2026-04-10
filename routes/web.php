@@ -70,6 +70,9 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
+use App\Http\Controllers\HR\Reports\AttendanceReportController;
+use App\Http\Controllers\HR\Reports\ReportsDashboardController;
+use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1863,4 +1866,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     });
 
+
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+ /*
+|--------------------------------------------------------------------------
+| HR Reports Module
+|--------------------------------------------------------------------------
+*/
+Route::prefix('reports')->name('reports.')->group(function () {
+
+    Route::get('/', [ReportsDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/staff-strength', [StaffStrengthReportController::class, 'index'])->name('staff-strength');
+
+    Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('attendance');
+
+    Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
+
+    Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
+
+    Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
+
+    Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
+});
 });

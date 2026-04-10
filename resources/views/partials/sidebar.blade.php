@@ -245,6 +245,60 @@
                 </ul>
             </li>
 
+            {{-- --- HR REPORTS MODULE --- --}}
+                <li class="nxl-item nxl-hasmenu {{ request()->is('admin/reports*') ? 'active nxl-trigger' : '' }}">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-bar-chart-2"></i></span>
+                        <span class="nxl-mtext">HR Reports</span>
+                        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                    </a>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.dashboard') }}" class="nxl-link">
+                                <i class="feather-home me-2"></i> Dashboard
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.staff-strength') }}" class="nxl-link">
+                                <i class="feather-users me-2"></i> Staff Strength
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.attendance') }}" class="nxl-link">
+                                <i class="feather-calendar me-2"></i> Attendance
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.leave') }}" class="nxl-link">
+                                <i class="feather-file-text me-2"></i> Leave
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.payroll') }}" class="nxl-link">
+                                <i class="feather-dollar-sign me-2"></i> Payroll
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.overtime') }}" class="nxl-link">
+                                <i class="feather-clock me-2"></i> Overtime
+                            </a>
+                        </li>
+
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.reports.department-salary') }}" class="nxl-link">
+                                <i class="feather-pie-chart me-2"></i> Department Salary
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-activity"></i></span>
