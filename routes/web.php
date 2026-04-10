@@ -25,6 +25,9 @@ use App\Http\Controllers\Admin\LabTestController;
 use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+
+// Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
@@ -1840,7 +1843,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     });
+});
 
+/*
+|--------------------------------------------------------------------------
+| Nurse: shift Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-shifts')->name('nurse-shifts.')->group(function () {
+        Route::get('/', [NurseShiftsController::class, 'index'])->name('index');
+        Route::get('/{id}/create', [NurseShiftsController::class, 'create'])->name('create');
+        Route::post('/store', [NurseShiftsController::class, 'store'])->name('store');
+        Route::get('/{id}', [NurseShiftsController::class, 'show'])->name('show');
+        Route::post('/handover/{id}/complete', [NurseShiftsController::class, 'markComplete'])->name('complete');
+    });
 
 
 
