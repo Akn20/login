@@ -34,6 +34,8 @@ use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
 use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
+use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
 
@@ -84,6 +86,7 @@ use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 
+use App\Models\User;
 //added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
@@ -1153,6 +1156,35 @@ Route::prefix('isolation-records')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+    // Scan Types
+Route::get('/scan-types', [ScanTypeApiController::class, 'index']);
+
+Route::post('/scan-types', [ScanTypeApiController::class, 'store']);
+
+Route::put('/scan-types/{id}', [ScanTypeApiController::class, 'update']);
+
+Route::delete('/scan-types/{id}', [ScanTypeApiController::class, 'destroy']);
+Route::get('/doctors', function () {
+
+    $doctors = DB::table('users')
+        ->join('roles', 'users.role_id', '=', 'roles.id')
+        ->where('roles.name', 'like', '%doctor%')
+        ->select(
+            'users.id',
+            'users.name'
+        )
+        ->get();
+
+    return [
+        'status' => true,
+        'data' => $doctors
+    ];
+});
+Route::get(
+    '/history',
+    [ScanRequestApiController::class, 'history']
+);
+});
 Route::prefix('ppe-compliance')->group(function () {
     Route::get('/', [PpeComplianceController::class, 'apiIndex']);
     Route::post('/', [PpeComplianceController::class, 'apiStore']);

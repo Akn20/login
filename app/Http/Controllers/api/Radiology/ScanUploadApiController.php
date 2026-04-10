@@ -28,9 +28,95 @@ class ScanUploadApiController extends Controller
 
         return response()->json(['message'=>'Uploaded']);
     }
+public function index()
+{
+    // Fetch scan requests for dropdown
+    $requests = ScanRequest::with('patient:id,first_name,last_name')
+        ->whereIn('status', [
+            'Approved',
+            'Scheduled',
+            'Pending'
+        ])
+        ->get()
+        ->map(function ($item) {
 
-    public function index()
-    {
-        return ScanUpload::with('scanRequest')->get();
-    }
+            // SAFE patient name
+            $patientName = 'Patient';
+
+            if ($item->patient) {
+                $first =
+                    $item->patient->first_name ?? '';
+
+                $last =
+                    $item->patient->last_name ?? '';
+
+                $patientName =
+                    trim($first . ' ' . $last);
+            }
+
+            return [
+                'id' => $item->id,
+
+                'patientName' =>
+                    $patientName,
+
+                'bodyPart' =>
+                    $item->body_part ?? '-',
+            ];
+        });
+
+    // Fetch uploaded files for table
+    $uploadedFiles = ScanUpload::with(
+        'scanRequest.patient'
+    )
+        ->get()
+        ->map(function ($upload) {
+
+            $patientName = 'Patient';
+
+            if (
+                $upload->scanRequest &&
+                $upload->scanRequest->patient
+            ) {
+                $first =
+                    $upload->scanRequest
+                        ->patient
+                        ->first_name ?? '';
+
+                $last =
+                    $upload->scanRequest
+                        ->patient
+                        ->last_name ?? '';
+
+                $patientName =
+                    trim($first . ' ' . $last);
+            }
+
+            return [
+                'id' => $upload->id,
+
+                'patientName' =>
+                    $patientName,
+
+                'fileName' =>
+                    basename(
+                        $upload->file_path
+                    ),
+
+                'fileType' =>
+                    $upload->file_type ?? '-',
+
+                'fileUrl' =>
+                    asset(
+                        'storage/' .
+                        $upload->file_path
+                    ),
+            ];
+        });
+
+    return response()->json([
+        'requests' => $requests,
+        'uploadedFiles' => $uploadedFiles,
+    ]);
+}
 }
