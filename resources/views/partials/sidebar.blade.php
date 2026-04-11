@@ -353,7 +353,14 @@
         <i class="feather-minus-circle me-2"></i>Deduction Rule Set
     </a>
 </li>
-
+{{-- STATUTORY DEDUCTION MASTER --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.statutory-deduction.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.statutory-deduction.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-file-text me-2"></i>Statutory Deduction
+    </a>
+</li>
 
         {{-----Hourly Pay Approval------}}
             
