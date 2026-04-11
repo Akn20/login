@@ -91,6 +91,8 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 
+use App\Http\Controllers\InsuranceController;
+
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -1551,7 +1553,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
             ->name('billing.print');
     });
-    
 
+});
+
+
+//insurance (Receptionist)
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('insurance')->name('insurance.')->group(function () {
+
+        Route::get('/', [InsuranceController::class, 'index'])->name('index');
+
+        Route::get('/create', [InsuranceController::class, 'create'])->name('create');
+
+        Route::post('/store', [InsuranceController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [InsuranceController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}', [InsuranceController::class, 'update'])->name('update');
+
+        Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
+
+    });
 
 });

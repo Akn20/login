@@ -47,6 +47,8 @@
                             up-target="#main-container"><i class="feather-list me-2"></i>Token & Queue</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.emergency.create') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-activity me-2"></i>Emergency Cases</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.insurance.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-shield me-2"></i>Insurance</a></li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patients*') ? 'active nxl-trigger' : '' }}">

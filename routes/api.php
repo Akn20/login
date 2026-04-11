@@ -67,6 +67,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
+use App\Http\Controllers\InsuranceController;
+
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -780,6 +782,19 @@ Route::prefix('pharmacy')->group(function () {
     Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
     Route::get('grn', [PharmacyReportController::class, 'grnApi']);
     Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+
+});
+
+//Insurance(Receptionist)
+
+
+Route::prefix('insurance')->group(function () {
+
+    Route::get('/', [InsuranceController::class, 'apiIndex']);
+    Route::get('/{id}', [InsuranceController::class, 'apiShow']);
+    Route::post('/', [InsuranceController::class, 'apiStore']);
+    Route::post('/update/{id}', [InsuranceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [InsuranceController::class, 'apiDestroy']);
 
 });
 
