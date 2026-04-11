@@ -48,4 +48,83 @@ class AttendanceReportController extends Controller
             'attendancePercentage'
         ));
     }
+    public function store(Request $request)
+{
+    // ✅ Validation
+    $request->validate([
+        'employee_id' => 'required',
+        'department_id' => 'required',
+        'designation_id' => 'required',
+        'shift_id' => 'required',
+        'attendance_date' => 'required|date',
+        'status' => 'required',
+    ]);
+
+    // ✅ Check duplicate
+    $exists = AttendanceRecord::where('employee_id', $request->employee_id)
+        ->where('attendance_date', $request->attendance_date)
+        ->exists();
+
+    if ($exists) {
+        return redirect()->back()->with('error', 'Attendance already recorded for this date');
+    }
+
+    // ✅ Calculate working hours
+    $workingHours = null;
+
+    if ($request->check_in && $request->check_out) {
+        $checkIn = strtotime($request->check_in);
+        $checkOut = strtotime($request->check_out);
+
+        $diff = $checkOut - $checkIn;
+        $workingHours = gmdate('H:i', $diff);
+    }
+
+    // ✅ Calculate late minutes
+    $lateMinutes = 0;
+
+    if ($request->check_in) {
+        $shift = \App\Models\Shift::find($request->shift_id);
+
+        if ($shift && $shift->start_time) {
+            $lateMinutes = max(
+                0,
+                (strtotime($request->check_in) - strtotime($shift->start_time)) / 60
+            );
+        }
+    }
+
+    // ✅ Calculate overtime
+    $overtimeMinutes = 0;
+
+    if ($request->check_out) {
+        $shift = \App\Models\Shift::find($request->shift_id);
+
+        if ($shift && $shift->end_time) {
+            $overtimeMinutes = max(
+                0,
+                (strtotime($request->check_out) - strtotime($shift->end_time)) / 60
+            );
+        }
+    }
+
+    // ✅ Save data
+    AttendanceRecord::create([
+        'employee_id' => $request->employee_id,
+        'department_id' => $request->department_id,
+        'designation_id' => $request->designation_id,
+        'shift_id' => $request->shift_id,
+        'attendance_date' => $request->attendance_date,
+        'check_in' => $request->check_in,
+        'check_out' => $request->check_out,
+        'status' => $request->status,
+        'late_minutes' => $lateMinutes,
+        'overtime_minutes' => $overtimeMinutes,
+    ]);
+
+    // ✅ Redirect with success
+    return redirect()
+        ->route('hr.attendance.index')
+        ->with('success', 'Attendance recorded successfully');
+}
 }

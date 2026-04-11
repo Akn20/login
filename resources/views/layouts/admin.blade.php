@@ -183,6 +183,7 @@
     @include('partials.scripts')
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://unpkg.com/unpoly@3.8.0/unpoly.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     @stack('scripts')
     <script src="{{ asset('assets/vendors/js/vendors.min.js') }}"></script>

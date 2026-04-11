@@ -35,6 +35,13 @@ use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
 use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use App\Http\Controllers\Api\Reports\AttendanceReportApiController;
+use App\Http\Controllers\Api\Reports\DashboardApiController;
+use App\Http\Controllers\Api\Reports\DepartmentSalaryApiController;
+use App\Http\Controllers\Api\Reports\LeaveReportApiController;
+use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
+use App\Http\Controllers\Api\Reports\PayrollReportApiController;
+use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
@@ -1184,7 +1191,7 @@ Route::get(
     '/history',
     [ScanRequestApiController::class, 'history']
 );
-});
+
 Route::prefix('ppe-compliance')->group(function () {
     Route::get('/', [PpeComplianceController::class, 'apiIndex']);
     Route::post('/', [PpeComplianceController::class, 'apiStore']);
@@ -1234,5 +1241,23 @@ Route::prefix('deduction-rule-sets')->group(function () {
     Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
     Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
     Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
+
+});
+/*
+|--------------------------------------------------------------------------
+| 31. Report module
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('reports')->group(function () {
+
+    Route::get('/dashboard', [DashboardApiController::class, 'index']);
+    Route::get('/staff-strength', [StaffStrengthApiController::class, 'index']);
+    Route::get('/attendance', [AttendanceReportApiController::class, 'index']);
+    Route::get('/leave', [LeaveReportApiController::class, 'index']);
+    Route::get('/payroll', [PayrollReportApiController::class, 'index']);
+    Route::get('/overtime', [OvertimeReportApiController::class, 'index']);
+    Route::get('/department-salary', [DepartmentSalaryApiController::class, 'index']);
 
 });
