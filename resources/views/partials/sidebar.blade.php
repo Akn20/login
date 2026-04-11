@@ -188,17 +188,6 @@
                         </a>
                     </li>
 
-                    </ul>
-
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
-                                <span class="nxl-mtext">Shift Management</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>   
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -696,8 +685,50 @@
                             <i class="feather-repeat me-2"></i>
                             Variable Allowances
                         </a>
-</li>
-                
+                    </li>
+
+
+
+                    {{-- DEDUCTION --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.deduction.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-minus-circle me-2"></i>Deductions
+                        </a>
+                    </li>
+                    {{-- HOURLY PAY --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.hourly-pay.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-clock me-2"></i>Hourly Pay
+                        </a>
+                    </li>
+                    {{-- DEDUCTION RULE SET --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
+                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
+                            up-follow up-target="#main-container">
+                            <i class="feather-minus-circle me-2"></i>Deduction Rule Set
+                        </a>
+                    </li>
+                    {{-----Hourly Pay Approval------}}
+                        
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
+                        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
+                        up-follow up-target="#main-container">
+
+                            <i class="feather-clock me-2"></i>
+                            Hourly Pay Approval
+
+                        </a>
+                    </li>
+
+                </ul>
+    
+
 </li>   
 
             {{-- --- 7. SYSTEM ADMINISTRATION --- --}}
