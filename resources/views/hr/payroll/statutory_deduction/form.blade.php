@@ -32,19 +32,20 @@
                     <label class="form-label">Category</label>
                     <select name="statutory_category" class="form-control" required>
                         <option value="">Select</option>
-                        <option value="PF">PF</option>
-                        <option value="ESI">ESI</option>
-                        <option value="PT">PT</option>
-                        <option value="TDS">TDS</option>
-                        <option value="LWF">LWF</option>
+                       <option value="PF" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'PF' ? 'selected' : '' }}>PF</option>
+                       <option value="ESI" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'ESI' ? 'selected' : '' }}>ESI</option>
+                       <option value="PT" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'PT' ? 'selected' : '' }}>PT</option>
+                      <option value="TDS" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'TDS' ? 'selected' : '' }}>TDS</option>
+                      <option value="PF" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'PF' ? 'selected' : '' }}>PF</option>
+                    <option value="LWF" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'LWF' ? 'selected' : '' }}>LWF</option>
                     </select>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Status</label>
                     <select name="status" class="form-control" required>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
+                       <option value="active" {{ old('status', $deduction->status ?? '') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ old('status', $deduction->status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
 
@@ -59,7 +60,7 @@
                     <select name="rule_set_id" class="form-control" required>
                         <option value="">Select</option>
                         @foreach($ruleSets as $rule)
-                            <option value="{{ $rule->id }}">
+                            <option value="{{ $rule->id }}" {{ old('rule_set_id', $deduction->rule_set_id ?? '') == $rule->id ? 'selected' : '' }}>
                                 {{ $rule->rule_set_code }}
                             </option>
                         @endforeach
@@ -84,7 +85,8 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Ceiling Amount</label>
-                    <input type="number" name="salary_ceiling_amount" class="form-control">
+                    <input type="number" name="salary_ceiling_amount" class="form-control"
+                    value="{{ old('salary_ceiling_amount', $deduction->salary_ceiling_amount ?? '') }}">
                 </div>
 
                 <div class="col-md-6 mb-3">
@@ -98,9 +100,11 @@
                 <div class="col-md-3 mb-3">
                     <label>Applicable States</label>
                     <select name="states[]" class="form-control" multiple>
-                        <option>Karnataka</option>
-                        <option>Telangana</option>
-                        <option>Tamil Nadu</option>
+                        @php $selectedStates = old('states', json_decode($deduction->applicable_states ?? '[]', true)); @endphp
+<option value="Karnataka" {{ in_array('Karnataka', $selectedStates) ? 'selected' : '' }}>Karnataka</option>
+<option value="Telangana" {{ in_array('Telangana', $selectedStates) ? 'selected' : '' }}>Telangana</option>
+<option value="Tamil Nadu" {{ in_array('Tamil Nadu', $selectedStates) ? 'selected' : '' }}>Tamil Nadu</option>
+
                     </select>
                 </div>
 
@@ -151,7 +155,8 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Payslip Order</label>
-                    <input type="number" name="payslip_order" class="form-control">
+                    <input type="number" name="payslip_order" class="form-control"
+                    value="{{ old('payslip_order', $deduction->payslip_order ?? '') }}">
                 </div>
 
             </div>
@@ -171,7 +176,8 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Authority Code</label>
-                    <input type="text" name="authority_code" class="form-control">
+                    <input type="text" name="authority_code" class="form-control"
+    value="{{ old('authority_code', $deduction->authority_code ?? '') }}">
                 </div>
 
             </div>

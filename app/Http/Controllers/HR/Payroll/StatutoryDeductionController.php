@@ -108,11 +108,14 @@ class StatutoryDeductionController extends Controller
     }
 
     // 🔹 DELETED
-    public function deleted()
-    {
-        $records = StatutoryDeduction::onlyTrashed()->get();
-        return view('hr.payroll.statutory_deduction.deleted', compact('records'));
-    }
+   public function deleted()
+{
+    $records = StatutoryDeduction::onlyTrashed()
+                ->latest()
+                ->paginate(10);
+
+    return view('hr.payroll.statutory_deduction.deleted', compact('records'));
+}
 
     // 🔹 RESTORE
     public function restore($id)

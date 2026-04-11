@@ -20,7 +20,7 @@
             @method('PUT')
 
             @include('hr.payroll.statutory_deduction.form', [
-                'record' => $record
+                'deduction' => $record
             ])
 
         </form>
