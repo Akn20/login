@@ -624,7 +624,20 @@
                 <ul class="nxl-submenu">
 
 
+  </li>
+    <li class="nxl-item {{ request('type') == 'fixed' ? 'active' : '' }}">
+        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'fixed']) }}" class="nxl-link">
+                            <i class="feather-dollar-sign me-2"></i>
+                            Fixed Allowances
+                        </a>
+                    </li>
 
+                    <li class="nxl-item {{ request('type') == 'variable' ? 'active' : '' }}">
+                        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'variable']) }}" class="nxl-link">
+                            <i class="feather-repeat me-2"></i>
+                            Variable Allowances
+                        </a>
+                    </li>
     {{-- DEDUCTION --}}
     <li class="nxl-item">
         <a href="{{ route('hr.payroll.deduction.index') }}"
@@ -672,63 +685,6 @@
         </li>
 
         </ul>
-            </li>
-                    <li class="nxl-item {{ request('type') == 'fixed' ? 'active' : '' }}">
-                        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'fixed']) }}" class="nxl-link">
-                            <i class="feather-dollar-sign me-2"></i>
-                            Fixed Allowances
-                        </a>
-                    </li>
-
-                    <li class="nxl-item {{ request('type') == 'variable' ? 'active' : '' }}">
-                        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'variable']) }}" class="nxl-link">
-                            <i class="feather-repeat me-2"></i>
-                            Variable Allowances
-                        </a>
-                    </li>
-
-
-
-                    {{-- DEDUCTION --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.deduction.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-minus-circle me-2"></i>Deductions
-                        </a>
-                    </li>
-                    {{-- HOURLY PAY --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.hourly-pay.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-clock me-2"></i>Hourly Pay
-                        </a>
-                    </li>
-                    {{-- DEDUCTION RULE SET --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-minus-circle me-2"></i>Deduction Rule Set
-                        </a>
-                    </li>
-                    {{-----Hourly Pay Approval------}}
-                        
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
-                        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
-                        up-follow up-target="#main-container">
-
-                            <i class="feather-clock me-2"></i>
-                            Hourly Pay Approval
-
-                        </a>
-                    </li>
-
-                </ul>
-    
-
 </li>   
 
             {{-- --- 7. SYSTEM ADMINISTRATION --- --}}
