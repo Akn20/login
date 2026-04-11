@@ -5,200 +5,244 @@
 @section('content')
 
 <div class="page-header mb-4 d-flex align-items-center justify-content-between">
+
     <div class="page-header-left">
-        <h5 class="m-b-10 mb-1">Statutory Contribution Master</h5>
+
+        <h5 class="m-b-10 mb-1">
+            Statutory Contribution Master
+        </h5>
 
         <ul class="breadcrumb mb-0">
+
             <li class="breadcrumb-item">
-                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}">
+                    Dashboard
+                </a>
             </li>
 
             <li class="breadcrumb-item active">
                 Statutory Contribution List
             </li>
+
         </ul>
+
     </div>
+
+
 
     <div class="d-flex gap-2 align-items-center">
 
         <!-- Add Button -->
-        <a href="{{ route('hr.payroll.statutory-contribution.create') }}" 
+
+        <a href="{{ route('hr.payroll.statutory-contribution.create') }}"
            class="btn btn-primary">
 
             <i class="feather-plus me-1"></i>
             Add Contribution
+
         </a>
 
-        {{-- Deleted Records button removed for now --}}
+
+
+        <!-- Deleted Button -->
+
+        <a href="{{ route('hr.payroll.statutory-contribution.deleted') }}"
+           class="btn btn-danger">
+
+            Deleted Records
+
+        </a>
+
     </div>
+
 </div>
 
 
+
 <div class="row">
-    <div class="col-12">
 
-        <div class="card stretch stretch-full">
+<div class="col-12">
 
-            <div class="card-body p-0">
+<div class="card stretch stretch-full">
 
-                <div class="table-responsive">
+<div class="card-body p-0">
 
-                    <table class="table table-hover align-middle mb-0">
+<div class="table-responsive">
 
-                        <thead>
-                            <tr>
+<table class="table table-hover align-middle mb-0">
 
-                                <th>Contribution Code</th>
+<thead>
 
-                                <th>Contribution Name</th>
+<tr>
 
-                                <th>Statutory Category</th>
+<th>Contribution Code</th>
 
-                                <th>Rule Set Code</th>
+<th>Contribution Name</th>
 
-                                <th>Salary Ceiling Amount</th>
+<th>Statutory Category</th>
 
-                                <th>Status</th>
+<th>Status</th>
 
-                                <th class="text-end">Actions</th>
+<th class="text-end">Actions</th>
 
-                            </tr>
-                        </thead>
+</tr>
 
+</thead>
 
-                        <tbody>
 
-                        @forelse($contributions as $item)
 
-                            <tr>
+<tbody>
 
-                                <!-- Contribution Code -->
-                                <td>
-                                    <span class="badge bg-soft-primary text-primary">
-                                        {{ $item->contribution_code }}
-                                    </span>
-                                </td>
+@forelse($contributions as $item)
 
+<tr>
 
-                                <!-- Contribution Name -->
-                                <td>
-                                    {{ $item->contribution_name }}
-                                </td>
+<!-- Contribution Code -->
 
+<td>
 
-                                <!-- Statutory Category -->
-                                <td>
-                                    {{ $item->statutory_category }}
-                                </td>
+<span class="badge bg-soft-primary text-primary">
 
+{{ $item->contribution_code }}
 
-                                <!-- Rule Set Code -->
-                                <td>
-                                    {{ $item->rule_set_code }}
-                                </td>
+</span>
 
+</td>
 
-                                <!-- Salary Ceiling -->
-                                <td>
-                                    {{ $item->salary_ceiling_amount ?? 'N/A' }}
-                                </td>
 
 
-                                <!-- Status -->
-                                <td>
+<!-- Contribution Name -->
 
-                                    @if($item->status == 'active')
+<td>
 
-                                        <span class="text-success">
-                                            Active
-                                        </span>
+{{ $item->contribution_name }}
 
-                                    @else
+</td>
 
-                                        <span class="text-danger">
-                                            Inactive
-                                        </span>
 
-                                    @endif
 
-                                </td>
+<!-- Category -->
 
+<td>
 
-                                <!-- Actions -->
-                                <td class="text-end">
+{{ $item->statutory_category }}
 
-                                    <div class="d-flex gap-2 justify-content-end">
+</td>
 
-                                        <!-- View -->
-                                        <a href="{{ route('hr.payroll.statutory-contribution.show', $item->id) }}"
-                                           class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
-                                           title="View">
 
-                                            <i class="feather-eye"></i>
 
-                                        </a>
+<!-- Status -->
 
+<td>
 
-                                        <!-- Edit -->
-                                        <a href="{{ route('hr.payroll.statutory-contribution.edit', $item->id) }}"
-                                           class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
-                                           title="Edit">
+@if($item->status == 'Active')
 
-                                            <i class="feather-edit-2"></i>
+<span class="text-success">
 
-                                        </a>
+Active
 
+</span>
 
-                                        <!-- Delete -->
-                                        <form action="{{ route('hr.payroll.statutory-contribution.destroy', $item->id) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('Move to trash?')">
+@else
 
-                                            @csrf
-                                            @method('DELETE')
+<span class="text-danger">
 
-                                            <button type="submit"
-                                                    class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                                                    title="Delete">
+Inactive
 
-                                                <i class="feather-trash-2"></i>
+</span>
 
-                                            </button>
+@endif
 
-                                        </form>
+</td>
 
-                                    </div>
 
-                                </td>
 
-                            </tr>
+<!-- Actions -->
 
-                        @empty
+<td class="text-end">
 
-                            <tr>
+<div class="d-flex gap-2 justify-content-end">
 
-                                <td colspan="7" 
-                                    class="text-center text-muted">
+    <!-- View -->
 
-                                    No records found
+    <a href="{{ route('hr.payroll.statutory-contribution.show', $item->id) }}"
+       class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+       title="View">
 
-                                </td>
+        <i class="feather-eye"></i>
 
-                            </tr>
+    </a>
 
-                        @endforelse
 
-                        </tbody>
 
-                    </table>
+    <!-- Edit -->
 
-                </div>
+    <a href="{{ route('hr.payroll.statutory-contribution.edit', $item->id) }}"
+       class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+       title="Edit">
 
-            </div>
+        <i class="feather-edit-2"></i>
 
-        </div>
+    </a>
 
-    </div>
+
+
+    <!-- Delete -->
+
+    <form action="{{ route('hr.payroll.statutory-contribution.destroy', $item->id) }}"
+          method="POST"
+          onsubmit="return confirm('Move to trash?')">
+
+        @csrf
+        @method('DELETE')
+
+        <button type="submit"
+                class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+                title="Delete">
+
+            <i class="feather-trash-2"></i>
+
+        </button>
+
+    </form>
+
+</div>
+
+</td>
+
+</tr>
+
+
+
+@empty
+
+<tr>
+
+<td colspan="5"
+    class="text-center text-muted">
+
+No records found
+
+</td>
+
+</tr>
+
+@endforelse
+
+
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 @endsection

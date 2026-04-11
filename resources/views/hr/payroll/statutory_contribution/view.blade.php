@@ -6,319 +6,378 @@
 
 <div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
-    <div>
-        <h5 class="mb-1">
-            View Statutory Contribution
-        </h5>
-    </div>
+<div>
+<h5 class="mb-1">
+View Statutory Contribution
+</h5>
+</div>
 
-    <!-- Back Button -->
-    <a href="{{ route('hr.payroll.statutory-contribution.index') }}"
-       class="btn btn-light">
+<a href="{{ route('hr.payroll.statutory-contribution.index') }}"
+class="btn btn-light">
 
-        <i class="feather-arrow-left me-1"></i>
-        Back
+<i class="feather-arrow-left me-1"></i>
+Back
 
-    </a>
+</a>
 
 </div>
 
 
-
-<!-- Basic Details -->
+<!-- ================= BASIC DETAILS ================= -->
 
 <div class="card mb-3">
 
-    <div class="card-header">
-        Basic Details
-    </div>
+<div class="card-header">
+Basic Details
+</div>
 
-    <div class="card-body">
+<div class="card-body">
 
-        <div class="row">
+<div class="row">
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Contribution Code
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Contribution Code
+</label>
 
-                <div>
-                    {{ $statutoryContribution->contribution_code }}
-                </div>
-            </div>
-
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Contribution Name
-                </label>
-
-                <div>
-                    {{ $statutoryContribution->contribution_name }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->contribution_code }}
+</div>
+</div>
 
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Statutory Category
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Contribution Name
+</label>
 
-                <div>
-                    {{ $statutoryContribution->statutory_category }}
-                </div>
-            </div>
-
-        </div>
+<div>
+{{ $statutoryContribution->contribution_name }}
+</div>
+</div>
 
 
-        <div class="row">
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Statutory Category
+</label>
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Rule Set Code
-                </label>
-
-                <div>
-                    {{ $statutoryContribution->rule_set_code }}
-                </div>
-            </div>
-
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Eligibility Flag
-                </label>
-
-                <div>
-                    {{ ucfirst($statutoryContribution->eligibility_flag) }}
-                </div>
-            </div>
-
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Status
-                </label>
-
-                <div>
-                    @if($statutoryContribution->status == 'active')
-
-                        <span class="text-success">
-                            Active
-                        </span>
-
-                    @else
-
-                        <span class="text-danger">
-                            Inactive
-                        </span>
-
-                    @endif
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
+<div>
+{{ $statutoryContribution->statutory_category }}
+</div>
+</div>
 
 </div>
 
 
+<div class="row">
 
-<!-- Salary & State Configuration -->
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Rule Set Code
+</label>
 
-<div class="card mb-3">
-
-    <div class="card-header">
-        Salary & State Configuration
-    </div>
-
-    <div class="card-body">
-
-        <div class="row">
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Salary Ceiling Applicable
-                </label>
-
-                <div>
-                    {{ ucfirst($statutoryContribution->salary_ceiling_applicable) }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->rule_set_code }}
+</div>
+</div>
 
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Salary Ceiling Amount
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Eligibility Flag
+</label>
 
-                <div>
-                    {{ $statutoryContribution->salary_ceiling_amount ?? 'N/A' }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->eligibility_flag ? 'Yes' : 'No' }}
+</div>
+</div>
 
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    State Applicable
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Status
+</label>
 
-                <div>
-                    {{ ucfirst($statutoryContribution->state_applicable) }}
-                </div>
-            </div>
+<div>
 
-        </div>
+@if($statutoryContribution->status == 'Active')
 
-    </div>
+<span class="text-success">
+Active
+</span>
+
+@else
+
+<span class="text-danger">
+Inactive
+</span>
+
+@endif
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 
-
-<!-- Payroll Behaviour -->
+<!-- ================= SALARY & STATE ================= -->
 
 <div class="card mb-3">
 
-    <div class="card-header">
-        Payroll Behaviour
-    </div>
+<div class="card-header">
+Salary & State Configuration
+</div>
 
-    <div class="card-body">
+<div class="card-body">
 
-        <div class="row">
+<div class="row">
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Prorata Applicable
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Salary Ceiling Applicable
+</label>
 
-                <div>
-                    {{ ucfirst($statutoryContribution->prorata_applicable) }}
-                </div>
-            </div>
-
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    LOP Impact
-                </label>
-
-                <div>
-                    {{ ucfirst($statutoryContribution->lop_impact) }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->salary_ceiling_applicable ? 'Yes' : 'No' }}
+</div>
+</div>
 
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Rounding Rule
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Salary Ceiling Amount
+</label>
 
-                <div>
-                    {{ ucfirst($statutoryContribution->rounding_rule) ?? 'N/A' }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->salary_ceiling_amount ?? 'N/A' }}
+</div>
+</div>
 
-        </div>
 
-    </div>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+State Applicable
+</label>
+
+<div>
+{{ $statutoryContribution->state_applicable ? 'Yes' : 'No' }}
+</div>
+</div>
 
 </div>
 
 
+{{-- ⭐ Applicable States Display --}}
 
-<!-- Payslip Configuration -->
+@if($statutoryContribution->state_applicable)
 
-<div class="card mb-3">
+@php
 
-    <div class="card-header">
-        Payslip Configuration
-    </div>
+$states =
+json_decode(
+$statutoryContribution->applicable_states,
+true
+);
 
-    <div class="card-body">
+$stateNames = [
 
-        <div class="row">
+'KA' => 'Karnataka',
+'TN' => 'Tamil Nadu',
+'KL' => 'Kerala',
+'AP' => 'Andhra Pradesh',
+'TS' => 'Telangana',
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Show in Payslip
-                </label>
+];
 
-                <div>
-                    {{ ucfirst($statutoryContribution->show_in_payslip) }}
-                </div>
-            </div>
+@endphp
 
+<div class="row">
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Payslip Order
-                </label>
+<div class="col-md-12 mb-3">
 
-                <div>
-                    {{ $statutoryContribution->payslip_order ?? 'N/A' }}
-                </div>
-            </div>
+<label class="form-label text-muted">
+Applicable States
+</label>
 
+<div>
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Included in CTC
-                </label>
+@if($states)
 
-                <div>
-                    {{ ucfirst($statutoryContribution->included_in_ctc) }}
-                </div>
-            </div>
+@foreach($states as $code)
 
-        </div>
+<span class="badge bg-primary me-1">
 
-    </div>
+{{ $stateNames[$code] ?? $code }}
+
+</span>
+
+@endforeach
+
+@else
+
+<span class="text-muted">
+None
+</span>
+
+@endif
+
+</div>
+
+</div>
+
+</div>
+
+@endif
+
+</div>
 
 </div>
 
 
-
-<!-- Compliance Details -->
+<!-- ================= PAYROLL ================= -->
 
 <div class="card mb-3">
 
-    <div class="card-header">
-        Compliance Details
-    </div>
+<div class="card-header">
+Payroll Behaviour
+</div>
 
-    <div class="card-body">
+<div class="card-body">
 
-        <div class="row">
+<div class="row">
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Compliance Head
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Prorata Applicable
+</label>
 
-                <div>
-                    {{ $statutoryContribution->compliance_head }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->prorata_applicable ? 'Yes' : 'No' }}
+</div>
+</div>
 
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label text-muted">
-                    Statutory Code
-                </label>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+LOP Impact
+</label>
 
-                <div>
-                    {{ $statutoryContribution->statutory_code }}
-                </div>
-            </div>
+<div>
+{{ $statutoryContribution->lop_impact ? 'Yes' : 'No' }}
+</div>
+</div>
 
-        </div>
 
-    </div>
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Rounding Rule
+</label>
+
+<div>
+{{ $statutoryContribution->rounding_rule ?? 'N/A' }}
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= PAYSLIP ================= -->
+
+<div class="card mb-3">
+
+<div class="card-header">
+Payslip Configuration
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Show in Payslip
+</label>
+
+<div>
+{{ $statutoryContribution->show_in_payslip ? 'Yes' : 'No' }}
+</div>
+</div>
+
+
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Payslip Order
+</label>
+
+<div>
+{{ $statutoryContribution->payslip_order ?? 'N/A' }}
+</div>
+</div>
+
+
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Included in CTC
+</label>
+
+<div>
+{{ $statutoryContribution->included_in_ctc ? 'Yes' : 'No' }}
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= COMPLIANCE ================= -->
+
+<div class="card mb-3">
+
+<div class="card-header">
+Compliance Details
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Compliance Head
+</label>
+
+<div>
+{{ $statutoryContribution->compliance_head }}
+</div>
+</div>
+
+
+<div class="col-md-4 mb-3">
+<label class="form-label text-muted">
+Statutory Code
+</label>
+
+<div>
+{{ $statutoryContribution->statutory_code }}
+</div>
+</div>
+
+</div>
+
+</div>
 
 </div>
 

@@ -1378,14 +1378,22 @@ Route::prefix('payroll/deduction-rule-set')
 
 });
 
-// --- Payroll Statutory Contribution (UI ONLY) ---
+// --- Payroll Statutory Contribution ---
+
+// --- Payroll Statutory Contribution ---
+
 Route::prefix('payroll/statutory-contribution')
     ->name('payroll.statutory-contribution.')
     ->group(function () {
 
+    // INDEX
+
     Route::get('/',
         [StatutoryContributionController::class, 'index']
     )->name('index');
+
+
+    // CREATE
 
     Route::get('/create',
         [StatutoryContributionController::class, 'create']
@@ -1395,24 +1403,56 @@ Route::prefix('payroll/statutory-contribution')
         [StatutoryContributionController::class, 'store']
     )->name('store');
 
+
+    // ⭐ STATIC ROUTES FIRST
+
+    Route::get('/deleted',
+        [StatutoryContributionController::class, 'deleted']
+    )->name('deleted');
+
+
+    // SHOW
+
     Route::get('/{id}/show',
         [StatutoryContributionController::class, 'show']
     )->name('show');
+
+
+    // EDIT
 
     Route::get('/{id}/edit',
         [StatutoryContributionController::class, 'edit']
     )->name('edit');
 
+
+    // UPDATE
+
     Route::put('/{id}',
         [StatutoryContributionController::class, 'update']
     )->name('update');
+
+
+    // DELETE (Soft)
 
     Route::delete('/{id}',
         [StatutoryContributionController::class, 'destroy']
     )->name('destroy');
 
-});
 
+    // RESTORE
+
+    Route::post('/{id}/restore',
+        [StatutoryContributionController::class, 'restore']
+    )->name('restore');
+
+
+    // PERMANENT DELETE
+
+    Route::delete('/{id}/force-delete',
+        [StatutoryContributionController::class, 'forceDelete']
+    )->name('forceDelete');
+
+});
 
   });
 
