@@ -1271,7 +1271,7 @@ Route::prefix('ppe-compliance')->group(function () {
         Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
 
     });
-});
+
 /*
 |--------------------------------------------------------------------------
 | 31. Report module
