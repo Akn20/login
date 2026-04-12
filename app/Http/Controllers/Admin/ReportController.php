@@ -64,7 +64,7 @@ class ReportController extends Controller
             // CREATE ONLY IF NOT EXISTS
             $report = LabReport::create([
                 'sample_id' => $request->sample_id,
-                'status' => 'Completed',
+                'status' => $request->status,
                 'entered_at' => now()
             ]);
         }
