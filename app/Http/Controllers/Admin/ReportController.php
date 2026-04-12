@@ -218,6 +218,8 @@ class ReportController extends Controller
 
         // 📝 Audit log
         FileAuditLog::create([
+            'report_id' => $report->id,
+    'sample_id' => optional($report->sample)->sample_id,
             'user_id' => auth()->id(),
             'file_name' => $file->getClientOriginalName(),
             'action' => 'UPLOAD',
