@@ -46,8 +46,19 @@ class ReportController extends Controller
             'supporting_files.*' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
-        // 🔥 CHECK IF REPORT ALREADY EXISTS
+        //CHECK IF REPORT ALREADY EXISTS
         $report = LabReport::where('sample_id', $request->sample_id)->first();
+
+        // IF REPORT EXISTS → RESET VERIFICATION
+        if ($report) {
+            $report->update([
+                'verification_status' => 'Pending',
+                'verified_by' => null,
+                'verified_at' => null,
+                'verification_notes' => null,
+                'digital_signature' => null,
+            ]);
+        }
 
         if (!$report) {
             // CREATE ONLY IF NOT EXISTS
@@ -139,6 +150,10 @@ class ReportController extends Controller
             'status' => $request->status
         ]);
 
+        if ($report->verification_status === 'Finalized') {
+            return back()->with('error', 'Finalized reports cannot be modified');
+        }
+
         // Main file (new version)
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
@@ -150,6 +165,30 @@ class ReportController extends Controller
                 $this->storeFile($file, $report, false);
             }
         }
+
+
+        // RESET IF REJECTED
+        if ($report->verification_status === 'Rejected') {
+            $report->update([
+                'verification_status' => 'Pending',
+                'verified_by' => null,
+                'verified_at' => null,
+                'verification_notes' => null,
+                'digital_signature' => null,
+            ]);
+        }
+
+        // RESET IF NEW FILE UPLOADED
+        if ($request->hasFile('report_file') || $request->hasFile('supporting_files')) {
+            $report->update([
+                'verification_status' => 'Pending',
+                'verified_by' => null,
+                'verified_at' => null,
+                'verification_notes' => null,
+                'digital_signature' => null,
+            ]);
+        }
+
 
         return redirect()
             ->route('admin.laboratory.report.show', $id)
@@ -185,8 +224,72 @@ class ReportController extends Controller
             'timestamp' => now()
         ]);
     }
+
+    public function verify($id)
+    {
+        $report = LabReport::findOrFail($id);
+
+        if ($report->status !== 'Completed') {
+            return back()->with('error', 'Report must be completed first');
+        }
+
+        $report->update([
+            'verification_status' => 'Verified',
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
+        return back()->with('success', 'Report verified');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $report = LabReport::findOrFail($id);
+
+        $report->update([
+            'verification_status' => 'Rejected',
+            'verification_notes' => $request->notes,
+            'verified_by' => auth()->id(),
+            'verified_at' => now(),
+        ]);
+
+        return back()->with('success', 'Report rejected');
+    }
+
+    public function sign($id)
+    {
+        $report = LabReport::findOrFail($id);
+
+        if ($report->verification_status !== 'Verified') {
+            return back()->with('error', 'Verify before signing');
+        }
+
+        $report->update([
+            'digital_signature' => auth()->user()->name
+        ]);
+
+        return back()->with('success', 'Signed successfully');
+    }
+
+    public function finalize($id)
+    {
+        $report = LabReport::findOrFail($id);
+
+        if ($report->verification_status !== 'Verified') {
+            return back()->with('error', 'Only verified reports can be finalized');
+        }
+
+        $report->update([
+            'verification_status' => 'Finalized',
+            'finalized_at' => now(),
+        ]);
+
+        return back()->with('success', 'Report finalized');
+    }
+
+
     // ================= API: LIST REPORTS =================
-public function apiIndex()
+    public function apiIndex()
     {
         $reports = LabReport::with([
             'sample',
