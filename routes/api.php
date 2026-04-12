@@ -8,10 +8,13 @@ use App\Http\Controllers\Admin\LabTestController;
 */
 
 // Auth
-use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\Nurse\InfectionControlController;
+use App\Http\Controllers\Admin\Nurse\IsolationController;
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 // Admin
 
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -30,6 +33,8 @@ use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
 use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
+use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
 
@@ -48,22 +53,21 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 // Leave Management
 use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
+use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
+use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
-use App\Http\Controllers\HR\Payroll\HourlyPayController;
-use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
-// Root-level Controllers (alphabetical)
 use App\Http\Controllers\InstitutionController;
-use App\Http\Controllers\JobTypeController;
 // Root-level Controllers (alphabetical)
+use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
+// Root-level Controllers (alphabetical)
 use App\Http\Controllers\LeaveManagement\HolidayController;
 use App\Http\Controllers\LeaveManagement\LeaveAdjustmentController;
 use App\Http\Controllers\LeaveManagement\LeaveApprovalController;
@@ -71,29 +75,27 @@ use App\Http\Controllers\LeaveManagement\LeaveMappingController;
 use App\Http\Controllers\LeaveManagement\LeaveReportController;
 use App\Http\Controllers\LeaveManagement\LeaveTypeController;
 use App\Http\Controllers\LeaveManagement\WeekendController;
-
-// Beds / Wards / Rooms
 use App\Http\Controllers\ModuleController;
+// Beds / Wards / Rooms
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\WorkStatusController;
 
+use App\Models\User;
 //added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ResultEntryController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController;
 
 //Receptionist
 use App\Http\Controllers\TokenController;
-
-
-
+// Receptionist
+use Illuminate\Support\Facades\Route;
 
 // added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
@@ -101,9 +103,6 @@ Route::get('/patients', [PatientController::class, 'apiIndex']);
 // Receptionist
 
 // Receptionist
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -673,15 +672,11 @@ Route::prefix('surgery')->group(function () {
     Route::get('/date/{date}', [SurgeryApiController::class, 'getByDate']);
 });
 
-
-
-
 /*
 |--------------------------------------------------------------------------
 | 16. OT (Operation Theatre)
 |--------------------------------------------------------------------------
 */
-
 
 Route::prefix('ot')->group(function () {
     Route::get('/', [OTApiController::class, 'index']);
@@ -787,66 +782,92 @@ Route::prefix('edm')->group(function () {
     Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
     Route::post('/update/{id}', [EmployeeDocumentApiController::class, 'update']);
     Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
-
-
-Route::prefix('hr')->group(function () {
-
-    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftIndex']);
-    Route::post('shifts', [ShiftSchedulingAPIController::class, 'shiftStore']);
-    Route::get('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftShow']);
-    Route::put('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftUpdate']);
-    Route::delete('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftDelete']);
-
-    Route::post('shift-toggle/{id}', [ShiftSchedulingAPIController::class, 'toggleShiftStatus']);
-
-    Route::get('assignments', [ShiftSchedulingAPIController::class, 'assignmentIndex']);
-    Route::post('assignments', [ShiftSchedulingAPIController::class, 'assignmentStore']);
-
-    Route::get('rotations', [ShiftSchedulingAPIController::class, 'rotationIndex']);
-    Route::post('rotations', [ShiftSchedulingAPIController::class, 'rotationStore']);
-
-    Route::get('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffIndex']);
-    Route::post('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffStore']);
-
-    Route::get('conflicts', [ShiftSchedulingAPIController::class, 'conflictIndex']);
-
-});
-Route::prefix('attendance')->group(function () {
-
-    Route::get('/', [AttendanceApiController::class, 'index']);
-
-    Route::post('/', [AttendanceApiController::class, 'store']);
-
-    Route::get('/{id}', [AttendanceApiController::class, 'show']);
-
-    Route::put('/{id}', [AttendanceApiController::class, 'update']);
-
-    Route::delete('/{id}', [AttendanceApiController::class, 'destroy']);
-
-    Route::get('/late/list', [AttendanceApiController::class, 'lateEntries']);
-
-    Route::get('/overtime/list', [AttendanceApiController::class, 'overtime']);
-
-});
-Route::prefix('tokens')->group(function () {
-    Route::get('/', [TokenController::class, 'apiIndex']);
-    Route::post('/', [TokenController::class, 'apiStore']);
-    Route::get('/{id}', [TokenController::class, 'apiShow']);
-    Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
-    Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
-
-    Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
-
-});
-
-
-Route::get('/doctors', [TokenController::class, 'apiDoctors']);
-
-
-    Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
+   Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
     Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
 });
 
+
+    Route::prefix('hr')->group(function () {
+
+        Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftIndex']);
+        Route::post('shifts', [ShiftSchedulingAPIController::class, 'shiftStore']);
+        Route::get('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftShow']);
+        Route::put('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftUpdate']);
+        Route::delete('shifts/{id}', [ShiftSchedulingAPIController::class, 'shiftDelete']);
+
+        Route::post('shift-toggle/{id}', [ShiftSchedulingAPIController::class, 'toggleShiftStatus']);
+
+        Route::get('assignments', [ShiftSchedulingAPIController::class, 'assignmentIndex']);
+        Route::post('assignments', [ShiftSchedulingAPIController::class, 'assignmentStore']);
+
+        Route::get('rotations', [ShiftSchedulingAPIController::class, 'rotationIndex']);
+        Route::post('rotations', [ShiftSchedulingAPIController::class, 'rotationStore']);
+
+        Route::get('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffIndex']);
+        Route::post('weekly-offs', [ShiftSchedulingAPIController::class, 'weeklyOffStore']);
+
+        Route::get('conflicts', [ShiftSchedulingAPIController::class, 'conflictIndex']);
+
+    });
+    Route::prefix('attendance')->group(function () {
+
+        Route::get('/', [AttendanceApiController::class, 'index']);
+
+        Route::post('/', [AttendanceApiController::class, 'store']);
+
+        Route::get('/{id}', [AttendanceApiController::class, 'show']);
+
+        Route::put('/{id}', [AttendanceApiController::class, 'update']);
+
+        Route::delete('/{id}', [AttendanceApiController::class, 'destroy']);
+
+        Route::get('/late/list', [AttendanceApiController::class, 'lateEntries']);
+
+        Route::get('/overtime/list', [AttendanceApiController::class, 'overtime']);
+
+    });
+    Route::prefix('tokens')->group(function () {
+        Route::get('/', [TokenController::class, 'apiIndex']);
+        Route::post('/', [TokenController::class, 'apiStore']);
+        Route::get('/{id}', [TokenController::class, 'apiShow']);
+        Route::patch('{id}/skip', [TokenController::class, 'apiSkip']);
+        Route::patch('{id}/complete', [TokenController::class, 'apiComplete']);
+
+        Route::patch('{id}/reassign', [TokenController::class, 'apiReassign']);
+
+    });
+
+    Route::get('/doctors', [TokenController::class, 'apiDoctors']);
+
+    // Laboratory API
+    Route::prefix('laboratories')->group(function () {
+
+        Route::get('/', [LabTestController::class, 'apiIndex']);
+
+        Route::get('/requests', [LabTestController::class, 'apiLabRequests']);
+
+        Route::post('/', [LabTestController::class, 'apiStore']);
+
+        Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
+
+        Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
+       Route::get('/{id}', [LabTestController::class, 'apiShow']);
+    });
+
+        // SAMPLE COLLECTION API
+        Route::prefix('samples')->group(function () {
+
+            Route::get('/', [SampleCollectionController::class, 'apiIndex']);
+            Route::get('/pending', [SampleCollectionController::class, 'apiPending']);
+
+            Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
+            Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
+            Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
+
+        });
+       
+
+   
 /*
 |--------------------------------------------------------------------------
 | 21. Reception: Tokens & Doctors
@@ -910,7 +931,6 @@ Route::prefix('laboratories')->group(function () {
             Route::post('/submit/{id}', [ResultEntryController::class, 'apiSubmit']);
         });
     });
-
 
     Route::get('/{id}', [LabTestController::class, 'apiShow']);
     Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
@@ -986,7 +1006,7 @@ Route::prefix('payroll/deductions')->group(function () {
     Route::put('/{id}/status', [PayrollDeductionController::class, 'apiToggleStatus']);
 
 });
-//Pharmacy Billing Module
+// Pharmacy Billing Module
 Route::prefix('pharmacy')->group(function () {
 
     Route::get('billing', [PharmacyBillingController::class, 'apiIndex']);
@@ -1016,7 +1036,6 @@ Route::prefix('edm')->group(function () {
     Route::get('/documents/{id}/view', [EmployeeDocumentApiController::class, 'view']);
     Route::get('/documents/{id}/download', [EmployeeDocumentApiController::class, 'download']);
 });
-
 
 Route::prefix('radiology')->group(function () {
 
@@ -1055,20 +1074,51 @@ Route::prefix('radiology')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [RadiologyDashboardApiController::class, 'index']);
-});
+
+
+    
+    // Scan Types
+        Route::get('/scan-types', [ScanTypeApiController::class, 'index']);
+
+        Route::post('/scan-types', [ScanTypeApiController::class, 'store']);
+
+        Route::put('/scan-types/{id}', [ScanTypeApiController::class, 'update']);
+
+        Route::delete('/scan-types/{id}', [ScanTypeApiController::class, 'destroy']);
+
+        Route::get('/doctors', function () {
+
+            $doctors = DB::table('users')
+                ->join('roles', 'users.role_id', '=', 'roles.id')
+                ->where('roles.name', 'like', '%doctor%')
+                ->select(
+                    'users.id',
+                    'users.name'
+                )
+                ->get();
+
+            return [
+                'status' => true,
+                'data' => $doctors
+            ];
+        });
+        Route::get(
+            '/history',
+            [ScanRequestApiController::class, 'history']
+        );
+
+    });
+
+
 /*
 |--------------------------------------------------------------------------
 | 26. Payroll: Hourly Pay
 |--------------------------------------------------------------------------
 */
-
-
-
 Route::prefix('hourly-pay')->group(function () {
 
     Route::get('/', [HourlyPayController::class, 'apiIndex']);
     Route::post('/', [HourlyPayController::class, 'apiStore']);
-
 
     Route::get('/deleted', [HourlyPayController::class, 'apiDeleted']);
 
@@ -1079,9 +1129,95 @@ Route::prefix('hourly-pay')->group(function () {
     Route::post('/restore/{id}', [HourlyPayController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [HourlyPayController::class, 'apiForceDelete']);
 });
+
+
 /*
 |--------------------------------------------------------------------------
-| 26. Payroll: deduction rule set
+| 27. Medication Administration (Nurse)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('medication-administration')->group(function () {
+
+    Route::get('/patients-list', [MedicationAdministrationController::class, 'apiGetPatients']);
+    Route::get('/deleted', [MedicationAdministrationController::class, 'apiTrash']);
+    Route::get('/prescriptions/{patientId}', [MedicationAdministrationController::class, 'apiPrescriptionsByPatient']);
+
+    Route::get('/', [MedicationAdministrationController::class, 'apiIndex']);
+    Route::post('/', [MedicationAdministrationController::class, 'apiStore']);
+    Route::get('/patient/{patientId}', [MedicationAdministrationController::class, 'apiGetByPatient']);
+    Route::get('/nurse/{nurseId}', [MedicationAdministrationController::class, 'apiGetByNurse']);
+    Route::get('/status/{status}', [MedicationAdministrationController::class, 'apiGetByStatus']);
+    Route::get('/{id}', [MedicationAdministrationController::class, 'apiShow']);
+    Route::put('/{id}', [MedicationAdministrationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [MedicationAdministrationController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [MedicationAdministrationController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [MedicationAdministrationController::class, 'apiForceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 28. Isolation Tracking (Nurse)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('isolation-records')->group(function () {
+
+    Route::get('/', [IsolationController::class, 'apiIndex']);
+    Route::post('/', [IsolationController::class, 'apiStore']);
+    Route::get('/deleted', [IsolationController::class, 'apiTrash']);
+    Route::get('/active', [IsolationController::class, 'apiGetActive']);
+    Route::get('/patient/{patientId}', [IsolationController::class, 'apiGetByPatient']);
+    Route::get('/status/{status}', [IsolationController::class, 'apiGetByStatus']);
+    Route::get('/{id}', [IsolationController::class, 'apiShow']);
+    Route::put('/{id}', [IsolationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [IsolationController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [IsolationController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [IsolationController::class, 'apiForceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 29. PPE Compliance (Nurse)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('ppe-compliance')->group(function () {
+
+    Route::get('/', [PpeComplianceController::class, 'apiIndex']);
+    Route::post('/', [PpeComplianceController::class, 'apiStore']);
+    Route::get('/deleted', [PpeComplianceController::class, 'apiTrash']);
+    Route::get('/patient/{patientId}', [PpeComplianceController::class, 'apiGetByPatient']);
+    Route::get('/status/{status}', [PpeComplianceController::class, 'apiGetByStatus']);
+    Route::get('/report', [PpeComplianceController::class, 'apiGetReport']);
+    Route::get('/{id}', [PpeComplianceController::class, 'apiShow']);
+    Route::put('/{id}', [PpeComplianceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PpeComplianceController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [PpeComplianceController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PpeComplianceController::class, 'apiForceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 30. Infection Logs (Nurse)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('infection-logs')->group(function () {
+
+    Route::get('/', [InfectionControlController::class, 'apiIndex']);
+    Route::post('/', [InfectionControlController::class, 'apiStore']);
+    Route::get('/deleted', [InfectionControlController::class, 'apiTrash']);
+    Route::get('/{id}', [InfectionControlController::class, 'apiShow']);
+    Route::put('/{id}', [InfectionControlController::class, 'apiUpdate']);
+    Route::delete('/{id}', [InfectionControlController::class, 'apiDestroy']);
+    Route::post('/{id}/restore', [InfectionControlController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [InfectionControlController::class, 'apiForceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 31. Payroll: Deduction Rule Sets
 |--------------------------------------------------------------------------
 */
 Route::prefix('deduction-rule-sets')->group(function () {
@@ -1089,14 +1225,31 @@ Route::prefix('deduction-rule-sets')->group(function () {
     Route::get('/', [DeductionRuleSetController::class, 'apiIndex']);
     Route::post('/', [DeductionRuleSetController::class, 'apiStore']);
 
-    // ✅ MUST be before /{id}
     Route::get('/deleted', [DeductionRuleSetController::class, 'apiDeleted']);
     Route::post('/restore/{id}', [DeductionRuleSetController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [DeductionRuleSetController::class, 'apiForceDelete']);
 
-    // ✅ These LAST, no whereNumber
     Route::get('/{id}', [DeductionRuleSetController::class, 'apiShow']);
     Route::put('/{id}', [DeductionRuleSetController::class, 'apiUpdate']);
     Route::delete('/{id}', [DeductionRuleSetController::class, 'apiDestroy']);
+});
 
+
+/*
+|--------------------------------------------------------------------------
+| 32. Payroll: Deductions
+|--------------------------------------------------------------------------
+*/
+Route::prefix('deductions')->group(function () {
+
+    Route::get('/', [PayrollDeductionController::class, 'apiIndex']);
+    Route::post('/', [PayrollDeductionController::class, 'apiStore']);
+
+    Route::get('/deleted', [PayrollDeductionController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [PayrollDeductionController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [PayrollDeductionController::class, 'apiForceDelete']);
+
+    Route::get('/{id}', [PayrollDeductionController::class, 'apiShow']);
+    Route::put('/{id}', [PayrollDeductionController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
 });

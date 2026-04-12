@@ -2,6 +2,18 @@
 
 @section('content')
 
+@if($report->verification_status === 'Rejected')
+    <div class="alert alert-danger">
+        This report was rejected. Update and upload again.
+    </div>
+@endif
+
+@if($report->verification_status === 'Finalized')
+    <div class="alert alert-danger">
+        This report is finalized and cannot be edited.
+    </div>
+@endif
+
     <div class="page-header d-flex align-items-center">
         <h5 class="me-3">Upload More Files</h5>
 
