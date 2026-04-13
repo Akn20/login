@@ -86,14 +86,34 @@ $validated['authority_code'] = $request->authority_code;
     {
         $record = StatutoryDeduction::findOrFail($id);
 
-        $request->validate([
-            'statutory_code' => 'required|unique:statutory_deductions,statutory_code,' . $id,
-            'statutory_name' => 'required',
-        ]);
+       $request->validate([
+    'statutory_code' => 'required|unique:statutory_deductions,statutory_code,' . $id,
+    'statutory_name' => 'required',
+    'statutory_category' => 'required',
+    'status' => 'required',
+    'rule_set_id' => 'required',
+
+    'eligibility_flag' => 'required|boolean',
+    'state_applicable' => 'required|boolean',
+    'prorata_applicable' => 'required|boolean',
+    'lop_impact' => 'required|boolean',
+    'show_in_payslip' => 'required|boolean',
+
+    'compliance_head' => 'required|string',
+    'authority_code' => 'required|string',
+
+    'salary_ceiling_applicable' => 'required|boolean',
+    'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric',
+
+    'states' => 'required_if:state_applicable,1|nullable|array',
+
+    'rounding_rule' => 'nullable|string',
+    'payslip_order' => 'nullable|numeric',
+]);
 
         $record->update([
             ...$request->all(),
-            'applicable_states' => json_encode($request->applicable_states)
+           'applicable_states' => json_encode($request->states ?? [])
         ]);
 
         return redirect()->route('hr.payroll.statutory-deduction.index')

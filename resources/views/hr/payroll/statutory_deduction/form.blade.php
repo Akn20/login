@@ -29,7 +29,7 @@
                     <label class="form-label">Statutory Code</label>
                     <input type="text" name="statutory_code"
                         class="form-control @error('statutory_code') is-invalid @enderror"
-                        value="{{ old('statutory_code', $deduction->statutory_code ?? '') }}" required>
+                        value="{{ old('statutory_code', $deduction->statutory_code ?? '') }}" >
                     @error('statutory_code')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -39,7 +39,7 @@
                     <label class="form-label">Statutory Name</label>
                     <input type="text" name="statutory_name"
                         class="form-control @error('statutory_name') is-invalid @enderror"
-                        value="{{ old('statutory_name', $deduction->statutory_name ?? '') }}" required>
+                        value="{{ old('statutory_name', $deduction->statutory_name ?? '') }}" >
                     @error('statutory_name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -48,7 +48,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Category</label>
                     <select name="statutory_category"
-                        class="form-control @error('statutory_category') is-invalid @enderror" required>
+                        class="form-control @error('statutory_category') is-invalid @enderror">
                         <option value="">Select</option>
                         <option value="PF"  {{ old('statutory_category', $deduction->statutory_category ?? '') == 'PF'  ? 'selected' : '' }}>PF</option>
                         <option value="ESI" {{ old('statutory_category', $deduction->statutory_category ?? '') == 'ESI' ? 'selected' : '' }}>ESI</option>
@@ -64,7 +64,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Status</label>
                     <select name="status"
-                        class="form-control @error('status') is-invalid @enderror" required>
+                        class="form-control @error('status') is-invalid @enderror" >
                         <option value="active"   {{ old('status', $deduction->status ?? '') == 'active'   ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ old('status', $deduction->status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
@@ -82,7 +82,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Rule Set Code</label>
                     <select name="rule_set_id"
-                        class="form-control @error('rule_set_id') is-invalid @enderror" required>
+                        class="form-control @error('rule_set_id') is-invalid @enderror" >
                         <option value="">Select</option>
                         @foreach($ruleSets as $rule)
                             <option value="{{ $rule->id }}" {{ old('rule_set_id', $deduction->rule_set_id ?? '') == $rule->id ? 'selected' : '' }}>
