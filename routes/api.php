@@ -68,6 +68,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -821,4 +822,18 @@ Route::prefix('nurse-shifts')->group(function () {
     Route::get('/{id}', [NurseShiftsController::class, 'apiShow']);
     Route::post('/store', [NurseShiftsController::class, 'apiStore']);
     Route::post('/{id}/complete', [NurseShiftsController::class, 'apiMarkComplete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-discharge')->group(function () {
+
+    Route::get('/', [DischargePreparationController::class, 'apiIndex']);
+    Route::get('/{ipd_id}', [DischargePreparationController::class, 'apiShow']);
+    Route::post('/save', [DischargePreparationController::class, 'apiSave']);
+    Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
+
 });
