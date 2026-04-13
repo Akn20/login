@@ -22,41 +22,41 @@ class StatutoryDeductionController extends Controller
         $ruleSets = DeductionRuleSet::where('status', 'active')->get();
         return view('hr.payroll.statutory_deduction.create', compact('ruleSets'));
     }
-
+     
     // 🔹 STORE
     public function store(Request $request)
 {
+   
     // Validate first
-    $validated = $request->validate([
-        'statutory_code' => 'required|unique:statutory_deductions,statutory_code',
-        'statutory_name' => 'required',
-        'statutory_category' => 'required',
-        'status' => 'required',
-        'rule_set_id' => 'required',
+   $validated = $request->validate([
+    'statutory_code'            => 'required|unique:statutory_deductions,statutory_code',
+    'statutory_name'            => 'required',
+    'statutory_category'        => 'required',
+    'status'                    => 'required',
+    'rule_set_id'               => 'required',
 
-        'eligibility_flag' => 'nullable|boolean',
-        'salary_ceiling_applicable' => 'nullable|boolean',
-        'salary_ceiling_amount' => 'nullable|numeric',
-        'state_applicable' => 'nullable|boolean',
-        'prorata_applicable' => 'nullable|boolean',
-        'lop_impact' => 'nullable|boolean',
-        'rounding_rule' => 'nullable|string',
-        'show_in_payslip' => 'nullable|boolean',
-        'payslip_order' => 'nullable|numeric',
-        'compliance_head' => 'nullable|string',
-        'authority_code' => 'nullable|string',
-    ]);
+    // Yes — mandatory per image
+    'eligibility_flag'          => 'required|boolean',
+    'state_applicable'          => 'required|boolean',
+    'prorata_applicable'        => 'required|boolean',
+    'lop_impact'                => 'required|boolean',
+    'show_in_payslip'           => 'required|boolean',
+    'compliance_head'           => 'required|string',
+    'authority_code'            => 'required|string',
+
+    // Conditional per image
+    'salary_ceiling_applicable' => 'required|boolean',
+    'salary_ceiling_amount'     => 'required_if:salary_ceiling_applicable,1|nullable|numeric',
+    'states'                    => 'required_if:state_applicable,1|nullable|array',
+
+    // No — optional per image
+    'rounding_rule'             => 'nullable|string',
+    'payslip_order'             => 'nullable|numeric',
+]);
 
     // Defaults
-    $validated['eligibility_flag'] = $request->eligibility_flag ?? 0;
-    $validated['salary_ceiling_applicable'] = $request->salary_ceiling_applicable ?? 0;
-    $validated['state_applicable'] = $request->state_applicable ?? 0;
-    $validated['prorata_applicable'] = $request->prorata_applicable ?? 0;
-    $validated['lop_impact'] = $request->lop_impact ?? 0;
-    $validated['show_in_payslip'] = $request->show_in_payslip ?? 1;
 
     $validated['applicable_states'] = json_encode($request->states ?? []);
-    $validated['statutory_authority_code'] = $request->authority_code;
 
     StatutoryDeduction::create($validated);
 

@@ -12,19 +12,11 @@
     </a>
 </div>
 
-<div class="card">
-    <div class="card-body">
-
-        <form action="{{ route('hr.payroll.statutory-deduction.store') }}" method="POST">
-            @csrf
 
             @include('hr.payroll.statutory_deduction.form', [
-                'record' => null
+                'deduction' => null
             ])
 
-        </form>
-
-    </div>
-</div>
+    
 
 @endsection
