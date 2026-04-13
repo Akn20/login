@@ -56,8 +56,8 @@ class StatutoryDeductionController extends Controller
     $validated['show_in_payslip'] = $request->show_in_payslip ?? 1;
 
     $validated['applicable_states'] = json_encode($request->states ?? []);
-    $validated['statutory_authority_code'] = $request->authority_code;
-
+   // $validated['statutory_authority_code'] = $request->authority_code;
+$validated['authority_code'] = $request->authority_code;
     StatutoryDeduction::create($validated);
 
     return redirect()->route('hr.payroll.statutory-deduction.index')
@@ -132,4 +132,141 @@ class StatutoryDeductionController extends Controller
 
         return redirect()->back()->with('success', 'Permanently Deleted');
     }
+
+
+    // ================= API METHODS ================= //
+
+public function apiIndex()
+{
+    return response()->json([
+        'data' => StatutoryDeduction::latest()->get()
+    ]);
+}
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'statutory_code' => 'required|unique:statutory_deductions,statutory_code',
+        'statutory_name' => 'required',
+        'statutory_category' => 'required',
+        'status' => 'required',
+        'rule_set_id' => 'required|exists:deduction_rule_sets,id',
+    ]);
+
+    $data = StatutoryDeduction::create([
+        'statutory_code' => $request->statutory_code,
+        'statutory_name' => $request->statutory_name,
+        'statutory_category' => $request->statutory_category,
+        'status' => $request->status,
+
+        'rule_set_id' => $request->rule_set_id,
+
+        'eligibility_flag' => (bool) $request->eligibility_flag,
+        'salary_ceiling_applicable' => (bool) $request->salary_ceiling_applicable,
+        'salary_ceiling_amount' => $request->salary_ceiling_amount,
+
+        'state_applicable' => (bool) $request->state_applicable,
+        'applicable_states' => json_encode($request->states ?? []),
+
+        'prorata_applicable' => (bool) $request->prorata_applicable,
+        'lop_impact' => (bool) $request->lop_impact,
+
+        'rounding_rule' => $request->rounding_rule,
+
+        'show_in_payslip' => (bool) $request->show_in_payslip,
+        'payslip_order' => $request->payslip_order,
+
+        'compliance_head' => $request->compliance_head,
+        'authority_code' => $request->authority_code,
+    ]);
+
+    return response()->json([
+        'message' => 'Created successfully',
+        'data' => $data
+    ]);
+}
+
+public function apiShow($id)
+{
+    return response()->json([
+        'data' => StatutoryDeduction::findOrFail($id)
+    ]);
+}
+
+public function apiUpdate(Request $request, $id)
+{
+    $data = StatutoryDeduction::findOrFail($id);
+
+    $request->validate([
+        'statutory_code' => 'required|unique:statutory_deductions,statutory_code,' . $id,
+        'statutory_name' => 'required',
+        'rule_set_id' => 'required|exists:deduction_rule_sets,id',
+    ]);
+
+    $data->update([
+        'statutory_code' => $request->statutory_code,
+        'statutory_name' => $request->statutory_name,
+        'statutory_category' => $request->statutory_category,
+        'status' => $request->status,
+
+        'rule_set_id' => $request->rule_set_id,
+
+        'eligibility_flag' => (bool) $request->eligibility_flag,
+        'salary_ceiling_applicable' => (bool) $request->salary_ceiling_applicable,
+        'salary_ceiling_amount' => $request->salary_ceiling_amount,
+
+        'state_applicable' => (bool) $request->state_applicable,
+        'applicable_states' => json_encode($request->states ?? []),
+
+        'prorata_applicable' => (bool) $request->prorata_applicable,
+        'lop_impact' => (bool) $request->lop_impact,
+
+        'rounding_rule' => $request->rounding_rule,
+
+        'show_in_payslip' => (bool) $request->show_in_payslip,
+        'payslip_order' => $request->payslip_order,
+
+        'compliance_head' => $request->compliance_head,
+        'authority_code' => $request->authority_code,
+    ]);
+
+    return response()->json([
+        'message' => 'Updated successfully',
+        'data' => $data
+    ]);
+}
+
+public function apiDestroy($id)
+{
+    StatutoryDeduction::findOrFail($id)->delete();
+
+    return response()->json([
+        'message' => 'Deleted successfully'
+    ]);
+}
+
+public function apiDeleted()
+{
+    return response()->json([
+        'data' => StatutoryDeduction::onlyTrashed()->get()
+    ]);
+}
+
+public function apiRestore($id)
+{
+    StatutoryDeduction::onlyTrashed()->findOrFail($id)->restore();
+
+    return response()->json([
+        'message' => 'Restored successfully'
+    ]);
+}
+
+public function apiForceDelete($id)
+{
+    StatutoryDeduction::onlyTrashed()->findOrFail($id)->forceDelete();
+
+    return response()->json([
+        'message' => 'Deleted permanently'
+    ]);
+}
 }

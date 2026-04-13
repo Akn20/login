@@ -61,6 +61,7 @@ use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -1331,4 +1332,25 @@ Route::prefix('deductions')->group(function () {
     Route::get('/{id}', [PayrollDeductionController::class, 'apiShow']);
     Route::put('/{id}', [PayrollDeductionController::class, 'apiUpdate']);
     Route::delete('/{id}', [PayrollDeductionController::class, 'apiDestroy']);
+});
+/*
+|--------------------------------------------------------------------------
+| 33. Payroll: Statutory Deductions
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('statutory-deduction')->group(function () {
+
+    Route::get('/', [StatutoryDeductionController::class, 'apiIndex']);
+    Route::post('/', [StatutoryDeductionController::class, 'apiStore']);
+
+    Route::get('/deleted', [StatutoryDeductionController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [StatutoryDeductionController::class, 'apiShow']);
+    Route::put('/{id}', [StatutoryDeductionController::class, 'apiUpdate']);
+    Route::delete('/{id}', [StatutoryDeductionController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [StatutoryDeductionController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [StatutoryDeductionController::class, 'apiForceDelete']);
 });
