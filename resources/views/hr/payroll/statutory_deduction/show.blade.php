@@ -68,7 +68,7 @@
 
             <tr>
                 <th>Payslip Order</th>
-                <td>{{ $record->payslip_order }}</td>
+                <td>{{ $record->payslip_order ?? '-'}}</td>
             </tr>
 
             <tr>
