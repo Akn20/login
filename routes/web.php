@@ -56,6 +56,7 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\Doctor\NotificationController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
 // Leave Management
@@ -113,6 +114,7 @@ use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 use App\Http\Controllers\Admin\ParameterController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Admin\AlertController;
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -185,6 +187,8 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/consultation/edit/{id}', [ConsultationController::class, 'edit'])->name('edit-consultation');
         Route::post('/consultation/update/{id}', [ConsultationController::class, 'update'])->name('update-consultation');
         Route::get('/print-prescription/{id}', [ConsultationController::class, 'printPrescription'])->name('print-prescription');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     });
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
@@ -1291,6 +1295,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/report/{id}/finalize', [AdminReportController::class, 'finalize'])
             ->name('report.finalize');
+
+        Route::prefix('alerts')->group(function () {
+
+            Route::get('/', [AlertController::class, 'index'])
+                ->name('alerts.index');
+
+            Route::post('/{id}/ack', [AlertController::class, 'acknowledge'])
+                ->name('alerts.ack');
+
+        }); 
     });
 
 });

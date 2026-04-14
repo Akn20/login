@@ -44,7 +44,13 @@
 
                 <tbody>
                     @forelse($reports as $report)
-                        <tr>
+                        @php
+    $isCritical = \App\Models\CriticalValueAlert::where('report_id', $report->id)
+        ->where('status', 'Pending')
+        ->exists();
+@endphp
+
+<tr class="{{ $isCritical ? 'table-danger' : '' }}">
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $report->sample->sample_id ?? '-' }}</td>
                             <td>{{ $report->status }}</td>

@@ -446,6 +446,92 @@ class ReportController extends Controller
             'message' => 'Report permanently deleted'
         ]);
     }
+    // ================= VERIFY =================
+public function apiVerify($id)
+{
+    $report = LabReport::findOrFail($id);
+
+    if ($report->status !== 'Completed') {
+        return response()->json([
+            'status' => false,
+            'message' => 'Report must be completed first'
+        ]);
+    }
+
+    $report->update([
+        'verification_status' => 'Verified',
+        'verified_by' => auth()->id(),
+        'verified_at' => now(),
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Report verified successfully'
+    ]);
+}
+
+// ================= REJECT =================
+public function apiReject(Request $request, $id)
+{
+    $report = LabReport::findOrFail($id);
+
+    $report->update([
+        'verification_status' => 'Rejected',
+        'verification_notes' => $request->notes,
+        'verified_by' => auth()->id(),
+        'verified_at' => now(),
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Report rejected successfully'
+    ]);
+}
+
+// ================= SIGN =================
+public function apiSign($id)
+{
+    $report = LabReport::findOrFail($id);
+
+    if ($report->verification_status !== 'Verified') {
+        return response()->json([
+            'status' => false,
+            'message' => 'Verify before signing'
+        ]);
+    }
+
+    $report->update([
+        'digital_signature' => auth()->user()->name
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Signed successfully'
+    ]);
+}
+
+// ================= FINALIZE =================
+public function apiFinalize($id)
+{
+    $report = LabReport::findOrFail($id);
+
+    if ($report->verification_status !== 'Verified') {
+        return response()->json([
+            'status' => false,
+            'message' => 'Only verified reports can be finalized'
+        ]);
+    }
+
+    $report->update([
+        'verification_status' => 'Finalized',
+        'finalized_at' => now(),
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Report finalized successfully'
+    ]);
+}
 
 
 }
