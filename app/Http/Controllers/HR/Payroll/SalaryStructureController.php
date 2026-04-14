@@ -5,25 +5,26 @@ namespace App\Http\Controllers\HR\Payroll;
 use App\Http\Controllers\Controller;
 use App\Models\SalaryStructure;
 use Illuminate\Http\Request;
+
 class SalaryStructureController extends Controller
 {
-    //  LIST
+    // 🔹 LIST
     public function index()
     {
         $records = SalaryStructure::latest()->paginate(10);
-        return view('salary_structure.index', compact('records'));
+        return view('hr.payroll.salary_structure.index', compact('records'));
     }
 
-    //  CREATE PAGE
+    // 🔹 CREATE
     public function create()
     {
-        return view('salary_structure.create');
+        return view('hr.payroll.salary_structure.create');
     }
 
-    //  STORE
+    // 🔹 STORE
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'salary_structure_code' => 'required|unique:salary_structures',
             'salary_structure_name' => 'required',
             'structure_category' => 'required',
@@ -32,19 +33,25 @@ class SalaryStructureController extends Controller
             'fixed_allowance_components' => 'required|array',
             'residual_component_id' => 'required',
 
-            'salary_ceiling_amount' => 'nullable|numeric',
+            'allowed_work_types' => 'nullable|array',
+            'fixed_deduction_components' => 'nullable|array',
         ]);
 
         SalaryStructure::create([
-            ...$validated,
+            'salary_structure_code' => $request->salary_structure_code,
+            'salary_structure_name' => $request->salary_structure_name,
+            'structure_category' => $request->structure_category,
+            'status' => $request->status,
 
-            'fixed_allowance_components' => json_encode($request->fixed_allowance_components),
-            'allowed_work_types' => json_encode($request->allowed_work_types ?? []),
-            'fixed_deduction_components' => json_encode($request->fixed_deduction_components ?? []),
-
+            'fixed_allowance_components' => $request->fixed_allowance_components,
             'variable_allowance_allowed' => $request->variable_allowance_allowed ?? 0,
+            'residual_component_id' => $request->residual_component_id,
+
             'hourly_pay_eligible' => $request->hourly_pay_eligible ?? 0,
             'overtime_eligible' => $request->overtime_eligible ?? 0,
+            'allowed_work_types' => $request->allowed_work_types ?? [],
+
+            'fixed_deduction_components' => $request->fixed_deduction_components ?? [],
             'variable_deduction_allowed' => $request->variable_deduction_allowed ?? 0,
 
             'pf_applicable' => $request->pf_applicable ?? 0,
@@ -53,22 +60,22 @@ class SalaryStructureController extends Controller
             'tds_applicable' => $request->tds_applicable ?? 0,
         ]);
 
-        return redirect()->route('salary-structure.index')
+        return redirect()->route('hr.payroll.salary-structure.index')
             ->with('success', 'Created Successfully');
     }
 
-    //  SHOW
+    // 🔹 SHOW
     public function show($id)
     {
         $record = SalaryStructure::findOrFail($id);
-        return view('salary_structure.show', compact('record'));
+        return view('hr.payroll.salary_structure.show', compact('record'));
     }
 
-    //  EDIT
+    // 🔹 EDIT
     public function edit($id)
     {
         $record = SalaryStructure::findOrFail($id);
-        return view('salary_structure.edit', compact('record'));
+        return view('hr.payroll.salary_structure.edit', compact('record'));
     }
 
     // 🔹 UPDATE
@@ -76,23 +83,34 @@ class SalaryStructureController extends Controller
     {
         $record = SalaryStructure::findOrFail($id);
 
-        $validated = $request->validate([
+        $request->validate([
             'salary_structure_code' => 'required|unique:salary_structures,salary_structure_code,' . $id,
             'salary_structure_name' => 'required',
             'structure_category' => 'required',
             'status' => 'required',
+
+            'fixed_allowance_components' => 'required|array',
+            'residual_component_id' => 'required',
+
+            'allowed_work_types' => 'nullable|array',
+            'fixed_deduction_components' => 'nullable|array',
         ]);
 
         $record->update([
-            ...$validated,
+            'salary_structure_code' => $request->salary_structure_code,
+            'salary_structure_name' => $request->salary_structure_name,
+            'structure_category' => $request->structure_category,
+            'status' => $request->status,
 
-            'fixed_allowance_components' => json_encode($request->fixed_allowance_components ?? []),
-            'allowed_work_types' => json_encode($request->allowed_work_types ?? []),
-            'fixed_deduction_components' => json_encode($request->fixed_deduction_components ?? []),
-
+            'fixed_allowance_components' => $request->fixed_allowance_components,
             'variable_allowance_allowed' => $request->variable_allowance_allowed ?? 0,
+            'residual_component_id' => $request->residual_component_id,
+
             'hourly_pay_eligible' => $request->hourly_pay_eligible ?? 0,
             'overtime_eligible' => $request->overtime_eligible ?? 0,
+            'allowed_work_types' => $request->allowed_work_types ?? [],
+
+            'fixed_deduction_components' => $request->fixed_deduction_components ?? [],
             'variable_deduction_allowed' => $request->variable_deduction_allowed ?? 0,
 
             'pf_applicable' => $request->pf_applicable ?? 0,
@@ -101,11 +119,11 @@ class SalaryStructureController extends Controller
             'tds_applicable' => $request->tds_applicable ?? 0,
         ]);
 
-        return redirect()->route('salary-structure.index')
+        return redirect()->route('hr.payroll.salary-structure.index')
             ->with('success', 'Updated Successfully');
     }
 
-    //  DELETE (Soft Delete)
+    // 🔹 DELETE
     public function destroy($id)
     {
         SalaryStructure::findOrFail($id)->delete();

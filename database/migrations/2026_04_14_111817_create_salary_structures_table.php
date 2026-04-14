@@ -23,7 +23,7 @@ return new class extends Migration
         // 🔹 Earnings Setup
         $table->json('fixed_allowance_components'); // multi-select FK
         $table->boolean('variable_allowance_allowed')->default(false);
-        $table->unsignedBigInteger('residual_component_id'); // FK
+        $table->string('residual_component_id'); // FK
 
         // 🔹 Time-Based Pay
         $table->boolean('hourly_pay_eligible')->default(false);
