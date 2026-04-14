@@ -1602,11 +1602,12 @@ Route::prefix('payroll/salary-structure')
     Route::post('/store', [SalaryStructureController::class, 'store'])->name('store');
 
     Route::get('/{id}/show', [SalaryStructureController::class, 'show'])->name('show');
-
+    
     Route::get('/{id}/edit', [SalaryStructureController::class, 'edit'])->name('edit');
 
     Route::put('/{id}', [SalaryStructureController::class, 'update'])->name('update');
-
+    Route::get('/deleted', [SalaryStructureController::class, 'deleted'])
+    ->name('deleted');
     Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
 });
 });
