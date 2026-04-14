@@ -64,7 +64,7 @@ class ReportController extends Controller
             // CREATE ONLY IF NOT EXISTS
             $report = LabReport::create([
                 'sample_id' => $request->sample_id,
-                'status' => 'Completed',
+                'status' => $request->status,
                 'entered_at' => now()
             ]);
         }
@@ -218,8 +218,6 @@ class ReportController extends Controller
 
         // 📝 Audit log
         FileAuditLog::create([
-            'report_id' => $report->id,
-    'sample_id' => optional($report->sample)->sample_id,
             'user_id' => auth()->id(),
             'file_name' => $file->getClientOriginalName(),
             'action' => 'UPLOAD',
