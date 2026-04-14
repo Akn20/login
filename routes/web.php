@@ -92,7 +92,7 @@ use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 
 use App\Http\Controllers\InsuranceController;
-
+use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -1577,4 +1577,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     });
 
+    Route::prefix('billing')->name('billing.')->group(function () {
+
+        Route::get('/', [BasicBillingController::class, 'index'])->name('index');
+        Route::get('/create', [BasicBillingController::class, 'create'])->name('create');
+        Route::post('/store', [BasicBillingController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
+        Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
+
+    });
 });

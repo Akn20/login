@@ -15,7 +15,7 @@
 
             <div class="col-md-4 mb-3">
                 <div class="border p-3 rounded bg-light">
-                    <small class="text-muted">UHID</small><br>
+                    <small class="text-muted">Patient Code</small><br>
                     <strong>{{ $insurance->patient->patient_code ?? '-' }}</strong>
                 </div>
             </div>

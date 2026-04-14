@@ -11,41 +11,37 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::table('patient_insurances', function (Blueprint $table) {
+    //Schema::table('patient_insurances', function (Blueprint $table) {
 
         // Directly change column type
-    DB::statement('ALTER TABLE patient_insurances MODIFY patient_id CHAR(36) NULL');
-    });
+   // DB::statement('ALTER TABLE patient_insurances MODIFY patient_id CHAR(36) NULL'); });
 
-    Schema::table('patient_insurances', function (Blueprint $table) {
+    //Schema::table('patient_insurances', function (Blueprint $table) {
 
         // Change column type
-        $table->uuid('patient_id')->nullable()->change();
-    });
+     //   $table->uuid('patient_id')->nullable()->change();
+    //});
 
-    Schema::table('patient_insurances', function (Blueprint $table) {
-    $table->foreign('patient_id')
-          ->references('id')
-          ->on('patients')
-          ->onDelete('cascade');
-});
+    //Schema::table('patient_insurances', function (Blueprint $table) {
+    //$table->foreign('patient_id')
+      //    ->references('id')
+        //  ->on('patients')
+          //->onDelete('cascade');
+// });
 
     // Re-add foreign key (optional but recommended)
-    Schema::table('patient_insurances', function (Blueprint $table) {
+   // Schema::table('patient_insurances', function (Blueprint $table) {
 
-        $table->foreign('patient_id')
-              ->references('id')
-              ->on('patients')
-              ->onDelete('cascade');
-    });
+     //   $table->foreign('patient_id')
+       //       ->references('id')->on('patients')->onDelete('cascade');});
 }
 
 public function down()
 {
-    Schema::table('patient_insurances', function (Blueprint $table) {
+   // Schema::table('patient_insurances', function (Blueprint $table) {
 
-       DB::statement('ALTER TABLE patient_insurances MODIFY patient_id BIGINT UNSIGNED NULL');
-        $table->unsignedBigInteger('patient_id')->nullable()->change();
-    });
+     //  DB::statement('ALTER TABLE patient_insurances MODIFY patient_id BIGINT UNSIGNED NULL');
+       // $table->unsignedBigInteger('patient_id')->nullable()->change();
+    //});
 }
 };

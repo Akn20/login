@@ -212,45 +212,58 @@ public function index(Request $request)
     /**
      * 🔹 DOCUMENT UPLOAD HANDLER
      */
-    private function uploadDocuments(Request $request, $insuranceId, $replace = false)
-    {
-        $documents = [
-            'insurance_card' => 'Insurance Card',
-            'id_proof' => 'ID Proof',
-            'authorization_letter' => 'Authorization Letter',
-        ];
+  
+private function uploadDocuments(Request $request, $insuranceId, $replace = false)
+{
+    $documents = [
+        'insurance_card' => 'Insurance Card',
+        'id_proof' => 'ID Proof',
+        'authorization_letter' => 'Authorization Letter',
+    ];
 
-        foreach ($documents as $field => $type) {
+    foreach ($documents as $field => $type) {
 
-            if ($request->hasFile($field)) {
+        // ✅ CHECK FILE EXISTS
+        if ($request->hasFile($field) && $request->file($field)->isValid()) {
 
-                // 🔁 Replace old file
-                if ($replace) {
-                    $oldDoc = InsuranceDocument::where('insurance_id', $insuranceId)
-                        ->where('document_type', $type)
-                        ->first();
+            // 🔁 REPLACE OLD FILE (FOR UPDATE)
+            if ($replace) {
+                $oldDoc = InsuranceDocument::where('insurance_id', $insuranceId)
+                    ->where('document_type', $type)
+                    ->first();
 
-                    if ($oldDoc) {
-                        if (Storage::disk('public')->exists($oldDoc->file_path)) {
-                            Storage::disk('public')->delete($oldDoc->file_path);
-                        }
-                        $oldDoc->delete();
+                if ($oldDoc) {
+
+                    // ✅ DELETE OLD FILE FROM STORAGE
+                    if ($oldDoc->file_path && Storage::disk('public')->exists($oldDoc->file_path)) {
+                        Storage::disk('public')->delete($oldDoc->file_path);
                     }
+
+                    // ✅ DELETE OLD DB RECORD
+                    $oldDoc->delete();
                 }
-
-                $file = $request->file($field);
-                $path = $file->store('insurance_documents', 'public');
-
-                InsuranceDocument::create([
-                    'id' => Str::uuid(), // ✅ ADD THIS
-                    'insurance_id' => $insuranceId,
-                    'document_type' => $type,
-                    'file_path' => $path,
-                    'uploaded_at' => now(),
-                ]);
             }
+
+            // 📂 GET FILE
+            $file = $request->file($field);
+
+            // ✅ GENERATE UNIQUE FILE NAME (IMPORTANT)
+            $fileName = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
+
+            // ✅ STORE FILE
+            $path = $file->storeAs('insurance_documents', $fileName, 'public');
+
+            // ✅ SAVE IN DB
+            InsuranceDocument::create([
+                'id' => Str::uuid(),
+                'insurance_id' => $insuranceId,
+                'document_type' => $type,
+                'file_path' => $path,
+                'uploaded_at' => now(),
+            ]);
         }
     }
+}
 
     //API FUNCTIONS
 
@@ -281,55 +294,64 @@ public function index(Request $request)
         ]);
     }
 
-    public function apiStore(Request $request)
-    {
-        $request->validate([
-            'patient_id' => 'required',
-            'provider_name' => 'required',
-            'policy_number' => 'required',
+
+
+public function apiStore(Request $request)
+{
+    //  VALIDATION
+    $request->validate([
+        'patient_id' => 'required',
+        'provider_name' => 'required',
+        'policy_number' => 'required',
+
+        //  FILE VALIDATION
+        'insurance_card' => 'required|file|mimes:jpg,jpeg,png,pdf',
+        'id_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+        'authorization_letter' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+
+        //  CREATE INSURANCE
+        $insurance = PatientInsurance::create([
+            'id' => Str::uuid(),
+            'patient_id' => $request->patient_id,
+            'insurance_type' => $request->insurance_type,
+            'provider_name' => $request->provider_name,
+            'policy_number' => $request->policy_number,
+            'policy_holder_name' => $request->policy_holder_name,
+            'valid_from' => $request->valid_from,
+            'valid_to' => $request->valid_to,
+            'sum_insured' => $request->sum_insured,
+            'tpa_name' => $request->tpa_name,
+            'remarks' => $request->remarks,
+            'status' => 'pending',
+            'created_by' => $request->created_by ?? 1,
         ]);
 
-        DB::beginTransaction();
+        //  UPLOAD DOCUMENTS
+        $this->uploadDocuments($request, $insurance->id);
 
-        try {
+        DB::commit();
 
-            $insurance = PatientInsurance::create([
-                'id' => \Str::uuid(),
-                'patient_id' => $request->patient_id,
-                'insurance_type' => $request->insurance_type,
-                'provider_name' => $request->provider_name,
-                'policy_number' => $request->policy_number,
-                'policy_holder_name' => $request->policy_holder_name,
-                'valid_from' => $request->valid_from,
-                'valid_to' => $request->valid_to,
-                'sum_insured' => $request->sum_insured,
-                'tpa_name' => $request->tpa_name,
-                'remarks' => $request->remarks,
-                'status' => 'pending',
-                'created_by' => auth()->id() ?? null,
-            ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Insurance created successfully',
+            'data' => $insurance
+        ]);
 
-            $this->uploadDocuments($request, $insurance->id);
+    } catch (\Exception $e) {
 
-            DB::commit();
+        DB::rollBack();
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Insurance created successfully',
-                'data' => $insurance
-            ]);
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
-
+}
     public function apiUpdate(Request $request, $id)
     {
         $insurance = PatientInsurance::find($id);
@@ -410,4 +432,6 @@ public function index(Request $request)
             'message' => 'Deleted successfully'
         ]);
     }
+
+ 
 }

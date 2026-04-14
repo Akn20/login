@@ -68,7 +68,8 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 use App\Http\Controllers\InsuranceController;
-
+use App\Http\Controllers\BasicBillingController;
+use App\Models\Patient;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -788,6 +789,7 @@ Route::prefix('pharmacy')->group(function () {
 //Insurance(Receptionist)
 
 
+
 Route::prefix('insurance')->group(function () {
 
     Route::get('/', [InsuranceController::class, 'apiIndex']);
@@ -798,4 +800,34 @@ Route::prefix('insurance')->group(function () {
 
 });
 
+Route::get('/patient-by-name/{name}', function ($name) {
 
+    $patient = Patient::where(
+    DB::raw("CONCAT(first_name, ' ', last_name)"),
+    'like',
+    "%$name%"
+)->first();
+
+    if (!$patient) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Patient not found'
+        ]);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $patient
+    ]);
+});
+
+
+//receptionistbilling
+Route::prefix('billing')->group(function () {
+
+    Route::get('/', [BasicBillingController::class, 'apiIndex']);
+    Route::get('/appointments', [BasicBillingController::class, 'apiAppointments']);
+    Route::post('/store', [BasicBillingController::class, 'apiStore']);
+    Route::get('/{id}', [BasicBillingController::class, 'apiShow']);
+
+});
