@@ -46,17 +46,22 @@ public function create()
 public function store(Request $request)
 {
     $request->validate([
-        'appointment_id' => 'required|exists:appointments,id',
-        'patient_id' => 'required|exists:patients,id',
-        'amount' => 'required|numeric|min:1'
+        'appointment_id' => 'required|exists:appointments,id'
     ]);
+
+    // ❗ Duplicate check
+    $exists = ReceptionistBilling::where('visit_id', $request->appointment_id)->exists();
+
+    if ($exists) {
+        return back()->with('error', 'Payment already collected for this appointment');
+    }
 
     DB::beginTransaction();
 
     try {
+
         $appointment = Appointment::findOrFail($request->appointment_id);
 
-        // 🔢 Receipt number
         $last = ReceptionistBilling::latest()->first();
         $number = $last ? intval(substr($last->receipt_no, 4)) + 1 : 1;
         $receipt_no = 'RCPT' . str_pad($number, 4, '0', STR_PAD_LEFT);
@@ -65,11 +70,10 @@ public function store(Request $request)
             'id' => (string) \Str::uuid(),
             'receipt_no' => $receipt_no,
             'patient_id' => $appointment->patient_id,
-            'visit_id' => $appointment->id, // ✅ IMPORTANT
+            'visit_id' => $appointment->id,
             'amount' => $appointment->consultation_fee,
             'payment_mode' => 'CASH',
-            'collected_by' => auth()->id(),
-            'hospital_id' => auth()->user()->hospital_id ?? null
+            'collected_by' => auth()->id() ?? 'DEFAULT-UUID'
         ]);
 
         DB::commit();

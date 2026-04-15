@@ -50,7 +50,7 @@
                     </p>
 
                     <p class="mb-1">
-                        <strong>UHID:</strong>
+                        <strong>Patient Code:</strong>
                         {{ $billing->patient->patient_code ?? '' }}
                     </p>
                 </div>
