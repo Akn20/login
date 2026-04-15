@@ -1606,9 +1606,13 @@ Route::prefix('payroll/salary-structure')
     Route::get('/{id}/edit', [SalaryStructureController::class, 'edit'])->name('edit');
 
     Route::put('/{id}', [SalaryStructureController::class, 'update'])->name('update');
-    Route::get('/deleted', [SalaryStructureController::class, 'deleted'])
-    ->name('deleted');
+
     Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
+    Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
+
+Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
+
+Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
 });
 });
 

@@ -16,11 +16,13 @@ class SalaryStructureController extends Controller
     }
 
     // 🔹 CREATE
-    public function create()
-    {
-        return view('hr.payroll.salary_structure.create');
-    }
+public function create()
+{
+    $allowances = \App\Models\Allowance::where('status', 1)->get();
+    $deductions = \App\Models\PayrollDeduction::where('status', 'ACTIVE')->get();
 
+    return view('hr.payroll.salary_structure.create', compact('allowances', 'deductions'));
+}
     // 🔹 STORE
     public function store(Request $request)
     {
@@ -32,10 +34,17 @@ class SalaryStructureController extends Controller
 
             'fixed_allowance_components' => 'required|array',
             'residual_component_id' => 'required',
-
+            'effective_from' => 'required|date',
+'effective_to' => 'nullable|date|after_or_equal:effective_from',
             'allowed_work_types' => 'nullable|array',
             'fixed_deduction_components' => 'nullable|array',
+            
         ]);
+        if (!in_array($request->residual_component_id, $request->fixed_allowance_components)) {
+    return back()->withErrors([
+        'residual_component_id' => 'Residual must be one of the selected fixed components'
+    ])->withInput();
+}
 
         SalaryStructure::create([
             'salary_structure_code' => $request->salary_structure_code,
@@ -53,7 +62,8 @@ class SalaryStructureController extends Controller
 
             'fixed_deduction_components' => $request->fixed_deduction_components ?? [],
             'variable_deduction_allowed' => $request->variable_deduction_allowed ?? 0,
-
+'effective_from' => $request->effective_from,
+'effective_to' => $request->effective_to,
             'pf_applicable' => $request->pf_applicable ?? 0,
             'esi_applicable' => $request->esi_applicable ?? 0,
             'pt_applicable' => $request->pt_applicable ?? 0,
@@ -72,12 +82,15 @@ class SalaryStructureController extends Controller
     }
 
     // 🔹 EDIT
-    public function edit($id)
-    {
-        $record = SalaryStructure::findOrFail($id);
-        return view('hr.payroll.salary_structure.edit', compact('record'));
-    }
+public function edit($id)
+{
+    $record = SalaryStructure::findOrFail($id);
 
+    $allowances = \App\Models\Allowance::where('status', 1)->get();
+    $deductions = \App\Models\PayrollDeduction::where('status', 'ACTIVE')->get();
+
+    return view('hr.payroll.salary_structure.edit', compact('record', 'allowances', 'deductions'));
+}
     // 🔹 UPDATE
     public function update(Request $request, $id)
     {
@@ -88,13 +101,19 @@ class SalaryStructureController extends Controller
             'salary_structure_name' => 'required',
             'structure_category' => 'required',
             'status' => 'required',
-
+            'effective_from' => 'required|date',
+'effective_to' => 'nullable|date|after_or_equal:effective_from',
             'fixed_allowance_components' => 'required|array',
             'residual_component_id' => 'required',
 
             'allowed_work_types' => 'nullable|array',
             'fixed_deduction_components' => 'nullable|array',
         ]);
+        if (!in_array($request->residual_component_id, $request->fixed_allowance_components)) {
+    return back()->withErrors([
+        'residual_component_id' => 'Residual must be one of the selected fixed components'
+    ])->withInput();
+}
 
         $record->update([
             'salary_structure_code' => $request->salary_structure_code,
@@ -112,7 +131,8 @@ class SalaryStructureController extends Controller
 
             'fixed_deduction_components' => $request->fixed_deduction_components ?? [],
             'variable_deduction_allowed' => $request->variable_deduction_allowed ?? 0,
-
+'effective_from' => $request->effective_from,
+'effective_to' => $request->effective_to,
             'pf_applicable' => $request->pf_applicable ?? 0,
             'esi_applicable' => $request->esi_applicable ?? 0,
             'pt_applicable' => $request->pt_applicable ?? 0,
@@ -130,4 +150,21 @@ class SalaryStructureController extends Controller
 
         return redirect()->back()->with('success', 'Deleted Successfully');
     }
+public function deleted()
+{
+    $records = SalaryStructure::onlyTrashed()->paginate(10);
+    return view('hr.payroll.salary_structure.deleted', compact('records'));
+}
+
+public function restore($id)
+{
+    SalaryStructure::onlyTrashed()->findOrFail($id)->restore();
+    return redirect()->back()->with('success', 'Restored Successfully');
+}
+
+public function forceDelete($id)
+{
+    SalaryStructure::onlyTrashed()->findOrFail($id)->forceDelete();
+    return redirect()->back()->with('success', 'Permanently Deleted');
+}
 }
