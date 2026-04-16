@@ -1587,3 +1587,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     });
 });
+
+//Receptionist dashboard
+
+Route::prefix('admin/receptionist')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('admin.Receptionist.Dashboard.dashboard');
+    })->name('receptionist.dashboard');
+
+});
