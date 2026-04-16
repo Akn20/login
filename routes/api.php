@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
+use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
@@ -1289,4 +1290,14 @@ Route::prefix('reports')->group(function () {
     Route::get('/overtime', [OvertimeReportApiController::class, 'index']);
     Route::get('/department-salary', [DepartmentSalaryApiController::class, 'index']);
 
+});
+
+
+Route::prefix('emergency-reports')->group(function () {
+
+    Route::get('/', [EmergencyReportApiController::class, 'index']);
+
+    Route::get('/{patientId}', [EmergencyReportApiController::class, 'show']);
+
+    Route::get('/{patientId}/full', [EmergencyReportApiController::class, 'full']);
 });

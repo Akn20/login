@@ -63,6 +63,7 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\EmergencyRecordController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
@@ -93,6 +94,7 @@ use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\PatientApiController;
 use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
@@ -1878,26 +1880,55 @@ Route::prefix('admin')->name('admin.')->group(function () {
 | HR Reports Module
 |--------------------------------------------------------------------------
 */
-Route::prefix('reports')->name('reports.')->group(function () {
+    Route::prefix('reports')->name('reports.')->group(function () {
 
-    Route::get('/', [ReportsDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [ReportsDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/staff-strength', [StaffStrengthReportController::class, 'index'])->name('staff-strength');
+        Route::get('/staff-strength', [StaffStrengthReportController::class, 'index'])->name('staff-strength');
 
-    Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('attendance');
+        Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('attendance');
 
-    Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
+        Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
 
-    Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
+        Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
 
-    Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
+        Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
 
-    Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
+        Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
 
-    Route::get('/payslip/{id}', [PayrollReportController::class, 'payslip'])
-    ->name('payslip');
+        Route::get('/payslip/{id}', [PayrollReportController::class, 'payslip'])
+        ->name('payslip');
 
-
-
-    });
+        });
 });
+
+  
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+                /*
+        |--------------------------------------------------------------------------
+        | Emergency Records (Patient Module)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/patients-emergency-records', 
+            [EmergencyRecordController::class, 'index']
+        )->name('patients.emergency.list');
+
+        Route::get('/patients/{id}/basic-info', 
+            [PatientApiController::class, 'basicInfo']);
+
+        Route::get('/patients/{id}/emergency-record', 
+            [EmergencyRecordController::class, 'show']
+        )->name('patients.emergency');
+
+        Route::get('/patients/{id}/emergency-view', 
+            [EmergencyRecordController::class, 'viewEmergency']
+        )->name('patients.emergency.view');
+
+
+});
+
