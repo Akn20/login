@@ -1295,9 +1295,14 @@ Route::prefix('reports')->group(function () {
 
 Route::prefix('emergency-reports')->group(function () {
 
+    // 🔹 List
     Route::get('/', [EmergencyReportApiController::class, 'index']);
 
-    Route::get('/{patientId}', [EmergencyReportApiController::class, 'show']);
+    // 🔥 IMPORTANT: Specific first
+    Route::get('/{patientId}/full', [EmergencyReportApiController::class, 'full'])
+        ->whereUuid('patientId');
 
-    Route::get('/{patientId}/full', [EmergencyReportApiController::class, 'full']);
+    // 🔹 Basic
+    Route::get('/{patientId}', [EmergencyReportApiController::class, 'show'])
+        ->whereUuid('patientId');
 });

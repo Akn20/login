@@ -49,35 +49,56 @@
         </div>
 
         {{-- ⚠️ ALLERGIES --}}
-        <div class="col-lg-4">
-            <div class="card border-0 shadow-lg h-100 rounded-4">
-                <div class="card-body">
+<div class="col-lg-4">
+    <div class="card border-0 shadow-lg h-100 rounded-4">
+        <div class="card-body">
 
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-danger text-white rounded-circle p-3 me-3">
-                            <i class="feather-alert-triangle fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-0 fw-bold text-danger">Allergies</h5>
-                            <small class="text-muted">Critical Alerts</small>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    @forelse($allergies as $item)
-                        <div class="badge bg-danger bg-opacity-75 text-white mb-2 p-2 w-100 text-start">
-                            ⚠️ {{ $item->title }}
-                        </div>
-                    @empty
-                        <div class="text-success fw-semibold">
-                            ✔ No Known Allergies
-                        </div>
-                    @endforelse
-
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-danger text-white rounded-circle p-3 me-3">
+                    <i class="feather-alert-triangle fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold text-danger">Allergies</h5>
+                    <small class="text-muted">Critical Alerts (Merged Data)</small>
                 </div>
             </div>
+
+            <hr>
+
+            @forelse($allergies as $item)
+
+                @php
+                    // Handle both object (medical_flags) and string (pre_operatives)
+                    $title = is_object($item) ? $item->title : $item;
+                    $severity = is_object($item) ? $item->severity : null;
+                    $source = is_object($item) ? 'Flag' : 'Surgery';
+                @endphp
+
+                <div class="allergy-item mb-2 p-2 rounded d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <strong>⚠️ {{ $title }}</strong>
+
+                        @if($severity)
+                            <span class="badge bg-dark ms-2">{{ strtoupper($severity) }}</span>
+                        @endif
+                    </div>
+
+                    <span class="badge bg-secondary">
+                        {{ $source }}
+                    </span>
+
+                </div>
+
+            @empty
+                <div class="text-success fw-semibold">
+                    ✔ No Known Allergies
+                </div>
+            @endforelse
+
         </div>
+    </div>
+</div>
 
         {{-- 🧬 CHRONIC CONDITIONS --}}
         <div class="col-lg-4">
@@ -130,5 +151,16 @@
 .badge {
     font-size: 0.9rem;
     border-radius: 8px;
+}
+
+.allergy-item {
+    background: linear-gradient(90deg, #ff4d4d, #ff8080);
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.allergy-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(255,0,0,0.2);
 }
 </style>
