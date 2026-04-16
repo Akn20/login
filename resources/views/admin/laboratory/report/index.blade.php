@@ -36,6 +36,7 @@
                         <th>#</th>
                         <th>Sample</th>
                         <th>Status</th>
+                        <th>Verification</th>
                         <th>Uploaded At</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -43,10 +44,32 @@
 
                 <tbody>
                     @forelse($reports as $report)
-                        <tr>
+                        @php
+    $isCritical = \App\Models\CriticalValueAlert::where('report_id', $report->id)
+        ->where('status', 'Pending')
+        ->exists();
+@endphp
+
+<tr class="{{ $isCritical ? 'table-danger' : '' }}">
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $report->sample->sample_id ?? '-' }}</td>
                             <td>{{ $report->status }}</td>
+                            <td>
+                                @php
+                                    $status = $report->verification_status ?? 'Pending';
+
+                                    $colors = [
+                                        'Pending' => 'warning',
+                                        'Verified' => 'success',
+                                        'Rejected' => 'danger',
+                                        'Finalized' => 'primary',
+                                    ];
+                                @endphp
+
+                                <span class="badge bg-{{ $colors[$status] ?? 'secondary' }}">
+                                    {{ $status }}
+                                </span>
+                            </td>
                             <td>{{ $report->created_at->format('d M Y H:i') }}</td>
 
                             <td class="text-center">
@@ -59,10 +82,12 @@
                                     </a>
 
                                     <!-- UPLOAD MORE -->
-                                    <a href="{{ route('admin.laboratory.report.edit', $report->id) }}"
-                                        class="btn btn-outline-success btn-icon rounded-circle">
-                                        <i class="feather-edit"></i>
-                                    </a>
+                                    @if($report->verification_status !== 'Finalized')
+                                        <a href="{{ route('admin.laboratory.report.edit', $report->id) }}"
+                                            class="btn btn-outline-success btn-icon rounded-circle">
+                                            <i class="feather-edit"></i>
+                                        </a>
+                                    @endif
 
                                     <!-- DELETE -->
                                     <form method="POST" action="{{ route('admin.laboratory.report.destroy', $report->id) }}">
