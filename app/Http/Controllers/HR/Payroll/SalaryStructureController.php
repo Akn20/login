@@ -8,22 +8,22 @@ use Illuminate\Http\Request;
 
 class SalaryStructureController extends Controller
 {
-    // 🔹 LIST
+    // LIST
     public function index()
     {
         $records = SalaryStructure::latest()->paginate(10);
         return view('hr.payroll.salary_structure.index', compact('records'));
     }
 
-    // 🔹 CREATE
+    //  CREATE
 public function create()
 {
     $allowances = \App\Models\Allowance::where('status', 1)->get();
     $deductions = \App\Models\PayrollDeduction::where('status', 'ACTIVE')->get();
-
-    return view('hr.payroll.salary_structure.create', compact('allowances', 'deductions'));
+    $workTypes = \App\Models\HourlyPay::where('status', 'active')->get();
+    return view('hr.payroll.salary_structure.create', compact('allowances', 'deductions', 'workTypes'));
 }
-    // 🔹 STORE
+    //  STORE
     public function store(Request $request)
     {
         $request->validate([
@@ -32,7 +32,7 @@ public function create()
             'structure_category' => 'required',
             'status' => 'required',
 
-            'fixed_allowance_components' => 'required|array',
+            'fixed_allowance_components' => 'required|array|min:1',
             'residual_component_id' => 'required',
             'effective_from' => 'required|date',
 'effective_to' => 'nullable|date|after_or_equal:effective_from',
@@ -43,6 +43,11 @@ public function create()
         if (!in_array($request->residual_component_id, $request->fixed_allowance_components)) {
     return back()->withErrors([
         'residual_component_id' => 'Residual must be one of the selected fixed components'
+    ])->withInput();
+}
+if ($request->hourly_pay_eligible == 1 && empty($request->allowed_work_types)) {
+    return back()->withErrors([
+        'allowed_work_types' => 'Work types required when hourly pay is enabled'
     ])->withInput();
 }
 
@@ -74,24 +79,24 @@ public function create()
             ->with('success', 'Created Successfully');
     }
 
-    // 🔹 SHOW
+    //  SHOW
     public function show($id)
     {
         $record = SalaryStructure::findOrFail($id);
         return view('hr.payroll.salary_structure.show', compact('record'));
     }
 
-    // 🔹 EDIT
+    //  EDIT
 public function edit($id)
 {
     $record = SalaryStructure::findOrFail($id);
 
     $allowances = \App\Models\Allowance::where('status', 1)->get();
     $deductions = \App\Models\PayrollDeduction::where('status', 'ACTIVE')->get();
-
-    return view('hr.payroll.salary_structure.edit', compact('record', 'allowances', 'deductions'));
+    $workTypes = \App\Models\HourlyPay::where('status', 'active')->get();
+    return view('hr.payroll.salary_structure.edit', compact('record', 'allowances', 'deductions', 'workTypes'));
 }
-    // 🔹 UPDATE
+    //  UPDATE
     public function update(Request $request, $id)
     {
         $record = SalaryStructure::findOrFail($id);
@@ -143,7 +148,7 @@ public function edit($id)
             ->with('success', 'Updated Successfully');
     }
 
-    // 🔹 DELETE
+    //  DELETE
     public function destroy($id)
     {
         SalaryStructure::findOrFail($id)->delete();

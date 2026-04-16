@@ -4,10 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class SalaryStructure extends Model
 {
     use SoftDeletes;
+
+    // UUID SETTINGS
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid()->toString();
+            }
+        });
+    }
 
     protected $fillable = [
         'salary_structure_code',
@@ -49,5 +65,9 @@ class SalaryStructure extends Model
         'esi_applicable' => 'boolean',
         'pt_applicable' => 'boolean',
         'tds_applicable' => 'boolean',
+
+        //  DATE CAST (GOOD PRACTICE)
+        'effective_from' => 'date',
+        'effective_to' => 'date',
     ];
 }

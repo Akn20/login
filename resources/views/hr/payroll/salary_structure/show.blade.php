@@ -145,7 +145,17 @@
                     <strong>{{ $record->overtime_eligible ? 'Yes' : 'No' }}</strong>
                 </div>
             </div>
+        <div class="col-md-6 mb-3">
+    <label class="text-muted">Allowed Work Types</label>
+    <div>
+        @php
+            $workTypes = \App\Models\HourlyPay::whereIn('id', $record->allowed_work_types ?? [])
+                            ->pluck('name');
+        @endphp
 
+        {{ $workTypes->isNotEmpty() ? implode(', ', $workTypes->toArray()) : '-' }}
+    </div>
+</div>
         </div>
 
         <hr>

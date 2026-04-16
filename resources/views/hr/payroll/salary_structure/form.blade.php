@@ -22,14 +22,14 @@
     <div class="col-md-6 mb-3">
         <label>Salary Structure Name *</label>
         <input type="text" name="salary_structure_name"
-            class="form-control"
+            class="form-control @error('salary_structure_name') is-invalid @enderror"
             value="{{ old('salary_structure_name', $record->salary_structure_name ?? '') }}">
     </div>
 
     <!-- Category -->
     <div class="col-md-6 mb-3">
         <label>Category *</label>
-       <select name="structure_category" class="form-control">
+       <select name="structure_category" class="form-control @error('structure_category') is-invalid @enderror">
     <option value="">Select</option>
 
     <option value="monthly"
@@ -47,7 +47,7 @@
     <!-- Status -->
     <div class="col-md-6 mb-3">
         <label>Status *</label>
-        <select name="status" class="form-control">
+        <select name="status" class="form-control @error('status') is-invalid @enderror">
 
     <option value="active"
         {{ old('status', $record->status ?? '') == 'active' ? 'selected' : '' }}>
@@ -230,8 +230,32 @@ $selected = is_array($selected) ? $selected : [];
     </div>
 
 </div>
+<div class="col-md-6 mb-3">
+    <label>Allowed Work Types</label>
 
+    @php
+        $selectedWorkTypes = old('allowed_work_types', $record->allowed_work_types ?? []);
+        $selectedWorkTypes = is_array($selectedWorkTypes) ? $selectedWorkTypes : [];
+    @endphp
+
+    <select name="allowed_work_types[]" multiple
+        class="form-control @error('allowed_work_types') is-invalid @enderror">
+
+        @foreach($workTypes as $type)
+            <option value="{{ $type->id }}"
+                {{ in_array($type->id, $selectedWorkTypes) ? 'selected' : '' }}>
+                {{ $type->name }} ({{ $type->code }})
+            </option>
+        @endforeach
+
+    </select>
+
+    @error('allowed_work_types')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 <hr>
+
 
 <h6>Statutory</h6>
 

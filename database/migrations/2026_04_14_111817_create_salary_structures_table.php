@@ -12,8 +12,7 @@ return new class extends Migration
   public function up(): void
 {
     Schema::create('salary_structures', function (Blueprint $table) {
-        $table->id();
-
+$table->uuid('id')->primary();
         // 🔹 Identification
         $table->string('salary_structure_code')->unique();
         $table->string('salary_structure_name');
