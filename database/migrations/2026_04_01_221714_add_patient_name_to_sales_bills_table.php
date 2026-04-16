@@ -9,22 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sales_bills', function (Blueprint $table) {
-
-           // $table->uuid('patient_id')->nullable()->after('bill_number');
-
-           // $table->uuid('prescription_id')->nullable()->after('patient_id');
-
+         //$table->string('patient_name')->nullable()->after('patient_id');
         });
     }
 
     public function down(): void
     {
         Schema::table('sales_bills', function (Blueprint $table) {
-
-            $table->dropColumn('patient_id');
-            $table->dropColumn('prescription_id');
-
+            $table->dropColumn('patient_name');
         });
-
     }
 };
