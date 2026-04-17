@@ -87,6 +87,9 @@
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
                     </li>
+                    <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
+                    </li>
                 </ul>
             </li>
             <li
@@ -329,13 +332,21 @@
                             Test Parameters
                         </a>
                     </li>
-
+                    
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.test-parameters.create') }}" class="nxl-link">
                             <i class="feather-link me-2"></i>
                             Parameter Mapping
                         </a>
                     </li>
+                    
+                    <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.alerts.index') }} " class="nxl-link">
+                <i class="feather-alert-triangle"></i>
+                Critical Alerts
+            </a>
+        </li>
+        
 
                 </ul>
 
@@ -673,11 +684,23 @@
                             <i class="feather-minus-circle me-2"></i>Deduction Rule Set
                         </a>
                     </li>
+                    {{-----Hourly Pay Approval------}}
+                        
+                    <li class="nxl-item">
+                        <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
+                        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
+                        up-follow up-target="#main-container">
+
+                            <i class="feather-clock me-2"></i>
+                            Hourly Pay Approval
+
+                        </a>
+                    </li>
 
                 </ul>
-            </li>
+    
 
-
+</li>   
 
             {{-- --- 7. SYSTEM ADMINISTRATION --- --}}
             <li class="nxl-item nxl-caption"><label>Administration</label></li>

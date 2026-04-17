@@ -5,23 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class FileAuditLog extends Model
+
+class AlertAuditLog extends Model
 {
-    protected $table = 'file_audit_logs';
+    protected $table = 'alert_audit_logs';
 
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'report_id',
-        'sample_id',
+        'alert_id',
         'user_id',
-        'file_name',
         'action',
+        'remarks',
         'timestamp'
     ];
-
-    public $timestamps = true;
 
     protected static function boot()
     {
