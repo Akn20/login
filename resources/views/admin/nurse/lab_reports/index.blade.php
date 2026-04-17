@@ -5,7 +5,7 @@
 @section('content')
     <div class="nxl-content">
         
-        <!-- 🔷 Page Header -->
+        <!--  Page Header -->
         <div class="page-header">
             <div class="page-header-left d-flex align-items-center">
 
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <!-- 🔷 Main Content -->
+        <!-- Main Content -->
         <div class="main-content">
             <div class="row">
                 <div class="col-lg-12">

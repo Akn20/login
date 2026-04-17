@@ -17,35 +17,34 @@ class LabReportController extends Controller
     }
 
     public function show($type, $id)
-{
-    if ($type === 'lab') {
+    {
+        if ($type === 'lab') {
 
-        $report = DB::table('lab_reports')
-            ->join('sample_collections', 'lab_reports.sample_id', '=', 'sample_collections.id')
-            ->join('patients', 'sample_collections.patient_id', '=', 'patients.id')
-            ->select(
-                'lab_reports.*',
-                DB::raw("CONCAT(patients.first_name, ' ', patients.last_name) as patient")
-            )
-            ->where('lab_reports.id', $id)
-            ->first();
+            $report = DB::table('lab_reports')
+                ->join('sample_collections', 'lab_reports.sample_id', '=', 'sample_collections.id')
+                ->join('patients', 'sample_collections.patient_id', '=', 'patients.id')
+                ->select(
+                    'lab_reports.*',
+                    DB::raw("CONCAT(patients.first_name, ' ', patients.last_name) as patient")
+                )
+                ->where('lab_reports.id', $id)
+                ->first();
 
-        return view('admin.nurse.lab_reports.show', [
-            'report' => $report,
-            'type' => 'lab'
-        ]);
+            return view('admin.nurse.lab_reports.show', [
+                'report' => $report,
+                'type' => 'lab'
+            ]);
+        }
+
+        if ($type === 'radiology') {
+
+            $report = \App\Models\RadiologyReport::with('request.patient')->findOrFail($id);
+
+            return view('admin.nurse.lab_reports.show', [
+                'report' => $report,
+                'type' => 'radiology'
+            ]);
+        }
+        abort(404);
     }
-
-    if ($type === 'radiology') {
-
-        $report = \App\Models\RadiologyReport::with('request.patient')->findOrFail($id);
-
-        return view('admin.nurse.lab_reports.show', [
-            'report' => $report,
-            'type' => 'radiology'
-        ]);
-    }
-
-    abort(404);
-}
 }

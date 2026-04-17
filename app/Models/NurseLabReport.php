@@ -14,24 +14,25 @@ class NurseLabReport
     {
         // Lab Reports
         $labReports = DB::table('lab_reports')
-    ->join('sample_collections', 'lab_reports.sample_id', '=', 'sample_collections.id')
-    ->join('patients', 'sample_collections.patient_id', '=', 'patients.id')
-    ->select(
-        'lab_reports.id',
-        'lab_reports.status',
-        'lab_reports.created_at',
-        'patients.first_name as patient'
-    )
-    ->get()
-    ->map(function ($report) {
-        return [
-            'id' => $report->id,
-            'type' => 'lab',
-            'patient' => trim(($report->patient ?? '')),
-            'status' => $report->status,
-            'date' => $report->created_at,
-        ];
-    });
+        ->join('sample_collections', 'lab_reports.sample_id', '=', 'sample_collections.id')
+        ->join('patients', 'sample_collections.patient_id', '=', 'patients.id')
+        ->select(
+            'lab_reports.id',
+            'lab_reports.status',
+            'lab_reports.created_at',
+            'patients.first_name as patient'
+        )
+        ->get()
+        ->map(function ($report) {
+            return [
+                'id' => $report->id,
+                'type' => 'lab',
+                'patient' => trim(($report->patient ?? '')),
+                'status' => $report->status,
+                'date' => $report->created_at,
+            ];
+        });
+
         // Radiology Reports
         $radiologyReports = RadiologyReport::with('request.patient')->get()->map(function ($report) {
             return [
@@ -44,18 +45,18 @@ class NurseLabReport
         });
 
         return collect($labReports->toArray())
-    ->merge(collect($radiologyReports->toArray()))
-    ->sortByDesc('date')
-    ->values();
+        ->merge(collect($radiologyReports->toArray()))
+        ->sortByDesc('date')
+        ->values();
     }
 
     /**
      * Find single report
      */
     public static function find($type, $id)
-{
-    if ($type === 'lab') {
-        return DB::table('lab_reports')
+    {
+        if ($type === 'lab') {
+            return DB::table('lab_reports')
             ->join('sample_collections', 'lab_reports.sample_id', '=', 'sample_collections.id')
             ->join('patients', 'sample_collections.patient_id', '=', 'patients.id')
             ->select(
@@ -64,12 +65,12 @@ class NurseLabReport
             )
             ->where('lab_reports.id', $id)
             ->first();
-    }
+        }
 
-    if ($type === 'radiology') {
-        return RadiologyReport::with('request.patient')->findOrFail($id);
-    }
+        if ($type === 'radiology') {
+            return RadiologyReport::with('request.patient')->findOrFail($id);
+        }
 
-    abort(404);
-}
+        abort(404);
+    }
 }
