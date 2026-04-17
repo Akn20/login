@@ -73,6 +73,8 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
+
+use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
 
@@ -1586,6 +1588,32 @@ Route::prefix('payroll/statutory-deduction')
     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+
+//---------Payroll - Salary Structure-----------//
+
+Route::prefix('payroll/salary-structure')
+    ->name('payroll.salary-structure.')
+    ->group(function () {
+
+    Route::get('/', [SalaryStructureController::class, 'index'])->name('index');
+
+    Route::get('/create', [SalaryStructureController::class, 'create'])->name('create');
+
+    Route::post('/store', [SalaryStructureController::class, 'store'])->name('store');
+
+    Route::get('/{id}/show', [SalaryStructureController::class, 'show'])->name('show');
+    
+    Route::get('/{id}/edit', [SalaryStructureController::class, 'edit'])->name('edit');
+
+    Route::put('/{id}', [SalaryStructureController::class, 'update'])->name('update');
+
+    Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
+    Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
+
+Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
+
+Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+});
 });
 
 
