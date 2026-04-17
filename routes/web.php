@@ -73,7 +73,7 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
-
+use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
@@ -1613,6 +1613,27 @@ Route::prefix('payroll/salary-structure')
 Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
 
 Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+});
+//---------Payroll - Employee Salary assignment-----------//
+Route::prefix('payroll/employee-salary-assignment')
+    ->name('payroll.employee-salary-assignment.')
+    ->group(function () {
+
+    Route::get('/', [EmployeeSalaryAssignmentController::class, 'index'])->name('index');
+    Route::get('/create', [EmployeeSalaryAssignmentController::class, 'create'])->name('create');
+    Route::post('/store', [EmployeeSalaryAssignmentController::class, 'store'])->name('store');
+
+  
+    Route::get('/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])->name('deleted');
+    Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])
+    ->name('forceDelete');
+
+    
+    Route::get('/{id}/show', [EmployeeSalaryAssignmentController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
+    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
 });
 });
 

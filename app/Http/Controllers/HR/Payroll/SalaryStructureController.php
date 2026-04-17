@@ -150,11 +150,14 @@ public function edit($id)
 
     //  DELETE
     public function destroy($id)
-    {
-        SalaryStructure::findOrFail($id)->delete();
+{
+    $record = SalaryStructure::findOrFail($id);
+    $record->delete();
 
-        return redirect()->back()->with('success', 'Deleted Successfully');
-    }
+    return response()->json([
+        'message' => 'Deleted successfully'
+    ]);
+}
 public function deleted()
 {
     $records = SalaryStructure::onlyTrashed()->paginate(10);
@@ -173,12 +176,14 @@ public function forceDelete($id)
     return redirect()->back()->with('success', 'Permanently Deleted');
 }
 
+
     // ================= API METHODS ================= //
 public function apiIndex()
 {
     $records = SalaryStructure::latest()->get();
     return response()->json($records);
 }
+
 public function apiStore(Request $request)
 {
     $validated = $request->validate([
@@ -186,6 +191,7 @@ public function apiStore(Request $request)
         'salary_structure_name' => 'required',
         'structure_category' => 'required',
         'status' => 'required',
+        'residual_component_id' => 'required',
     ]);
 
     $record = SalaryStructure::create([
@@ -198,6 +204,7 @@ public function apiStore(Request $request)
         'hourly_pay_eligible' => $request->hourly_pay_eligible ?? 0,
         'overtime_eligible' => $request->overtime_eligible ?? 0,
         'variable_deduction_allowed' => $request->variable_deduction_allowed ?? 0,
+        'residual_component_id' => $request->residual_component_id,
 
         'pf_applicable' => $request->pf_applicable ?? 0,
         'esi_applicable' => $request->esi_applicable ?? 0,

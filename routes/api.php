@@ -62,6 +62,7 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
+use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -88,6 +89,10 @@ use App\Http\Controllers\WorkStatusController;
 use App\Models\User;
 //added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
+use App\Models\Allowance;
+use App\Models\PayrollDeduction;
+use App\Models\HourlyPay;
+
 
 use App\Http\Controllers\Admin\ResultEntryController;
 use App\Http\Controllers\Admin\TestParameterController;
@@ -1361,12 +1366,16 @@ Route::prefix('statutory-deduction')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::get('/allowances', fn() => response()->json(\App\Models\Allowance::where('status', 1)->get()));
+Route::get('/deductions', fn() => response()->json(\App\Models\PayrollDeduction::where('status', 'ACTIVE')->get()));
+Route::get('/work-types', fn() => response()->json(\App\Models\HourlyPay::where('status', 'active')->get()));
+  
 Route::prefix('salary-structure')->group(function () {
 
     Route::get('/', [SalaryStructureController::class, 'apiIndex']);
     Route::post('/', [SalaryStructureController::class, 'apiStore']);
-
     Route::get('/deleted', [SalaryStructureController::class, 'apiDeleted']);
+    
 
     Route::get('/{id}', [SalaryStructureController::class, 'apiShow']);
     Route::put('/{id}', [SalaryStructureController::class, 'apiUpdate']);
@@ -1374,5 +1383,7 @@ Route::prefix('salary-structure')->group(function () {
 
     Route::post('/restore/{id}', [SalaryStructureController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [SalaryStructureController::class, 'apiForceDelete']);
+
+   
 
 });
