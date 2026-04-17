@@ -123,6 +123,7 @@ use App\Http\Controllers\Admin\ReportController as AdminReportController;
 
 use App\Http\Controllers\Admin\Nurse\IsolationController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+use App\Http\Controllers\Admin\Nurse\LabReportController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -1899,5 +1900,17 @@ Route::prefix('reports')->name('reports.')->group(function () {
 
 
 
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Lab & Reports view
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-lab-reports')->name('nurse-lab-reports.')->group(function () {
+        Route::get('/', [LabReportController::class, 'index'])->name('index');
+        Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
     });
 });
