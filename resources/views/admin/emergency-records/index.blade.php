@@ -24,77 +24,93 @@
 
                 <table class="table align-middle table-hover" id="emergencyTable">
 
-                    <thead class="bg-light">
-                        <tr>
-                            <th>UHID</th>
-                            <th>Patient</th>
-                            <th>Blood</th>
-                            <th>Contact</th>
-                            <th>Status</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                    </thead>
+    <thead class="bg-light">
+        <tr>
+            <th>UHID</th>
+            <th>Patient</th>
+            <th>Blood</th>
+            <th>Contact</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+        </tr>
+    </thead>
 
-                    <tbody>
+    <tbody>
 
-                        @foreach($patients as $patient)
-                        <tr>
+    @foreach($records as $item)
+    <tr class="{{ $item['source'] === 'case' ? 'row-emergency' : 'row-surgery' }}">
 
-                            {{-- Patient Code --}}
-                            <td class="fw-semibold text-primary">
-                                {{ $patient->patient_code }}
-                            </td>
+        {{-- UHID --}}
+        <td class="fw-semibold text-primary">
+            {{ $item['patient_code'] ?? 'Direct Entry' }}
+        </td>
 
-                            {{-- Name --}}
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar bg-primary text-white rounded-circle me-2">
-                                        {{ strtoupper(substr($patient->first_name,0,1)) }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">
-                                            {{ $patient->first_name }} {{ $patient->last_name }}
-                                        </div>
-                                        <small class="text-muted">{{ $patient->gender }}</small>
-                                    </div>
-                                </div>
-                            </td>
+        {{-- Patient --}}
+        <td>
+            <div class="d-flex align-items-center">
+                <div class="avatar {{ $item['source'] === 'case' ? 'bg-danger' : 'bg-warning text-dark' }} text-white rounded-circle me-2">
+                    {{ strtoupper(substr($item['patient_name'] ?? 'U',0,1)) }}
+                </div>
+                <div>
+                    <div class="fw-bold">
+                        {{ $item['patient_name'] ?? 'Unknown' }}
+                    </div>
+                    <small class="text-muted">
+                        {{ $item['source'] === 'case' ? 'Emergency Case' : 'Surgery Case' }}
+                    </small>
+                </div>
+            </div>
+        </td>
 
-                            {{-- Blood --}}
-                            <td>
-                                <span class="badge bg-danger fs-6 px-3 py-2">
-                                    {{ $patient->blood_group ?? 'N/A' }}
-                                </span>
-                            </td>
+        {{-- Blood --}}
+        <td>
+            <span class="badge bg-danger fs-6 px-3 py-2">
+                {{ $item['blood_group'] ?? 'N/A' }}
+            </span>
+        </td>
 
-                            {{-- Mobile --}}
-                            <td>
-                                <span class="text-dark fw-semibold">
-                                    {{ $patient->mobile }}
-                                </span>
-                            </td>
+        {{-- Mobile --}}
+        <td>{{ $item['mobile'] ?? 'N/A' }}</td>
 
-                            {{-- Status --}}
-                            <td>
-                                <span class="badge bg-success-subtle text-success">
-                                    Stable
-                                </span>
-                            </td>
+        {{-- Type --}}
+        <td>
+            <span class="badge bg-light text-dark">
+                {{ $item['type'] }}
+            </span>
+        </td>
 
-                            {{-- Action --}}
-                            <td class="text-end">
-                                <a href="{{ route('admin.patients.emergency.view', $patient->id) }}"
-                                   class="btn btn-danger btn-sm rounded-pill px-3">
-                                   🚑 View
-                                </a>
-                            </td>
+        {{-- Status --}}
+        <td>
+            @if($item['source'] === 'case')
+                <span class="badge bg-danger text-white px-3 py-2">
+                    🚑 Emergency
+                </span>
+            @else
+                <span class="badge bg-warning text-dark px-3 py-2">
+                    🟠 Surgery Emergency
+                </span>
+            @endif
+        </td>
 
-                        </tr>
-                        @endforeach
+        {{-- Action --}}
+        <td class="text-end">
+            @if($item['patient_id'])
+                <a href="{{ route('admin.patients.emergency.view', $item['patient_id']) }}"
+                   class="btn btn-sm btn-danger rounded-pill px-3">
+                   View
+                </a>
+            @else
+                <span class="badge bg-secondary">No Link</span>
+            @endif
+        </td>
 
-                    </tbody>
+    </tr>
+    @endforeach
 
-                </table>
+    </tbody>
+
+</table>
 
             </div>
 
@@ -143,6 +159,51 @@ document.getElementById('searchInput').addEventListener('keyup', function () {
 }
 
 /* Badge styling */
+.badge {
+    border-radius: 10px;
+}
+
+tr {
+    transition: 0.2s;
+}
+
+tr:hover {
+    background-color: #fff5f5;
+}
+/* Emergency row highlight */
+.row-emergency {
+    background: rgba(255, 0, 0, 0.05);
+    border-left: 4px solid red;
+}
+
+/* Surgery highlight */
+.row-surgery {
+    background: rgba(255, 165, 0, 0.05);
+    border-left: 4px solid orange;
+}
+
+/* Avatar */
+.avatar {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Hover effect */
+.table-hover tbody tr:hover {
+    transform: scale(1.01);
+    transition: 0.2s;
+}
+
+/* Card styling */
+.card:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* Badge */
 .badge {
     border-radius: 10px;
 }
