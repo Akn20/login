@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
+use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
@@ -34,6 +35,13 @@ use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
 use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use App\Http\Controllers\Api\Reports\AttendanceReportApiController;
+use App\Http\Controllers\Api\Reports\DashboardApiController;
+use App\Http\Controllers\Api\Reports\DepartmentSalaryApiController;
+use App\Http\Controllers\Api\Reports\LeaveReportApiController;
+use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
+use App\Http\Controllers\Api\Reports\PayrollReportApiController;
+use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
@@ -1293,4 +1301,34 @@ Route::prefix('doctor')->group(function () {
 
     Route::put('/notifications/{id}/read', [NotificationController::class, 'apiMarkAsRead']);
 
+    });
+
+/*
+|--------------------------------------------------------------------------
+| 31. Report module
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('reports')->group(function () {
+
+    Route::get('/dashboard', [DashboardApiController::class, 'index']);
+    Route::get('/staff-strength', [StaffStrengthApiController::class, 'index']);
+    Route::get('/attendance', [AttendanceReportApiController::class, 'index']);
+    Route::get('/leave', [LeaveReportApiController::class, 'index']);
+    Route::get('/payroll', [PayrollReportApiController::class, 'index']);
+    Route::get('/overtime', [OvertimeReportApiController::class, 'index']);
+    Route::get('/department-salary', [DepartmentSalaryApiController::class, 'index']);
+
+});
+
+
+Route::prefix('emergency-reports')->group(function () {
+
+    Route::get('/', [EmergencyReportApiController::class, 'index']);
+
+    // 🔥 IMPORTANT ORDER
+    Route::get('/{caseId}/full', [EmergencyReportApiController::class, 'full']);
+
+    Route::get('/{caseId}', [EmergencyReportApiController::class, 'show']);
 });
