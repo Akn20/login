@@ -71,6 +71,8 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Models\Patient;
+
+use App\Http\Controllers\ReceptionistDashboardController;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -789,7 +791,9 @@ Route::prefix('pharmacy')->group(function () {
 
 //Insurance(Receptionist)
 
-
+Route::prefix('receptionist/dashboard')->group(function () {
+    Route::get('/', [ReceptionistDashboardController::class, 'apiDashboard']);
+});
 
 Route::prefix('insurance')->group(function () {
 
@@ -822,6 +826,8 @@ Route::get('/patient-by-name/{name}', function ($name) {
     ]);
 });
 
+//Reception dashboard
+
 
 //receptionistbilling
 Route::prefix('billing')->group(function () {
@@ -832,6 +838,7 @@ Route::prefix('billing')->group(function () {
     Route::get('/{id}', [BasicBillingController::class, 'apiShow']);
 
 });
+
 Route::prefix('receptionist/ipd')->group(function () {
 
     // =========================

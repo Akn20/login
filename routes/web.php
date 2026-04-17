@@ -96,6 +96,9 @@ use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
+use App\Http\Controllers\ReceptionistDashboardController;
+
+
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -1591,13 +1594,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 //Receptionist dashboard
 
-Route::prefix('admin/receptionist')->group(function () {
-
-    Route::get('/dashboard', function () {
-        return view('admin.Receptionist.Dashboard.dashboard');
-    })->name('receptionist.dashboard');
-
- });
+Route::prefix('admin')->group(function () {
+    Route::get('/receptionist-dashboard', [ReceptionistDashboardController::class, 'index'])
+        ->name('receptionist.dashboard');
+});
 
 //IPD
 Route::prefix('admin')->name('admin.')->group(function () {

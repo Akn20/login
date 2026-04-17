@@ -18,7 +18,7 @@
                 <div class="card dashboard-card border-start border-warning border-4 shadow-sm">
                     <div class="card-body">
                         <h6>Waiting Patients</h6>
-                        <h3>12</h3>
+                        <h3>{{ $waitingPatients }}</h3>
                     </div>
                 </div>
             </a>
@@ -30,8 +30,8 @@
                 <div class="card dashboard-card border-start border-info border-4 shadow-sm">
                     <div class="card-body">
                         <h6>Token Queue</h6>
-                        <h5>Current: 23</h5>
-                        <small>Waiting: 8</small>
+                        <h5>Current: {{ $currentToken ?? 'N/A' }}</h5>
+                        <small>Waiting: {{ $waitingTokens }}</small>
                     </div>
                 </div>
             </a>
@@ -43,7 +43,7 @@
                 <div class="card dashboard-card border-start border-success border-4 shadow-sm">
                     <div class="card-body">
                         <h6>New Registrations</h6>
-                        <h3>10</h3>
+                        <h3>{{ $newRegistrations }}</h3>
                     </div>
                 </div>
             </a>
@@ -59,7 +59,7 @@
             <div class="card dashboard-card border-start border-danger border-4 shadow-sm">
                 <div class="card-body">
                     <h6>Pending Admissions</h6>
-                    <h3>5</h3>
+                    <h3>{{ $pendingAdmissions }}</h3>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
             <div class="card dashboard-card border-start border-secondary border-4 shadow-sm">
                 <div class="card-body">
                     <h6>Doctors Available</h6>
-                    <h3>6 / 10</h3>
+                    <h3>{{ $availableDoctors }} / {{ $totalDoctors }}</h3>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 <div class="card dashboard-card border-start border-danger border-4 shadow-sm">
                     <div class="card-body">
                         <h6>Emergency Arrivals</h6>
-                        <h3>3</h3>
+                        <h3>{{ $emergencyCount }}</h3>
                     </div>
                 </div>
             </a>
@@ -95,7 +95,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h6 class="fw-bold">Today's Appointments</h6>
+                    <h6 class="fw-bold">Today's Appointments (Last 7 Days)</h6>
                     <div id="appointmentsChart"></div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h6 class="fw-bold">Daily Collection</h6>
+                    <h6 class="fw-bold">Daily Collection (Last 7 Days)</h6>
                     <div id="collectionChart"></div>
                 </div>
             </div>
@@ -116,6 +116,7 @@
 </div>
 
 @endsection
+
 
 @push('styles')
 <style>
@@ -129,9 +130,9 @@
 </style>
 @endpush
 
+
 @push('scripts')
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
     // 📊 Appointments Chart
@@ -142,10 +143,10 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         series: [{
             name: 'Appointments',
-            data: [10, 20, 15, 25, 30, 22, 18]
+            data: @json($appointmentData)
         }],
         xaxis: {
-            categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            categories: @json($appointmentLabels)
         },
         stroke: {
             curve: 'smooth'
@@ -163,10 +164,10 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         series: [{
             name: 'Collection',
-            data: [5000, 7000, 6000, 8000, 9000, 7500, 6500]
+            data: @json($collectionData)
         }],
         xaxis: {
-            categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            categories: @json($appointmentLabels)
         },
         dataLabels: {
             enabled: false
@@ -174,6 +175,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }).render();
 
 });
-
 </script>
 @endpush
