@@ -45,7 +45,7 @@
                                         <tr>
                                             <td>{{ $report['patient'] }}</td>
 
-                                            <td><span class="badge bg-info">{{ ucfirst($report['type']) }}</span> </td>
+                                            <td>{{ ucfirst($report['type']) }}</td>
 
                                             <td><span class="badge bg-warning">{{ $report['status'] }}</span> </td>
 
@@ -53,8 +53,8 @@
 
                                             <td>
                                                 <a href="{{ route('admin.nurse-lab-reports.show', [$report['type'], $report['id']]) }}"
-                                                class="btn btn-primary btn-sm">
-                                                    View
+                                                class="avatar-text avatar-md action-icon action-edit"><i class="feather-eye"></i>
+                                                    
                                                 </a>
                                             </td>
                                         </tr>
