@@ -69,6 +69,11 @@ class SignInController extends Controller
                 ->with('success', 'Login successful');
         }
 
+        if ($roleName === 'doctor') {
+            return redirect()->route('admin.dashboard')
+                ->with('success', 'Login successful');
+        }
+
         return redirect()->route('login')
             ->with('error', 'No dashboard configured for this role');
     }

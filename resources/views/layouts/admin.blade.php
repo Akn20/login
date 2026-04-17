@@ -171,6 +171,7 @@
             {{-- THE AJAX TARGET: Only content inside #main-container will refresh --}}
             <main class="nxl-container" id="main-container">
                 <div class="nxl-content" up-main>
+                    
                     @yield('content')
                 </div>
                 @include('partials.footer')
