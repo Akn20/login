@@ -92,7 +92,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\WorkStatusController;
 
 use App\Models\User;
-//added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 use App\Http\Controllers\Admin\ResultEntryController;
@@ -101,9 +101,14 @@ use App\Http\Controllers\TokenController;
 // Receptionist
 use Illuminate\Support\Facades\Route;
 
-// added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
+use App\Http\Controllers\HR\Reports\AttendanceReportController;
+Route::get(
+    '/reports/attendance',
+    [AttendanceReportController::class, 'apiIndex']
+);
 // Receptionist
 
 // Receptionist
@@ -122,7 +127,7 @@ Route::get('/test-api', function () {
     return 'API working';
 });
 
-// added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 /*
@@ -1282,7 +1287,7 @@ Route::prefix('ppe-compliance')->group(function () {
 Route::prefix('reports')->group(function () {
 
     Route::get('/dashboard', [DashboardApiController::class, 'index']);
-    Route::get('/staff-strength', [StaffStrengthApiController::class, 'index']);
+    Route::get('/staff-strength', [StaffStrengthApiController::class, 'apiIndex']);
     Route::get('/attendance', [AttendanceReportApiController::class, 'index']);
     Route::get('/leave', [LeaveReportApiController::class, 'index']);
     Route::get('/payroll', [PayrollReportApiController::class, 'index']);
