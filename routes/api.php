@@ -785,7 +785,72 @@ Route::prefix('payroll/allowance')->group(function () {
 });
 /*
 |--------------------------------------------------------------------------
-| 20. Employee Document Management (EDM)
+| 20. Laboratory API
+|--------------------------------------------------------------------------
+*/
+
+
+
+Route::prefix('laboratories')->group(function () {
+
+    // Lab Tests
+    Route::get('/', [LabTestController::class, 'apiIndex']);
+    Route::get('/requests', [LabTestController::class, 'apiLabRequests']);
+    Route::post('/', [LabTestController::class, 'apiStore']);
+
+    //  Test Parameters
+    Route::get('/test-parameters', [TestParameterController::class, 'apiIndex']);
+    Route::post('/test-parameters', [TestParameterController::class, 'apiStore']);
+    Route::get('/parameters', [TestParameterController::class, 'apiParameters']);
+    Route::get('/tests', [TestParameterController::class, 'apiTests']);
+    Route::post('/parameters', [TestParameterController::class, 'apiAddParameter']);
+
+    // ================= REPORTS ================= 
+    Route::prefix('reports')->group(function () {
+
+        Route::get('/', [ReportController::class, 'apiIndex']);
+        Route::get('/deleted', [ReportController::class, 'apiDeleted']);
+        Route::get('/{id}', [ReportController::class, 'apiShow']);
+
+        Route::post('/', [ReportController::class, 'apiStore']);
+        Route::post('/{id}/update-files', [ReportController::class, 'apiUpdateFiles']);
+
+        Route::delete('/{id}', [ReportController::class, 'apiDelete']);
+        Route::put('/{id}/restore', [ReportController::class, 'apiRestore']);
+        Route::delete('/{id}/force-delete', [ReportController::class, 'apiForceDelete']);
+
+        
+        Route::post('/{id}/verify', [ReportController::class, 'apiVerify']);
+        Route::post('/{id}/reject', [ReportController::class, 'apiReject']);
+        Route::post('/{id}/sign', [ReportController::class, 'apiSign']);
+        Route::post('/{id}/finalize', [ReportController::class, 'apiFinalize']);
+
+    });
+
+    // Sample Collection
+    Route::prefix('samples')->group(function () {
+
+        Route::get('/', [SampleCollectionController::class, 'apiIndex']);
+        Route::get('/pending', [SampleCollectionController::class, 'apiPending']);
+        Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
+        Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
+        Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
+
+        Route::prefix('results')->group(function () {
+            Route::get('/', [ResultEntryController::class, 'apiIndex']);
+            Route::get('/{id}', [ResultEntryController::class, 'apiResults']);
+            Route::post('/save-draft/{id}', [ResultEntryController::class, 'apiSaveDraft']);
+            Route::post('/submit/{id}', [ResultEntryController::class, 'apiSubmit']);
+        });
+    });
+
+    Route::get('/{id}', [LabTestController::class, 'apiShow']);
+    Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
+    Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
+});
+/*
+|--------------------------------------------------------------------------
+| 21. Employee Document Management (EDM)
 |--------------------------------------------------------------------------
 */
 
@@ -883,7 +948,7 @@ Route::prefix('edm')->group(function () {
    
 /*
 |--------------------------------------------------------------------------
-| 21. Reception: Tokens & Doctors
+| 22. Reception: Tokens & Doctors
 |--------------------------------------------------------------------------
 */
 
@@ -898,57 +963,8 @@ Route::prefix('tokens')->group(function () {
 
 Route::get('/doctors', [TokenController::class, 'apiDoctors']);
 
-/*
-|--------------------------------------------------------------------------
-| 22. Laboratory API
-|--------------------------------------------------------------------------
-*/
 
-Route::prefix('laboratories')->group(function () {
 
-    // Lab Tests
-    Route::get('/', [LabTestController::class, 'apiIndex']);
-    Route::get('/requests', [LabTestController::class, 'apiLabRequests']);
-    Route::post('/', [LabTestController::class, 'apiStore']);
-
-    //  Test Parameters
-    Route::get('/test-parameters', [TestParameterController::class, 'apiIndex']);
-    Route::post('/test-parameters', [TestParameterController::class, 'apiStore']);
-    Route::get('/parameters', [TestParameterController::class, 'apiParameters']);
-    Route::get('/tests', [TestParameterController::class, 'apiTests']);
-    Route::post('/parameters', [TestParameterController::class, 'apiAddParameter']);
-
-    // ================= REPORTS ================= 
-    Route::prefix('reports')->group(function () { Route::get('/', [ReportController::class, 'apiIndex']); 
-    Route::get('/deleted', [ReportController::class, 'apiDeleted']); 
-    Route::get('/{id}', [ReportController::class, 'apiShow']); 
-    Route::post('/', [ReportController::class, 'apiStore']); 
-    Route::post('/{id}/update-files', [ReportController::class, 'apiUpdateFiles']); 
-    Route::delete('/{id}', [ReportController::class, 'apiDelete']); 
-    Route::put('/{id}/restore', [ReportController::class, 'apiRestore']); 
-    Route::delete('/{id}/force-delete', [ReportController::class, 'apiForceDelete']); });
-
-    // Sample Collection
-    Route::prefix('samples')->group(function () {
-
-        Route::get('/', [SampleCollectionController::class, 'apiIndex']);
-        Route::get('/pending', [SampleCollectionController::class, 'apiPending']);
-        Route::post('/collect/{id}', [SampleCollectionController::class, 'apiCollect']);
-        Route::post('/status/{id}', [SampleCollectionController::class, 'apiUpdateStatus']);
-        Route::post('/reject/{id}', [SampleCollectionController::class, 'apiReject']);
-
-        Route::prefix('results')->group(function () {
-            Route::get('/', [ResultEntryController::class, 'apiIndex']);
-            Route::get('/{id}', [ResultEntryController::class, 'apiResults']);
-            Route::post('/save-draft/{id}', [ResultEntryController::class, 'apiSaveDraft']);
-            Route::post('/submit/{id}', [ResultEntryController::class, 'apiSubmit']);
-        });
-    });
-
-    Route::get('/{id}', [LabTestController::class, 'apiShow']);
-    Route::put('/{id}', [LabTestController::class, 'apiUpdate']);
-    Route::delete('/{id}', [LabTestController::class, 'apiDelete']);
-});
 
 /*
 |--------------------------------------------------------------------------
