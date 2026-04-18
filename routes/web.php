@@ -1604,7 +1604,7 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
         });
 
-});
+
 
 //---------Payroll -statutory deduction-----------//
 
@@ -1650,9 +1650,9 @@ Route::prefix('payroll/salary-structure')
     Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
     Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
 
-Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
+    Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
 
-Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
 });
  //---------Payroll - Employee Salary assignment-----------//
 Route::prefix('payroll/employee-salary-assignment')
@@ -1677,7 +1677,7 @@ Route::prefix('payroll/employee-salary-assignment')
     Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
 });
 
-
+});
 
 /*
 |--------------------------------------------------------------------------
