@@ -1606,8 +1606,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
 });
 
-<<<<<<< HEAD
-    //---------Payroll -Statutory deduction-----------//
+//---------Payroll -statutory deduction-----------//
+
 Route::prefix('payroll/statutory-deduction')
     ->name('payroll.statutory-deduction.')
     ->group(function () {
@@ -1654,7 +1654,7 @@ Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->nam
 
 Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
 });
-//---------Payroll - Employee Salary assignment-----------//
+ //---------Payroll - Employee Salary assignment-----------//
 Route::prefix('payroll/employee-salary-assignment')
     ->name('payroll.employee-salary-assignment.')
     ->group(function () {
@@ -1663,22 +1663,21 @@ Route::prefix('payroll/employee-salary-assignment')
     Route::get('/create', [EmployeeSalaryAssignmentController::class, 'create'])->name('create');
     Route::post('/store', [EmployeeSalaryAssignmentController::class, 'store'])->name('store');
 
-  
+    // static
     Route::get('/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])->name('deleted');
-    Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
-    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])
-    ->name('forceDelete');
 
-    
+    // restore + force delete
+    Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('forceDelete');
+
+    // dynamic
     Route::get('/{id}/show', [EmployeeSalaryAssignmentController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
     Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
     Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
 });
-});
 
-=======
->>>>>>> 0c9cc4a64c5d64e3c315b1f110c7d2f95369f703
+
 
 /*
 |--------------------------------------------------------------------------
