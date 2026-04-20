@@ -26,8 +26,8 @@
             <tr>
                 <td>{{ $s->employee_id }}</td>
                 <td>{{ $s->name }}</td>
-                <td>{{ $s->department->name ?? '-' }}</td>
-                <td>{{ $s->designation->name ?? '-' }}</td>
+                <td>{{ $s->department->department_name ?? '-' }}</td>
+                <td>{{ $s->designation->designation_name ?? '-' }}</td>
                 <td>{{ $s->status }}</td>
             </tr>
             @endforeach

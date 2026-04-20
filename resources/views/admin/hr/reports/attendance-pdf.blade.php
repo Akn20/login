@@ -33,7 +33,7 @@
         @foreach($data as $a)
         <tr>
             <td>{{ $a->staff->name ?? '' }}</td>
-            <td>{{ $a->department->name ?? '' }}</td>
+            <td>{{ $a->department->department_name ?? '' }}</td>
             <td>{{ $a->attendance_date }}</td>
             <td>{{ $a->check_in }}</td>
             <td>{{ $a->check_out }}</td>
