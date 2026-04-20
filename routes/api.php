@@ -63,6 +63,7 @@ use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
+use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -1402,4 +1403,25 @@ Route::prefix('salary-structure')->group(function () {
 
    
 
+});
+/*
+|--------------------------------------------------------------------------
+| 35. Payroll: Salary Structure
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('employee-salary-assignment')->group(function () {
+
+    Route::get('/', [EmployeeSalaryAssignmentController::class, 'apiIndex']);
+    Route::post('/', [EmployeeSalaryAssignmentController::class, 'apiStore']);
+
+    
+    Route::get('/deleted', [EmployeeSalaryAssignmentController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [EmployeeSalaryAssignmentController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [EmployeeSalaryAssignmentController::class, 'apiForceDelete']);
+
+    Route::get('/{id}', [EmployeeSalaryAssignmentController::class, 'apiShow']);
+    Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'apiUpdate']);
+    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'apiDestroy']);
 });
