@@ -25,6 +25,9 @@
                         <th>Employee</th>
                         <th>Structure</th>
                         <th>Salary</th>
+                        <th>Basis</th>
+                        <th>Pay Frequency</th>
+                        <th>Effective From</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -34,37 +37,65 @@
                     @forelse($records as $item)
                     <tr>
 
-                        <td>{{ optional($item->employee)->name ?? '-' }}</td>
-
-                        <td>{{ optional($item->salaryStructure)->salary_structure_name ?? '-' }}</td>
-
-                        <td>₹ {{ $item->salary_amount }}</td>
-
+                        <!-- Employee -->
                         <td>
-                            <span class="badge bg-soft-danger text-danger">
-                                Deleted
+                            <span class="badge bg-soft-primary text-primary">
+                                {{ optional($item->employee)->name ?? '-' }}
                             </span>
                         </td>
 
+                        <!-- Structure -->
+                        <td>
+                            <span class="badge bg-soft-info text-info">
+                                {{ optional($item->salaryStructure)->salary_structure_name ?? '-' }}
+                            </span>
+                        </td>
+
+                        <!-- Salary -->
+                        <td>₹ {{ $item->salary_amount }}</td>
+
+                        <!-- Basis -->
+                        <td>{{ strtoupper($item->salary_basis) }}</td>
+
+                        <!-- Pay Frequency -->
+                        <td>{{ ucfirst($item->pay_frequency) }}</td>
+
+                        <!-- Effective From -->
+                        <td>{{ $item->effective_from }}</td>
+
+                        <!-- Status -->
+                      <td>
+    @if(strtolower($item->status) == 'active')
+        <span class="badge bg-soft-success text-success">Active</span>
+    @else
+        <span class="badge bg-soft-danger text-danger">Inactive</span>
+    @endif
+</td>
+
+                        <!-- Actions -->
                         <td class="text-end">
                             <div class="d-flex gap-2 justify-content-end">
 
                                 <!-- Restore -->
                                 <form action="{{ route('hr.payroll.employee-salary-assignment.restore', $item->id) }}" method="POST">
                                     @csrf
-                                    <button class="btn btn-outline-success btn-icon rounded-circle btn-sm">
+                                    <button type="submit"
+                                            class="btn btn-outline-success btn-icon rounded-circle btn-sm"
+                                            title="Restore">
                                         <i class="feather-rotate-ccw"></i>
                                     </button>
                                 </form>
 
-                                <!-- Force Delete -->
+                                <!-- Permanent Delete -->
                                 <form action="{{ route('hr.payroll.employee-salary-assignment.forceDelete', $item->id) }}"
                                       method="POST"
                                       onsubmit="return confirm('Permanent delete?')">
                                     @csrf
                                     @method('DELETE')
 
-                                    <button class="btn btn-outline-danger btn-icon rounded-circle btn-sm">
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+                                            title="Delete Permanently">
                                         <i class="feather-trash"></i>
                                     </button>
                                 </form>
@@ -75,7 +106,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="8" class="text-center text-muted">
                             No deleted records
                         </td>
                     </tr>
