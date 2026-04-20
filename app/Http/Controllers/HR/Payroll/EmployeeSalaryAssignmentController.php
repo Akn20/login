@@ -83,6 +83,7 @@ class EmployeeSalaryAssignmentController extends Controller
     {
         $record = EmployeeSalaryAssignment::with(['employee', 'salaryStructure'])
             ->findOrFail($id);
+        $record = EmployeeSalaryAssignment::with(['employee', 'structure'])->findOrFail($id);
 
         return view('hr.payroll.employee_salary_assignment.show', compact('record'));
     }
@@ -114,7 +115,9 @@ class EmployeeSalaryAssignmentController extends Controller
 
         $record->update([
             ...$request->all(),
-            'allowed_work_types' => json_encode($request->allowed_work_types ?? []),
+           'allowed_work_types' => !empty($request->allowed_work_types)
+    ? json_encode($request->allowed_work_types)
+    : null,
         ]);
 
         return redirect()->route('hr.payroll.employee-salary-assignment.index')

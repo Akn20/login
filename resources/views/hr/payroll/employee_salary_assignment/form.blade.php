@@ -1,3 +1,4 @@
+
 <div class="row">
 
     <!-- Employee -->
@@ -111,16 +112,26 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label>Work Types</label>
-        <select name="work_types[]" multiple class="form-control">
-            @foreach($workTypes as $id => $name)
-                <option value="{{ $id }}"
-                    {{ collect(old('work_types'))->contains($id) ? 'selected' : '' }}>
-                    {{ $name }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+    <label>Work Types</label>
+
+   @php
+    $selectedWorkTypes = old(
+        'allowed_work_types',
+        isset($record->allowed_work_types)
+            ? json_decode($record->allowed_work_types, true)
+            : []
+    );
+@endphp
+
+<select name="allowed_work_types[]" multiple class="form-control">
+    @foreach($workTypes as $id => $name)
+        <option value="{{ $id }}"
+            {{ in_array($id, $selectedWorkTypes ?? []) ? 'selected' : '' }}>
+            {{ $name }}
+        </option>
+    @endforeach
+</select>
+</div>
 
     <div class="col-md-6 mb-3">
         <label>Overtime Eligible</label>

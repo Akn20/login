@@ -54,4 +54,8 @@ class EmployeeSalaryAssignment extends Model
     {
         return $this->belongsTo(SalaryStructure::class);
     }
+    public function structure()
+{
+    return $this->belongsTo(\App\Models\SalaryStructure::class, 'salary_structure_id');
+}
 }
