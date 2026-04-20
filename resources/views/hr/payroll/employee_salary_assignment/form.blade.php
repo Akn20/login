@@ -45,17 +45,25 @@
     </div>
     <div class="col-md-6 mb-3">
     <label>Currency *</label>
-    <select name="currency" class="form-control">
-        <option value="">Select</option>
-        <option value="INR">INR</option>
-        <option value="USD">USD</option>
-    </select>
+   <select name="currency" class="form-control">
+    <option value="">Select Currency</option>
+
+    <option value="INR"
+        {{ old('currency', $record->currency ?? '') == 'INR' ? 'selected' : '' }}>
+        INR
+    </option>
+
+    <option value="USD"
+        {{ old('currency', $record->currency ?? '') == 'USD' ? 'selected' : '' }}>
+        USD
+    </option>
+</select>
 </div>
 <div class="col-md-6 mb-3">
     <label>Status *</label>
     <select name="status" class="form-control">
-        <option value="Active">Active</option>
-        <option value="Inactive">Inactive</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
     </select>
 </div>
 
@@ -127,6 +135,5 @@
 <hr>
 
 <div class="d-flex justify-content-end gap-2">
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{{ route('hr.payroll.employee-salary-assignment.index') }}" class="btn btn-light">Cancel</a>
+    
 </div>

@@ -144,4 +144,11 @@ class EmployeeSalaryAssignmentController extends Controller
 
         return back()->with('success', 'Restored');
     }
+    public function forceDelete($id)
+{
+    $record = EmployeeSalaryAssignment::withTrashed()->findOrFail($id);
+    $record->forceDelete();
+
+    return redirect()->back()->with('success', 'Permanently Deleted');
+}
 }

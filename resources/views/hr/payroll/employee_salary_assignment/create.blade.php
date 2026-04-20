@@ -20,6 +20,10 @@
             @csrf  
 
             @include('hr.payroll.employee_salary_assignment.form')
+            <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ route('hr.payroll.employee-salary-assignment.index') }}" class="btn btn-light">Cancel</a>
+            </div>
 
         </form>
 
