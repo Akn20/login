@@ -132,13 +132,6 @@ class ConsultationController extends Controller
                         'status' => 'Pending',
                     ]);
 
-                    SampleCollection::create([
-                        'id' => Str::uuid(),
-                        'lab_request_id' => $labRequest->id,
-                        'patient_id' => $request->patient_id,
-                        'status' => 'Pending',
-                    ]);
-
                 }
 
             }

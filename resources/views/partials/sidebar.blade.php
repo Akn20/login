@@ -310,6 +310,16 @@
                 </a>
 
                 <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.dashboard.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
 
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">

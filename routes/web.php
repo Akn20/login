@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
 use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\LabDashboardController;
 use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -1166,6 +1167,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
+        
+
         Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
 
         Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
@@ -1295,6 +1298,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/report/{id}/finalize', [AdminReportController::class, 'finalize'])
             ->name('report.finalize');
+
+            
+Route::get('dashboard', [LabDashboardController::class, 'index'])
+    ->name('dashboard.index');
 
         Route::prefix('alerts')->group(function () {
 
