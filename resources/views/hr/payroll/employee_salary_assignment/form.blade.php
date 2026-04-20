@@ -71,10 +71,19 @@
     <!-- Pay Frequency -->
     <div class="col-md-6 mb-3">
         <label>Pay Frequency *</label>
-        <select name="pay_frequency" class="form-control">
-            <option value="Monthly" {{ old('pay_frequency') == 'Monthly' ? 'selected' : '' }}>Monthly</option>
-            <option value="Weekly" {{ old('pay_frequency') == 'Weekly' ? 'selected' : '' }}>Weekly</option>
-        </select>
+       <select name="pay_frequency" class="form-control">
+
+    <option value="Monthly"
+        {{ old('pay_frequency', $record->pay_frequency ?? '') == 'Monthly' ? 'selected' : '' }}>
+        Monthly
+    </option>
+
+    <option value="Weekly"
+        {{ old('pay_frequency', $record->pay_frequency ?? '') == 'Weekly' ? 'selected' : '' }}>
+        Weekly
+    </option>
+
+</select>
     </div>
 
 </div>
@@ -105,10 +114,21 @@
 
     <div class="col-md-6 mb-3">
         <label>Hourly Pay</label>
-        <select name="hourly_pay" class="form-control">
-            <option value="1" {{ old('hourly_pay') == 1 ? 'selected' : '' }}>Yes</option>
-            <option value="0" {{ old('hourly_pay') == 0 ? 'selected' : '' }}>No</option>
-        </select>
+       <select name="hourly_pay_eligible" class="form-control">
+
+    <option value="1"
+        {{ old('hourly_pay_eligible', $record->hourly_pay_eligible ?? '') == 1 ? 'selected' : '' }}>
+        Yes
+    </option>
+
+    <option value="0"
+        {{ old('hourly_pay_eligible', $record->hourly_pay_eligible ?? '') == 0 ? 'selected' : '' }}>
+        No
+    </option>
+
+</select>
+
+
     </div>
 
     <div class="col-md-6 mb-3">
@@ -131,14 +151,26 @@
         </option>
     @endforeach
 </select>
+@error('allowed_work_types')
+    <div class="text-danger">{{ $message }}</div>
+@enderror
 </div>
 
     <div class="col-md-6 mb-3">
         <label>Overtime Eligible</label>
-        <select name="overtime" class="form-control">
-            <option value="1" {{ old('overtime') == 1 ? 'selected' : '' }}>Yes</option>
-            <option value="0" {{ old('overtime') == 0 ? 'selected' : '' }}>No</option>
-        </select>
+      <select name="overtime_eligible" class="form-control">
+
+    <option value="1"
+        {{ old('overtime_eligible', $record->overtime_eligible ?? '') == 1 ? 'selected' : '' }}>
+        Yes
+    </option>
+
+    <option value="0"
+        {{ old('overtime_eligible', $record->overtime_eligible ?? '') == 0 ? 'selected' : '' }}>
+        No
+    </option>
+
+</select>
     </div>
 
 </div>
@@ -148,3 +180,31 @@
 <div class="d-flex justify-content-end gap-2">
     
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const hourlyDropdown = document.querySelector('[name="hourly_pay_eligible"]');
+    const workTypeDropdown = document.querySelector('[name="allowed_work_types[]"]');
+
+    function toggleWorkTypes() {
+
+        if (!hourlyDropdown || !workTypeDropdown) return;
+
+        if (hourlyDropdown.value == "1") {
+            workTypeDropdown.disabled = false;
+        } else {
+            workTypeDropdown.disabled = true;
+
+            // clear selection properly
+            Array.from(workTypeDropdown.options).forEach(option => option.selected = false);
+        }
+    }
+
+    // run on page load
+    toggleWorkTypes();
+
+    // run on change
+    hourlyDropdown.addEventListener('change', toggleWorkTypes);
+
+});
+</script>

@@ -92,12 +92,12 @@
 
             <div class="col-md-4">
                 <label class="text-muted">Hourly Pay</label>
-                <div>{{ $record->hourly_pay ? 'Yes' : 'No' }}</div>
+                <div>{{ (int)$record->hourly_pay_eligible === 1 ? 'Yes' : 'No' }}</div>
             </div>
 
             <div class="col-md-4">
                 <label class="text-muted">Overtime</label>
-                <div>{{ $record->overtime ? 'Yes' : 'No' }}</div>
+               <div>{{ (int)$record->overtime_eligible === 1 ? 'Yes' : 'No' }}</div>
             </div>
 <div class="col-md-12 mt-3">
     <label class="text-muted">Work Types</label>

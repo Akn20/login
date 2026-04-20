@@ -111,6 +111,7 @@ class EmployeeSalaryAssignmentController extends Controller
             'salary_amount' => 'required|numeric',
             'effective_from' => 'required|date',
             'effective_to' => 'nullable|date|after_or_equal:effective_from',
+            'allowed_work_types' => 'required_if:hourly_pay_eligible,1',
         ]);
 
         $record->update([
