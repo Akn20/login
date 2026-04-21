@@ -39,10 +39,19 @@
     <!-- Salary Basis -->
     <div class="col-md-6 mb-3">
         <label>Salary Basis *</label>
-        <select name="salary_basis" class="form-control">
-            <option value="Ctc" {{ old('salary_basis') == 'Ctc' ? 'selected' : '' }}>Ctc</option>
-            <option value="Gross" {{ old('salary_basis') == 'Gross' ? 'selected' : '' }}>Gross</option>
-        </select>
+       <select name="salary_basis" class="form-control">
+
+    <option value="Ctc"
+        {{ old('salary_basis', $record->salary_basis ?? '') == 'Ctc' ? 'selected' : '' }}>
+        CTC
+    </option>
+
+    <option value="Gross"
+        {{ old('salary_basis', $record->salary_basis ?? '') == 'Gross' ? 'selected' : '' }}>
+        Gross
+    </option>
+
+</select>
     </div>
     <div class="col-md-6 mb-3">
     <label>Currency *</label>
@@ -62,10 +71,19 @@
 </div>
 <div class="col-md-6 mb-3">
     <label>Status *</label>
-    <select name="status" class="form-control">
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-    </select>
+   <select name="status" class="form-control">
+
+    <option value="active"
+        {{ old('status', $record->status ?? '') == 'active' ? 'selected' : '' }}>
+        Active
+    </option>
+
+    <option value="inactive"
+        {{ old('status', $record->status ?? '') == 'inactive' ? 'selected' : '' }}>
+        Inactive
+    </option>
+
+</select>
 </div>
 
     <!-- Pay Frequency -->
