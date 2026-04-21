@@ -71,7 +71,7 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Models\Patient;
-
+use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\ReceptionistDashboardController;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -791,9 +791,7 @@ Route::prefix('pharmacy')->group(function () {
 
 //Insurance(Receptionist)
 
-Route::prefix('receptionist/dashboard')->group(function () {
-    Route::get('/', [ReceptionistDashboardController::class, 'apiDashboard']);
-});
+
 
 Route::prefix('insurance')->group(function () {
 
@@ -827,7 +825,9 @@ Route::get('/patient-by-name/{name}', function ($name) {
 });
 
 //Reception dashboard
-
+Route::prefix('receptionist/dashboard')->group(function () {
+    Route::get('/', [ReceptionistDashboardController::class, 'apiDashboard']);
+});
 
 //receptionistbilling
 Route::prefix('billing')->group(function () {
@@ -861,4 +861,16 @@ Route::prefix('receptionist/ipd')->group(function () {
     Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
     Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
     Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
+});
+
+//ReceptionistReport
+
+Route::prefix('receptionist/reports')->group(function () {
+
+    Route::get('registration', [ReceptionistReportController::class, 'apiRegistration']);
+    Route::get('appointment', [ReceptionistReportController::class, 'apiAppointment']);
+    Route::get('token', [ReceptionistReportController::class, 'apiToken']);
+    Route::get('collection', [ReceptionistReportController::class, 'apiCollection']);
+    Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
+
 });

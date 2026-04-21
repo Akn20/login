@@ -55,6 +55,50 @@
                             up-target="#main-container"><i class="feather-shield me-2"></i>Insurance</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.billing.index') }}" class="nxl-link" up-follow
                      up-target="#main-container"><i class="feather-dollar-sign me-2"></i>Billing</a></li>
+                   <li class="nxl-item has-submenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <i class="feather-bar-chart-2"></i> Reports
+    </a>
+
+    <ul class="nxl-submenu">
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.registration') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Registration Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.appointment') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Appointment Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.token') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Token Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.collection') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Collection Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.admission') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Admission Report
+            </a>
+        </li>
+
+    </ul>
+</li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patients*') ? 'active nxl-trigger' : '' }}">

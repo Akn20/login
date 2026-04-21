@@ -91,7 +91,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\IPDAdmissionController;
-
+use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -1371,7 +1371,31 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth'])
     ->group(function () {
+        // ==============================
+// RECEPTIONIST REPORTS
+// ==============================
+Route::prefix('receptionist')->name('receptionist.')->group(function () {
 
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+        Route::get('registration', [ReceptionistReportController::class, 'registration'])
+            ->name('registration');
+
+        Route::get('appointment', [ReceptionistReportController::class, 'appointment'])
+            ->name('appointment');
+
+        Route::get('token', [ReceptionistReportController::class, 'token'])
+            ->name('token');
+
+        Route::get('collection', [ReceptionistReportController::class, 'collection'])
+            ->name('collection');
+
+        Route::get('admission', [ReceptionistReportController::class, 'admission'])
+            ->name('admission');
+
+    });
+
+});
         /*
         |--------------------------------------------------------------------------
         | Sales Return Module
@@ -1394,6 +1418,9 @@ Route::prefix('admin')
             'salesReturn/{id}/reject',
             [SalesReturnController::class, 'reject']
         )->name('salesReturn.reject');
+
+
+        
 
     });
 
@@ -1590,6 +1617,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
 
     });
+    
 });
 
 //Receptionist dashboard
@@ -1604,29 +1632,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::prefix('receptionist')->name('receptionist.')->group(function () {
 
-        // IPD Admission Routes
+        // ==============================
+        // IPD ROUTES
+        // ==============================
+        Route::get('/', [IPDAdmissionController::class, 'index'])->name('ipd.index');
 
-        Route::get('ipd', [IPDAdmissionController::class, 'index'])
-            ->name('ipd.index');
-
-        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])
-            ->name('ipd.create');
-
-        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])
-            ->name('ipd.store');
-
-        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])
-            ->name('ipd.view');
-
-        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])
-            ->name('ipd.edit');
-
-        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])
-            ->name('ipd.update');
-
-        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])
-            ->name('ipd.print');
-        
+        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])->name('ipd.create');
+        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])->name('ipd.store');
+        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])->name('ipd.view');
+        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])->name('ipd.edit');
+        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])->name('ipd.update');
+        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])->name('ipd.print');
         Route::get('get-patient/{id}', [IPDAdmissionController::class, 'getPatient']);
 
     });
