@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -1623,5 +1624,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
         Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Reports
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-reports')->name('nurse-reports.')->group(function () {
+        Route::get('/', [NurseReportController::class, 'index'])->name('index');
+
+        Route::get('/vitals', [NurseReportController::class, 'vitals'])->name('vitals');
+        Route::get('/medications', [NurseReportController::class, 'medications'])->name('medications');
     });
 });

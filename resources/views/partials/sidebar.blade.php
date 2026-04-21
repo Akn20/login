@@ -294,9 +294,29 @@
                                 <span class="nxl-mtext">Discharge Preparation</span>
                             </a>
                         </li>
-                    </ul>
+                   
 
-                </li>   
+                    <li class="nxl-item has-submenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-bar-chart-2"></i> Reports
+                        </a>
+
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.vitals') }}" class="nxl-link"> Vitals Report</a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.medications') }}" class="nxl-link">Medication Report </a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                    </ul>
+                                    
+                   
+                </li> 
+
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-package"></i></span>
