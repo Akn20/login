@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
+use App\Http\Controllers\Api\PatientPortal\PatientPortalApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
@@ -1331,4 +1332,14 @@ Route::prefix('emergency-reports')->group(function () {
     Route::get('/{caseId}/full', [EmergencyReportApiController::class, 'full']);
 
     Route::get('/{caseId}', [EmergencyReportApiController::class, 'show']);
+});
+
+Route::prefix('patient-portal')->group(function () {
+
+    Route::get('/dashboard', [PatientPortalApiController::class, 'dashboard']);
+    Route::get('/appointments', [PatientPortalApiController::class, 'appointments']);
+    Route::get('/lab-reports', [PatientPortalApiController::class, 'labReports']);
+    Route::get('/radiology-reports', [PatientPortalApiController::class, 'radiology']);
+    Route::get('/profile', [PatientPortalApiController::class, 'profile']);
+    Route::post('/profile/update', [PatientPortalApiController::class, 'updateProfile']);
 });
