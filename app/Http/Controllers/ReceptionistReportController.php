@@ -207,20 +207,28 @@ public function admission(Request $request)
     // TOKEN REPORT API
     // ===============================
     public function apiToken(Request $request)
-    {
-        $query = Token::with(['appointment.patient','appointment.doctor']);
+{
+    $query = Token::with(['appointment.patient','appointment.doctor']);
 
-        if ($request->filled('date')) {
-            $query->whereDate('created_at', $request->date);
-        }
-
-        $data = $query->latest()->get();
-
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
+    if ($request->filled('patient')) {
+        $query->whereHas('appointment.patient', function ($q) use ($request) {
+            $q->where('first_name', 'like', "%{$request->patient}%")
+              ->orWhere('last_name', 'like', "%{$request->patient}%");
+        });
     }
+
+    // Existing date filter
+    if ($request->filled('date')) {
+        $query->whereDate('created_at', $request->date);
+    }
+
+    $data = $query->latest()->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $data
+    ]);
+}
 
     // ===============================
     // COLLECTION REPORT API
