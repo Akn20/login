@@ -76,6 +76,7 @@ use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
+use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
 
@@ -1675,6 +1676,21 @@ Route::prefix('payroll/employee-salary-assignment')
     Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
     Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
     Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
+});
+
+
+
+//---------Payroll - Pre-Payroll Adjustment-----------//
+Route::prefix('pre-payroll')->group(function () {
+
+    Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
+        ->name('pre-payroll.index');
+
+    Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
+        ->name('pre-payroll.create');
+
+    Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
+        ->name('pre-payroll.store');
 });
 
 });
