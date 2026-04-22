@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="col-md-4">
-                        <p><strong>UHID:</strong>
+                        <p><strong>Patient Code:</strong>
                             {{ $billing->patient->patient_code ?? '' }}
                         </p>
                     </div>
