@@ -62,6 +62,14 @@
                             up-target="#main-container"><i class="feather-user-plus me-2"></i>Add Patient</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.patients.duplicates') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-copy me-2"></i>Duplicates</a></li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patients.emergency.list') }}" 
+                        class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-activity me-2"></i>
+                            Emergency Records
+                        </a>
+                    </li>
                 </ul>
             </li>
 
@@ -319,6 +327,16 @@
                     <span class="nxl-mtext">Laboratory</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.dashboard.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
 
                 <ul class="nxl-submenu">
 

@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Inventory\ReportController;
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
 use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\LabDashboardController;
 use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -67,6 +68,7 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\EmergencyCaseController;
+use App\Http\Controllers\EmergencyRecordController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\Payroll\PayrollAllowanceController;
@@ -76,6 +78,9 @@ use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
 use App\Http\Controllers\HR\Reports\AttendanceReportController;
+use App\Http\Controllers\HR\Reports\DepartmentSalaryReportController;
+use App\Http\Controllers\HR\Reports\OvertimeReportController;
+use App\Http\Controllers\HR\Reports\PayrollReportController;
 use App\Http\Controllers\HR\Reports\ReportsDashboardController;
 use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
@@ -95,6 +100,7 @@ use App\Http\Controllers\LeaveManagement\WeekendController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\PatientApiController;
 use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
@@ -1169,6 +1175,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
+        
+
         Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
 
         Route::get('/tests/create', [LabTestController::class, 'create'])->name('tests.create');
@@ -1298,6 +1306,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('/report/{id}/finalize', [AdminReportController::class, 'finalize'])
             ->name('report.finalize');
+
+            
+Route::get('dashboard', [LabDashboardController::class, 'index'])
+    ->name('dashboard.index');
 
         Route::prefix('alerts')->group(function () {
 
@@ -1980,5 +1992,40 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
 
         Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
-    });
+
+        Route::get('/payslip/{id}', [PayrollReportController::class, 'payslip'])
+        ->name('payslip');
+
+        });
 });
+
+  
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+                /*
+        |--------------------------------------------------------------------------
+        | Emergency Records (Patient Module)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/patients-emergency-records', 
+            [EmergencyRecordController::class, 'index']
+        )->name('patients.emergency.list');
+
+        Route::get('/patients/{id}/basic-info', 
+            [PatientApiController::class, 'basicInfo']);
+
+        Route::get('/patients/{id}/emergency-record', 
+            [EmergencyRecordController::class, 'show']
+        )->name('patients.emergency');
+
+        Route::get('/patients/{id}/emergency-view', 
+            [EmergencyRecordController::class, 'viewEmergency']
+        )->name('patients.emergency.view');
+
+
+});
+

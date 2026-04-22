@@ -125,7 +125,7 @@
 <i class="feather-arrow-left me-1"></i> Back
 </a>
 
-<button type="submit" class="btn btn-primary">
+<button type="submit" class="btn btn-primary" id="submitBtn">
 <i class="feather-save me-1"></i> Save Attendance
 </button>
 
@@ -220,6 +220,10 @@ $('#shift_end').val(data.end_time);
 
 });
 
+});
+
+document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('submitBtn').disabled = true;
 });
 
 </script>

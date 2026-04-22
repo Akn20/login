@@ -35,7 +35,7 @@
         @foreach($data as $l)
         <tr>
             <td>{{ $l->staff->name ?? '' }}</td>
-            <td>{{ $l->staff->department->name ?? '' }}</td>
+            <td>{{ $l->staff->department->department_name ?? '' }}</td>
             <td>{{ $l->leaveType->display_name ?? '' }}</td>
             <td>{{ $l->from_date }}</td>
             <td>{{ $l->to_date }}</td>
