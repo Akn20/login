@@ -210,6 +210,14 @@ public function admission(Request $request)
     {
         $query = Token::with(['appointment.patient','appointment.doctor']);
 
+        // ✅ ADD THIS (PATIENT FILTER)
+        if ($request->filled('patient')) {
+            $query->whereHas('appointment.patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient}%")
+                ->orWhere('last_name', 'like', "%{$request->patient}%");
+            });
+        }
+
         if ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
         }
