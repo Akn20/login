@@ -7,7 +7,7 @@ use App\Models\Staff;
 
 class StaffStrengthApiController extends Controller
 {
-    public function apiIndex()
+    public function Index()
 {
     try {
 
