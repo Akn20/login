@@ -110,11 +110,7 @@
                         </a>
                     </li>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.profile') }}" class="nxl-link">
-                            <i class="feather-settings me-2"></i> Profile
-                        </a>
-                    </li>
+                    
 
                 </ul>
             </li>
