@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PrePayrollAdjustmentController extends Controller
 {
-    // 🔹 INDEX
+    //  INDEX
     public function index()
     {
         $records = PrePayrollAdjustment::with(['employee'])
@@ -21,13 +21,13 @@ class PrePayrollAdjustmentController extends Controller
         return view('hr.payroll.pre_payroll_adjustment.index', compact('records'));
     }
 
-    // 🔹 CREATE
+    // CREATE
     public function create()
     {
         $employees = Staff::pluck('name', 'id');
 
         // IMPORTANT (for dropdown)
-        $assignments = EmployeeSalaryAssignment::all();
+     $assignments = EmployeeSalaryAssignment::with('salaryStructure')->get();
 
         return view(
             'hr.payroll.pre_payroll_adjustment.create',
@@ -36,35 +36,68 @@ class PrePayrollAdjustmentController extends Controller
     }
 
     //  STORE
-    public function store(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required',
-            'salary_assignment_id' => 'required',
-            'payroll_month' => 'required',
-            'working_days' => 'required',
-            'days_paid' => 'required|lte:working_days',
-            'status' => 'required',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required',
+        'salary_assignment_id' => 'required',
+        'payroll_month' => 'required',
+        'working_days' => 'required',
+        'days_paid' => 'required|lte:working_days',
+        'adhoc_earnings' => 'nullable|numeric|min:0',
+        'adhoc_deductions' => 'nullable|numeric|min:0',
+    ]);
 
-        // CALCULATION
-        $gross = ($request->fixed_earnings_total ?? 0)
-               + ($request->adhoc_earnings ?? 0);
+    // CALCULATION
+    $gross = ($request->fixed_earnings_total ?? 0)
+           + ($request->adhoc_earnings ?? 0);
 
-        $deductions = ($request->fixed_deductions_total ?? 0)
-                    + ($request->adhoc_deductions ?? 0);
+    $deductions = ($request->fixed_deductions_total ?? 0)
+                + ($request->adhoc_deductions ?? 0);
 
-        $net = $gross - $deductions;
+    $net = $gross - $deductions;
 
-        PrePayrollAdjustment::create([
-            ...$request->all(),
-            'gross_earnings' => $gross,
-            'total_deductions' => $deductions,
-            'net_payable' => $net,
-            'created_by' => Auth::id()
-        ]);
+    //  PREPARE DATA
+    $data = $request->all();
 
-   return redirect()->route('hr.payroll.pre-payroll.index')
-            ->with('success', 'Created Successfully');
+// FIX NULL VALUES
+$data['fixed_earnings_total'] = $request->fixed_earnings_total ?? 0;
+$data['fixed_deductions_total'] = $request->fixed_deductions_total ?? 0;
+$data['adhoc_earnings'] = $request->adhoc_earnings ?? 0;
+$data['adhoc_deductions'] = $request->adhoc_deductions ?? 0;
+
+    //HANDLE STATUS (based on button)
+    if ($request->action == 'submit') {
+        $data['status'] = 'Submitted';
+        $data['submitted_by'] = Auth::id();
+    } else {
+        $data['status'] = 'Draft';
     }
+
+    // ADD CALCULATED VALUES
+    $data['gross_earnings'] = $gross;
+    $data['total_deductions'] = $deductions;
+    $data['net_payable'] = $net;
+    $data['created_by'] = Auth::id();
+
+    //  SAVE
+    PrePayrollAdjustment::create($data);
+
+    return redirect()->route('hr.pre-payroll.index')
+        ->with('success', 'Created Successfully');
+}
+
+public function approve($id)
+{
+    $record = PrePayrollAdjustment::findOrFail($id);
+
+    $record->status = 'Approved';
+    $record->approved_by = Auth::id();
+    $record->approved_on = now();
+
+    $record->save();
+
+    return redirect()->route('hr.pre-payroll.index')
+        ->with('success', 'Approved Successfully');
+}
 }

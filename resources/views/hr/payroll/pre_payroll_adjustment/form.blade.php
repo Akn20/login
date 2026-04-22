@@ -3,7 +3,7 @@
 
     <div class="card-body">
 
-        {{-- 🔴 ERROR BLOCK --}}
+        {{--  ERROR BLOCK --}}
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -16,7 +16,7 @@
 
         <div class="row">
 
-            {{-- 🔹 Employee --}}
+            {{--  Employee --}}
             <div class="col-md-6 mb-3">
                 <label>Employee *</label>
                 <select name="employee_id" class="form-control">
@@ -30,28 +30,30 @@
                 </select>
             </div>
 
-            {{-- 🔹 Salary Assignment --}}
+            {{--  Salary Assignment --}}
             <div class="col-md-6 mb-3">
                 <label>Salary Assignment *</label>
                 <select name="salary_assignment_id" class="form-control">
                     <option value="">Select</option>
-                    @foreach($assignments as $item)
-                        <option value="{{ $item->id }}"
-                            {{ old('salary_assignment_id', $record->salary_assignment_id ?? '') == $item->id ? 'selected' : '' }}>
-                            {{ $item->id }}
-                        </option>
-                    @endforeach
+                @foreach($assignments as $item)
+    <option value="{{ $item->id }}"
+        {{ old('salary_assignment_id', $record->salary_assignment_id ?? '') == $item->id ? 'selected' : '' }}>
+        
+  {{ $item->salaryStructure->salary_structure_name ?? 'No Name' }}
+        
+    </option>
+@endforeach
                 </select>
             </div>
 
-            {{-- 🔹 Payroll Month --}}
+            {{--  Payroll Month --}}
             <div class="col-md-6 mb-3">
                 <label>Payroll Month *</label>
                 <input type="month" name="payroll_month" class="form-control"
                     value="{{ old('payroll_month', $record->payroll_month ?? '') }}">
             </div>
 
-            {{-- 🔹 Pay Type --}}
+            {{--  Pay Type --}}
             <div class="col-md-6 mb-3">
                 <label>Pay Type *</label>
                 <select name="pay_type" class="form-control">
@@ -108,14 +110,14 @@
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Earnings Total</label>
-                <input type="number" name="fixed_earnings_total" class="form-control"
-                    value="{{ old('fixed_earnings_total', $record->fixed_earnings_total ?? '') }}">
+              <input type="number" name="fixed_earnings_total" class="form-control"
+       value="{{ old('fixed_earnings_total', $record->fixed_earnings_total ?? 0) }}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Deductions Total</label>
-                <input type="number" name="fixed_deductions_total" class="form-control"
-                    value="{{ old('fixed_deductions_total', $record->fixed_deductions_total ?? '') }}">
+            <input type="number" name="fixed_deductions_total" class="form-control"
+       value="{{ old('fixed_deductions_total', $record->fixed_deductions_total ?? 0) }}">
             </div>
 
         </div>
@@ -214,9 +216,13 @@
 {{-- 🔘 ACTION BUTTONS --}}
 <div class="mt-3 d-flex justify-content-end gap-2">
 
-    <button type="submit" class="btn btn-primary btn-sm px-4">
-        <i class="feather-save me-1"></i> Save
-    </button>
+<button type="submit" name="action" value="draft" class="btn btn-secondary btn-sm px-4">
+    Save Draft
+</button>
+
+<button type="submit" name="action" value="submit" class="btn btn-primary btn-sm px-4">
+    Submit
+</button>
 
     <a href="{{ route('hr.pre-payroll.index') }}"
        class="btn btn-light btn-sm px-4">

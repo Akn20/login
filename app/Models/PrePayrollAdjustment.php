@@ -16,14 +16,17 @@ class PrePayrollAdjustment extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected static function boot()
-    {
-        parent::boot();
+protected static function boot()
+{
+    parent::boot();
 
-        static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
-        });
-    }
+    static::creating(function ($model) {
+        $model->id = (string) Str::uuid();
+
+        //  ADD THIS LINE
+        $model->pre_payroll_code = 'PPR_' . rand(1000, 9999);
+    });
+}
 
     // Fillable fields
     protected $fillable = [
@@ -63,4 +66,10 @@ class PrePayrollAdjustment extends Model
         'approved_on',
         'created_by'
     ];
+
+
+    public function employee()
+{
+    return $this->belongsTo(\App\Models\Staff::class, 'employee_id');
+}
 }
