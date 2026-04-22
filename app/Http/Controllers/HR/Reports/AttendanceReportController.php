@@ -10,44 +10,117 @@ use Illuminate\Http\Request;
 class AttendanceReportController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = AttendanceRecord::with(['staff', 'department', 'designation', 'shift']);
+{
+    $query = AttendanceRecord::with([
+        'staff',
+        'department',
+        'designation',
+        'shift'
+    ]);
 
-        // 🔍 Filters
-        if ($request->from_date && $request->to_date) {
-            $query->whereBetween('attendance_date', [$request->from_date, $request->to_date]);
-        }
+    if ($request->from_date && $request->to_date) {
+        $query->whereBetween(
+            'attendance_date',
+            [$request->from_date, $request->to_date]
+        );
+    }
 
-        if ($request->department_id) {
-            $query->where('department_id', $request->department_id);
-        }
+    if ($request->department_id) {
+        $query->where(
+            'department_id',
+            $request->department_id
+        );
+    }
 
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
+    if ($request->status) {
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
 
-        $attendance = $query->latest()->paginate(10);
+    $attendance = $query
+        ->latest()
+        ->paginate(10);
 
-        // 📊 Calculations
-        $totalDays = $attendance->count();
-        $presentDays = $attendance->where('status', 'Present')->count();
-        $absentDays = $attendance->where('status', 'Absent')->count();
+    $departments = Department::all();
 
-        $attendancePercentage = $totalDays > 0
-            ? round(($presentDays / $totalDays) * 100, 2)
-            : 0;
+    // ADD THESE CALCULATIONS
+    $totalDays = $attendance->count();
 
-        $departments = Department::all();
+    $presentDays = $attendance
+        ->where('status', 'Present')
+        ->count();
 
-        return view('admin.hr.reports.attendance', compact(
+    $absentDays = $attendance
+        ->where('status', 'Absent')
+        ->count();
+
+    $attendancePercentage =
+        $totalDays > 0
+        ? round(
+            ($presentDays / $totalDays) * 100,
+            2
+          )
+        : 0;
+
+    return view(
+        'admin.hr.reports.attendance',
+        compact(
             'attendance',
             'departments',
             'totalDays',
             'presentDays',
             'absentDays',
             'attendancePercentage'
-        ));
+        )
+    );
+}public function apiIndex(Request $request)
+{
+    $query = AttendanceRecord::with([
+        'staff',
+        'department',
+        'designation',
+        'shift'
+    ]);
+
+    if ($request->from_date && $request->to_date) {
+        $query->whereBetween(
+            'attendance_date',
+            [$request->from_date, $request->to_date]
+        );
     }
+
+    if ($request->department_id) {
+        $query->where(
+            'department_id',
+            $request->department_id
+        );
+    }
+
+    if ($request->status) {
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+    // Attendance data
+    $attendance = $query
+        ->latest()
+        ->get();
+
+    // ALL departments
+    $departments = Department::select(
+        'id',
+        'department_name'
+    )->get();
+
+    return response()->json([
+        'attendance' => $attendance,
+        'departments' => $departments
+    ]);
+}
     public function store(Request $request)
 {
     // ✅ Validation
