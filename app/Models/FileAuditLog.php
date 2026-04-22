@@ -13,6 +13,8 @@ class FileAuditLog extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'report_id',
+        'sample_id',
         'user_id',
         'file_name',
         'action',

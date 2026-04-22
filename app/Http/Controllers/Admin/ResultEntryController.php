@@ -3,11 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\SampleCollection;
 use App\Models\LabReport;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\TestParameter;
+use App\Models\CriticalValueAlert;
+use App\Models\AlertAuditLog;
+use App\Models\Notification;
+use App\Models\LabRequest;
+
+
 
 class ResultEntryController extends Controller
 {
@@ -88,6 +95,10 @@ class ResultEntryController extends Controller
         // Merge old + new
         $data = array_merge($existingData, $newData);
 
+
+
+
+
         // Handle attachments separately
         if (!empty($files)) {
             $data['attachments'] = $files;
@@ -104,11 +115,74 @@ class ResultEntryController extends Controller
                 'entered_at' => now()
             ]
         );
+        foreach ($newData as $paramName => $value) {
+
+    // Skip non-numeric or attachments
+    if ($paramName == 'attachments' || !is_numeric($value)) continue;
+
+    // Get threshold from DB
+    $paramConfig = TestParameter::where('test_name', $sample->labRequest->test_name)
+        ->whereHas('parameter', function ($q) use ($paramName) {
+            $q->where('name', $paramName);
+        })
+        ->first();
+
+    if ($paramConfig) {
+
+        $min = $paramConfig->parameter->min_value ?? null;
+        $max = $paramConfig->parameter->max_value ?? null;
+
+        if (
+            ($min !== null && $value < $min) ||
+            ($max !== null && $value > $max)
+        ) {
+            $report = LabReport::where('sample_id', $sample->id)->first();
+
+            $consultation = optional($sample->labRequest)->consultation;
+            $doctorStaffId = optional($consultation)->doctor_id;
+            $doctorUserId = optional(optional($consultation)->doctor)->user_id;
+
+            $alert = CriticalValueAlert::create([
+                'report_id' => $report->id,
+                'parameter_name' => $paramName,
+                'value' => $value,
+                'threshold_min' => $min,
+                'threshold_max' => $max,
+                'doctor_id' => $doctorStaffId,
+                'status' => 'Pending'
+            ]);
+
+            if ($doctorUserId) {
+                Notification::create([
+                    'user_id' => $doctorUserId,
+                    'message' => 'Critical value detected for ' . $paramName . ' in sample ' . ($sample->sample_id ?? $sample->id),
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            }
+
+            AlertAuditLog::create([
+                'alert_id' => $alert->id,
+                'user_id' => Auth::id(),
+                'action' => 'CREATED',
+                'timestamp' => now()
+            ]);
+        }
+    }
+}
 
         if ($status == 'Completed') {
-            $sample->status = 'Completed';
-            $sample->save();
-        }
+
+    // Update Sample
+    $sample->status = 'Completed';
+    $sample->save();
+
+    
+    if ($sample->lab_request_id) {
+        LabRequest::where('id', $sample->lab_request_id)
+            ->update(['status' => 'Completed']);
+    }
+}
 
         return back()->with('success', 'Result saved successfully!');
     }
@@ -155,7 +229,6 @@ class ResultEntryController extends Controller
         }
 
         $existingData = optional($sample->labReport)->result_data ?? [];
-
         $data = $request->except(['attachments']);
 
         // merge data safely
@@ -165,7 +238,7 @@ class ResultEntryController extends Controller
             $data['attachments'] = $files;
         }
 
-        LabReport::updateOrCreate(
+        $report = LabReport::updateOrCreate(
             ['sample_id' => $sample->id],
             [
                 'result_data' => $data,
@@ -174,9 +247,66 @@ class ResultEntryController extends Controller
             ]
         );
 
+        foreach ($data as $paramName => $value) {
+            if ($paramName == 'attachments' || !is_numeric($value)) {
+                continue;
+            }
+
+            $paramConfig = TestParameter::where('test_name', $sample->labRequest->test_name)
+                ->whereHas('parameter', function ($q) use ($paramName) {
+                    $q->where('name', $paramName);
+                })
+                ->first();
+
+            if ($paramConfig) {
+                $min = $paramConfig->parameter->min_value ?? null;
+                $max = $paramConfig->parameter->max_value ?? null;
+
+                if (
+                    ($min !== null && $value < $min) ||
+                    ($max !== null && $value > $max)
+                ) {
+                    $consultation = optional($sample->labRequest)->consultation;
+                    $doctorStaffId = optional($consultation)->doctor_id;
+                    $doctorUserId = optional(optional($consultation)->doctor)->user_id;
+
+                    $alert = CriticalValueAlert::create([
+                        'report_id' => $report->id,
+                        'parameter_name' => $paramName,
+                        'value' => $value,
+                        'threshold_min' => $min,
+                        'threshold_max' => $max,
+                        'doctor_id' => $doctorStaffId,
+                        'status' => 'Pending'
+                    ]);
+
+                    if ($doctorUserId) {
+                        Notification::create([
+                            'user_id' => $doctorUserId,
+                            'message' => 'Critical value detected for ' . $paramName . ' in sample ' . ($sample->sample_id ?? $sample->id),
+                            'is_read' => false,
+                            'created_at' => now(),
+                        ]);
+                    }
+
+                    AlertAuditLog::create([
+                        'alert_id' => $alert->id,
+                        'user_id' => Auth::id(),
+                        'action' => 'CREATED',
+                        'timestamp' => now()
+                    ]);
+                }
+            }
+        }
+
         if ($status == 'Completed') {
             $sample->status = 'Completed';
             $sample->save();
+
+            if ($sample->lab_request_id) {
+                LabRequest::where('id', $sample->lab_request_id)
+                    ->update(['status' => 'Completed']);
+            }
         }
 
         return response()->json([

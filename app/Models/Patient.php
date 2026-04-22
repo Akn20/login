@@ -60,4 +60,9 @@ class Patient extends Model
     {
         return $this->hasMany(LabRequest::class);
     }
+
+    public function medicalFlags()
+    {
+        return $this->hasMany(PatientMedicalFlag::class);
+    }
 }

@@ -62,6 +62,14 @@
                             up-target="#main-container"><i class="feather-user-plus me-2"></i>Add Patient</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.patients.duplicates') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-copy me-2"></i>Duplicates</a></li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patients.emergency.list') }}" 
+                        class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-activity me-2"></i>
+                            Emergency Records
+                        </a>
+                    </li>
                 </ul>
             </li>
 
@@ -78,6 +86,9 @@
                             up-target="#main-container"><i class="feather-file-text me-2"></i>OPD List</a></li>
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
+                    </li>
+                    <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
                 </ul>
             </li>
@@ -188,6 +199,17 @@
                         </a>
                     </li>
 
+                    </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
+                                <span class="nxl-mtext">Shift Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>   
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -307,6 +329,16 @@
                 </a>
 
                 <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.laboratory.dashboard.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container">
+                            <i class="feather-list me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="nxl-submenu">
 
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">
@@ -321,13 +353,21 @@
                             Test Parameters
                         </a>
                     </li>
-
+                    
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.test-parameters.create') }}" class="nxl-link">
                             <i class="feather-link me-2"></i>
                             Parameter Mapping
                         </a>
                     </li>
+                    
+                    <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.alerts.index') }} " class="nxl-link">
+                <i class="feather-alert-triangle"></i>
+                Critical Alerts
+            </a>
+        </li>
+        
 
                 </ul>
 

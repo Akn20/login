@@ -18,7 +18,14 @@ class LabReport extends Model
         'sample_id',
         'result_data',
         'status',
-        'entered_at'
+        'entered_at',
+
+        'verification_status',
+        'verified_by',
+        'verified_at',
+        'verification_notes',
+        'digital_signature',
+        'finalized_at',
     ];
 
 
