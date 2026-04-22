@@ -107,8 +107,8 @@ use App\Http\Controllers\Admin\ResultEntryController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController;
 
-//Receptionist
-use App\Http\Controllers\TokenController;
+
+
 // Receptionist
 use Illuminate\Support\Facades\Route;
 
