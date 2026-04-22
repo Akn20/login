@@ -94,4 +94,77 @@ class LabDashboardController extends Controller
             'completionRate'
         ));
     }
+
+    public function apiDashboard()
+    {
+        $pendingTests = LabRequest::where('status', 'pending')->count();
+        $todaySamples = SampleCollection::whereDate('collection_time', Carbon::today())->count();
+        $pendingEntry = LabReport::whereIn('status', ['Draft', 'In Progress'])->count();
+        $pendingApproval = LabReport::where('verification_status', 'Pending')->count();
+        $criticalAlerts = CriticalValueAlert::where('status', 'Pending')->count();
+
+        $completedReports = LabReport::where('status', 'Completed')->count();
+        $totalReports = LabReport::count();
+
+        $pendingReports = max($totalReports - $completedReports, 0);
+        $completionRate = $totalReports > 0
+            ? round(($completedReports / $totalReports) * 100)
+            : 0;
+
+        $maintenanceAlerts = EquipmentMaintenance::where('status', 'Pending')->count();
+
+        $alerts = CriticalValueAlert::with('report.sample.labRequest.patient')->latest()->take(5)->get();
+
+        $pendingTestsList = LabRequest::with('patient')->where('status', 'pending')->latest()->take(5)->get();
+
+        $todaySamplesList = SampleCollection::with('labRequest.patient')
+            ->whereDate('collection_time', Carbon::today())
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $pendingEntryReports = LabReport::with('sample.labRequest.patient')
+            ->whereIn('status', ['Draft', 'In Progress'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $pendingApprovalReports = LabReport::with('sample.labRequest.patient')
+            ->where('verification_status', 'Pending')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $maintenanceAlertsList = EquipmentMaintenance::with('equipment')
+            ->where('status', 'Pending')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'status' => true,
+
+            // 👇 IMPORTANT: USE data (NOT stats)
+            'data' => [
+                'pendingOrders' => $pendingTests,
+                'samplesToday' => $todaySamples,
+                'reportsPendingEntry' => $pendingEntry,
+                'reportsPendingApproval' => $pendingApproval,
+                'criticalAlerts' => $criticalAlerts,
+                'completedTests' => $completedReports,
+                'pendingTests' => $pendingReports,
+                'equipmentAlerts' => $maintenanceAlerts,
+                'completionRate' => $completionRate,
+            ],
+
+            'lists' => [
+                'pendingTests' => $pendingTestsList,
+                'samplesToday' => $todaySamplesList,
+                'pendingEntryReports' => $pendingEntryReports,
+                'pendingApprovalReports' => $pendingApprovalReports,
+                'criticalAlerts' => $alerts,
+                'maintenanceAlerts' => $maintenanceAlertsList,
+            ]
+        ]);
+    }
 }

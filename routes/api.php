@@ -110,6 +110,7 @@ Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 //labaratory
 use App\Http\Controllers\Admin\AlertController;
+use App\Http\Controllers\Admin\LabDashboardController;
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -1331,4 +1332,8 @@ Route::prefix('emergency-reports')->group(function () {
     Route::get('/{caseId}/full', [EmergencyReportApiController::class, 'full']);
 
     Route::get('/{caseId}', [EmergencyReportApiController::class, 'show']);
+});
+
+Route::prefix('lab')->group(function () {
+    Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
 });
