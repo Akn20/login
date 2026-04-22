@@ -12,86 +12,73 @@ use App\Models\RadiologyReport;
 class PatientPortalController extends Controller
 {
     // 🔹 Dashboard
-    public function dashboard()
-    {
-        $patient = Patient::first(); // TODO: replace with auth
+  public function dashboard()
+{
+    // ✅ COUNTS (ALL DATA)
+    $appointmentsCount = Appointment::count();
 
-        $appointments = Appointment::where('patient_id', $patient->id)
-            ->orderBy('appointment_date')
-            ->take(5)
-            ->get();
+    $labReportsCount = LabReport::withoutGlobalScopes()->count();
 
-        // ✅ FIXED: remove soft delete + filter by patient
-        $labReports = LabReport::withoutGlobalScopes()
-            ->whereHas('sample', function ($q) use ($patient) {
-                $q->where('patient_id', $patient->id);
-            })
-            ->latest()
-            ->take(5)
-            ->get();
+    $radiologyCount = RadiologyReport::withoutGlobalScopes()->count();
 
-        // ✅ FIXED: filter radiology by patient
-        $radiologyReports = RadiologyReport::withoutGlobalScopes()
-            ->whereHas('request', function ($q) use ($patient) {
-                $q->where('patient_id', $patient->id);
-            })
-            ->latest()
-            ->take(5)
-            ->get();
+    // ✅ RECENT DATA
+    $appointments = Appointment::with('patient')
+        ->orderBy('appointment_date', 'desc')
+        ->take(5)
+        ->get();
 
-        return view('admin.patient-portal.dashboard', compact(
-            'patient',
-            'appointments',
-            'labReports',
-            'radiologyReports'
-        ));
-    }
+    $labReports = LabReport::withoutGlobalScopes()
+        ->with('sample')
+        ->latest()
+        ->take(5)
+        ->get();
 
+    $radiologyReports = RadiologyReport::withoutGlobalScopes()
+        ->with('request.patient')
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('admin.patient-portal.dashboard', compact(
+        'appointments',
+        'labReports',
+        'radiologyReports',
+        'appointmentsCount',
+        'labReportsCount',
+        'radiologyCount'
+    ));
+}
     // 🔹 Appointments
-    public function appointments()
-    {
-        $patient = Patient::first();
+public function appointments()
+{
+    $appointments = Appointment::with(['patient', 'doctor', 'department'])
+        ->orderBy('appointment_date', 'desc')
+        ->orderBy('appointment_time', 'desc')
+        ->get();
 
-        $appointments = Appointment::where('patient_id', $patient->id)
-            ->latest()
-            ->get();
-
-        return view('admin.patient-portal.appointments', compact('appointments'));
-    }
+    return view('admin.patient-portal.appointments', compact('appointments'));
+}
 
     // 🔹 Lab Reports
     public function labReports()
-    {
-        $patient = Patient::first();
+{
+    $reports = LabReport::withoutGlobalScopes()
+        ->with('sample')
+        ->latest()
+        ->get();
 
-        // ✅ FIXED: remove soft delete + filter by patient
-        $reports = LabReport::withoutGlobalScopes()
-            ->whereHas('sample', function ($q) use ($patient) {
-                $q->where('patient_id', $patient->id);
-            })
-            ->with('sample')
-            ->latest()
-            ->get();
-
-        return view('admin.patient-portal.lab-reports', compact('reports'));
-    }
+    return view('admin.patient-portal.lab-reports', compact('reports'));
+}
 
     // 🔹 Radiology
     public function radiology()
-    {
-        $patient = Patient::first();
+{
+    $reports = RadiologyReport::with('request.patient') // eager load
+        ->latest()
+        ->get();
 
-        // ✅ FIXED: filter by patient
-        $reports = RadiologyReport::withoutGlobalScopes()
-            ->whereHas('request', function ($q) use ($patient) {
-                    $q->where('patient_id', $patient->id);
-                })
-            ->latest()
-            ->get();
-
-        return view('admin.patient-portal.radiology-reports', compact('reports'));
-    }
-
+    return view('admin.patient-portal.radiology-reports', compact('reports'));
+}
     // 🔹 Profile
     public function profile()
     {
