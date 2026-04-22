@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
 use App\Http\Controllers\Admin\Radiology\RadiologyController;
@@ -2001,6 +2002,21 @@ Route::middleware(['auth', 'role:admin'])
             [EmergencyRecordController::class, 'viewEmergency']
         )->name('patients.emergency.view');
 
+
+        Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    Route::get('/', [PatientPortalController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/appointments', [PatientPortalController::class, 'appointments'])->name('appointments');
+
+    Route::get('/lab-reports', [PatientPortalController::class, 'labReports'])->name('lab');
+
+    Route::get('/radiology-reports', [PatientPortalController::class, 'radiology'])->name('radiology');
+
+    Route::get('/profile', [PatientPortalController::class, 'profile'])->name('profile');
+
+    Route::post('/profile/update', [PatientPortalController::class, 'updateProfile'])->name('profile.update');
+});
 
 });
 
