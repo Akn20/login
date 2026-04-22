@@ -310,6 +310,13 @@
                                 <a href="{{ route('admin.nurse-reports.medications') }}" class="nxl-link">Medication Report </a>
                             </li>
                             
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.shift') }}" class="nxl-link">Shift Report</a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.patient-summary') }}" class="nxl-link">Patient Summary</a>
+                            </li>
                         </ul>
                     </li>
                     </ul>

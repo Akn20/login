@@ -1634,9 +1634,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 */
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('nurse-reports')->name('nurse-reports.')->group(function () {
-        Route::get('/', [NurseReportController::class, 'index'])->name('index');
-
         Route::get('/vitals', [NurseReportController::class, 'vitals'])->name('vitals');
         Route::get('/medications', [NurseReportController::class, 'medications'])->name('medications');
+        Route::get('/shift', [NurseReportController::class, 'shiftReport'])->name('shift');
+        Route::get('/patient-summary', [NurseReportController::class, 'patientSummary'])->name('patient-summary');
     });
 });
