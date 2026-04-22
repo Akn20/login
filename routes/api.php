@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\LabTestController;
 use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\IsolationController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 use App\Http\Controllers\Admin\PatientController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 // Admin
 
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
@@ -42,6 +44,9 @@ use App\Http\Controllers\Api\Reports\LeaveReportApiController;
 use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
 use App\Http\Controllers\Api\Reports\PayrollReportApiController;
 use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
+use App\Http\Controllers\BasicBillingController;
+use App\Http\Controllers\InsuranceController;
+use App\Models\Patient;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
@@ -122,11 +127,15 @@ use App\Http\Controllers\Doctor\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | Test / Misc
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
 
+use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\BasicBillingController;
+use App\Models\Patient;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -681,6 +690,8 @@ Route::prefix('prescriptions')->group(function () {
     Route::post('/dispense/{id}', [PrescriptionController::class, 'apiDispense']);
     Route::post('/reject/{id}', [PrescriptionController::class, 'apiReject']);
     Route::get('/bill/{id}', [PrescriptionController::class, 'apiBill']);
+    Route::post('/offline', [PrescriptionController::class, 'apiStoreOffline']);
+    Route::get('/{id}/dispense-data', [PrescriptionController::class, 'apiDispenseData']);
 });
 
 /*
@@ -1415,4 +1426,64 @@ Route::prefix('emergency-reports')->group(function () {
 
 Route::prefix('lab')->group(function () {
     Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
+});
+
+   Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('sales', [PharmacyReportController::class, 'salesApi']);
+    Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
+    Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
+    Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
+    Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
+    Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
+    Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
+    Route::get('grn', [PharmacyReportController::class, 'grnApi']);
+    Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+
+});
+
+//Insurance(Receptionist)
+
+
+
+Route::prefix('insurance')->group(function () {
+
+    Route::get('/', [InsuranceController::class, 'apiIndex']);
+    Route::get('/{id}', [InsuranceController::class, 'apiShow']);
+    Route::post('/', [InsuranceController::class, 'apiStore']);
+    Route::post('/update/{id}', [InsuranceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [InsuranceController::class, 'apiDestroy']);
+
+});
+
+Route::get('/patient-by-name/{name}', function ($name) {
+
+    $patient = Patient::where(
+    DB::raw("CONCAT(first_name, ' ', last_name)"),
+    'like',
+    "%$name%"
+)->first();
+
+    if (!$patient) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Patient not found'
+        ]);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $patient
+    ]);
+});
+
+
+//receptionistbilling
+Route::prefix('billing')->group(function () {
+
+    Route::get('/', [BasicBillingController::class, 'apiIndex']);
+    Route::get('/appointments', [BasicBillingController::class, 'apiAppointments']);
+    Route::post('/store', [BasicBillingController::class, 'apiStore']);
+    Route::get('/{id}', [BasicBillingController::class, 'apiShow']);
+
 });

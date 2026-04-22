@@ -47,6 +47,8 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
+
 // Attendance
 use App\Http\Controllers\Admin\UserController;
 // Doctor
@@ -139,6 +141,8 @@ use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
+use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -604,6 +608,21 @@ Route::middleware(['auth', 'role:admin'])
             Route::post('/approve/{id}', [ExpiryController::class, 'approve'])->name('approve');
             Route::post('/complete/{id}', [ExpiryController::class, 'complete'])->name('complete');
         });
+
+        Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('/sales', [PharmacyReportController::class, 'sales'])->name('reports.sales');
+    Route::get('/medicine', [PharmacyReportController::class, 'medicine'])->name('reports.medicine');
+    Route::get('/batch', [PharmacyReportController::class, 'batch'])->name('reports.batch');
+    Route::get('/expiry', [PharmacyReportController::class, 'expiry'])->name('reports.expiry');
+    Route::get('/low-stock', [PharmacyReportController::class, 'lowStock'])->name('reports.lowstock');
+    Route::get('/controlled-drugs', [PharmacyReportController::class, 'controlled'])->name('reports.controlled');
+    Route::get('/vendor', [PharmacyReportController::class, 'vendor'])->name('reports.vendor');
+    Route::get('/grn', [PharmacyReportController::class, 'grn'])->name('reports.grn');
+    Route::get('/billing', [PharmacyReportController::class, 'billing'])->name('reports.billing');
+
+});
+
 
         /*
         |--------------------------------------------------------------------------
@@ -1888,9 +1907,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
             ->name('billing.print');
-
-
-
     });
 });
 
@@ -2029,3 +2045,34 @@ Route::middleware(['auth', 'role:admin'])
 
 });
 
+
+//insurance (Receptionist)
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('insurance')->name('insurance.')->group(function () {
+
+        Route::get('/', [InsuranceController::class, 'index'])->name('index');
+
+        Route::get('/create', [InsuranceController::class, 'create'])->name('create');
+
+        Route::post('/store', [InsuranceController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [InsuranceController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}', [InsuranceController::class, 'update'])->name('update');
+
+        Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
+
+    });
+
+    Route::prefix('billing')->name('billing.')->group(function () {
+
+        Route::get('/', [BasicBillingController::class, 'index'])->name('index');
+        Route::get('/create', [BasicBillingController::class, 'create'])->name('create');
+        Route::post('/store', [BasicBillingController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
+        Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
+
+    });
+});

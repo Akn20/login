@@ -99,7 +99,7 @@
                     <th class="text-end">Balance (₹)</th>
                     <th>Payment Mode</th>
                     <th>Payment Status</th>
-                    <th>Invoice Status</th>
+                    
                     <th class="text-center" style="width: 200px;">Actions</th>
                 </tr>
             </thead>
@@ -159,11 +159,7 @@
                             </span>
                         </td>
 
-                        <td>
-                            <span class="badge bg-{{ $invoiceBadge }}">
-                                {{ $bill->invoice_status }}
-                            </span>
-                        </td>
+                        
 
                         <td class="text-center action-icons">
 
