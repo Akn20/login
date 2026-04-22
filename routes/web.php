@@ -98,6 +98,9 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 
 use App\Http\Controllers\ReceptionistDashboardController;
 
+//Accountant
+use App\Http\Controllers\AccountantBillingController;
+
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -1648,3 +1651,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
 });
+
+// Accountant Billing
+Route::prefix('admin/accountant/billing')
+    ->name('admin.accountant.billing.')
+    ->group(function () {
+
+        Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+
+        Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+
+        Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+
+        Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
+
+    });
