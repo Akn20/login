@@ -1425,3 +1425,21 @@ Route::prefix('employee-salary-assignment')->group(function () {
     Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'apiUpdate']);
     Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'apiDestroy']);
 });
+/*
+|--------------------------------------------------------------------------
+| 35. Payroll: Pre payroll adjustment
+|--------------------------------------------------------------------------
+*/
+Route::prefix('pre-payroll')->group(function () {
+
+    Route::get('/', [PrePayrollAdjustmentController::class, 'apiIndex']);
+    Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
+
+    Route::get('/{id}', [PrePayrollAdjustmentController::class, 'apiShow']);
+    Route::put('/{id}', [PrePayrollAdjustmentController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDestroy']);
+
+    Route::get('/deleted', [PrePayrollAdjustmentController::class, 'apiDeleted']);
+    Route::post('/restore/{id}', [PrePayrollAdjustmentController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [PrePayrollAdjustmentController::class, 'apiForceDelete']);
+});
