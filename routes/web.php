@@ -113,6 +113,7 @@ use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 //use App\Http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\IPDAdmissionController;
 
 
 use Illuminate\Support\Facades\Route;
@@ -2075,4 +2076,39 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
 
     });
+});
+ 
+
+//IPD
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
+
+        // IPD Admission Routes
+
+        Route::get('ipd', [IPDAdmissionController::class, 'index'])
+            ->name('ipd.index');
+
+        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])
+            ->name('ipd.create');
+
+        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])
+            ->name('ipd.store');
+
+        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])
+            ->name('ipd.view');
+
+        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])
+            ->name('ipd.edit');
+
+        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])
+            ->name('ipd.update');
+
+        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])
+            ->name('ipd.print');
+        
+        Route::get('get-patient/{id}', [IPDAdmissionController::class, 'getPatient']);
+
+    });
+
 });

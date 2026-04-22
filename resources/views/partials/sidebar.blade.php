@@ -43,6 +43,8 @@
                 <ul class="nxl-submenu">
                     <li class="nxl-item"><a href="{{ route('admin.appointments.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-calendar me-2"></i>Appointments</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.receptionist.ipd.index') }}" class="nxl-link" up-follow 
+                    up-target="#main-container"><i class="fas fa-procedures me-2"></i>IPD Admission</a></li>       
                     <li class="nxl-item"><a href="{{ route('admin.tokens.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-list me-2"></i>Token & Queue</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.emergency.create') }}" class="nxl-link" up-follow
