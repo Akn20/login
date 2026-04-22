@@ -144,28 +144,6 @@
                     <span class="nxl-mtext">Pharmacy</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
-<<<<<<< HEAD
-                <ul class="nxl-submenu">
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-truck me-2"></i>Vendors</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-file-text me-2"></i>GRN Entry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.stock.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-box me-2"></i>Stock</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.expiry.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-alert-triangle me-2"></i>Expiry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-lock me-2"></i>Controlled Drug</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-edit-3 me-2"></i>Prescriptions</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link"
-                            up-follow up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
-                </ul>
-=======
                <ul class="nxl-submenu">
 
     <li class="nxl-item">
@@ -270,7 +248,6 @@
     
 
 </ul>
->>>>>>> 74f692a5a2b45cd317ade4a9a68f4edc98b27fdc
             </li>
 
             {{-- ================= Nurse Module ================= --}}
