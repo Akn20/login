@@ -43,7 +43,10 @@
                             $item = $alert->item;
                         @endphp
 
-                        <tr class="{{ $alert->status == 'Pending' ? 'table-danger' : '' }}">
+                       <tr class="
+    {{ $alert->status == 'Pending' ? 'table-danger' : '' }}
+    {{ $alert->status == 'Acknowledged' ? 'table-warning' : '' }}
+">
 
                             <!-- SL NO -->
                             <td>{{ $loop->iteration }}</td>
@@ -62,11 +65,18 @@
 
                             <!-- EXPIRY -->
                             <td>
-                                {{ $item->expiry_date 
-                                    ? \Carbon\Carbon::parse($item->expiry_date)->format('d M Y') 
-                                    : '-' 
-                                }}
-                            </td>
+    @if($item->expiry_date)
+        @if(\Carbon\Carbon::parse($item->expiry_date)->isPast())
+            <span class="text-danger fw-bold">
+                {{ \Carbon\Carbon::parse($item->expiry_date)->format('d M Y') }}
+            </span>
+        @else
+            {{ \Carbon\Carbon::parse($item->expiry_date)->format('d M Y') }}
+        @endif
+    @else
+        -
+    @endif
+</td>
 
                             <!-- ALERT TYPE -->
                             <td>
@@ -81,26 +91,46 @@
 
                             <!-- STATUS -->
                             <td>
-                                @if($alert->status == 'Pending')
-                                    <span class="badge bg-danger">Pending</span>
-                                @else
-                                    <span class="badge bg-success">Resolved</span>
-                                @endif
-                            </td>
+    @if($alert->status == 'Pending')
+        <span class="badge bg-danger">Pending</span>
+    @elseif($alert->status == 'Acknowledged')
+        <span class="badge bg-warning text-dark">Acknowledged</span>
+    @elseif($alert->status == 'Resolved')
+        <span class="badge bg-success">Resolved</span>
+    @endif
+</td>
 
                             <!-- ACTION -->
                             <td>
-                                @if($alert->status == 'Pending')
-                                    <form action="{{ route('admin.laboratory.inventory.alerts.resolve', $alert->id) }}" method="POST">
-                                        @csrf
-                                        <button class="btn btn-sm btn-success">
-                                            RESOLVE
-                                        </button>
-                                    </form>
-                                @else
-                                    <span class="text-success fw-bold">Resolved</span>
-                                @endif
-                            </td>
+    @if($alert->status == 'Pending')
+
+        <form action="{{ route('admin.laboratory.inventory.alerts.acknowledge', $alert->id) }}" method="POST" style="display:inline;">
+            @csrf
+            <button class="btn btn-sm btn-warning">
+                ACK
+            </button>
+        </form>
+
+        <form action="{{ route('admin.laboratory.inventory.alerts.resolve', $alert->id) }}" method="POST" style="display:inline;">
+            @csrf
+            <button class="btn btn-sm btn-success">
+                RESOLVE
+            </button>
+        </form>
+
+    @elseif($alert->status == 'Acknowledged')
+
+        <form action="{{ route('admin.laboratory.inventory.alerts.resolve', $alert->id) }}" method="POST">
+            @csrf
+            <button class="btn btn-sm btn-success">
+                RESOLVE
+            </button>
+        </form>
+
+    @else
+        <span class="text-success fw-bold">Resolved</span>
+    @endif
+</td>
 
                         </tr>
 

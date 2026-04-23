@@ -1331,7 +1331,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [InventoryController::class, 'index'])
             ->name('dashboard');
 
-        // ✅ ITEMS (THIS WAS MISSING)
         Route::resource('items', InventoryItemController::class);
 
         // Usage Logs
@@ -1343,7 +1342,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('alerts.index');
 
         Route::post('alerts/{id}/acknowledge', [InventoryAlertController::class, 'acknowledge'])
-            ->name('alerts.ack');
+            ->name('alerts.acknowledge');
 
         Route::post('alerts/{id}/resolve', [InventoryAlertController::class, 'resolve'])
             ->name('alerts.resolve');

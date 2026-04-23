@@ -66,15 +66,26 @@
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->quantity }}</td>
                             <td>{{ $item->threshold }}</td>
-                            <td>{{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('Y-m-d') : '-' }}</td>
+                            <td>{{ $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date)->format('d M Y') : '-' }}</td>
 
                             <td>
-                                @if($item->quantity < $item->threshold)
-                                    <span class="badge bg-danger">Low</span>
-                                @else
-                                    <span class="badge bg-success">OK</span>
-                                @endif
-                            </td>
+                            {{-- LOW STOCK --}}
+                            @if($item->threshold !== null && $item->quantity < $item->threshold)
+                                <span class="badge bg-danger">Low Stock</span>
+
+                            {{-- EXPIRED --}}
+                            @elseif($item->expiry_date && \Carbon\Carbon::parse($item->expiry_date)->isPast())
+                                <span class="badge bg-danger">Expired</span>
+
+                            {{-- NEAR EXPIRY --}}
+                            @elseif($item->expiry_date && now()->diffInDays($item->expiry_date) <= 7)
+                                <span class="badge bg-warning text-dark">Near Expiry</span>
+
+                            {{-- SAFE --}}
+                            @else
+                                <span class="badge bg-success">OK</span>
+                            @endif
+                        </td>
 
                             <td class="text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
@@ -109,6 +120,13 @@
                                     </td>
                         </tr>
                         @endforeach
+                        @if($items->isEmpty())
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="feather-box me-2"></i> No inventory items found
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                     </table>
                 </div>

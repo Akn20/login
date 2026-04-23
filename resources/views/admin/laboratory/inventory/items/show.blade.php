@@ -57,7 +57,7 @@
             <div class="col-md-6">
                 <label class="form-label text-muted">Status</label>
                 <br>
-                @if($item->quantity <= $item->threshold)
+                @if($item->threshold !== null && $item->quantity <= $item->threshold)
                     <span class="badge bg-danger">Low Stock</span>
                 @else
                     <span class="badge bg-success">In Stock</span>

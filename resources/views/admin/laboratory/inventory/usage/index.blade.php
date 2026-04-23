@@ -7,24 +7,56 @@
 <div class="card">
     <div class="card-body">
 
-        <table class="table">
-            <tr>
-                <th>Item</th>
-                <th>Quantity Used</th>
-                <th>Used By</th>
-                <th>Date</th>
-            </tr>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
 
-            @foreach($logs as $log)
-            <tr>
-                <td>{{ $log->item->name }}</td>
-                <td>{{ $log->quantity_used }}</td>
-                <td>{{ $log->used_by }}</td>
-                <td>{{ $log->created_at }}</td>
-            </tr>
-            @endforeach
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Quantity Used</th>
+                        <th>Used By</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
 
-        </table>
+                <tbody>
+                    @forelse($logs as $log)
+                        <tr>
+
+                            <!-- SL NO -->
+                            <td>{{ $loop->iteration }}</td>
+
+                            <!-- ITEM -->
+                            <td>{{ optional($log->item)->name ?? 'N/A' }}</td>
+
+                            <!-- QUANTITY -->
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ $log->quantity_used }}
+                                </span>
+                            </td>
+
+                            <!-- USER -->
+                           <td>{{ optional($log->user)->name ?? 'N/A' }}</td>
+
+                            <!-- DATE -->
+                            <td>
+                                {{ $log->used_at ? \Carbon\Carbon::parse($log->used_at)->format('d M Y, h:i A') : 'N/A' }}
+                            </td>
+
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-muted">
+                                No usage logs found
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+
+            </table>
+        </div>
 
     </div>
 </div>

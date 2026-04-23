@@ -14,22 +14,44 @@
                 <th>Status</th>
             </tr>
 
-            @foreach($items as $item)
-            <tr>
-                <td>{{ $item->name }}</td>
-                <td>{{ $item->expiry_date }}</td>
+          @forelse($items as $item)
 
-                <td>
-                    @if($item->expiry_date && now()->gt($item->expiry_date))
-                        <span class="badge bg-danger">Expired</span>
-                    @elseif($item->expiry_date && now()->diffInDays($item->expiry_date) <= 7)
-                        <span class="badge bg-warning">Near Expiry</span>
-                    @else
-                        <span class="badge bg-success">Safe</span>
-                    @endif
-                </td>
-            </tr>
-            @endforeach
+@php
+    $expiry = $item->expiry_date ? \Carbon\Carbon::parse($item->expiry_date) : null;
+@endphp
+
+<tr class="{{ $expiry && $expiry->isPast() ? 'table-danger' : '' }}">
+    
+    <td>{{ $item->name }}</td>
+
+    <td>
+        {{ $expiry ? $expiry->format('d M Y') : '-' }}
+    </td>
+
+    <td>
+        @if($expiry && $expiry->isPast())
+            <span class="badge bg-danger">Expired</span>
+
+        @elseif($expiry && now()->lte($expiry) && now()->diffInDays($expiry) <= 7)
+            <span class="badge bg-warning text-dark">Near Expiry</span>
+
+        @elseif($expiry)
+            <span class="badge bg-success">Safe</span>
+
+        @else
+            <span class="badge bg-secondary">No Expiry</span>
+        @endif
+    </td>
+
+</tr>
+
+@empty
+<tr>
+    <td colspan="3" class="text-center text-muted">
+        No expiry data found
+    </td>
+</tr>
+@endforelse
 
         </table>
 
