@@ -121,6 +121,11 @@ use App\Http\Controllers\Admin\ParameterController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\AlertController;
+use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\InventoryItemController;
+use App\Http\Controllers\Admin\InventoryUsageController;
+use App\Http\Controllers\Admin\InventoryAlertController;
+use App\Http\Controllers\Admin\InventoryExpiryController;
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -1172,7 +1177,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
-        
 
         Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
 
@@ -1305,8 +1309,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('report.finalize');
 
             
-Route::get('dashboard', [LabDashboardController::class, 'index'])
-    ->name('dashboard.index');
+        Route::get('dashboard', [LabDashboardController::class, 'index'])
+            ->name('dashboard.index');
 
         Route::prefix('alerts')->group(function () {
 
@@ -1317,9 +1321,40 @@ Route::get('dashboard', [LabDashboardController::class, 'index'])
                 ->name('alerts.ack');
 
         }); 
+
+        Route::prefix('inventory') ->name('inventory.')->group(function () {
+
+        // Dashboard
+        Route::get('/', [InventoryController::class, 'index'])
+            ->name('dashboard');
+
+        // ✅ ITEMS (THIS WAS MISSING)
+        Route::resource('items', InventoryItemController::class);
+
+        // Usage Logs
+        Route::get('usage', [InventoryUsageController::class, 'index'])
+            ->name('usage.index');
+
+        // Alerts
+        Route::get('alerts', [InventoryAlertController::class, 'index'])
+            ->name('alerts.index');
+
+        Route::post('alerts/{id}/acknowledge', [InventoryAlertController::class, 'acknowledge'])
+            ->name('alerts.ack');
+
+        Route::post('alerts/{id}/resolve', [InventoryAlertController::class, 'resolve'])
+            ->name('alerts.resolve');
+
+        // Expiry
+        Route::get('expiry', [InventoryExpiryController::class, 'index'])
+            ->name('expiry.index');
+    
+        });
     });
 
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
