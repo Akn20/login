@@ -75,8 +75,7 @@
                             @endif
                         </td>
                         
-                        <td class="text-end">
-                            <td class="text-end">
+     <td class="text-end">
 
     {{-- EDIT BUTTON --}}
     @if($item->status != 'Approved')
@@ -98,20 +97,10 @@
         </form>
     @endif
 
-</td>
-@if($item->status != 'Approved')
-
-    <form action="{{ route('hr.pre-payroll.approve', $item->id) }}" method="POST">
-        @csrf
-        <button class="btn btn-success btn-sm"
-            onclick="return confirm('Approve this record?')">
-            Approve
-        </button>
-    </form>
-
-@else
-    <span class="text-success">✔ Approved</span>
-@endif
+    {{-- APPROVED LABEL --}}
+    @if($item->status == 'Approved')
+        <span class="text-success">✔ Approved</span>
+    @endif
 
 </td>
                     </tr>
