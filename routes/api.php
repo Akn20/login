@@ -110,6 +110,7 @@ Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 //labaratory
 use App\Http\Controllers\Admin\AlertController;
+use App\Http\Controllers\Admin\LabDashboardController;
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -122,6 +123,9 @@ use App\Http\Controllers\Doctor\NotificationController;
 |--------------------------------------------------------------------------
 | Test / Misc
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
 
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
@@ -467,7 +471,7 @@ Route::prefix('hr')->group(function () {
 
     // Staff Management
     Route::get('/staff', [StaffManagementController::class, 'apiIndex']);
-    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftindex']);
+    Route::get('/shifts', [ShiftSchedulingAPIController::class, 'shiftIndex']);
     Route::get('/surgeons', [StaffManagementController::class, 'getSurgeons']);
     Route::get('/assistant-doctors', [StaffManagementController::class, 'getAssistantDoctors']);
     Route::get('/anesthetists', [StaffManagementController::class, 'getAnesthetists']);
@@ -478,6 +482,15 @@ Route::prefix('hr')->group(function () {
     Route::post('/staff/{id}/restore', [StaffManagementController::class, 'apiRestore']);
     Route::delete('/staff/{id}/force-delete', [StaffManagementController::class, 'apiForceDelete']);
     Route::get('/doctors', [StaffManagementController::class, 'apiDoctors']);
+
+    // Shift Assignments
+    Route::get('/shift-assignments', [ShiftSchedulingAPIController::class, 'assignmentIndex']);
+    Route::get('/shift-assignments/{id}', [ShiftSchedulingAPIController::class, 'assignmentShow']);
+    Route::post('/shift-assignments', [ShiftSchedulingAPIController::class, 'assignmentStore']);
+    Route::delete('/shift-assignments/{id}', [ShiftSchedulingAPIController::class, 'assignmentDelete']);
+    Route::get('/shift-assignments/deleted', [ShiftSchedulingAPIController::class, 'deletedAssignments']);
+    Route::post('/shift-assignments/{id}/restore', [ShiftSchedulingAPIController::class, 'restoreAssignment']);
+    Route::delete('/shift-assignments/{id}/force-delete', [ShiftSchedulingAPIController::class, 'forceDeleteAssignment']);
 
     // Employee list
     Route::get('/employee', [EmployeeController::class, 'index']);
@@ -991,6 +1004,38 @@ Route::prefix('vitals')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| 23. Nurse: PPE Compliance
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('ppe-compliance')->group(function () {
+    Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
+    Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
+    Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
+    Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
+    Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| 24. Nurse: Medication Administration
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('medication-administration')->group(function () {
+    Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
+    Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
+    Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
+    Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
+    Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
+    Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
+});
+/*
+|--------------------------------------------------------------------------
+
 | 24. Nursing Notes
 |--------------------------------------------------------------------------
 */
@@ -1051,6 +1096,41 @@ Route::prefix('pharmacy')->group(function () {
 
 });
 
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
+
+    Route::get('/', [NurseShiftsController::class, 'apiIndex']);
+    Route::get('/{id}', [NurseShiftsController::class, 'apiShow']);
+    Route::post('/store', [NurseShiftsController::class, 'apiStore']);
+    Route::post('/{id}/complete', [NurseShiftsController::class, 'apiMarkComplete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Shift Handover Notes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shift-handover')->group(function () {
+
+    // Get handover notes by assignment
+    Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
+    
+    // Create handover note
+    Route::post('/', [NurseShiftsController::class, 'apiStore']);
+    
+    // Update handover note
+    Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
+    
+    // Delete handover note
+    Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
+    
+    // Update handover status
+    Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
+});
 Route::prefix('edm')->group(function () {
 
     // ✅ FIRST: LIST (no params)
@@ -1331,4 +1411,8 @@ Route::prefix('emergency-reports')->group(function () {
     Route::get('/{caseId}/full', [EmergencyReportApiController::class, 'full']);
 
     Route::get('/{caseId}', [EmergencyReportApiController::class, 'show']);
+});
+
+Route::prefix('lab')->group(function () {
+    Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
 });
