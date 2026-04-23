@@ -1693,6 +1693,12 @@ Route::prefix('pre-payroll')->group(function () {
         ->name('pre-payroll.store');
         Route::post('/approve/{id}', [PrePayrollAdjustmentController::class, 'approve'])
     ->name('pre-payroll.approve');
+    Route::get('pre-payroll/{id}/edit', 
+    [PrePayrollAdjustmentController::class, 'edit']
+)->name('pre-payroll.edit');
+Route::put('pre-payroll/{id}', 
+    [PrePayrollAdjustmentController::class, 'update']
+)->name('pre-payroll.update');
 });
 
 });
