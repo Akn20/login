@@ -110,13 +110,13 @@
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Earnings Total</label>
-              <input type="number" name="fixed_earnings_total" class="form-control"
+              <input type="number" name="fixed_earnings_total" id="fixed_earnings_total" class="form-control"
        value="{{ old('fixed_earnings_total', $record->fixed_earnings_total ?? 0) }}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Deductions Total</label>
-            <input type="number" name="fixed_deductions_total" class="form-control"
+            <input type="number" name="fixed_deductions_total" id="fixed_deductions_total" class="form-control"
        value="{{ old('fixed_deductions_total', $record->fixed_deductions_total ?? 0) }}">
             </div>
 
@@ -162,7 +162,7 @@
 
             <div class="col-md-6 mb-3">
                 <label>Adhoc Earnings</label>
-                <input type="number" name="adhoc_earnings" class="form-control"
+                <input type="number" name="adhoc_earnings" class="form-control" id="adhoc_earnings"
                     value="{{ old('adhoc_earnings', $record->adhoc_earnings ?? '') }}">
             </div>
 
@@ -173,7 +173,7 @@
 
             <div class="col-md-6 mb-3">
                 <label>Adhoc Deductions</label>
-                <input type="number" name="adhoc_deductions" class="form-control"
+                <input type="number" name="adhoc_deductions" class="form-control" id="adhoc_deductions"
                     value="{{ old('adhoc_deductions', $record->adhoc_deductions ?? '') }}">
             </div>
 
@@ -185,7 +185,28 @@
         </div>
 
         <hr>
+<hr>
 
+<h6>Preview Calculation</h6>
+
+<div class="row">
+
+    <div class="col-md-4 mb-3">
+        <label>Gross Earnings</label>
+        <input type="text" id="gross_earnings" class="form-control" readonly>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <label>Total Deductions</label>
+        <input type="text" id="total_deductions" class="form-control" readonly>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <label>Net Payable</label>
+        <input type="text" id="net_payable" class="form-control" readonly>
+    </div>
+
+</div>
         <h6>Status</h6>
 
         <div class="row">
@@ -213,7 +234,7 @@
     </div>
 </div>
 
-{{-- 🔘 ACTION BUTTONS --}}
+{{--  ACTION BUTTONS --}}
 <div class="mt-3 d-flex justify-content-end gap-2">
 
 <button type="submit" name="action" value="draft" class="btn btn-secondary btn-sm px-4">
@@ -228,5 +249,28 @@
        class="btn btn-light btn-sm px-4">
         Cancel
     </a>
+<script>
+function calculatePayroll() {
 
+    let fixedEarnings = parseFloat(document.getElementById('fixed_earnings_total').value) || 0;
+    let adhocEarnings = parseFloat(document.getElementById('adhoc_earnings').value) || 0;
+
+    let fixedDeductions = parseFloat(document.getElementById('fixed_deductions_total').value) || 0;
+    let adhocDeductions = parseFloat(document.getElementById('adhoc_deductions').value) || 0;
+
+    let gross = fixedEarnings + adhocEarnings;
+    let deductions = fixedDeductions + adhocDeductions;
+    let net = gross - deductions;
+
+    document.getElementById('gross_earnings').value = gross.toFixed(2);
+    document.getElementById('total_deductions').value = deductions.toFixed(2);
+    document.getElementById('net_payable').value = net.toFixed(2);
+}
+
+// Trigger calculation on input
+document.querySelectorAll('#fixed_earnings_total, #adhoc_earnings, #fixed_deductions_total, #adhoc_deductions')
+    .forEach(input => {
+        input.addEventListener('input', calculatePayroll);
+    });
+</script>
 </div>

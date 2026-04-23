@@ -76,6 +76,29 @@
                         </td>
                         
                         <td class="text-end">
+                            <td class="text-end">
+
+    {{-- EDIT BUTTON --}}
+    @if($item->status != 'Approved')
+        <a href="{{ route('hr.pre-payroll.edit', $item->id) }}" 
+           class="btn btn-primary btn-sm">
+            Edit
+        </a>
+    @endif
+
+    {{-- APPROVE BUTTON --}}
+    @if($item->status == 'Submitted')
+        <form action="{{ route('hr.pre-payroll.approve', $item->id) }}" 
+              method="POST" 
+              style="display:inline;">
+            @csrf
+            <button class="btn btn-success btn-sm">
+                Approve
+            </button>
+        </form>
+    @endif
+
+</td>
 @if($item->status != 'Approved')
 
     <form action="{{ route('hr.pre-payroll.approve', $item->id) }}" method="POST">

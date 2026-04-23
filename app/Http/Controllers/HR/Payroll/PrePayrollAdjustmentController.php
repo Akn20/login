@@ -87,6 +87,31 @@ $data['adhoc_deductions'] = $request->adhoc_deductions ?? 0;
         ->with('success', 'Created Successfully');
 }
 
+public function edit($id)
+{
+    $record = PrePayrollAdjustment::findOrFail($id);
+
+    $employees = Staff::pluck('name', 'id');
+    $assignments = EmployeeSalaryAssignment::with('salaryStructure')->get();
+
+    return view('hr.payroll.pre_payroll_adjustment.edit', compact(
+        'record', 'employees', 'assignments'
+    ));
+}
+public function update(Request $request, $id)
+{
+    $record = PrePayrollAdjustment::findOrFail($id);
+
+    // 🚫 LOCK AFTER APPROVAL
+    if ($record->status == 'Approved') {
+        abort(403, 'Already Approved');
+    }
+
+    $record->update($request->all());
+
+    return redirect()->route('hr.pre-payroll.index')
+        ->with('success', 'Updated Successfully');
+}
 public function approve($id)
 {
     $record = PrePayrollAdjustment::findOrFail($id);
