@@ -36,19 +36,21 @@
 
                 <thead>
                     <tr>
+                        <th>Code</th>
                         <th>Employee</th>
                         <th>Payroll Month</th>
                         <th>Working Days</th>
                         <th>Days Paid</th>
                         <th>Net Pay</th>
                         <th>Status</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     @forelse($records as $item)
                     <tr>
-
+                        <td>{{ $item->pre_payroll_code }}</td>
                         <td>
                             <span class="badge bg-soft-primary text-primary">
                                 {{ optional($item->employee)->name }}
@@ -72,11 +74,27 @@
                                 <span class="badge bg-soft-warning text-warning">Draft</span>
                             @endif
                         </td>
+                        
+                        <td class="text-end">
+@if($item->status != 'Approved')
 
+    <form action="{{ route('hr.pre-payroll.approve', $item->id) }}" method="POST">
+        @csrf
+        <button class="btn btn-success btn-sm"
+            onclick="return confirm('Approve this record?')">
+            Approve
+        </button>
+    </form>
+
+@else
+    <span class="text-success">✔ Approved</span>
+@endif
+
+</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted">
+                        <td colspan="8" class="text-center text-muted">
                             No records found
                         </td>
                     </tr>

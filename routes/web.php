@@ -1691,6 +1691,8 @@ Route::prefix('pre-payroll')->group(function () {
 
     Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
         ->name('pre-payroll.store');
+        Route::post('/approve/{id}', [PrePayrollAdjustmentController::class, 'approve'])
+    ->name('pre-payroll.approve');
 });
 
 });
