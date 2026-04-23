@@ -64,6 +64,7 @@ use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
+use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -1433,13 +1434,14 @@ Route::prefix('employee-salary-assignment')->group(function () {
 Route::prefix('pre-payroll')->group(function () {
 
     Route::get('/', [PrePayrollAdjustmentController::class, 'apiIndex']);
-    Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
+    Route::get('/form-data', [PrePayrollAdjustmentController::class, 'formData']);
+    Route::get('/deleted', [PrePayrollAdjustmentController::class, 'apiDeleted']);
 
     Route::get('/{id}', [PrePayrollAdjustmentController::class, 'apiShow']);
+    Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
     Route::put('/{id}', [PrePayrollAdjustmentController::class, 'apiUpdate']);
-    Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDestroy']);
+    Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDelete']);
 
-    Route::get('/deleted', [PrePayrollAdjustmentController::class, 'apiDeleted']);
-    Route::post('/restore/{id}', [PrePayrollAdjustmentController::class, 'apiRestore']);
-    Route::delete('/force-delete/{id}', [PrePayrollAdjustmentController::class, 'apiForceDelete']);
+    Route::post('/restore/{id}', [PrePayrollAdjustmentController::class, 'restore']);
+    Route::delete('/force-delete/{id}', [PrePayrollAdjustmentController::class, 'forceDelete']);
 });
