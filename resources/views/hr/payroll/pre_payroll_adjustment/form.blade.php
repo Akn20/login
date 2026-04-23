@@ -1,6 +1,9 @@
+@php
+    $isReadonly = isset($record) && $record->status == 'Approved';
+@endphp
+
 <div class="card mb-3">
     <div class="card-header">Pre Payroll Adjustment</div>
-
     <div class="card-body">
 
         {{--  ERROR BLOCK --}}
@@ -19,7 +22,7 @@
             {{--  Employee --}}
             <div class="col-md-6 mb-3">
                 <label>Employee *</label>
-                <select name="employee_id" class="form-control">
+              <select name="employee_id" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>
                     <option value="">Select</option>
                     @foreach($employees as $id => $name)
                         <option value="{{ $id }}"
@@ -33,7 +36,7 @@
             {{--  Salary Assignment --}}
             <div class="col-md-6 mb-3">
                 <label>Salary Assignment *</label>
-                <select name="salary_assignment_id" class="form-control">
+<select name="salary_assignment_id" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>
                     <option value="">Select</option>
                 @foreach($assignments as $item)
     <option value="{{ $item->id }}"
@@ -49,14 +52,14 @@
             {{--  Payroll Month --}}
             <div class="col-md-6 mb-3">
                 <label>Payroll Month *</label>
-                <input type="month" name="payroll_month" class="form-control"
+                <input type="month" name="payroll_month" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('payroll_month', $record->payroll_month ?? '') }}">
             </div>
 
             {{--  Pay Type --}}
             <div class="col-md-6 mb-3">
                 <label>Pay Type *</label>
-                <select name="pay_type" class="form-control">
+                <select name="pay_type" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>
                     <option value="Monthly"
                         {{ old('pay_type', $record->pay_type ?? '') == 'Monthly' ? 'selected' : '' }}>
                         Monthly
@@ -78,25 +81,25 @@
 
             <div class="col-md-3 mb-3">
                 <label>Working Days *</label>
-                <input type="number" name="working_days" class="form-control"
+                <input type="number" name="working_days" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('working_days', $record->working_days ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>Days Paid *</label>
-                <input type="number" name="days_paid" class="form-control"
+                <input type="number" name="days_paid" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('days_paid', $record->days_paid ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>LOP Days</label>
-                <input type="number" step="0.01" name="lop_days" class="form-control"
+                <input type="number" step="0.01" name="lop_days" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('lop_days', $record->lop_days ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>OT Hours</label>
-                <input type="number" step="0.01" name="ot_hours" class="form-control"
+                <input type="number" step="0.01" name="ot_hours" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('ot_hours', $record->ot_hours ?? '') }}">
             </div>
 
@@ -110,13 +113,13 @@
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Earnings Total</label>
-              <input type="number" name="fixed_earnings_total" id="fixed_earnings_total" class="form-control"
+              <input type="number" name="fixed_earnings_total" id="fixed_earnings_total" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
        value="{{ old('fixed_earnings_total', $record->fixed_earnings_total ?? 0) }}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Fixed Deductions Total</label>
-            <input type="number" name="fixed_deductions_total" id="fixed_deductions_total" class="form-control"
+            <input type="number" name="fixed_deductions_total" id="fixed_deductions_total" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
        value="{{ old('fixed_deductions_total', $record->fixed_deductions_total ?? 0) }}">
             </div>
 
@@ -130,25 +133,25 @@
 
             <div class="col-md-3 mb-3">
                 <label>PF Employee</label>
-                <input type="number" name="pf_employee" class="form-control"
+                <input type="number" name="pf_employee" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('pf_employee', $record->pf_employee ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>ESI Employee</label>
-                <input type="number" name="esi_employee" class="form-control"
+                <input type="number" name="esi_employee" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('esi_employee', $record->esi_employee ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>Professional Tax</label>
-                <input type="number" name="professional_tax" class="form-control"
+                <input type="number" name="professional_tax" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('professional_tax', $record->professional_tax ?? '') }}">
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>TDS Amount</label>
-                <input type="number" name="tds_amount" class="form-control"
+                <input type="number" name="tds_amount" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('tds_amount', $record->tds_amount ?? '') }}">
             </div>
 
@@ -162,24 +165,24 @@
 
             <div class="col-md-6 mb-3">
                 <label>Adhoc Earnings</label>
-                <input type="number" name="adhoc_earnings" class="form-control" id="adhoc_earnings"
+                <input type="number" name="adhoc_earnings" class="form-control" id="adhoc_earnings" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('adhoc_earnings', $record->adhoc_earnings ?? '') }}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Earnings Remarks</label>
-                <textarea name="earnings_remarks" class="form-control">{{ old('earnings_remarks', $record->earnings_remarks ?? '') }}</textarea>
+                <textarea name="earnings_remarks" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>{{ old('earnings_remarks', $record->earnings_remarks ?? '') }}</textarea>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Adhoc Deductions</label>
-                <input type="number" name="adhoc_deductions" class="form-control" id="adhoc_deductions"
+                <input type="number" name="adhoc_deductions" class="form-control" id="adhoc_deductions" {{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('adhoc_deductions', $record->adhoc_deductions ?? '') }}">
             </div>
 
             <div class="col-md-6 mb-3">
                 <label>Deduction Remarks</label>
-                <textarea name="deduction_remarks" class="form-control">{{ old('deduction_remarks', $record->deduction_remarks ?? '') }}</textarea>
+                <textarea name="deduction_remarks" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>{{ old('deduction_remarks', $record->deduction_remarks ?? '') }}</textarea>
             </div>
 
         </div>
@@ -207,48 +210,34 @@
     </div>
 
 </div>
-        <h6>Status</h6>
 
-        <div class="row">
+        
 
-            <div class="col-md-4 mb-3">
-                <label>Status *</label>
-                <select name="status" class="form-control">
-                    <option value="Draft"
-                        {{ old('status', $record->status ?? '') == 'Draft' ? 'selected' : '' }}>
-                        Draft
-                    </option>
-                    <option value="Submitted"
-                        {{ old('status', $record->status ?? '') == 'Submitted' ? 'selected' : '' }}>
-                        Submitted
-                    </option>
-                    <option value="Approved"
-                        {{ old('status', $record->status ?? '') == 'Approved' ? 'selected' : '' }}>
-                        Approved
-                    </option>
-                </select>
-            </div>
+    
+</div> {{-- CLOSE card-body --}}
+</div> {{-- CLOSE card --}}
 
-        </div>
-
-    </div>
-</div>
-
-{{--  ACTION BUTTONS --}}
+{{-- ACTION BUTTONS --}}
 <div class="mt-3 d-flex justify-content-end gap-2">
 
-<button type="submit" name="action" value="draft" class="btn btn-secondary btn-sm px-4">
-    Save Draft
-</button>
+@if(!$isReadonly)
+    <button type="submit" name="action" value="draft" class="btn btn-secondary btn-sm px-4">
+        Save Draft
+    </button>
 
-<button type="submit" name="action" value="submit" class="btn btn-primary btn-sm px-4">
-    Submit
-</button>
+    <button type="submit" name="action" value="submit" class="btn btn-primary btn-sm px-4">
+        Submit
+    </button>
+@endif
 
-    <a href="{{ route('hr.pre-payroll.index') }}"
-       class="btn btn-light btn-sm px-4">
-        Cancel
-    </a>
+<a href="{{ route('hr.pre-payroll.index') }}"
+   class="btn btn-light btn-sm px-4">
+    Cancel
+</a>
+
+</div>
+
+{{-- SCRIPT SHOULD BE OUTSIDE BUTTON DIV --}}
 <script>
 function calculatePayroll() {
 
@@ -267,10 +256,11 @@ function calculatePayroll() {
     document.getElementById('net_payable').value = net.toFixed(2);
 }
 
-// Trigger calculation on input
 document.querySelectorAll('#fixed_earnings_total, #adhoc_earnings, #fixed_deductions_total, #adhoc_deductions')
     .forEach(input => {
         input.addEventListener('input', calculatePayroll);
     });
+
+// RUN ON PAGE LOAD
+window.onload = calculatePayroll;
 </script>
-</div>

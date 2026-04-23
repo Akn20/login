@@ -75,15 +75,16 @@
                             @endif
                         </td>
                         
-     <td class="text-end">
+   <td class="text-end d-flex justify-content-end gap-2">
 
-    {{-- EDIT BUTTON --}}
-    @if($item->status != 'Approved')
-        <a href="{{ route('hr.pre-payroll.edit', $item->id) }}" 
-           class="btn btn-primary btn-sm">
-            Edit
-        </a>
-    @endif
+ {{-- EDIT ICON --}}
+@if($item->status != 'Approved')
+    <a href="{{ route('hr.pre-payroll.edit', $item->id) }}" 
+       class="btn btn-sm btn-light border"
+       title="Edit">
+        <i class="feather-edit text-primary"></i>
+    </a>
+@endif
 
     {{-- APPROVE BUTTON --}}
     @if($item->status == 'Submitted')
@@ -91,9 +92,9 @@
               method="POST" 
               style="display:inline;">
             @csrf
-            <button class="btn btn-success btn-sm">
-                Approve
-            </button>
+            <button class="btn btn-sm btn-light border" title="Approve">
+    <i class="feather-check text-success"></i>
+</button>
         </form>
     @endif
 
