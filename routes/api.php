@@ -1370,3 +1370,25 @@ Route::prefix('statutory-deduction')->group(function () {
     Route::post('/restore/{id}', [StatutoryDeductionController::class, 'apiRestore']);
     Route::delete('/force-delete/{id}', [StatutoryDeductionController::class, 'apiForceDelete']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| 34. Payroll: Salary Structure
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('salary-structure')->group(function () {
+
+    Route::get('/', [SalaryStructureController::class, 'apiIndex']);
+    Route::post('/', [SalaryStructureController::class, 'apiStore']);
+
+    Route::get('/deleted', [SalaryStructureController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [SalaryStructureController::class, 'apiShow']);
+    Route::put('/{id}', [SalaryStructureController::class, 'apiUpdate']);
+    Route::delete('/{id}', [SalaryStructureController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [SalaryStructureController::class, 'apiRestore']);
+    Route::delete('/force-delete/{id}', [SalaryStructureController::class, 'apiForceDelete']);
+
+});

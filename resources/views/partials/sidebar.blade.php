@@ -681,6 +681,14 @@
         <i class="feather-file-text me-2"></i>Statutory Deduction
     </a>
 </li>
+{{-- SALARY STRUCTURE --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.salary-structure.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.salary-structure.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-dollar-sign me-2"></i>Salary Structure
+    </a>
+</li>
 
         {{-----Hourly Pay Approval------}}
             
