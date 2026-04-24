@@ -1,4 +1,4 @@
-@extends('layouts.admin') 
+@extends('layouts.admin')
 
 @section('page-title', 'Rate Employee Mapping | ' . config('app.name'))
 
@@ -28,11 +28,9 @@
 
     </div>
 
-
     <div class="d-flex gap-2 align-items-center">
 
         <!-- Add Button -->
-
         <a href="{{ route('hr.payroll.rate-employee-mapping.create') }}"
            class="btn btn-primary">
 
@@ -41,9 +39,7 @@
 
         </a>
 
-
-        <!-- Deleted -->
-
+        <!-- Deleted Records -->
         <a href="{{ route('hr.payroll.rate-employee-mapping.deleted') }}"
            class="btn btn-danger">
 
@@ -56,178 +52,155 @@
 </div>
 
 
-
 <div class="row">
-<div class="col-12">
+    <div class="col-12">
 
-<div class="card stretch stretch-full">
+        <div class="card stretch stretch-full">
 
-<div class="card-body p-0">
+            <div class="card-body p-0">
 
-<div class="table-responsive">
+                <div class="table-responsive">
 
-<table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0">
 
-<thead>
+                        <thead>
 
-<tr>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Rate Type</th>
+                                <th>Rate Value</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
 
-<th>Employee</th>
-<th>Rate Type</th>
-<th>Rate Value</th>
-<th class="text-end">Actions</th>
+                        </thead>
 
-</tr>
 
-</thead>
+                        <tbody>
 
+                            @forelse($rateMappings ?? [] as $item)
 
+                                <tr>
 
-<tbody>
+                                    <!-- Employee -->
+                                    <td>
 
-@forelse($rateMappings ?? [] as $item)
+                                        <span class="badge bg-soft-primary text-primary">
 
-<tr>
+                                            {{ optional($item->employee)->name ?? '-' }}
 
+                                        </span>
 
-<!-- Employee -->
+                                    </td>
 
-<td>
 
-<span class="badge bg-soft-primary text-primary">
+                                    <!-- Rate Type -->
+                                    <td>
 
-{{ optional($item->employee)->name ?? '-' }}
+                                        {{ $item->rate_type ?? '-' }}
 
-</span>
+                                    </td>
 
-</td>
 
+                                    <!-- Rate Value -->
+                                    <td>
 
+                                        <span class="badge bg-soft-info text-info">
 
-<!-- Rate Type -->
+                                            @if($item->rate_type === 'Flat')
 
-<td>
+                                                {{ $item->base_rate_value ?? '-' }}
 
-{{ $item->rate_type ?? '-' }}
+                                            @elseif($item->rate_type === 'Multiplier')
 
-</td>
+                                                {{ $item->multiplier_value ?? '-' }}
 
+                                            @else
 
+                                                -
 
-<!-- Rate Value -->
+                                            @endif
 
-<td>
+                                        </span>
 
-<span class="badge bg-soft-info text-info">
+                                    </td>
 
-@if($item->rate_type === 'Flat')
 
-{{ $item->base_rate_value ?? '-' }}
+                                    <!-- Actions -->
+                                    <td class="text-end">
 
-@elseif($item->rate_type === 'Multiplier')
+                                        <div class="d-flex gap-2 justify-content-end">
 
-{{ $item->multiplier_value ?? '-' }}
 
-@else
+                                            <!-- View -->
+                                            <a href="{{ route('hr.payroll.rate-employee-mapping.show', $item->id) }}"
+                                               class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+                                               title="View">
 
--
+                                                <i class="feather-eye"></i>
 
-@endif
+                                            </a>
 
-</span>
 
-</td>
+                                            <!-- Edit -->
+                                            <a href="{{ route('hr.payroll.rate-employee-mapping.edit', $item->id) }}"
+                                               class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+                                               title="Edit">
 
+                                                <i class="feather-edit-2"></i>
 
+                                            </a>
 
-<!-- Actions -->
 
-<td class="text-end">
+                                            <!-- Delete -->
+                                            <form action="{{ route('hr.payroll.rate-employee-mapping.destroy', $item->id) }}"
+                                                  method="POST"
+                                                  onsubmit="return confirm('Are you sure you want to delete this record?');">
 
-<div class="d-flex gap-2 justify-content-end">
+                                                @csrf
+                                                @method('DELETE')
 
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+                                                        title="Delete">
 
-<!-- View -->
+                                                    <i class="feather-trash-2"></i>
 
-<a href="{{ route('hr.payroll.rate-employee-mapping.show', $item->id) }}"
-   class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
-   title="View">
+                                                </button>
 
-<i class="feather-eye"></i>
+                                            </form>
 
-</a>
+                                        </div>
 
+                                    </td>
 
+                                </tr>
 
-<!-- Edit -->
+                            @empty
 
-<a href="{{ route('hr.payroll.rate-employee-mapping.edit', $item->id) }}"
-   class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
-   title="Edit">
+                                <tr>
 
-<i class="feather-edit-2"></i>
+                                    <td colspan="4"
+                                        class="text-center text-muted">
 
-</a>
+                                        No records found
 
+                                    </td>
 
+                                </tr>
 
-<!-- Delete -->
+                            @endforelse
 
-<form action="{{ route('hr.payroll.rate-employee-mapping.destroy', $item->id) }}"
-      method="POST"
-      onsubmit="return confirm('Are you sure you want to delete this record?');">
+                        </tbody>
 
-@csrf
-@method('DELETE')
+                    </table>
 
-<button type="submit"
-        class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-        title="Delete">
+                </div>
 
-<i class="feather-trash-2"></i>
+            </div>
 
-</button>
+        </div>
 
-</form>
-
-
-</div>
-
-</td>
-
-</tr>
-
-
-
-@empty
-
-<tr>
-
-<td colspan="4"
-    class="text-center text-muted">
-
-No records found
-
-</td>
-
-</tr>
-
-@endforelse
-
-
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+    </div>
 </div>
 
 @endsection
