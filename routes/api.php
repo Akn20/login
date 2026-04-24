@@ -1350,3 +1350,27 @@ Route::prefix('patient-portal')->group(function () {
     Route::get('/profile', [PatientPortalApiController::class, 'profile']);
     Route::post('/profile/update', [PatientPortalApiController::class, 'updateProfile']);
 });
+
+Route::prefix('admin/patient-portal')->group(function () {
+
+    Route::get(
+        '/dashboard',
+        [PatientPortalApiController::class, 'dashboard']
+    );
+
+    Route::get(
+        '/appointments',
+        [PatientPortalApiController::class, 'appointments']
+    );
+
+    Route::get(
+        '/lab-reports',
+        [PatientPortalApiController::class, 'labReports']
+    );
+
+    Route::get(
+        '/radiology-reports',
+        [PatientPortalApiController::class, 'radiology']
+    );
+
+});
