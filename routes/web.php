@@ -70,8 +70,13 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\PayrollDeductionController;
+use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
+
 
 use App\Http\Controllers\HR\Reports\AttendanceReportController;
+use App\Http\Controllers\HR\Reports\DepartmentSalaryReportController;
+use App\Http\Controllers\HR\Reports\OvertimeReportController;
+use App\Http\Controllers\HR\Reports\PayrollReportController;
 use App\Http\Controllers\HR\Reports\ReportsDashboardController;
 use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
@@ -1556,6 +1561,82 @@ Route::prefix('payroll/deduction-rule-set')
     Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
     Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+
+});
+
+// --- Payroll Statutory Contribution ---
+
+// --- Payroll Statutory Contribution ---
+
+Route::prefix('payroll/statutory-contribution')
+    ->name('payroll.statutory-contribution.')
+    ->group(function () {
+
+    // INDEX
+
+    Route::get('/',
+        [StatutoryContributionController::class, 'index']
+    )->name('index');
+
+
+    // CREATE
+
+    Route::get('/create',
+        [StatutoryContributionController::class, 'create']
+    )->name('create');
+
+    Route::post('/store',
+        [StatutoryContributionController::class, 'store']
+    )->name('store');
+
+
+    // ⭐ STATIC ROUTES FIRST
+
+    Route::get('/deleted',
+        [StatutoryContributionController::class, 'deleted']
+    )->name('deleted');
+
+
+    // SHOW
+
+    Route::get('/{id}/show',
+        [StatutoryContributionController::class, 'show']
+    )->name('show');
+
+
+    // EDIT
+
+    Route::get('/{id}/edit',
+        [StatutoryContributionController::class, 'edit']
+    )->name('edit');
+
+
+    // UPDATE
+
+    Route::put('/{id}',
+        [StatutoryContributionController::class, 'update']
+    )->name('update');
+
+
+    // DELETE (Soft)
+
+    Route::delete('/{id}',
+        [StatutoryContributionController::class, 'destroy']
+    )->name('destroy');
+
+
+    // RESTORE
+
+    Route::post('/{id}/restore',
+        [StatutoryContributionController::class, 'restore']
+    )->name('restore');
+
+
+    // PERMANENT DELETE
+
+    Route::delete('/{id}/force-delete',
+        [StatutoryContributionController::class, 'forceDelete']
+    )->name('forceDelete');
 
 });
 
