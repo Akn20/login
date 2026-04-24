@@ -717,7 +717,24 @@
         <i class="feather-dollar-sign me-2"></i>Salary Structure
     </a>
 </li>
+{{-- EMPLOYEE SALARY ASSIGNMENT --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.employee-salary-assignment.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.employee-salary-assignment.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-user-check me-2"></i>Employee Salary Assignment
+    </a>
+</li>
 
+
+{{-- PRE PAYROLL --}}
+<li class="nxl-item">
+    <a href="{{route('hr.payroll.pre-payroll.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.pre-payroll.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-file-text me-2"></i>Pre Payroll Adjustment
+    </a>
+</li>
         {{-----Hourly Pay Approval------}}
             
         <li class="nxl-item">

@@ -74,8 +74,9 @@ use App\Http\Controllers\HR\Payroll\HourlyPayController;
 use App\Http\Controllers\HR\Payroll\HourlyPayApprovalController;
 use App\Http\Controllers\HR\Payroll\DeductionRuleSetController;
 use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
-
+use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
+use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
 
@@ -886,6 +887,11 @@ Route::middleware(['auth'])
             Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
             Route::resource('allowance', PayrollAllowanceController::class);
             Route::resource('deduction-rule-set', DeductionRuleSetController::class);
+            Route::resource('employee-salary-assignment', EmployeeSalaryAssignmentController::class);
+
+            Route::resource('statutory-contribution', StatutoryContributionController::class);
+
+            Route::resource('pre-payroll', PrePayrollAdjustmentController::class);
         });
 
     });
@@ -1775,33 +1781,55 @@ Route::prefix('payroll/salary-structure')
     Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
     Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
 
-Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
+    Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
 
-Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+});
+ //---------Payroll - Employee Salary assignment-----------//
+Route::prefix('payroll/employee-salary-assignment')
+    ->name('payroll.employee-salary-assignment.')
+    ->group(function () {
+
+    Route::get('/', [EmployeeSalaryAssignmentController::class, 'index'])->name('index');
+    Route::get('/create', [EmployeeSalaryAssignmentController::class, 'create'])->name('create');
+    Route::post('/store', [EmployeeSalaryAssignmentController::class, 'store'])->name('store');
+
+    // static
+    Route::get('/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])->name('deleted');
+
+    // restore + force delete
+    Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('forceDelete');
+
+    // dynamic
+    Route::get('/{id}/show', [EmployeeSalaryAssignmentController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
+    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
 });
 
 
-//     //---------Payroll -Statutory deduction-----------//
-// Route::prefix('payroll/statutory-deduction')
-//     ->name('payroll.statutory-deduction.')
-//     ->group(function () {
 
-//     Route::get('/', [StatutoryDeductionController::class, 'index'])->name('index');
-//     Route::get('/create', [StatutoryDeductionController::class, 'create'])->name('create');
-//     Route::post('/store', [StatutoryDeductionController::class, 'store'])->name('store');
+//---------Payroll - Pre-Payroll Adjustment-----------//
+Route::prefix('pre-payroll')->group(function () {
 
-//     // Static
-//     Route::get('/deleted', [StatutoryDeductionController::class, 'deleted'])->name('deleted');
+    Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
+        ->name('pre-payroll.index');
 
-//     // Dynamic
-//     Route::get('/{id}/show', [StatutoryDeductionController::class, 'show'])->name('show');
-//     Route::get('/{id}/edit', [StatutoryDeductionController::class, 'edit'])->name('edit');
-//     Route::put('/{id}', [StatutoryDeductionController::class, 'update'])->name('update');
-//     Route::delete('/{id}', [StatutoryDeductionController::class, 'destroy'])->name('delete');
+    Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
+        ->name('pre-payroll.create');
 
-//     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
-//     Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
-//     });
+    Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
+        ->name('pre-payroll.store');
+        Route::post('/approve/{id}', [PrePayrollAdjustmentController::class, 'approve'])
+    ->name('pre-payroll.approve');
+    Route::get('pre-payroll/{id}/edit', 
+    [PrePayrollAdjustmentController::class, 'edit']
+)->name('pre-payroll.edit');
+Route::put('pre-payroll/{id}', 
+    [PrePayrollAdjustmentController::class, 'update']
+)->name('pre-payroll.update');
+});
 
 
 
