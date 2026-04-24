@@ -7,7 +7,7 @@
 
 <div class="card-header d-flex justify-content-between">
     <h4>Billing List</h4>
-    <a href="{{ route('admin.billing.create') }}" class="btn btn-primary">+ Add Billing</a>
+    
 </div>
 
 <div class="card-body">

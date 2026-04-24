@@ -122,11 +122,7 @@
                         </a>
                     </li>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.billing') }}" class="nxl-link">
-                            <i class="feather-dollar-sign me-2"></i> Billing & Payments
-                        </a>
-                    </li>
+                   
 
                     
 
