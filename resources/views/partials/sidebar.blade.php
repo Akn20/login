@@ -662,6 +662,20 @@
 </li>
 
 
+{{-- RATE EMPLOYEE MAPPING --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.rate-employee-mapping.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.rate-employee-mapping.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Rate Employee Mapping
+
+    </a>
+</li>
+
+
+
         {{-----Hourly Pay Approval------}}
             
         <li class="nxl-item">

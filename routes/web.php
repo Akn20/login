@@ -79,6 +79,7 @@ use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
+use App\Http\Controllers\HR\Payroll\RateEmployeeMappingController;
 
 
 
@@ -1732,6 +1733,71 @@ Route::prefix('payroll/statutory-contribution')
 
     Route::delete('/{id}/force-delete',
         [StatutoryContributionController::class, 'forceDelete']
+    )->name('forceDelete');
+
+});
+
+
+// --- Payroll Rate Employee Mapping --- //
+
+Route::prefix('payroll/rate-employee-mapping')
+    ->name('payroll.rate-employee-mapping.')
+    ->group(function () {
+
+    // INDEX
+    Route::get('/',
+        [RateEmployeeMappingController::class, 'index']
+    )->name('index');
+
+    // CREATE
+    Route::get('/create',
+        [RateEmployeeMappingController::class, 'create']
+    )->name('create');
+
+    Route::post('/store',
+        [RateEmployeeMappingController::class, 'store']
+    )->name('store');
+
+
+    // STATIC ROUTES FIRST
+    Route::get('/deleted',
+        [RateEmployeeMappingController::class, 'deleted']
+    )->name('deleted');
+
+
+    // SHOW
+    Route::get('/{id}/show',
+        [RateEmployeeMappingController::class, 'show']
+    )->name('show');
+
+
+    // EDIT
+    Route::get('/{id}/edit',
+        [RateEmployeeMappingController::class, 'edit']
+    )->name('edit');
+
+
+    // UPDATE
+    Route::put('/{id}',
+        [RateEmployeeMappingController::class, 'update']
+    )->name('update');
+
+
+    // DELETE (Soft)
+    Route::delete('/{id}',
+        [RateEmployeeMappingController::class, 'destroy']
+    )->name('destroy');
+
+
+    // RESTORE
+    Route::post('/{id}/restore',
+        [RateEmployeeMappingController::class, 'restore']
+    )->name('restore');
+
+
+    // FORCE DELETE
+    Route::delete('/{id}/force-delete',
+        [RateEmployeeMappingController::class, 'forceDelete']
     )->name('forceDelete');
 
 });
