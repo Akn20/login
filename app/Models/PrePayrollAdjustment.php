@@ -72,4 +72,20 @@ protected static function boot()
 {
     return $this->belongsTo(\App\Models\Staff::class, 'employee_id');
 }
+
+
+public function creator()
+{
+    return $this->belongsTo(\App\Models\User::class, 'created_by');
+}
+
+public function submitter()
+{
+    return $this->belongsTo(\App\Models\User::class, 'submitted_by');
+}
+
+public function approver()
+{
+    return $this->belongsTo(\App\Models\User::class, 'approved_by');
+}
 }
