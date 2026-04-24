@@ -9,6 +9,7 @@ use App\Models\Staff;
 use App\Models\EmployeeSalaryAssignment; // IMPORTANT
 use Illuminate\Support\Facades\Auth;
 
+
 class PrePayrollAdjustmentController extends Controller
 {
     //  INDEX
@@ -183,9 +184,16 @@ public function approve($id)
 
     $record->save();
 
+    // 
+    if (request()->expectsJson()) {
+        return response()->json([
+            'message' => 'Approved Successfully',
+            'data' => $record
+        ]);
+    }
+
     return redirect()->route('hr.pre-payroll.index')
         ->with('success', 'Approved Successfully');
-
 }
 
 
@@ -304,36 +312,6 @@ public function apiDelete($id)
 
     return response()->json(['message' => 'Deleted successfully']);
 }
-public function apiDeleted()
-{
-    $records = PrePayrollAdjustment::onlyTrashed()
-        ->with('employee')
-        ->latest()
-        ->paginate(10);
 
-    return response()->json([
-        'data' => $records->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'employee_name' => optional($item->employee)->name,
-                'payroll_month' => $item->payroll_month,
-                'status' => $item->status,
-            ];
-        })
-    ]);
-}
-public function restore($id)
-{
-    $record = PrePayrollAdjustment::onlyTrashed()->findOrFail($id);
-    $record->restore();
 
-    return response()->json(['message' => 'Restored successfully']);
-}
-public function forceDelete($id)
-{
-    $record = PrePayrollAdjustment::onlyTrashed()->findOrFail($id);
-    $record->forceDelete();
-
-    return response()->json(['message' => 'Permanently deleted']);
-}
 }
