@@ -83,9 +83,11 @@ use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Reports\AttendanceReportController;
 use App\Http\Controllers\HR\Reports\ReportsDashboardController;
 use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
+
 use App\Http\Controllers\HR\Reports\PayrollReportController;
 use App\Http\Controllers\HR\Reports\OvertimeReportController;
 use App\Http\Controllers\HR\Reports\DepartmentSalaryReportController;
+
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
@@ -2057,10 +2059,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
 
-        Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
+      //  Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
 
-        Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
+       // Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
 
-        Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
+      //  Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
     });
 });
