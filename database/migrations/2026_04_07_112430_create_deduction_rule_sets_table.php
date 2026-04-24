@@ -12,6 +12,7 @@ return new class extends Migration
 public function up()
 {
     Schema::create('deduction_rule_sets', function (Blueprint $table) {
+       $table->engine = 'InnoDB';
        $table->uuid('id')->primary();
 
         $table->string('rule_set_code')->unique();
@@ -47,6 +48,7 @@ public function up()
 
         $table->softDeletes(); // ✅ IMPORTANT
         $table->timestamps();
+        
     });
 }
 
