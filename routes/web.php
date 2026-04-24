@@ -2299,9 +2299,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
 
-      //  Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
+        Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
 
-       // Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
+        Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
 
         Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
 
