@@ -807,8 +807,8 @@
             </a>
         </li>
 
-        </ul>
-            </li>
+        
+        
     {{-- DEDUCTION --}}
     <li class="nxl-item">
         <a href="{{ route('hr.payroll.deduction.index') }}"
