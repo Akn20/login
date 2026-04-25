@@ -22,7 +22,9 @@
             {{--  Employee --}}
             <div class="col-md-6 mb-3">
                 <label>Employee *</label>
-              <select name="employee_id" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>
+   <select name="employee_id"
+        class="form-control @error('employee_id') is-invalid @enderror"
+        {{ $isReadonly ? 'disabled' : '' }}>
                     <option value="">Select</option>
                     @foreach($employees as $id => $name)
                         <option value="{{ $id }}"
@@ -31,12 +33,17 @@
                         </option>
                     @endforeach
                 </select>
+                @error('employee_id')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             {{--  Salary Assignment --}}
             <div class="col-md-6 mb-3">
                 <label>Salary Assignment *</label>
-<select name="salary_assignment_id" class="form-control" {{ $isReadonly ? 'disabled' : '' }}>
+<select name="salary_assignment_id"
+        class="form-control @error('salary_assignment_id') is-invalid @enderror"
+        {{ $isReadonly ? 'disabled' : '' }}>
                     <option value="">Select</option>
                 @foreach($assignments as $item)
     <option value="{{ $item->id }}"
@@ -47,13 +54,20 @@
     </option>
 @endforeach
                 </select>
+                @error('salary_assignment_id')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             {{--  Payroll Month --}}
             <div class="col-md-6 mb-3">
                 <label>Payroll Month *</label>
-                <input type="month" name="payroll_month" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
+             <input type="month" name="payroll_month"
+       class="form-control @error('payroll_month') is-invalid @enderror"{{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('payroll_month', $record->payroll_month ?? '') }}">
+                @error('payroll_month')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             {{--  Pay Type --}}
@@ -81,14 +95,22 @@
 
             <div class="col-md-3 mb-3">
                 <label>Working Days *</label>
-                <input type="number" name="working_days" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
+                <input type="number" name="working_days"
+       class="form-control @error('working_days') is-invalid @enderror"{{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('working_days', $record->working_days ?? '') }}">
+                @error('working_days')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             <div class="col-md-3 mb-3">
                 <label>Days Paid *</label>
-                <input type="number" name="days_paid" class="form-control" {{ $isReadonly ? 'disabled' : '' }}
+                <input type="number" name="days_paid"
+       class="form-control @error('days_paid') is-invalid @enderror"{{ $isReadonly ? 'disabled' : '' }}
                     value="{{ old('days_paid', $record->days_paid ?? '') }}">
+                @error('days_paid')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
             </div>
 
             <div class="col-md-3 mb-3">

@@ -27,7 +27,48 @@
     {{ session('success') }}
 </div>
 @endif
+<form method="GET" action="{{ route('hr.pre-payroll.index') }}" class="row mb-3">
 
+    {{-- Employee --}}
+    <div class="col-md-3">
+        <select name="employee_id" class="form-control">
+            <option value="">All Employees</option>
+            @foreach($employees as $id => $name)
+                <option value="{{ $id }}" {{ request('employee_id') == $id ? 'selected' : '' }}>
+                    {{ $name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Month --}}
+    <div class="col-md-3">
+        <input type="month" name="payroll_month"
+               value="{{ request('payroll_month') }}"
+               class="form-control">
+    </div>
+
+    {{-- Status --}}
+    <div class="col-md-3">
+        <select name="status" class="form-control">
+            <option value="">All Status</option>
+            <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
+            <option value="Submitted" {{ request('status') == 'Submitted' ? 'selected' : '' }}>Submitted</option>
+            <option value="Approved" {{ request('status') == 'Approved' ? 'selected' : '' }}>Approved</option>
+        </select>
+    </div>
+
+    {{-- Buttons --}}
+    <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-primary w-100">Filter</button>
+
+        <a href="{{ route('hr.pre-payroll.index') }}" 
+           class="btn btn-outline-secondary w-100">
+            Reset
+        </a>
+    </div>
+
+</form>
 <div class="card">
     <div class="card-body p-0">
 
@@ -43,6 +84,10 @@
                         <th>Days Paid</th>
                         <th>Net Pay</th>
                         <th>Status</th>
+                        <th>Created By</th>
+<th>Submitted By</th>
+<th>Approved By</th>
+<th>Approved On</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -74,6 +119,12 @@
                                 <span class="badge bg-soft-warning text-warning">Draft</span>
                             @endif
                         </td>
+                        <td>{{ $item->creator->name ?? '-' }}</td>
+<td>{{ $item->submitter->name ?? '-' }}</td>
+<td>{{ $item->approver->name ?? '-' }}</td>
+<td>
+    {{ $item->approved_on ? \Carbon\Carbon::parse($item->approved_on)->format('Y-m-d') : '-' }}
+</td>
                         
    <td class="text-end d-flex justify-content-end gap-2">
 
@@ -107,7 +158,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted">
+                        <td colspan="12" class="text-center text-muted">
                             No records found
                         </td>
                     </tr>
