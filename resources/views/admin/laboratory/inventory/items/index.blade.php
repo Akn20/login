@@ -116,6 +116,17 @@
                                                 </button>
                                             </form>
 
+                                            <!-- Use Item -->
+                        <form action="{{ route('admin.laboratory.inventory.use', $item->id) }}" method="POST" class="d-flex align-items-center gap-1">
+                            @csrf
+                            <input type="number" name="quantity" min="1" placeholder="Qty"
+                                class="form-control form-control-sm" style="width:70px;" required>
+
+                            <button class="btn btn-warning btn-sm" title="Use Item">
+                                Use
+                            </button>
+                        </form>
+
                                         </div>
                                     </td>
                         </tr>

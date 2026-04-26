@@ -1331,6 +1331,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [InventoryController::class, 'index'])
             ->name('dashboard');
 
+        Route::post('use/{id}', [InventoryController::class, 'useItem'])
+    ->name('use');
+
         Route::resource('items', InventoryItemController::class);
 
         // Usage Logs
