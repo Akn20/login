@@ -170,4 +170,18 @@ class EmployeeDocumentApiController extends Controller
 
         return response()->file(storage_path('app/' . $doc->file_path));
     }
+    // ===============================
+// GET EMPLOYEES FOR DROPDOWN
+// ===============================
+public function employees()
+{
+    $employees = \App\Models\Staff::select('id', 'name')
+        ->orderBy('name')
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $employees
+    ]);
+}
 }

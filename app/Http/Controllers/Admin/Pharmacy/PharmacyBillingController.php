@@ -264,7 +264,7 @@ public function update(Request $request, $bill_id)
 
     $validated = $request->validate([
         //'patient_id' => 'required|string|max:255',
-        'prescription_id' => 'required|string|max:255',
+        //'prescription_id' => 'required|string|max:255',
         'remarks' => 'nullable|string',
         'payment_status' => 'required|in:Paid,Partially Paid,Unpaid',
         'payment_mode' => 'required|string',
@@ -274,7 +274,7 @@ public function update(Request $request, $bill_id)
     
 
     $bill->update([
-        'prescription_id' => $validated['prescription_id'],
+        //'prescription_id' => $validated['prescription_id'],
         'remarks' => $validated['remarks'] ?? null,
         'payment_status' => $validated['payment_status'],
         'payment_mode' => $validated['payment_mode'],
@@ -329,8 +329,18 @@ public function apiIndex(Request $request)
         });
     }
 
-    $bills = $query->with('patient')->latest()->get();
-
+   $bills = $query->with('patient')->latest()->get()->map(function ($bill) {
+    return [
+        'bill_id' => $bill->bill_id,
+        'bill_number' => $bill->bill_number,
+        'patient_name' => $bill->patient->first_name ?? '',
+        'total_amount' => $bill->total_amount,
+        'paid_amount' => $bill->paid_amount,
+        'balance_amount' => $bill->balance_amount,
+        'payment_mode' => $bill->payment_mode,
+        'created_at' => $bill->created_at,
+    ];
+});
     return response()->json([
         'status' => true,
         'data' => $bills
@@ -425,26 +435,36 @@ public function apiStore(Request $request)
 // ✅ 3. VIEW BILL (API)
 public function apiView($bill_id)
 {
-    $invoice = SalesBill::with('patient')
-        ->where('bill_id', $bill_id)
-        ->first();
+    try {
 
-    if (!$invoice) {
+        $invoice = SalesBill::with('patient')
+            ->where('bill_id', $bill_id)
+            ->first();
+
+        if (!$invoice) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bill not found'
+            ], 404);
+        }
+
+        $items = SalesBillItem::with(['medicine', 'batch'])
+            ->where('sales_bill_id', $bill_id)
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'invoice' => $invoice,
+            'items' => $items
+        ]);
+
+    } catch (\Exception $e) {
+
         return response()->json([
             'status' => false,
-            'message' => 'Bill not found'
-        ], 404);
+            'message' => $e->getMessage()
+        ], 500);
     }
-
-    $items = SalesBillItem::with(['medicine', 'batch'])
-        ->where('sales_bill_id', $bill_id)
-        ->get();
-
-    return response()->json([
-        'status' => true,
-        'invoice' => $invoice,
-        'items' => $items
-    ]);
 }
 
 
@@ -460,16 +480,66 @@ public function apiUpdate(Request $request, $bill_id)
         ], 404);
     }
 
+    DB::beginTransaction();
+
     try {
 
+        $total = 0;
+
+        // 🔥 DELETE OLD ITEMS
+        $bill->items()->delete();
+
+        // 🔥 INSERT UPDATED ITEMS + CALCULATE TOTAL
+        foreach ($request->items as $item) {
+
+            $qty = $item['quantity'];
+            $price = $item['unit_price'];
+
+            $lineTotal = $qty * $price;
+
+            $total += $lineTotal;
+
+            DB::table('sales_bill_items')->insert([
+                'id' => Str::uuid(),
+                'sales_bill_id' => $bill->bill_id,
+                'medicine_id' => $item['medicine_id'],
+                'batch_id' => $item['batch_id'],
+                'quantity' => $qty,
+                'unit_price' => $price,
+                'total_price' => $lineTotal,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // 🔥 PAYMENT CALCULATION
+        $paid = $request->paid_amount ?? 0;
+
+        // ✅ AUTO STATUS LOGIC
+        if ($paid >= $total && $total > 0) {
+            $paymentStatus = 'Paid';
+            $invoiceStatus = 'Finalized';
+        } elseif ($paid > 0) {
+            $paymentStatus = 'Partially Paid';
+            $invoiceStatus = 'Draft';
+        } else {
+            $paymentStatus = 'Unpaid';
+            $invoiceStatus = 'Draft';
+        }
+
+        // 🔥 UPDATE BILL CORRECTLY
         $bill->update([
             'prescription_id' => $request->prescription_id,
             'remarks' => $request->remarks,
-            'payment_status' => $request->payment_status,
+            'payment_status' => $paymentStatus,   // ✅ AUTO
+            'invoice_status' => $invoiceStatus,   // ✅ AUTO
             'payment_mode' => $request->payment_mode,
-            'paid_amount' => $request->paid_amount ?? 0,
-            'balance_amount' => ($bill->total_amount ?? 0) - ($request->paid_amount ?? 0),
+            'paid_amount' => $paid,
+            'total_amount' => $total,
+            'balance_amount' => $total - $paid,
         ]);
+
+        DB::commit();
 
         return response()->json([
             'status' => true,
@@ -478,12 +548,14 @@ public function apiUpdate(Request $request, $bill_id)
 
     } catch (\Exception $e) {
 
+        DB::rollBack();
+
         return response()->json([
             'status' => false,
             'message' => $e->getMessage()
         ], 500);
     }
-}
+}   
 
 
 // ✅ 5. PRINT BILL (API)

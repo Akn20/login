@@ -38,6 +38,6 @@ public function batch()
 
     public function bill()
     {
-        return $this->belongsTo(SalesBill::class, 'sales_bill_id', 'id');
+        return $this->belongsTo(SalesBill::class, 'sales_bill_id', 'bill_id');
     }
 }
