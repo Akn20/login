@@ -114,6 +114,12 @@
                             up-target="#main-container"><i class="feather-user-plus me-2"></i>Add Patient</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.patients.duplicates') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-copy me-2"></i>Duplicates</a></li>
+                    
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.billing.index') }}" class="nxl-link">
+                            <i class="feather-dollar-sign me-2"></i> Patient Billing
+                        </a>
+                    </li>
 
                     <li class="nxl-item">
                         <a href="{{ route('admin.patients.emergency.list') }}" 
@@ -123,6 +129,52 @@
                         </a>
                     </li>
                 </ul>
+            </li>
+
+
+            {{-- --- PATIENT PORTAL --- --}}
+            <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>
+
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patient-portal*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-user"></i></span>
+                    <span class="nxl-mtext">Patient Portal</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+
+                <ul class="nxl-submenu">
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.dashboard') }}" class="nxl-link">
+                            <i class="feather-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.appointments') }}" class="nxl-link">
+                            <i class="feather-calendar me-2"></i> Appointments
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.lab') }}" class="nxl-link">
+                            <i class="feather-activity me-2"></i> Lab Reports
+                        </a>
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.radiology') }}" class="nxl-link">
+                            <i class="feather-camera me-2"></i> Radiology Reports
+                        </a>
+                    </li>
+
+                   
+
+                    
+
+                </ul>
+
+
             </li>
 
             {{-- --- 3. MEDICAL SERVICES --- --}}

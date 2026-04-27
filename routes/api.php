@@ -28,8 +28,10 @@ use App\Http\Controllers\Admin\SampleCollectionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
+use App\Http\Controllers\Api\Billing\BillingApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
+use App\Http\Controllers\Api\PatientPortal\PatientPortalApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
@@ -107,7 +109,7 @@ use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 
 use App\Models\User;
-//added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 use App\Models\Allowance;
 use App\Models\PayrollDeduction;
@@ -123,7 +125,7 @@ use App\Http\Controllers\Admin\ReportController;
 // Receptionist
 use Illuminate\Support\Facades\Route;
 
-// added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 //laboratory
@@ -138,6 +140,10 @@ use App\Http\Controllers\Admin\InventoryController;
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
+
+
+
+use App\Http\Controllers\HR\Reports\AttendanceReportController;
 
 // Receptionist
 
@@ -166,7 +172,7 @@ Route::get('/test-api', function () {
     return 'API working';
 });
 
-// added by sushan for api
+
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 /*
@@ -1424,7 +1430,7 @@ Route::prefix('doctor')->group(function () {
 Route::prefix('reports')->group(function () {
 
     Route::get('/dashboard', [DashboardApiController::class, 'index']);
-    Route::get('/staff-strength', [StaffStrengthApiController::class, 'index']);
+    Route::get('/staff-strength', [StaffStrengthApiController::class, 'apiIndex']);
     Route::get('/attendance', [AttendanceReportApiController::class, 'index']);
     Route::get('/leave', [LeaveReportApiController::class, 'index']);
     Route::get('/payroll', [PayrollReportApiController::class, 'index']);
@@ -1432,7 +1438,10 @@ Route::prefix('reports')->group(function () {
     Route::get('/department-salary', [DepartmentSalaryApiController::class, 'index']);
 
 });
-
+Route::get(
+    '/reports/attendance',
+    [AttendanceReportController::class, 'apiIndex']
+);
 
 Route::prefix('emergency-reports')->group(function () {
 
@@ -1443,6 +1452,18 @@ Route::prefix('emergency-reports')->group(function () {
 
     Route::get('/{caseId}', [EmergencyReportApiController::class, 'show']);
 });
+
+Route::prefix('patient-portal')->group(function () {
+
+    Route::get('/dashboard', [PatientPortalApiController::class, 'dashboard']);
+    Route::get('/appointments', [PatientPortalApiController::class, 'appointments']);
+    Route::get('/lab-reports', [PatientPortalApiController::class, 'labReports']);
+    Route::get('/radiology-reports', [PatientPortalApiController::class, 'radiology']);
+    Route::get('/profile', [PatientPortalApiController::class, 'profile']);
+    Route::post('/profile/update', [PatientPortalApiController::class, 'updateProfile']);
+
+    });
+
 
 Route::prefix('lab')->group(function () {
     Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
@@ -1807,5 +1828,13 @@ Route::prefix('receptionist/reports')->group(function () {
     Route::get('token', [ReceptionistReportController::class, 'apiToken']);
     Route::get('collection', [ReceptionistReportController::class, 'apiCollection']);
     Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
+});
+
+Route::prefix('billing')->group(function () {
+
+    Route::get('/', [BillingApiController::class, 'index']);
+    Route::post('/', [BillingApiController::class, 'store']);
+    Route::get('/{id}', [BillingApiController::class, 'show']);
+    Route::delete('/{id}', [BillingApiController::class, 'destroy']);
 
 });

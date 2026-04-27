@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
 use App\Http\Controllers\Admin\Radiology\RadiologyController;
@@ -2442,6 +2443,24 @@ Route::middleware(['auth', 'role:admin'])
         )->name('patients.emergency.view');
 
 
+        Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    Route::get('/', [PatientPortalController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/appointments', [PatientPortalController::class, 'appointments'])->name('appointments');
+
+    Route::get('/lab-reports', [PatientPortalController::class, 'labReports'])->name('lab');
+
+    Route::get('/radiology-reports', [PatientPortalController::class, 'radiology'])->name('radiology');
+
+    Route::get('/profile', [PatientPortalController::class, 'profile'])->name('profile');
+
+    Route::post('/profile/update', [PatientPortalController::class, 'updateProfile'])->name('profile.update');
+      
+    Route::get('/billing', [PatientPortalController::class, 'billing'])
+                ->name('billing');
+        });
+
 });
 
 
@@ -2518,4 +2537,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
       //  Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
     });
+});
+
+
+// admin billing
+Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('billing')->name('billing.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('index');
+    Route::get('/create', [\App\Http\Controllers\Admin\BillingController::class, 'create'])->name('create');
+    Route::post('/store', [\App\Http\Controllers\Admin\BillingController::class, 'store'])->name('store');
+    Route::get('/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'show'])->name('show');
+    Route::get('/receipt/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'receipt'])->name('receipt');
+});
 });

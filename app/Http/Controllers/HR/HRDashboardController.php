@@ -11,79 +11,214 @@ use Carbon\Carbon;
 class HRDashboardController extends Controller
 {
     public function index()
-    {
+{
+    try {
+
         // Top stats
-        $stats = [
-            'total_staff' => Staff::count(),
-            'active_staff' => Staff::where('status', 'active')->count(),
-            'pending_leaves' => LeaveApplication::where('status', 'pending')->count(),
-        ];
+        $totalEmployees = Staff::count();
 
-        // 1) Headcount by Department (for bar chart)
-        $departments = Staff::selectRaw('department_id, COUNT(*) as total')
-            ->with('department:id,department_name')
-            ->groupBy('department_id')
-            ->get();
+        $activeStaff = Staff::where(
+            'status',
+            'active'
+        )->count();
 
-        $departmentLabels = $departments->map(
-            fn ($row) => $row->department->department_name ?? 'Unknown'
-        );
-        $departmentCounts = $departments->pluck('total');
+        $pendingLeaves = LeaveApplication::where(
+            'status',
+            'pending'
+        )->count();
 
-        // 2) Attendance last 7 days (stacked present vs absent)
+        // Department headcount
+        $departments = Staff::selectRaw(
+            'department_id, COUNT(*) as total'
+        )
+        ->with(
+            'department:id,department_name'
+        )
+        ->groupBy('department_id')
+        ->get();
+
+        $departmentLabels =
+            $departments->map(
+                fn ($row) =>
+                    $row->department
+                        ->department_name
+                    ?? 'Unknown'
+            );
+
+        $departmentCounts =
+            $departments->pluck('total');
+
+        // Attendance last 7 days
         $rangeDays = 7;
-        $fromDate = Carbon::today()->subDays($rangeDays - 1);
 
-        // build continuous date range
+        $fromDate =
+            Carbon::today()
+                ->subDays(
+                    $rangeDays - 1
+                );
+
         $dates = collect();
-        for ($i = $rangeDays - 1; $i >= 0; $i--) {
-            $dates->push(Carbon::today()->subDays($i)->format('Y-m-d'));
+
+        for (
+            $i = $rangeDays - 1;
+            $i >= 0;
+            $i--
+        ) {
+            $dates->push(
+                Carbon::today()
+                    ->subDays($i)
+                    ->format('Y-m-d')
+            );
         }
 
-        // Attendance per day (assuming one row per staff per day, with status field)
-        // If your model uses a different field name, adjust 'status'.
-        $attendance = AttendanceRecord::selectRaw(
-            "attendance_date,
-                 SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_total,
-                 SUM(CASE WHEN status = 'absent'  THEN 1 ELSE 0 END) as absent_total"
-        )
-            ->whereDate('attendance_date', '>=', $fromDate)
-            ->groupBy('attendance_date')
-            ->orderBy('attendance_date')
+        $attendance =
+            AttendanceRecord::selectRaw(
+                "attendance_date,
+                SUM(
+                    CASE
+                    WHEN status = 'present'
+                    THEN 1
+                    ELSE 0
+                    END
+                ) as present_total,
+
+                SUM(
+                    CASE
+                    WHEN status = 'absent'
+                    THEN 1
+                    ELSE 0
+                    END
+                ) as absent_total"
+            )
+            ->whereDate(
+                'attendance_date',
+                '>=',
+                $fromDate
+            )
+            ->groupBy(
+                'attendance_date'
+            )
+            ->orderBy(
+                'attendance_date'
+            )
             ->get();
 
-        $attendanceMap = $attendance->mapWithKeys(function ($row) {
-            $key = Carbon::parse($row->attendance_date)->format('Y-m-d');
+        $attendanceMap =
+            $attendance->mapWithKeys(
+                function ($row) {
 
-            return [
-                $key => [
-                    'present' => (int) $row->present_total,
-                    'absent' => (int) $row->absent_total,
-                ],
-            ];
-        });
+                    $key =
+                        Carbon::parse(
+                            $row->attendance_date
+                        )
+                        ->format(
+                            'Y-m-d'
+                        );
 
-        $attendanceLabels = $dates;
-        $presentCounts = $dates->map(fn ($d) => $attendanceMap[$d]['present'] ?? 0);
-        $absentCounts = $dates->map(fn ($d) => $attendanceMap[$d]['absent'] ?? 0);
+                    return [
+                        $key => [
+                            'present' =>
+                                (int)
+                                $row
+                                    ->present_total,
 
-        // 3) Staff status distribution (for donut chart)
-        // Adjust statuses as per your Staff table.
-        $statusLabels = ['Active', 'Inactive'];
-        $statusCounts = [
-            Staff::where('status', 'active')->count(),
-            Staff::where('status', 'inactive')->count(),
+                            'absent' =>
+                                (int)
+                                $row
+                                    ->absent_total,
+                        ],
+                    ];
+                }
+            );
+
+        $presentCounts =
+            $dates->map(
+                fn ($d) =>
+                    $attendanceMap[$d]['present']
+                    ?? 0
+            );
+
+        $absentCounts =
+            $dates->map(
+                fn ($d) =>
+                    $attendanceMap[$d]['absent']
+                    ?? 0
+            );
+
+        // Status distribution
+        $statusLabels = [
+            'Active',
+            'Inactive'
         ];
 
-        return view('hr.dashboard.index', [
-            'stats' => $stats,
-            'departmentLabels' => $departmentLabels,
-            'departmentCounts' => $departmentCounts,
-            'attendanceLabels' => $attendanceLabels,
-            'presentCounts' => $presentCounts,
-            'absentCounts' => $absentCounts,
-            'statusLabels' => $statusLabels,
-            'statusCounts' => $statusCounts,
+        $statusCounts = [
+            Staff::where(
+                'status',
+                'active'
+            )->count(),
+
+            Staff::where(
+                'status',
+                'inactive'
+            )->count(),
+        ];
+
+        // IMPORTANT — return JSON
+        return response()->json([
+
+            'success' => true,
+
+            'data' => [
+
+                'totalEmployees' =>
+                    $totalEmployees,
+
+                'activeStaff' =>
+                    $activeStaff,
+
+                'pendingLeaves' =>
+                    $pendingLeaves,
+
+                'departmentLabels' =>
+                    $departmentLabels,
+
+                'departmentCounts' =>
+                    $departmentCounts,
+
+                'attendanceLabels' =>
+                    $dates,
+
+                'presentCounts' =>
+                    $presentCounts,
+
+                'absentCounts' =>
+                    $absentCounts,
+
+                'statusLabels' =>
+                    $statusLabels,
+
+                'statusCounts' =>
+                    $statusCounts,
+
+                // needed for your dashboard card
+                'totalReports' => 6,
+            ],
         ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' =>
+                $e->getMessage(),
+
+            'data' => [
+                'totalEmployees' => 0,
+                'totalReports' => 6,
+            ],
+        ], 500);
     }
+}
 }
