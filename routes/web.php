@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
@@ -2549,4 +2550,38 @@ Route::prefix('billing')->name('billing.')->group(function () {
     Route::get('/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'show'])->name('show');
     Route::get('/receipt/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'receipt'])->name('receipt');
 });
+});
+    
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: shift Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-shifts')->name('nurse-shifts.')->group(function () {
+        Route::get('/', [NurseShiftsController::class, 'index'])->name('index');
+        Route::get('/{id}/create', [NurseShiftsController::class, 'create'])->name('create');
+        Route::post('/store', [NurseShiftsController::class, 'store'])->name('store');
+        Route::get('/{id}', [NurseShiftsController::class, 'show'])->name('show');
+        Route::post('/handover/{id}/complete', [NurseShiftsController::class, 'markComplete'])->name('complete');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
+        Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
+        Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
+        Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
+        Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
+        Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
+    });
 });
