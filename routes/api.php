@@ -64,6 +64,8 @@ use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\AppointmentController;
 // Doctor
 use App\Http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\Doctor\IpdController;
+
 // HR
 use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BiometricController;
@@ -122,8 +124,8 @@ use App\Http\Controllers\Admin\ResultEntryController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController;
 
-
-
+//Receptionist
+//use App\Http\Controllers\TokenController;
 // Receptionist
 use Illuminate\Support\Facades\Route;
 
@@ -150,6 +152,7 @@ use App\Http\Controllers\HR\Reports\AttendanceReportController;
 // Receptionist
 
 // Receptionist
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
 
 /*
 |--------------------------------------------------------------------------
@@ -1897,5 +1900,38 @@ Route::prefix('billing')->group(function () {
     Route::post('/', [BillingApiController::class, 'store']);
     Route::get('/{id}', [BillingApiController::class, 'show']);
     Route::delete('/{id}', [BillingApiController::class, 'destroy']);
+
+});
+
+
+
+// API FOR IPD MODULE(DOCTOR)
+
+
+Route::prefix('doctor/ipd')->group(function () {
+
+    // ✅ IPD LIST
+    Route::get('/list', [IpdController::class, 'apiIndex']);
+
+    // ✅ IPD DETAILS
+    Route::get('/details/{id}', [IpdController::class, 'apiShow']);
+
+    // ✅ ADD NOTE
+    Route::post('/add-note/{id}', [IpdController::class, 'apiStoreNote']);
+
+    // ✅ UPDATE TREATMENT
+    Route::post('/update-treatment/{id}', [IpdController::class, 'apiUpdateTreatment']);
+
+    // ✅ ADD PRESCRIPTION
+    Route::post('/add-prescription/{id}', [IpdController::class, 'apiStorePrescription']);
+
+    // ✅ LAB / RADIOLOGY
+    Route::post('/add-lab-radiology/{id}', [IpdController::class, 'apiStoreLabRadiology']);
+
+    // ✅ DISCHARGE DETAILS VIEW
+    Route::get('/discharge/{id}', [IpdController::class, 'apiDischargeDetails']);
+
+    // ✅ SUBMIT DISCHARGE
+    Route::post('/submit-discharge/{id}', [IpdController::class, 'apiDischargeSubmit']);
 
 });

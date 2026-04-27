@@ -11,146 +11,135 @@ use App\Models\Token;
 use App\Models\Bed;
 use App\Models\ReceptionistBilling;
 use App\Models\IPDAdmission;
-use Carbon\Carbon;
+
 class ReceptionistReportController extends Controller
 {
- 
-public function registration(Request $request)
-{
-    $query = Patient::query();
+    // ===============================
+    // VIEW METHODS
+    // ===============================
 
-    // Filter: Patient Name
-    if ($request->patient) {
-        $query->where(function ($q) use ($request) {
-            $q->where('first_name', 'like', '%' . $request->patient . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient . '%');
-        });
+    public function registration(Request $request)
+    {
+        $query = Patient::query();
+
+        if ($request->patient) {
+            $query->where(function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient . '%');
+            });
+        }
+
+        if ($request->date) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $patients = $query->latest()->paginate(10);
+
+        return view('admin.receptionist.reports.registration', compact('patients'));
     }
 
-    //  Filter: Date (assuming created_at = registration time)
-    if ($request->date) {
-        $query->whereDate('created_at', $request->date);
+    public function appointment(Request $request)
+    {
+        $query = Appointment::with(['patient', 'doctor', 'department']);
+
+        if ($request->patient) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient . '%');
+            });
+        }
+
+        if ($request->doctor) {
+            $query->where('doctor_id', $request->doctor);
+        }
+
+        if ($request->date) {
+            $query->whereDate('appointment_date', $request->date);
+        }
+
+        $appointments = $query->latest()->paginate(10);
+
+        $doctors = Staff::all();
+        $departments = Department::all();
+
+        return view('admin.receptionist.reports.appointment', compact('appointments','doctors','departments'));
     }
 
-    //  Pagination (10 per page)
-    $patients = $query->latest()->paginate(10);
+    public function token(Request $request)
+    {
+        $query = Token::with(['appointment.patient', 'appointment.doctor']);
 
-    return view('admin.receptionist.reports.registration', compact('patients'));
-}
+        if ($request->patient) {
+            $query->whereHas('appointment.patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient . '%');
+            });
+        }
 
-  
+        if ($request->date) {
+            $query->whereDate('created_at', $request->date);
+        }
 
-public function appointment(Request $request)
-{
-    $query = Appointment::with(['patient', 'doctor', 'department']);
+        $tokens = $query->latest()->paginate(10);
 
-    //  Filter: Patient
-    if ($request->patient) {
-        $query->whereHas('patient', function ($q) use ($request) {
-            $q->where('first_name', 'like', '%' . $request->patient . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient . '%');
-        });
+        return view('admin.receptionist.reports.token', compact('tokens'));
     }
 
-    //  Filter: Doctor
-    if ($request->doctor) {
-        $query->where('doctor_id', $request->doctor);
+    public function collection(Request $request)
+    {
+        $query = ReceptionistBilling::with('patient');
+
+        if ($request->patient) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient . '%');
+            });
+        }
+
+        if ($request->payment_mode) {
+            $query->where('payment_mode', $request->payment_mode);
+        }
+
+        if ($request->date) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $collections = $query->latest()->paginate(10);
+
+        return view('admin.receptionist.reports.collection', compact('collections'));
     }
 
-    //  Filter: Date
-    if ($request->date) {
-        $query->whereDate('appointment_date', $request->date);
+    public function admission(Request $request)
+    {
+        $query = IPDAdmission::with(['patient', 'department', 'payments','bed']);
+
+        if ($request->patient) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient . '%');
+            });
+        }
+
+        if ($request->department) {
+            $query->where('department_id', $request->department);
+        }
+
+        if ($request->date) {
+            $query->whereDate('admission_date', $request->date);
+        }
+
+        $admissions = $query->latest()->paginate(10);
+        $departments = Department::all();
+        $beds = Bed::all();
+
+        return view('admin.receptionist.reports.admission', compact('admissions','departments','beds'));
     }
 
-    //  Pagination
-    $appointments = $query->latest()->paginate(10);
+    // ===============================
+    // API METHODS
+    // ===============================
 
-$doctors = Staff::all();
-$departments = Department::all();
-
-return view('admin.receptionist.reports.appointment', compact('appointments','doctors','departments'));
-}
-
-public function token(Request $request)
-{
-    $query = Token::with(['appointment.patient', 'appointment.doctor']);
-
-    //  Filter: Patient
-    if ($request->patient) {
-        $query->whereHas('appointment.patient', function ($q) use ($request) {
-            $q->where('first_name', 'like', '%' . $request->patient . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient . '%');
-        });
-    }
-
-    //  Filter: Date (based on token created_at)
-    if ($request->date) {
-        $query->whereDate('created_at', $request->date);
-    }
-
-    $tokens = $query->latest()->paginate(10);
-
-    return view('admin.receptionist.reports.token', compact('tokens'));
-}
-
-
-public function collection(Request $request)
-{
-    $query = ReceptionistBilling::with('patient');
-
-    //  Patient filter
-    if ($request->patient) {
-        $query->whereHas('patient', function ($q) use ($request) {
-            $q->where('first_name', 'like', '%' . $request->patient . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient . '%');
-        });
-    }
-
-    //  Payment mode filter
-    if ($request->payment_mode) {
-        $query->where('payment_mode', $request->payment_mode);
-    }
-
-    //  Date filter
-    if ($request->date) {
-        $query->whereDate('created_at', $request->date);
-    }
-
-    $collections = $query->latest()->paginate(10);
-
-    return view('admin.receptionist.reports.collection', compact('collections'));
-}
-
-public function admission(Request $request)
-{
-    $query = IPDAdmission::with(['patient', 'department', 'payments','bed']);
-
-    //  Patient filter
-    if ($request->patient) {
-        $query->whereHas('patient', function ($q) use ($request) {
-            $q->where('first_name', 'like', '%' . $request->patient . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient . '%');
-        });
-    }
-
-    //  Department filter
-    if ($request->department) {
-        $query->where('department_id', $request->department);
-    }
-
-    //  Date filter
-    if ($request->date) {
-        $query->whereDate('admission_date', $request->date);
-    }
-
-    $admissions = $query->latest()->paginate(10);
-    $departments = Department::all();
-    $beds = Bed::all();
-    return view('admin.receptionist.reports.admission', compact('admissions','departments','beds'));
-}
-
-//API
- public function apiRegistration(Request $request)
+    public function apiRegistration(Request $request)
     {
         $query = Patient::query();
 
@@ -165,17 +154,12 @@ public function admission(Request $request)
             $query->whereDate('created_at', $request->date);
         }
 
-        $data = $query->latest()->get();
-
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data' => $query->latest()->get()
         ]);
     }
 
-    // ===============================
-    // APPOINTMENT REPORT API
-    // ===============================
     public function apiAppointment(Request $request)
     {
         $query = Appointment::with(['patient','doctor','department']);
@@ -195,44 +179,33 @@ public function admission(Request $request)
             $query->whereDate('appointment_date', $request->date);
         }
 
-        $data = $query->latest()->get();
-
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data' => $query->latest()->get()
         ]);
     }
 
-    // ===============================
-    // TOKEN REPORT API
-    // ===============================
     public function apiToken(Request $request)
-{
-    $query = Token::with(['appointment.patient','appointment.doctor']);
+    {
+        $query = Token::with(['appointment.patient','appointment.doctor']);
 
-    if ($request->filled('patient')) {
-        $query->whereHas('appointment.patient', function ($q) use ($request) {
-            $q->where('first_name', 'like', "%{$request->patient}%")
-              ->orWhere('last_name', 'like', "%{$request->patient}%");
-        });
+        if ($request->filled('patient')) {
+            $query->whereHas('appointment.patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient}%")
+                  ->orWhere('last_name', 'like', "%{$request->patient}%");
+            });
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    // Existing date filter
-    if ($request->filled('date')) {
-        $query->whereDate('created_at', $request->date);
-    }
-
-    $data = $query->latest()->get();
-
-    return response()->json([
-        'status' => true,
-        'data' => $data
-    ]);
-}
-
-    // ===============================
-    // COLLECTION REPORT API
-    // ===============================
     public function apiCollection(Request $request)
     {
         $query = ReceptionistBilling::with('patient');
@@ -252,25 +225,15 @@ public function admission(Request $request)
             $query->whereDate('created_at', $request->date);
         }
 
-        $data = $query->latest()->get();
-
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data' => $query->latest()->get()
         ]);
     }
 
-    // ===============================
-    // ADMISSION REPORT API
-    // ===============================
     public function apiAdmission(Request $request)
     {
-        $query = IPDAdmission::with([
-            'patient',
-            'department',
-            'bed',
-            'payments'
-        ]);
+        $query = IPDAdmission::with(['patient','department','bed','payments']);
 
         if ($request->filled('patient')) {
             $query->whereHas('patient', function ($q) use ($request) {
@@ -287,11 +250,9 @@ public function admission(Request $request)
             $query->whereDate('admission_date', $request->date);
         }
 
-        $data = $query->latest()->get();
-
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data' => $query->latest()->get()
         ]);
     }
 }
