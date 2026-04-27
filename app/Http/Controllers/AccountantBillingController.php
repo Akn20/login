@@ -2,145 +2,150 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\IpdBill;
+use App\Models\IpdBillItem;
+use Carbon\Carbon;
 
 class AccountantBillingController extends Controller
 {
     /**
-     * Display IPD Billing List
+     * 🔹 INDEX (Real Data from DB)
      */
     public function index()
     {
-        // Dummy data for UI
-        $patients = [
-            [
-                'id' => 1,
-                'name' => 'John Doe',
-                'ipd_no' => 'IPD001',
-                'admission_date' => '2026-04-10',
-                'room' => 'Room 101',
-                'doctor' => 'Dr. Smith',
-                'status' => 'Interim',
-            ],
-            [
-                'id' => 2,
-                'name' => 'Jane Smith',
-                'ipd_no' => 'IPD002',
-                'admission_date' => '2026-04-12',
-                'room' => 'Room 202',
-                'doctor' => 'Dr. Adams',
-                'status' => 'Final',
-            ],
-        ];
+        $patients = DB::table('ipd_admissions as ipd')
+            ->join('patients as p', 'p.id', '=', 'ipd.patient_id')
+            ->leftJoin('users as d', 'd.id', '=', 'ipd.doctor_id')
+            ->leftJoin('rooms as r', 'r.id', '=', 'ipd.room_id')
+            ->leftJoin('ipd_bills as b', 'b.ipd_id', '=', 'ipd.id')
+
+            ->select(
+                'ipd.id',
+                DB::raw("CONCAT(p.first_name, ' ', p.last_name) as name"),
+                'ipd.admission_id as ipd_no',
+                'ipd.admission_date',
+                'r.room_number as room',
+                'd.name as doctor',
+                'b.id as bill_id',
+                DB::raw("IFNULL(b.status, 'interim') as status")
+            )
+
+            ->orderBy('ipd.created_at', 'desc')
+            ->get();
 
         return view('admin.Accountant.Billing.index', compact('patients'));
     }
 
     /**
-     *  Create ( Bill)
+     * 🔹 CREATE
      */
     public function create()
-{
-    $patients = [
-        [
-            'id' => 1,
-            'name' => 'John Doe',
-            'ipd_no' => 'IPD001',
-            'doctor' => 'Dr. Smith',
-            'room' => 'Room 101',
-            'admission_date' => '2026-04-10',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Jane Smith',
-            'ipd_no' => 'IPD002',
-            'doctor' => 'Dr. Adams',
-            'room' => 'Room 202',
-            'admission_date' => '2026-04-12',
-        ],
-    ];
-
-    return view('admin.Accountant.Billing.create', compact('patients'));
-}
-
-    /**
-     * Show Edit Billing
-     */
-    public function edit($id)
     {
-        $patient = [
-            'id' => $id,
-            'name' => 'John Doe',
-            'ipd_no' => 'IPD001',
-            'doctor' => 'Dr. Smith',
-            'room' => 'Room 101',
-            'admission_date' => '2026-04-10',
-        ];
+        $patients = DB::table('ipd_admissions as ipd')
+            ->join('patients as p', 'p.id', '=', 'ipd.patient_id')
+            ->select('ipd.id as ipd_id', 'p.name', 'ipd.admission_id')
+            ->get();
 
-        // Dummy charges
-        $charges = [
-            [
-                'date' => '2026-04-11',
-                'type' => 'Room',
-                'description' => 'Room Charge',
-                'qty' => 2,
-                'rate' => 2000,
-                'amount' => 4000,
-            ],
-            [
-                'date' => '2026-04-12',
-                'type' => 'Lab',
-                'description' => 'Blood Test',
-                'qty' => 1,
-                'rate' => 500,
-                'amount' => 500,
-            ],
-        ];
-
-        return view('admin.Accountant.Billing.edit', compact('patient', 'charges'));
+        return view('admin.Accountant.Billing.create', compact('patients'));
     }
 
     /**
-     * View Final Bill
+     * 🔹 STORE BILL
+     */
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $total = 0;
+
+            foreach ($request->items as $item) {
+                $total += $item['amount'];
+            }
+
+            $discount = $request->discount ?? 0;
+            $tax = $request->tax ?? 0;
+
+            $grandTotal = $total - $discount + $tax;
+
+            // 🔹 Get Advance
+            $ipd = DB::table('ipd_admissions')
+                ->where('id', $request->ipd_id)
+                ->first();
+
+            $advance = $ipd->advance_amount ?? 0;
+
+            $payable = max($grandTotal - $advance, 0);
+
+            // 🔹 Create Bill
+            $bill = IpdBill::create([
+                'patient_id' => $request->patient_id,
+                'ipd_id' => $request->ipd_id,
+                'bill_no' => $this->generateBillNumber(),
+                'bill_date' => Carbon::now(),
+                'status' => 'interim',
+
+                'total_amount' => $total,
+                'discount' => $discount,
+                'tax' => $tax,
+                'grand_total' => $grandTotal,
+                'payable_amount' => $payable,
+            ]);
+
+            // 🔹 Save Items
+            foreach ($request->items as $item) {
+                IpdBillItem::create([
+                    'bill_id' => $bill->id,
+                    'type' => $item['type'],
+                    'reference_id' => $item['reference_id'] ?? null,
+                    'description' => $item['description'],
+                    'quantity' => $item['quantity'],
+                    'rate' => $item['rate'],
+                    'amount' => $item['amount'],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.accountant.billing.index')
+                ->with('success', 'Bill Created Successfully');
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * 🔹 EDIT
+     */
+    public function edit($id)
+    {
+        $bill = IpdBill::with('items')->where('id', $id)->firstOrFail();
+
+        return view('admin.Accountant.Billing.edit', compact('bill'));
+    }
+
+    /**
+     * 🔹 VIEW
      */
     public function show($id)
     {
-        $patient = [
-            'id' => $id,
-            'name' => 'John Doe',
-            'ipd_no' => 'IPD001',
-            'doctor' => 'Dr. Smith',
-            'room' => 'Room 101',
-            'admission_date' => '2026-04-10',
-        ];
+        $bill = IpdBill::with('items')->where('id', $id)->firstOrFail();
 
-        $charges = [
-            [
-                'date' => '2026-04-11',
-                'type' => 'Room',
-                'description' => 'Room Charge',
-                'qty' => 2,
-                'rate' => 2000,
-                'amount' => 4000,
-            ],
-            [
-                'date' => '2026-04-12',
-                'type' => 'Lab',
-                'description' => 'Blood Test',
-                'qty' => 1,
-                'rate' => 500,
-                'amount' => 500,
-            ],
-        ];
+        return view('admin.Accountant.Billing.view', compact('bill'));
+    }
 
-        $summary = [
-            'total' => 4500,
-            'discount' => 200,
-            'tax' => 100,
-            'grand_total' => 4400,
-        ];
-
-        return view('admin.Accountant.Billing.view', compact('patient', 'charges', 'summary'));
+    /**
+     * 🔹 BILL NUMBER
+     */
+    private function generateBillNumber()
+    {
+        $count = IpdBill::count() + 1;
+        return 'IPD-BILL-' . str_pad($count, 5, '0', STR_PAD_LEFT);
     }
 }

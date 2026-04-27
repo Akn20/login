@@ -2205,6 +2205,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Accountant Billing
+
 Route::prefix('admin/accountant/billing')
     ->name('admin.accountant.billing.')
     ->group(function () {
@@ -2213,10 +2214,11 @@ Route::prefix('admin/accountant/billing')
 
         Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
 
+        Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+
         Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
 
         Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
-
     });
 
 //IPD (Doctor Module)
