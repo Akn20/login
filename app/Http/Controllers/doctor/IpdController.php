@@ -16,58 +16,114 @@ use App\Models\IpdPrescriptionItem;
 use App\Models\IpdDischarge;
 use App\Models\Medicine;
 use App\Models\ScanType;
+use App\Models\LabTest;
 
 class IpdController extends Controller
 {
     // ✅ 1. INDEX
-    public function index()
+    public function index(Request $request)
     {
-        $patients = IpdAdmission::with(['patient', 'ward', 'bed'])->get();
+        $query = IpdAdmission::with(['patient', 'ward', 'bed']);
 
-        return view('doctor.ipd.index', compact('patients'));
+        // ✅ Patient Name Filter
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->patient_name . '%')
+                ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+            });
+        }
+
+        // ✅ Status Filter
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        // ✅ Admission Date Filter
+        if ($request->admission_date) {
+            $query->whereDate('admission_date', $request->admission_date);
+        }
+
+        // ✅ Ward Filter (Dropdown using ward_id)
+        if ($request->ward_id) {
+            $query->where('ward_id', $request->ward_id);
+        }
+
+        $patients = $query->latest()->get();
+
+        // ✅ Get all wards for dropdown
+        $wards = \App\Models\Ward::where('status', 1)
+                    ->orderBy('ward_name')
+                    ->get();
+
+        return view('doctor.ipd.index', compact('patients', 'wards'));
     }
 
     // ✅ 2. SHOW
- public function show($id)
-{
-    $ipd = IpdAdmission::with(['patient','ward','bed'])->findOrFail($id);
+    public function show($id)
+    {
+        $ipd = IpdAdmission::with(['patient', 'ward', 'bed'])->findOrFail($id);
 
-    $notes = IpdNote::where('ipd_id', $id)->latest()->get();
+        // Notes
+        $notes = IpdNote::where('ipd_id', $id)
+            ->latest()
+            ->get();
 
-    $treatment = IpdTreatment::where('ipd_id', $id)->first();
+        // Treatment
+        $treatment = IpdTreatment::where('ipd_id', $id)
+            ->first();
 
-    // ✅ FIXED (NO MIXING ISSUE)
-    $prescriptionItems = DB::table('ipd_prescription_items')
-        ->join('ipd_prescriptions', 'ipd_prescription_items.prescription_id', '=', 'ipd_prescriptions.id')
-        ->where('ipd_prescriptions.ipd_id', $id)
-        ->select('ipd_prescription_items.*')
-        ->get();
+        // Prescription
+        $prescriptionIds = IpdPrescription::where('patient_id', $ipd->patient_id)
+            ->pluck('id');
 
-    $labTests = DB::table('lab_requests')
-        ->where('consultation_id', $id)
-        ->get();
+        $prescriptionItems = IpdPrescriptionItem::whereIn(
+            'prescription_id',
+            $prescriptionIds
+        )->latest()->get();
 
-    $scans = DB::table('scan_requests')
-        ->join('scan_types', 'scan_requests.scan_type_id', '=', 'scan_types.id')
-        ->where('scan_requests.patient_id', $ipd->patient_id)
-        ->select('scan_types.name', 'scan_requests.status')
-        ->get();
+        // Existing Lab Requests
+        $labTests = DB::table('lab_requests')
+            ->where('consultation_id', $id)
+            ->get();
 
-    $medicines = Medicine::where('status', 1)->get();
+        // Existing Scan Requests
+        $scans = DB::table('scan_requests')
+            ->join('scan_types', 'scan_requests.scan_type_id', '=', 'scan_types.id')
+            ->where('scan_requests.patient_id', $ipd->patient_id)
+            ->select(
+                'scan_types.name',
+                'scan_requests.status',
+                'scan_requests.body_part',
+                'scan_requests.priority'
+            )
+            ->get();
 
-    $scanTypes = ScanType::where('status', 'Active')->get();
+        // Medicine Dropdown
+        $medicines = Medicine::where('status', 1)
+            ->get();
 
-    return view('doctor.ipd.show', compact(
-        'ipd',
-        'notes',
-        'treatment',
-        'prescriptionItems',
-        'labTests',
-        'scans',
-        'medicines',
-        'scanTypes'
-    ));
-}
+        // Radiology Dropdown
+        $scanTypes = ScanType::where('status', 'Active')
+            ->get();
+
+        // ✅ Lab Test Dropdown from lab_tests table
+        $availableLabTests = LabTest::where('status', 1)
+            ->orderBy('test_name')
+            ->get();
+
+        return view('doctor.ipd.show', compact(
+            'ipd',
+            'notes',
+            'treatment',
+            //'prescription',
+            'prescriptionItems',
+            'labTests',
+            'scans',
+            'medicines',
+            'scanTypes',
+            'availableLabTests'
+        ));
+    }
 
     // ✅ 3. STORE NOTE
     public function storeNote(Request $request, $id)
@@ -101,51 +157,41 @@ class IpdController extends Controller
     }
 
     // ✅ 5. STORE PRESCRIPTION
-public function storePrescription(Request $request, $id)
-{
-    $request->validate([
-        'medicine_id' => 'required|array',
-        'medicine_id.*' => 'required'
-    ]);
+    public function storePrescription(Request $request, $id)
+    {
+        $ipd = IpdAdmission::findOrFail($id);
 
-    $ipd = IpdAdmission::findOrFail($id);
-
-    // ✅ INSERT PRESCRIPTION
-    $prescriptionId = (string) Str::uuid();
-
-    DB::table('ipd_prescriptions')->insert([
-        'id' => $prescriptionId,
-        'ipd_id' => $id,
-        'patient_id' => $ipd->patient_id,
-        'doctor_id' => auth()->id(),
-        'prescription_date' => now(),
-        'created_at' => now(),
-        'updated_at' => now()
-    ]);
-
-    // ✅ INSERT ITEMS
-    foreach ($request->medicine_id as $key => $medicineId) {
-
-        if (!$medicineId) continue;
-
-        $medicine = Medicine::find($medicineId);
-        if (!$medicine) continue;
-
-        DB::table('ipd_prescription_items')->insert([
-            'id' => (string) Str::uuid(), // 🔥 MUST
-            'prescription_id' => $prescriptionId, // 🔥 MUST MATCH
-            'medicine_name' => $medicine->medicine_name,
-            'dosage' => $request->dosage[$key] ?? null,
-            'frequency' => $request->frequency[$key] ?? null,
-            'duration' => $request->duration[$key] ?? null,
-            'instructions' => $request->instructions[$key] ?? null,
-            'created_at' => now(),
-            'updated_at' => now()
+        $request->validate([
+            'medicine_id' => 'required|array',
+            'medicine_id.*' => 'required|exists:medicines,id',
         ]);
+
+        $prescription = IpdPrescription::create([
+            'ipd_id' => $id,
+            'patient_id' => $ipd->patient_id,
+            'doctor_id' => auth()->id(),
+            'prescription_date' => now(),
+        ]);
+
+        foreach ($request->medicine_id as $key => $medicineId) {
+
+            $medicine = Medicine::find($medicineId);
+
+            IpdPrescriptionItem::create([
+                'prescription_id' => $prescription->id,
+                'medicine_name' => $medicine->medicine_name,
+                'dosage' => $request->dosage[$key] ?? null,
+                'frequency' => $request->frequency[$key] ?? null,
+                'duration' => $request->duration[$key] ?? null,
+                'instructions' => $request->instructions[$key] ?? null,
+            ]);
+        }
+
+        return back()->with('success', 'Prescription added successfully');
     }
 
-    return back()->with('success', 'Prescription added successfully');
-}
+   // return back()->with('success', 'Prescription added successfully');
+
 
     // ✅ 6. LAB + RADIOLOGY (COMBINED)
     public function storeLabRadiology(Request $request, $id)

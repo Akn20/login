@@ -18,7 +18,13 @@
 
     <!-- ✅ Patient Info -->
     <div class="card-box mb-3">
-        <h4>Patient Details</h4>
+        <div class="d-flex justify-content-between align-items-center">
+            <h4>Patient Details</h4>
+
+            <a href="{{ route('doctor.ipd.index') }}" class="btn btn-secondary btn-sm">
+                ← Back
+            </a>
+        </div>
 
         <p><strong>Name:</strong>
             {{ $ipd->patient ? $ipd->patient->first_name . ' ' . $ipd->patient->last_name : 'N/A' }}
@@ -32,6 +38,11 @@
             {{ $ipd->bed->room_number ?? 'N/A' }}
         </p>
     </div>
+
+    {{-- ADD THIS near top of blade file after patient details --}}
+    @php
+        $isDischarged = $ipd->status == 'discharged';
+    @endphp
 
     <!-- Tabs -->
     <ul class="nav nav-tabs">
@@ -55,11 +66,17 @@
         <div class="tab-pane fade show active" id="notes">
             <div class="card-box">
 
-                <form method="POST" action="{{ route('doctor.ipd.storeNote', $ipd->id) }}">
-                    @csrf
-                    <textarea name="notes" class="form-control mb-2" required></textarea>
-                    <button class="btn btn-success btn-sm">Save</button>
-                </form>
+            @if(!$isDischarged)
+            <form method="POST" action="{{ route('doctor.ipd.storeNote', $ipd->id) }}">
+                @csrf
+                <textarea name="notes" class="form-control mb-2" required></textarea>
+                <button class="btn btn-success btn-sm">Save</button>
+            </form>
+            @else
+            <div class="alert alert-secondary">
+                Patient is discharged. Notes cannot be added.
+            </div>
+            @endif
 
                 <hr>
 
@@ -77,14 +94,21 @@
         <div class="tab-pane fade" id="treatment">
             <div class="card-box">
 
+                @if(!$isDischarged)
                 <form method="POST" action="{{ route('doctor.ipd.updateTreatment', $ipd->id) }}">
                     @csrf
-                    <textarea name="treatment" class="form-control mb-2">
-                        {{ $treatment->treatment ?? '' }}
-                    </textarea>
-
+                    <textarea name="treatment" class="form-control mb-2">{{ $treatment->treatment ?? '' }}</textarea>
                     <button class="btn btn-primary btn-sm">Update</button>
                 </form>
+                @else
+                <div class="mb-2">
+                    <textarea class="form-control" readonly>{{ $treatment->treatment ?? '' }}</textarea>
+                </div>
+
+                <div class="alert alert-secondary">
+                    Patient is discharged. Treatment cannot be updated.
+                </div>
+                @endif
 
             </div>
         </div>
@@ -93,19 +117,21 @@
         <div class="tab-pane fade" id="medications">
             <div class="card-box">
 
+                @if(!$isDischarged)
                 <form method="POST" action="{{ route('doctor.ipd.storePrescription', $ipd->id) }}">
                     @csrf
 
-                    <input type="hidden" name="patient_id" value="{{ $ipd->patient_id }}">
 
                     <select name="medicine_id[]" class="form-control mb-2" required>
                         <option value="">Select Medicine</option>
+
                         @foreach($medicines as $med)
-                            <option value="{{ $med->id }}">   <!-- ✅ IMPORTANT -->
+                            <option value="{{ $med->id }}">
                                 {{ $med->medicine_name }}
                             </option>
                         @endforeach
-                    </select>              
+                    </select>
+
                     <input name="dosage[]" class="form-control mb-2" placeholder="Dosage">
                     <input name="frequency[]" class="form-control mb-2" placeholder="Frequency">
                     <input name="duration[]" class="form-control mb-2" placeholder="Duration">
@@ -113,6 +139,11 @@
 
                     <button class="btn btn-success btn-sm mb-3">Add</button>
                 </form>
+                @else
+                <div class="alert alert-secondary">
+                    Patient is discharged. Prescription cannot be added.
+                </div>
+                @endif
 
                 <table class="table table-bordered">
                     <tr>
@@ -139,6 +170,7 @@
         <div class="tab-pane fade" id="lab">
             <div class="card-box">
 
+            @if(!$isDischarged)
                 <form method="POST" action="{{ route('doctor.ipd.storeLabRadiology', $ipd->id) }}">
                     @csrf
 
@@ -154,7 +186,15 @@
                     <!-- ================= LAB FIELDS ================= -->
                     <div id="labFields" style="display:none;">
 
-                        <input type="text" name="test_name" class="form-control mb-2" placeholder="Test Name">
+                        <select name="test_name" class="form-control mb-2">
+                            <option value="">Select Lab Test</option>
+
+                            @foreach($availableLabTests as $lab)
+                                <option value="{{ $lab->test_name }}">
+                                    {{ $lab->test_name }}
+                                </option>
+                            @endforeach
+                        </select>
 
                         <select name="lab_priority" class="form-control mb-2">
                             <option value="routine">Routine</option>
@@ -189,21 +229,35 @@
                     <button class="btn btn-success btn-sm">Submit</button>
                 </form>
 
+                @else
+                <div class="alert alert-secondary">
+                    Patient is discharged. Lab and Radiology requests cannot be added.
+                </div>
+                @endif
+
                 <hr>
 
                 <!-- SHOW LAB TESTS -->
                 <h6>Lab Tests</h6>
                 <ul>
-                    @foreach($labTests as $test)
+                    @forelse($labTests as $test)
                         <li>{{ $test->test_name }} ({{ $test->status }})</li>
-                    @endforeach
+                    @empty
+                        <li>No lab test requests found</li>
+                    @endforelse
                 </ul>
 
                 <h6>Radiology</h6>
                 <ul>
-                    @foreach($scanTypes as $scan)
-                        <li>{{ $scan->name }} ({{ $scan->status }})</li>
-                    @endforeach
+                    @forelse($scans as $scan)
+                        <li>
+                            {{ $scan->name }}
+                            - {{ $scan->body_part ?? 'N/A' }}
+                            ({{ $scan->status }})
+                        </li>
+                    @empty
+                        <li>No radiology requests found</li>
+                    @endforelse
                 </ul>
 
             </div>

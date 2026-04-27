@@ -9,6 +9,10 @@ class IpdPrescriptionItem extends Model
 {
     protected $table = 'ipd_prescription_items';
 
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     protected $fillable = [
     'id', // added
     'prescription_id',
