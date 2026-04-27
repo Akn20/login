@@ -21,12 +21,12 @@ class BillingApiController extends Controller
             'data' => $data
         ]);
     }
-
-    // 🔹 Store billing
-    public function store(Request $request)
-    {
+public function store(Request $request)
+{
+    try {
         $request->validate([
             'patient_id' => 'required',
+            'visit_id' => 'required',
             'amount' => 'required|numeric',
             'payment_mode' => 'required'
         ]);
@@ -38,7 +38,7 @@ class BillingApiController extends Controller
             'visit_id' => $request->visit_id,
             'amount' => $request->amount,
             'payment_mode' => $request->payment_mode,
-            'collected_by' => auth()->id() ?? null
+            'collected_by' => auth()->id() ?? 'SYSTEM'
         ]);
 
         return response()->json([
@@ -46,8 +46,14 @@ class BillingApiController extends Controller
             'message' => 'Billing Created',
             'data' => $billing
         ]);
-    }
 
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     // 🔹 Show single billing
     public function show($id)
     {
