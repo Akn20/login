@@ -916,11 +916,46 @@ Route::middleware(['auth'])
         Route::prefix('payroll')->name('payroll.')->group(function () {
 
             Route::resource('statutory-deduction', StatutoryDeductionController::class);
+            // Deleted records
+            Route::get('statutory-deduction/deleted', [StatutoryDeductionController::class, 'deleted'])
+                ->name('statutory-deduction.deleted');
+
+            // Restore
+            Route::put('statutory-deduction/{id}/restore', [StatutoryDeductionController::class, 'restore'])
+                ->name('statutory-deduction.restore');
+
+            // Force delete
+            Route::delete('statutory-deduction/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])
+                ->name('statutory-deduction.force-delete');
             Route::resource('salary-structure', SalaryStructureController::class);
+
+                        // Deleted records
+            Route::get('salary-structure/deleted', [SalaryStructureController::class, 'deleted'])
+                ->name('salary-structure.deleted');
+
+            // Restore
+            Route::put('salary-structure/{id}/restore', [SalaryStructureController::class, 'restore'])
+                ->name('salary-structure.restore');
+
+            // Force delete
+            Route::delete('salary-structure/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])
+                ->name('salary-structure.force-delete');
             Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
             Route::resource('allowance', PayrollAllowanceController::class);
             Route::resource('deduction-rule-set', DeductionRuleSetController::class);
             Route::resource('employee-salary-assignment', EmployeeSalaryAssignmentController::class);
+
+            // Deleted records
+            Route::get('employee-salary-assignment/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])
+                ->name('employee-salary-assignment.deleted');
+
+            // Restore
+            Route::put('employee-salary-assignment/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])
+                ->name('employee-salary-assignment.restore');
+
+            // Force delete
+            Route::delete('employee-salary-assignment/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])
+                ->name('employee-salary-assignment.force-delete');
 
             Route::resource('statutory-contribution', StatutoryContributionController::class);
 
@@ -2339,7 +2374,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/leave', [LeaveReportController::class, 'index'])->name('leave');
 
-       Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
+        Route::get('/payroll', [PayrollReportController::class, 'index'])->name('payroll');
 
         Route::get('/overtime', [OvertimeReportController::class, 'index'])->name('overtime');
 
