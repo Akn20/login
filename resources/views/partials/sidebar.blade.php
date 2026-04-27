@@ -41,6 +41,8 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('receptionist.dashboard') }}" class="nxl-link {{ request()->routeIs('receptionist.dashboard') ? 'active' : '' }}" 
+                        up-follow up-target="#main-container"><i class="feather-home me-2"></i> Dashboard</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.appointments.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-calendar me-2"></i>Appointments</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.receptionist.ipd.index') }}" class="nxl-link" up-follow 
@@ -53,6 +55,50 @@
                             up-target="#main-container"><i class="feather-shield me-2"></i>Insurance</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.billing.index') }}" class="nxl-link" up-follow
                      up-target="#main-container"><i class="feather-dollar-sign me-2"></i>Billing</a></li>
+                   <li class="nxl-item has-submenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <i class="feather-bar-chart-2"></i> Reports
+    </a>
+
+    <ul class="nxl-submenu">
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.registration') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Registration Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.appointment') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Appointment Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.token') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Token Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.collection') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Collection Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.admission') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Admission Report
+            </a>
+        </li>
+
+    </ul>
+</li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patients*') ? 'active nxl-trigger' : '' }}">
@@ -122,16 +168,47 @@
                         </a>
                     </li>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.billing') }}" class="nxl-link">
-                            <i class="feather-dollar-sign me-2"></i> Billing & Payments
-                        </a>
-                    </li>
-
-                    
-
                 </ul>
 
+
+ {{-- ---  ACCOUNTANT --- --}}
+            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
+
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
+                    <span class="nxl-mtext">Accountant</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+                    {{-- Billing Menu --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Billing
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            {{-- OPD → Receptionist Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    OPD Billing
+                                </a>
+                            </li>
+
+                            {{-- IPD → Accountant Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.accountant.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    IPD Billing
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                </ul>
 
             </li>
 
@@ -146,6 +223,11 @@
                 <ul class="nxl-submenu">
                     <li class="nxl-item"><a href="{{ route('doctor.view-appointment') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-file-text me-2"></i>OPD List</a></li>
+                    <li class="nxl-item">
+                        <a href="{{ route('doctor.ipd.index') }}" class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-activity me-2"></i>IPD List
+                        </a>
+                    </li>
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
                     </li>
@@ -345,17 +427,6 @@
                         </a>
                     </li>
 
-                    </ul>
-
-                    <ul class="nxl-submenu">
-                        <li class="nxl-item">
-                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
-                                <span class="nxl-mtext">Shift Management</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>   
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -401,6 +472,54 @@
                 </ul>
 
             </li>
+                    
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
+                                <span class="nxl-mtext">Shift Management</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-discharge.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-procedures"></i></span>
+                                <span class="nxl-mtext">Discharge Preparation</span>
+                            </a>
+                        </li>
+                   
+
+                    <li class="nxl-item has-submenu">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-bar-chart-2"></i> Reports
+                        </a>
+
+                        <ul class="nxl-submenu">
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.vitals') }}" class="nxl-link"> Vitals Report</a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.medications') }}" class="nxl-link">Medication Report </a>
+                            </li>
+                            
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.shift') }}" class="nxl-link">Shift Report</a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.nurse-reports.patient-summary') }}" class="nxl-link">Patient Summary</a>
+                            </li>
+                        </ul>
+                    </li>
+                    </ul>
+                                    
+                   
+                </li> 
+
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-package"></i></span>
@@ -493,6 +612,19 @@
                         </a>
                     </li>
                 </ul>
+
+                <ul class="nxl-submenu">
+
+
+    <!-- ITEMS -->
+    <li class="nxl-item">
+        <a href="{{ route('admin.laboratory.inventory.items.index') }}" class="nxl-link">
+            <i class="feather-box me-2"></i>
+            Lab Inventory Management
+        </a>
+    </li>
+
+</ul>
 
                 <ul class="nxl-submenu">
 
@@ -820,9 +952,9 @@
                 <ul class="nxl-submenu">
 
 
-
-                    <li class="nxl-item {{ request('type') == 'fixed' ? 'active' : '' }}">
-                        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'fixed']) }}" class="nxl-link">
+  </li>
+    <li class="nxl-item {{ request('type') == 'fixed' ? 'active' : '' }}">
+        <a href="{{ route('hr.payroll.allowance.index', ['type' => 'fixed']) }}" class="nxl-link">
                             <i class="feather-dollar-sign me-2"></i>
                             Fixed Allowances
                         </a>
@@ -834,49 +966,120 @@
                             Variable Allowances
                         </a>
                     </li>
+{{-- STATUTORY CONTRIBUTION --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.statutory-contribution.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.statutory-contribution.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Statutory Contribution
+
+    </a>
+</li>
+
+
+{{-- RATE EMPLOYEE MAPPING --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.rate-employee-mapping.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.rate-employee-mapping.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Rate Employee Mapping
+
+    </a>
+</li>
 
 
 
-                    {{-- DEDUCTION --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.deduction.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-minus-circle me-2"></i>Deductions
-                        </a>
-                    </li>
-                    {{-- HOURLY PAY --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.hourly-pay.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-clock me-2"></i>Hourly Pay
-                        </a>
-                    </li>
-                    {{-- DEDUCTION RULE SET --}}
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
-                            class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
-                            up-follow up-target="#main-container">
-                            <i class="feather-minus-circle me-2"></i>Deduction Rule Set
-                        </a>
-                    </li>
-                    {{-----Hourly Pay Approval------}}
-                        
-                    <li class="nxl-item">
-                        <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
-                        class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
-                        up-follow up-target="#main-container">
+        {{-----Hourly Pay Approval------}}
+            
+        <li class="nxl-item">
+            <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
+            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
+            up-follow up-target="#main-container">
 
-                            <i class="feather-clock me-2"></i>
-                            Hourly Pay Approval
+                <i class="feather-clock me-2"></i>
+                Hourly Pay Approval
 
-                        </a>
-                    </li>
+            </a>
+        </li>
 
-                </ul>
-    
+        
+        
+    {{-- DEDUCTION --}}
+    <li class="nxl-item">
+        <a href="{{ route('hr.payroll.deduction.index') }}"
+           class="nxl-link {{ request()->routeIs('hr.payroll.deduction.index') ? 'active' : '' }}"
+           up-follow up-target="#main-container">
+            <i class="feather-minus-circle me-2"></i>Deductions
+        </a>
+    </li>
+    {{-- HOURLY PAY --}}
+    <li class="nxl-item">
+    <a href="{{ route('hr.payroll.hourly-pay.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-clock me-2"></i>Hourly Pay
+    </a>
+</li>
+{{-- DEDUCTION RULE SET --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.deduction-rule-set.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.deduction-rule-set.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-minus-circle me-2"></i>Deduction Rule Set
+    </a>
+</li>
+{{-- STATUTORY DEDUCTION MASTER --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.statutory-deduction.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.statutory-deduction.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-file-text me-2"></i>Statutory Deduction
+    </a>
+</li>
+{{-- SALARY STRUCTURE --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.salary-structure.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.salary-structure.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-dollar-sign me-2"></i>Salary Structure
+    </a>
+</li>
+{{-- EMPLOYEE SALARY ASSIGNMENT --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.employee-salary-assignment.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.employee-salary-assignment.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-user-check me-2"></i>Employee Salary Assignment
+    </a>
+</li>
 
+
+{{-- PRE PAYROLL --}}
+<li class="nxl-item">
+    <a href="{{route('hr.payroll.pre-payroll.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.pre-payroll.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-file-text me-2"></i>Pre Payroll Adjustment
+    </a>
+</li>
+        {{-----Hourly Pay Approval------}}
+            
+        <li class="nxl-item">
+            <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
+            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
+            up-follow up-target="#main-container">
+
+                <i class="feather-clock me-2"></i>
+                Hourly Pay Approval
+
+            </a>
+        </li>
+
+        </ul>
 </li>   
 
             {{-- --- 7. SYSTEM ADMINISTRATION --- --}}
