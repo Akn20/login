@@ -47,6 +47,7 @@ use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\InsuranceController;
 use App\Models\Patient;
+use App\Modles\LabTest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
@@ -1498,54 +1499,8 @@ Route::prefix('billing')->group(function () {
     Route::post('/store', [BasicBillingController::class, 'apiStore']);
     Route::get('/{id}', [BasicBillingController::class, 'apiShow']);
 
-
-Route::prefix('receptionist/ipd')->group(function () {
-
-    // =========================
-    // MASTER APIs (TOP)
-    // =========================
-    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
-    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
-    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
-    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
-    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
-    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
-
-    // =========================
-    // MAIN IPD APIs
-    // =========================
-    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
-    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
-
-    // ⚠️ KEEP THESE AT LAST
-    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
-    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
-    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
 });
 
-Route::prefix('receptionist/ipd')->group(function () {
-
-    // =========================
-    // MASTER APIs (TOP)
-    // =========================
-    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
-    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
-    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
-    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
-    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
-    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
-
-    // =========================
-    // MAIN IPD APIs
-    // =========================
-    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
-    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
-
-    // ⚠️ KEEP THESE AT LAST
-    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
-    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
-    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
-});
 
 //ReceptionistReport
 
@@ -1558,6 +1513,29 @@ Route::prefix('receptionist/reports')->group(function () {
     Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
 
 });
+
+Route::prefix('receptionist/ipd')->group(function () {
+
+    // =========================
+    // MASTER APIs (TOP)
+    // =========================
+    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
+    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
+    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
+    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
+    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
+    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
+
+    // =========================
+    // MAIN IPD APIs
+    // =========================
+    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
+    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
+
+    // ⚠️ KEEP THESE AT LAST
+    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
+    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
+    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
 });
 
 
@@ -1590,4 +1568,12 @@ Route::prefix('doctor/ipd')->group(function () {
     // ✅ SUBMIT DISCHARGE
     Route::post('/submit-discharge/{id}', [IpdController::class, 'apiDischargeSubmit']);
 
+    // 🔥 ADD THIS HERE (correct place)
+    Route::get('/medicines', [IpdController::class, 'apiMedicines']);
+
+    // Scan Types
+    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']); 
+
+    // Lab Test
+    Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
 });

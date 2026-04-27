@@ -190,6 +190,9 @@ class IpdController extends Controller
         return back()->with('success', 'Prescription added successfully');
     }
 
+   // return back()->with('success', 'Prescription added successfully');
+
+
     // ✅ 6. LAB + RADIOLOGY (COMBINED)
     public function storeLabRadiology(Request $request, $id)
     {
@@ -312,16 +315,21 @@ public function apiShow($id)
 
     $treatment = IpdTreatment::where('ipd_id', $id)->first();
 
-    $prescription = IpdPrescription::where('ipd_id', $id)->latest()->first();
+    // ✅ FIXED PRESCRIPTION
+    $prescriptionIds = IpdPrescription::where('ipd_id', $id)->pluck('id');
 
-    $prescriptionItems = $prescription
-        ? IpdPrescriptionItem::where('prescription_id', $prescription->id)->get()
-        : [];
+   $prescriptionItems = DB::table('ipd_prescription_items')
+    ->join('ipd_prescriptions', 'ipd_prescription_items.prescription_id', '=', 'ipd_prescriptions.id')
+    ->where('ipd_prescriptions.ipd_id', $id) // 🔥 IMPORTANT
+    ->select('ipd_prescription_items.*')
+    ->get();
 
+    // ✅ LAB
     $labTests = DB::table('lab_requests')
         ->where('consultation_id', $id)
         ->get();
 
+    // ✅ RADIOLOGY
     $scans = DB::table('scan_requests')
         ->where('patient_id', $ipd->patient_id)
         ->get();
@@ -333,7 +341,7 @@ public function apiShow($id)
             'ipd' => $ipd,
             'notes' => $notes,
             'treatment' => $treatment,
-            'prescription' => $prescriptionItems,
+            'prescription' => $prescriptionItems, // ✅ correct
             'lab_tests' => $labTests,
             'radiology' => $scans
         ]
@@ -385,20 +393,49 @@ public function apiUpdateTreatment(Request $request, $id)
 // ======================================
 public function apiStorePrescription(Request $request, $id)
 {
+    // ✅ VALIDATION
+    $request->validate([
+        'medicine_id' => 'required|array',
+        'medicine_id.*' => 'required'
+    ]);
+
+    // ✅ GET IPD
+    $ipd = DB::table('ipd_admissions')->where('id', $id)->first();
+
+    if (!$ipd) {
+        return response()->json([
+            'status' => false,
+            'message' => 'IPD not found'
+        ], 404);
+    }
+
+    // ✅ GET DOCTOR FROM STAFF TABLE
+    $staff = DB::table('staff')->where('id', $ipd->doctor_id)->first();
+    $doctorId = $staff->user_id ?? null;
+
+    // ✅ CREATE PRESCRIPTION
     $prescription = IpdPrescription::create([
+        'id' => (string) Str::uuid(),
         'ipd_id' => $id,
-        'patient_id' => $request->patient_id,
-        'doctor_id' => $request->doctor_id,
+        'patient_id' => $ipd->patient_id,
+        'doctor_id' => $doctorId,
         'prescription_date' => now()
     ]);
 
+    // ✅ STORE ITEMS
     foreach ($request->medicine_id as $key => $medicineId) {
+
+        // 🚫 skip empty
+        if (!$medicineId) continue;
 
         $medicine = Medicine::find($medicineId);
 
+        // 🚫 skip invalid
+        if (!$medicine) continue;
+
         IpdPrescriptionItem::create([
             'prescription_id' => $prescription->id,
-            'medicine_name' => $medicine->medicine_name ?? 'Unknown',
+            'medicine_name' => $medicine->medicine_name,
             'dosage' => $request->dosage[$key] ?? null,
             'frequency' => $request->frequency[$key] ?? null,
             'duration' => $request->duration[$key] ?? null,
@@ -418,39 +455,67 @@ public function apiStorePrescription(Request $request, $id)
 // ======================================
 public function apiStoreLabRadiology(Request $request, $id)
 {
+    $ipd = DB::table('ipd_admissions')->where('id', $id)->first();
+
+    if (!$ipd) {
+        return response()->json([
+            'status' => false,
+            'message' => 'IPD not found'
+        ], 404);
+    }
+
+    // ================= LAB =================
     if ($request->type == 'lab') {
 
         DB::table('lab_requests')->insert([
             'id' => (string) Str::uuid(),
-            'patient_id' => $request->patient_id,
-            'consultation_id' => $id,
+            'patient_id' => $ipd->patient_id,
+            'consultation_id' => $id, // ✅ IMPORTANT
             'test_name' => $request->test_name,
-            'priority' => $request->lab_priority ?? 'routine',
+            'priority' => $request->priority ?? 'routine',
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
-    } elseif ($request->type == 'radiology') {
+        return response()->json([
+            'status' => true,
+            'message' => 'Lab test added successfully'
+        ]);
+    }
+
+    // ================= RADIOLOGY =================
+    if ($request->type == 'radiology') {
+
+        $staff = DB::table('staff')->where('id', $ipd->doctor_id)->first();
+
+        if (!$staff) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Doctor staff not found'
+            ], 400);
+        }
+
+        $userId = $staff->user_id;
 
         DB::table('scan_requests')->insert([
             'id' => (string) Str::uuid(),
-            'patient_id' => $request->patient_id,
-            'doctor_id' => $request->doctor_id,
+            'patient_id' => $ipd->patient_id,
+            'doctor_id' => $userId,
             'scan_type_id' => $request->scan_type_id,
             'body_part' => $request->body_part,
             'reason' => $request->reason,
-            'priority' => $request->scan_priority ?? 'Normal',
+            'priority' => $request->priority ?? 'Normal',
             'status' => 'Pending',
             'created_at' => now(),
             'updated_at' => now()
         ]);
-    }
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Lab/Radiology request added successfully'
-    ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Radiology request added successfully'
+        ]);
+    }
 }
 
 //
@@ -474,41 +539,65 @@ public function apiDischargeDetails($id)
 // ======================================
 public function apiDischargeSubmit(Request $request, $id)
 {
-    $ipd = IpdAdmission::find($id);
+    // ✅ Get IPD record
+    $ipd = DB::table('ipd_admissions')->where('id', $id)->first();
 
     if (!$ipd) {
         return response()->json([
             'status' => false,
-            'message' => 'IPD patient not found'
+            'message' => 'IPD not found'
         ], 404);
     }
 
-    if ($ipd->status == 'discharged') {
-        return response()->json([
-            'status' => false,
-            'message' => 'Patient already discharged'
+    // ✅ Get doctor from IPD
+    $doctor = DB::table('users')->where('id', $ipd->doctor_id)->first();
+
+    // ✅ Insert discharge summary
+   DB::table('ipd_discharges')->insert([
+    'id' => (string) Str::uuid(),
+    'ipd_id' => $id, // ✅ IMPORTANT (use this instead of patient_id)
+    'diagnosis' => $request->diagnosis,
+    'treatment_given' => $request->treatment_given,
+    'medication_advice' => $request->medication_advice,
+    'follow_up' => $request->follow_up,
+    'doctor_name' => $doctor->name ?? 'Doctor',
+    'date' => now(),
+    'created_at' => now(),
+    'updated_at' => now(),
+]);
+
+    // ✅ Update IPD status
+    DB::table('ipd_admissions')
+        ->where('id', $id)
+        ->update([
+            'status' => 'discharged',
+            'discharge_date' => now()
         ]);
-    }
-
-    IpdDischarge::create([
-        'ipd_id' => $id,
-        'diagnosis' => $request->diagnosis,
-        'treatment_given' => $request->treatment_given,
-        'medication_advice' => $request->medication_advice,
-        'follow_up' => $request->follow_up,
-        'doctor_name' => $request->doctor_name,
-        'date' => $request->date
-    ]);
-
-    $ipd->update([
-        'status' => 'discharged',
-        'discharge_date' => now()
-    ]);
 
     return response()->json([
         'status' => true,
         'message' => 'Patient discharged successfully'
     ]);
 }
-
+public function apiMedicines()
+{
+    return response()->json([
+        'status' => true,
+        'data' => \App\Models\Medicine::where('status', 1)->get(),
+    ]);
+}
+public function apiScanTypes()
+{
+    return response()->json([
+        'status' => true,
+        'data' => \App\Models\ScanType::where('status', 1)->get()
+    ]);
+}
+public function apiLabTests()
+{
+    return response()->json([
+        'status' => true,
+        'data' => \App\Models\LabTest::where('status', 1)->get()
+    ]);
+}
 }

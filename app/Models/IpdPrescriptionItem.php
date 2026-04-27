@@ -14,13 +14,14 @@ class IpdPrescriptionItem extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'prescription_id',
-        'medicine_name',
-        'dosage',
-        'frequency',
-        'duration',
-        'instructions'
-    ];
+    'id', // added
+    'prescription_id',
+    'medicine_name',
+    'dosage',
+    'frequency',
+    'duration',
+    'instructions'
+];
 
     protected static function boot()
     {
