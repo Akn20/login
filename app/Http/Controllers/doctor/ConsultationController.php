@@ -1,20 +1,22 @@
 <?php
 
 namespace App\Http\Controllers\Doctor;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Medicine;
-use App\Models\Patient;
 use App\Models\Appointment;
 use App\Models\Consultation;
-use App\Models\Staff;
-use App\Models\Roles;
 use App\Models\LabRequest;
-use Illuminate\Support\Str;
 use App\Models\LabTest;
+use App\Models\Medicine;
+use App\Models\Patient;
+use App\Models\Roles;
+use App\Models\SampleCollection;
+use App\Models\Staff;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 class ConsultationController extends Controller
 {
-
     /* =========================
        Open Consultation Page
     ==========================*/
@@ -28,8 +30,6 @@ class ConsultationController extends Controller
             ->whereDate('appointment_date', today())
             ->first();
 
-
-
         // Fetch medicines
         $medicines = Medicine::where('status', 1)->get();
 
@@ -38,9 +38,9 @@ class ConsultationController extends Controller
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
         $labTests = LabTest::where('status', 1)->get();
+
         return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests'));
     }
-
 
     /* =========================
        Save Consultation
@@ -70,11 +70,11 @@ class ConsultationController extends Controller
         $appointment = Appointment::findOrFail($request->appointment_id);
 
         $appointment->update([
-            'appointment_status' => 'Completed'
+            'appointment_status' => 'Completed',
         ]);
         $tests = [];
 
-        if (!empty($request->tests)) {
+        if (! empty($request->tests)) {
             foreach ($request->tests as $testId) {
                 $labTest = LabTest::find($testId);
                 if ($labTest) {
@@ -92,21 +92,21 @@ class ConsultationController extends Controller
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
             'tests' => $tests,
-            'consultation_date' => now()
+            'consultation_date' => now(),
         ]);
         foreach ($request->medicine as $index => $medicineId) {
             $consultation->medicines()->attach($medicineId, [
+                'id' => (string) Str::uuid(),
                 'dosage' => $request->dosage[$index],
                 'frequency' => $request->frequency[$index],
                 'duration' => $request->duration[$index],
-                'instructions' => $request->instructions[$index]
+                'instructions' => $request->instructions[$index],
             ]);
 
         }
 
-
         // Lab Requests
-        if (!empty($request->tests)) {
+        if (! empty($request->tests)) {
 
             foreach ($request->tests as $index => $testId) {
 
@@ -114,13 +114,22 @@ class ConsultationController extends Controller
 
                 if ($labTest) {
 
-                    LabRequest::create([
+                    $labRequest = LabRequest::create([
                         'id' => Str::uuid(),
                         'patient_id' => $request->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
-                        'priority' => $request->priority[$index] ?? 'routine',
-                        'status' => 'pending'
+                        'priority' => is_array($request->priority)
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
+                        'status' => 'pending',
+                    ]);
+
+                    SampleCollection::create([
+                        'id' => Str::uuid(),
+                        'lab_request_id' => $labRequest->id,
+                        'patient_id' => $request->patient_id,
+                        'status' => 'Pending',
                     ]);
 
                 }
@@ -128,12 +137,14 @@ class ConsultationController extends Controller
             }
 
         }
+
         return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
 
     }
+
     // =========================
-// Edit Consultation
-// =========================
+    // Edit Consultation
+    // =========================
     public function edit($id)
     {
         $consultation = Consultation::with(['medicines', 'labRequests'])->findOrFail($id);
@@ -150,14 +161,17 @@ class ConsultationController extends Controller
 
         $doctors = Staff::where('role_id', $doctorRole->id)->get();
 
+        $labTests = LabTest::where('status', 1)->get();
+
         return view(
             'doctor.opd.edit-consultation',
             compact('consultation', 'patient', 'medicines', 'doctors', 'labTests', 'priority')
         );
     }
+
     // =========================
-// Update Consultation
-// =========================
+    // Update Consultation
+    // =========================
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -167,39 +181,33 @@ class ConsultationController extends Controller
             'dosage.*' => 'required',
             'frequency.*' => 'required',
             'duration.*' => 'required',
-            'instructions.*' => 'required'
+            'instructions.*' => 'required',
         ]);
 
         $consultation = Consultation::findOrFail($id);
-        $tests = is_array($request->tests)
-            ? implode(',', $request->tests)
-            : $request->tests;
+        $tests = [];
+
+        if (! empty($request->tests)) {
+            foreach ($request->tests as $testId) {
+                $labTest = LabTest::find($testId);
+                if ($labTest) {
+                    $tests[] = $labTest->test_name;
+                }
+            }
+        }
+
+        $tests = implode(',', $tests);
         $consultation->update([
             'symptoms' => $request->symptoms,
             'diagnosis' => $request->diagnosis,
             'tests' => $tests,
-            'referral_doctor_id' => $request->referral_doctor_id
+            'referral_doctor_id' => $request->referral_doctor_id,
         ]);
         LabRequest::where('consultation_id', $consultation->id)->delete();
 
         // Labrequests
-        if (!empty($request->tests)) {
+        if (! empty($request->tests)) {
 
-            $tests = [];
-
-            foreach ($request->tests as $testInput) {
-
-                $splitTests = explode(',', $testInput);
-
-                foreach ($splitTests as $test) {
-
-                    $test = trim($test);
-
-                    if ($test !== '') {
-                        $tests[] = $test;
-                    }
-                }
-            }
             foreach ($request->tests as $testId) {
 
                 $labTest = LabTest::find($testId);
@@ -211,8 +219,10 @@ class ConsultationController extends Controller
                         'patient_id' => $consultation->patient_id,
                         'consultation_id' => $consultation->id,
                         'test_name' => $labTest->test_name,
-                        'priority' => $request->priority ?? 'routine',
-                        'status' => 'pending'
+                        'priority' => is_array($request->priority)
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
+                        'status' => 'pending',
                     ]);
 
                 }
@@ -228,10 +238,11 @@ class ConsultationController extends Controller
             if ($medicine) {
 
                 $consultation->medicines()->attach($medicine, [
+                    'id' => (string) Str::uuid(),
                     'dosage' => $request->dosage[$index],
                     'frequency' => $request->frequency[$index],
                     'duration' => $request->duration[$index],
-                    'instructions' => $request->instructions[$index]
+                    'instructions' => $request->instructions[$index],
                 ]);
 
             }
@@ -243,13 +254,12 @@ class ConsultationController extends Controller
             ->with('success', 'Consultation updated successfully');
     }
 
-
     /* =========================
        Consultation Summary
     ==========================*/
     public function summary($id)
     {
-        $consultation = Consultation::with(['patient', 'medicines'])
+        $consultation = Consultation::with(['patient', 'medicines', 'labRequests'])
             ->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
@@ -273,7 +283,6 @@ class ConsultationController extends Controller
         return view('doctor.opd.print-prescription', compact('consultation'));
     }
 
-
     /* =========================
       API: List Consultations
     ==========================*/
@@ -282,31 +291,34 @@ class ConsultationController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Consultation list fetched successfully',
-            'data' => Consultation::with(['patient'])->latest()->get()
+            'data' => Consultation::with(['patient'])->latest()->get(),
         ]);
     }
-
 
     /* =========================
        Show Single Consultation
     ==========================*/
     public function apiShow($id)
     {
-        $consultation = Consultation::with('patient')->find($id);
+        $consultation = Consultation::with([
+            'patient',
+            'doctor',
+            'medicines',
+            'labRequests',
+        ])->find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
-            'data' => $consultation
+            'data' => $consultation,
         ]);
     }
-
 
     /* =========================
        Store Consultation
@@ -318,47 +330,112 @@ class ConsultationController extends Controller
             'doctor_id' => 'required',
             'symptoms' => 'required|string',
             'diagnosis' => 'required|string',
-            'tests' => 'nullable|string'
+            'tests' => 'nullable|string',
         ]);
 
-        $consultation = Consultation::create([
-            'patient_id' => $validated['patient_id'],
-            'doctor_id' => $validated['doctor_id'],
-            'symptoms' => $validated['symptoms'],
-            'diagnosis' => $validated['diagnosis'],
-            'tests' => $validated['tests'] ?? null,
-            'consultation_date' => now()
-        ]);
-        // Save Lab Requests
-        $tests = is_array($request->tests)
-            ? $request->tests
-            : explode(',', $request->tests);
-
-        foreach ($tests as $index => $test) {
-
-            $test = trim($test);
-
-            if ($test !== '') {
-
-                LabRequest::create([
-                    'id' => Str::uuid(),
-                    'patient_id' => $request->patient_id,
-                    'consultation_id' => $consultation->id,
-                    'test_name' => $test,
-                    'priority' => $request->priority[$index] ?? 'routine',
-                    'status' => 'pending'
+        // =========================
+        // Update Appointment Status
+        // =========================
+        if ($request->appointment_id) {
+            $appointment = Appointment::find($request->appointment_id);
+            if ($appointment) {
+                $appointment->update([
+                    'appointment_status' => 'Completed',
                 ]);
-
             }
         }
 
+        // =========================
+        // Convert Test IDs → Names
+        // =========================
+        $testNames = [];
+        $testIds = [];
+
+        if (! empty($request->tests)) {
+
+            $testIds = is_array($request->tests)
+                ? $request->tests
+                : explode(',', $request->tests);
+
+            foreach ($testIds as $id) {
+                $labTest = LabTest::find($id);
+                if ($labTest) {
+                    $testNames[] = $labTest->test_name; // ✅ store name
+                }
+            }
+        }
+
+        // Store names in consultations table
+        $tests = ! empty($testNames) ? implode(',', $testNames) : null;
+
+        // =========================
+        // Create Consultation
+        // =========================
+        $consultation = Consultation::create([
+            'patient_id' => $validated['patient_id'],
+            'doctor_id' => $validated['doctor_id'],
+            'referral_doctor_id' => $request->referral_doctor_id,
+            'symptoms' => $validated['symptoms'],
+            'diagnosis' => $validated['diagnosis'],
+            'tests' => $tests,
+            'consultation_date' => now(),
+        ]);
+
+        // =========================
+        // Save Lab Requests
+        // =========================
+        if (! empty($testIds)) {
+
+            foreach ($testIds as $testId) {
+
+                $testId = trim($testId);
+
+                if ($testId !== '') {
+
+                    $labTest = LabTest::find($testId);
+
+                    if ($labTest) {
+                        LabRequest::create([
+                            'id' => Str::uuid(),
+                            'patient_id' => $request->patient_id,
+                            'consultation_id' => $consultation->id,
+                            'test_name' => $labTest->test_name,
+                            'priority' => $request->priority ?? 'routine',
+                            'status' => 'pending',
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // =========================
+        // Save Medicines (NO CHANGE)
+        // =========================
+        if ($request->has('medicines')) {
+
+            foreach ($request->medicines as $med) {
+
+                if (! empty($med['medicine'])) {
+
+                    $consultation->medicines()->attach($med['medicine'], [
+                        'dosage' => $med['dosage'] ?? null,
+                        'frequency' => $med['frequency'] ?? null,
+                        'duration' => $med['duration'] ?? null,
+                        'instructions' => $med['instructions'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        // =========================
+        // Response
+        // =========================
         return response()->json([
             'status' => true,
             'message' => 'Consultation created successfully',
-            'data' => $consultation->load('patient')
+            'data' => $consultation->load('patient', 'medicines', 'labRequests'),
         ], 201);
     }
-
 
     /* =========================
        Update Consultation
@@ -367,48 +444,68 @@ class ConsultationController extends Controller
     {
         $consultation = Consultation::find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         $validated = $request->validate([
             'symptoms' => 'sometimes|string',
             'diagnosis' => 'sometimes|string',
-            'tests' => 'sometimes|nullable|string'
+            'medicine' => 'sometimes|array',
+            'medicine.*' => 'sometimes|required',
+            'tests' => 'sometimes|nullable|string',
         ]);
-        if (!empty($validated['tests'])) {
+
+        // ✅ UPDATE TESTS
+        if (! empty($validated['tests'])) {
 
             LabRequest::where('consultation_id', $consultation->id)->delete();
 
             $tests = explode(',', $validated['tests']);
 
-            foreach ($tests as $index => $test) {
+            foreach ($tests as $test) {
 
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $consultation->patient_id,
                     'consultation_id' => $consultation->id,
                     'test_name' => trim($test),
-                    'priority' => $request->priority[$index] ?? 'routine',
-                    'status' => 'pending'
+                    'priority' => $request->priority ?? 'routine',
+                    'status' => 'pending',
                 ]);
-
             }
-
         }
 
         $consultation->update($validated);
 
+        // ✅ ADD THIS (MEDICINES FIX)
+        if ($request->has('medicines')) {
+
+            $consultation->medicines()->detach();
+
+            foreach ($request->medicines as $index => $med) {
+
+                if (! empty($med['medicine'])) {
+
+                    $consultation->medicines()->attach($med['medicine'], [
+                        'dosage' => $med['dosage'] ?? null,
+                        'frequency' => $med['frequency'] ?? null,
+                        'duration' => $med['duration'] ?? null,
+                        'instructions' => $med['instructions'] ?? null,
+                    ]);
+                }
+            }
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Consultation updated successfully',
-            'data' => $consultation->load('patient')
+            'data' => $consultation->load(['patient', 'medicines', 'labRequests']),
         ]);
     }
-
 
     /* =========================
        Delete Consultation
@@ -417,10 +514,10 @@ class ConsultationController extends Controller
     {
         $consultation = Consultation::find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
@@ -428,70 +525,79 @@ class ConsultationController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Consultation deleted successfully'
+            'message' => 'Consultation deleted successfully',
         ]);
     }
-
 
     /* =========================
        Consultation Summary
     ==========================*/
     public function apiSummary($id)
     {
-        $consultation = Consultation::with('patient')->find($id);
+        $consultation = Consultation::with([
+            'patient',
+            'doctor',
+            'referralDoctor',
+            'medicines',
+            'labRequests',
+        ])->find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Consultation summary fetched successfully',
-            'data' => $consultation
+            'data' => $consultation,
         ]);
     }
+
     public function apiPrescriptions($id)
     {
-        $consultation = Consultation::with('medicines')->find($id);
+        $consultation = Consultation::with('medicines', 'doctor')->find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Prescriptions fetched successfully',
-            'data' => $consultation->medicines
+            'data' => $consultation->medicines,
         ]);
     }
+
     public function apiTests($id)
     {
         $consultation = Consultation::find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Tests fetched successfully',
-            'data' => $consultation->tests
+            'data' => $consultation->tests,
         ]);
     }
+
     public function apiPatientHistory($patientId)
     {
         $consultations = Consultation::with([
             'doctor',
-            'medicines'
+            'medicines',
+            'patient',
+            'labRequests',
         ])
             ->where('patient_id', $patientId)
             ->latest('consultation_date')
@@ -499,25 +605,33 @@ class ConsultationController extends Controller
 
         return response()->json([
             'status' => true,
-            'data' => $consultations
+            'data' => $consultations,
         ]);
     }
+
     public function apiReferral($id)
     {
         $consultation = Consultation::with('referralDoctor')->find($id);
 
-        if (!$consultation) {
+        if (! $consultation) {
             return response()->json([
                 'status' => false,
-                'message' => 'Consultation not found'
+                'message' => 'Consultation not found',
             ], 404);
         }
 
         return response()->json([
             'status' => true,
             'message' => 'Referral doctor fetched successfully',
-            'data' => $consultation->referralDoctor
+            'data' => $consultation->referralDoctor,
         ]);
     }
 
+    public function apiMedicines()
+    {
+        return response()->json([
+            'status' => true,
+            'data' => Medicine::where('status', 1)->get(),
+        ]);
+    }
 }

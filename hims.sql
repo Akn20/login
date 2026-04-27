@@ -1,4 +1,4 @@
-USE `hims`;
+USE `hims_app`;
 
 -- Helpful: disable FK checks while seeding
 SET
