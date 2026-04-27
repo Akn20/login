@@ -1604,7 +1604,7 @@ Route::prefix('pre-payroll')->group(function () {
 
     Route::get('/', [PrePayrollAdjustmentController::class, 'apiIndex']);
     Route::get('/form-data', [PrePayrollAdjustmentController::class, 'formData']);
-    Route::get('/deleted', [PrePayrollAdjustmentController::class, 'apiDeleted']);
+    Route::post('/{id}/approve', [PrePayrollAdjustmentController::class, 'approve']);
 
     Route::get('/{id}', [PrePayrollAdjustmentController::class, 'apiShow']);
     Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
