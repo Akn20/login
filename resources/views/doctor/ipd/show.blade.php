@@ -98,14 +98,14 @@
 
                     <input type="hidden" name="patient_id" value="{{ $ipd->patient_id }}">
 
-                    <select name="medicine_name[]" class="form-control mb-2" required>
+                    <select name="medicine_id[]" class="form-control mb-2" required>
                         <option value="">Select Medicine</option>
                         @foreach($medicines as $med)
-                            <option value="{{ $med->medicine_name }}">
+                            <option value="{{ $med->id }}">   <!-- ✅ IMPORTANT -->
                                 {{ $med->medicine_name }}
                             </option>
                         @endforeach
-                    </select>                
+                    </select>              
                     <input name="dosage[]" class="form-control mb-2" placeholder="Dosage">
                     <input name="frequency[]" class="form-control mb-2" placeholder="Frequency">
                     <input name="duration[]" class="form-control mb-2" placeholder="Duration">
