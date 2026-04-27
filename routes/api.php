@@ -46,6 +46,7 @@ use App\Http\Controllers\Api\Reports\PayrollReportApiController;
 use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\ReceptionistDashboardController;
 use App\Models\Patient;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use Illuminate\Support\Facades\DB;
@@ -153,6 +154,8 @@ use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatient
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Models\Patient;
+
+use App\Http\Controllers\ReceptionistDashboardController;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -1460,7 +1463,9 @@ Route::prefix('lab')->group(function () {
 
 //Insurance(Receptionist)
 
-
+Route::prefix('receptionist/dashboard')->group(function () {
+    Route::get('/', [ReceptionistDashboardController::class, 'apiDashboard']);
+});
 
 Route::prefix('insurance')->group(function () {
 
@@ -1492,6 +1497,8 @@ Route::get('/patient-by-name/{name}', function ($name) {
         'data' => $patient
     ]);
 });
+
+//Reception dashboard
 
 
 //receptionistbilling
@@ -1764,4 +1771,28 @@ Route::prefix('inventory-alerts')->group(function () {
         'apiResolve'
     ]);
 
+});
+
+Route::prefix('receptionist/ipd')->group(function () {
+
+    // =========================
+    // MASTER APIs (TOP)
+    // =========================
+    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
+    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
+    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
+    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
+    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
+    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
+
+    // =========================
+    // MAIN IPD APIs
+    // =========================
+    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
+    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
+
+    // ⚠️ KEEP THESE AT LAST
+    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
+    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
+    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
 });
