@@ -124,9 +124,15 @@ use Illuminate\Support\Facades\Route;
 // added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
-//labaratory
+//laboratory
 use App\Http\Controllers\Admin\AlertController;
 use App\Http\Controllers\Admin\LabDashboardController;
+use App\Http\Controllers\Admin\InventoryItemController;
+use App\Http\Controllers\Admin\InventoryUsageController;
+use App\Http\Controllers\Admin\InventoryExpiryController;
+use App\Http\Controllers\Admin\InventoryAlertController;
+use App\Http\Controllers\Admin\InventoryController;
+
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -1140,16 +1146,16 @@ Route::prefix('nurse-shift-handover')->group(function () {
 
     // Get handover notes by assignment
     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
-    
+
     // Create handover note
     Route::post('/', [NurseShiftsController::class, 'apiStore']);
-    
+
     // Update handover note
     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
-    
+
     // Delete handover note
     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
-    
+
     // Update handover status
     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
 });
@@ -1403,7 +1409,7 @@ Route::prefix('doctor')->group(function () {
 
     Route::put('/notifications/{id}/read', [NotificationController::class, 'apiMarkAsRead']);
 
-    });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -1607,4 +1613,155 @@ Route::prefix('pre-payroll')->group(function () {
 
     Route::post('/restore/{id}', [PrePayrollAdjustmentController::class, 'restore']);
     Route::delete('/force-delete/{id}', [PrePayrollAdjustmentController::class, 'forceDelete']);
+
+});
+/*
+|--------------------------------------------------------------------------
+| INVENTORY
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory')->group(function () {
+
+    /*
+    | IMPORTANT:
+    | Static routes first
+    | Dynamic {id} routes lastF
+    */
+
+    // All inventory items
+    Route::get('/', [
+        InventoryItemController::class,
+        'apiIndex'
+    ]);
+
+    // Create item
+    Route::post('/store', [
+        InventoryItemController::class,
+        'apiStore'
+    ]);
+
+    // Usage logs
+    Route::get('/logs', [
+        InventoryController::class,
+        'apiUsageLogs'
+    ]);
+
+    // Consume stock
+    Route::post('/use/{id}', [
+        InventoryController::class,
+        'apiUseItem'
+    ]);
+
+    // Single item (KEEP AFTER /logs)
+    Route::get('/{id}', [
+        InventoryItemController::class,
+        'apiShow'
+    ]);
+
+    // Update
+    Route::post('/update/{id}', [
+        InventoryItemController::class,
+        'apiUpdate'
+    ]);
+
+    // Delete
+    Route::delete('/delete/{id}', [
+        InventoryItemController::class,
+        'apiDestroy'
+    ]);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY USAGE REPORTS
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-usage')->group(function () {
+
+    Route::get('/', [
+        InventoryUsageController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/search', [
+        InventoryUsageController::class,
+        'apiSearch'
+    ]);
+
+    Route::get('/item/{item_id}', [
+        InventoryUsageController::class,
+        'apiByItem'
+    ]);
+
+    Route::get('/user/{user_id}', [
+        InventoryUsageController::class,
+        'apiByUser'
+    ]);
+
+    Route::get('/summary', [
+        InventoryUsageController::class,
+        'apiSummary'
+    ]);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY EXPIRY
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-expiry')->group(function () {
+
+    Route::get('/', [
+        InventoryExpiryController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/expired', [
+        InventoryExpiryController::class,
+        'apiExpired'
+    ]);
+
+    Route::get('/expiring-soon', [
+        InventoryExpiryController::class,
+        'apiExpiringSoon'
+    ]);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY ALERTS
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-alerts')->group(function () {
+
+    Route::get('/', [
+        InventoryAlertController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/status/{status}', [
+        InventoryAlertController::class,
+        'apiByStatus'
+    ]);
+
+    Route::post('/acknowledge/{id}', [
+        InventoryAlertController::class,
+        'apiAcknowledge'
+    ]);
+
+    Route::post('/resolve/{id}', [
+        InventoryAlertController::class,
+        'apiResolve'
+    ]);
+
 });

@@ -429,6 +429,19 @@
 
                 <ul class="nxl-submenu">
 
+
+    <!-- ITEMS -->
+    <li class="nxl-item">
+        <a href="{{ route('admin.laboratory.inventory.items.index') }}" class="nxl-link">
+            <i class="feather-box me-2"></i>
+            Lab Inventory Management
+        </a>
+    </li>
+
+</ul>
+
+                <ul class="nxl-submenu">
+
                     <li class="nxl-item">
                         <a href="{{ route('admin.laboratory.tests.create') }}" class="nxl-link">
                             <i class="feather-plus-circle me-2"></i>
