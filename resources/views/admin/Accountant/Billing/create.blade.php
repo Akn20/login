@@ -3,49 +3,36 @@
 @section('content')
 <div class="container-fluid">
 
+<form method="POST" action="{{ route('admin.accountant.billing.store') }}">
+    @csrf
+
     <h3 class="mb-4">Create IPD Billing</h3>
 
-    {{-- ================= SELECT PATIENT ================= --}}
-    <div class="card mb-4">
-        <div class="card-header">Select Patient</div>
-        <div class="card-body">
-
-            <select id="patientSelect" class="form-control">
-                <option value="">-- Select Patient --</option>
-                @foreach($patients as $p)
-                    <option value="{{ $p['id'] }}"
-                        data-name="{{ $p['name'] }}"
-                        data-ipd="{{ $p['ipd_no'] }}"
-                        data-doctor="{{ $p['doctor'] }}"
-                        data-room="{{ $p['room'] }}"
-                        data-date="{{ $p['admission_date'] }}">
-                        {{ $p['name'] }} ({{ $p['ipd_no'] }})
-                    </option>
-                @endforeach
-            </select>
-
-        </div>
-    </div>
+    {{-- HIDDEN --}}
+    <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
+    <input type="hidden" name="ipd_id" value="{{ $patient->ipd_id }}">
 
     {{-- ================= PATIENT DETAILS ================= --}}
-    <div class="card mb-4" id="patientCard" style="display:none;">
+    <div class="card mb-4">
         <div class="card-header bg-primary text-white">Patient Details</div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3"><strong>Name:</strong> <span id="p_name"></span></div>
-                <div class="col-md-3"><strong>IPD:</strong> <span id="p_ipd"></span></div>
-                <div class="col-md-3"><strong>Doctor:</strong> <span id="p_doc"></span></div>
-                <div class="col-md-3"><strong>Room:</strong> <span id="p_room"></span></div>
-                <div class="col-md-3 mt-2"><strong>Date:</strong> <span id="p_date"></span></div>
+                <div class="col-md-3"><strong>Name:</strong> {{ $patient->name }}</div>
+                <div class="col-md-3"><strong>IPD:</strong> {{ $patient->admission_id }}</div>
+                <div class="col-md-3"><strong>Doctor:</strong> {{ $patient->doctor }}</div>
+                <div class="col-md-3"><strong>Room:</strong> {{ $patient->room }}</div>
+                <div class="col-md-3 mt-2">
+                    <strong>Advance:</strong> ₹{{ $patient->advance_amount }}
+                </div>
             </div>
         </div>
     </div>
 
     {{-- ================= CHARGES ================= --}}
-    <div class="card mb-4" id="chargesSection" style="display:none;">
+    <div class="card mb-4">
         <div class="card-header d-flex justify-content-between">
             <span>Charges</span>
-            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addChargeModal">
+            <button type="button" class="btn btn-success btn-sm" onclick="addCharge()">
                 + Add Charge
             </button>
         </div>
@@ -54,127 +41,181 @@
             <table class="table table-bordered" id="chargesTable">
                 <thead>
                     <tr>
-                        <th>Date</th>
                         <th>Type</th>
                         <th>Description</th>
-                        <th>Qty</th>
-                        <th>Rate</th>
+                        <th>QTY</th>
                         <th>Amount</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+
+                <tbody>
+
+                <tr>
+                    <td>
+                        <input type="text" name="items[0][type]" value="Pharmacy" class="form-control" readonly>
+                    </td>
+                    <td>
+                        <input type="text" name="items[0][description]" value="Pharmacy Charges" class="form-control">
+                    </td>
+                    <td>
+                        <input type="number" name="items[0][quantity]" class="form-control qty" value="1">
+                    </td>
+                    <td>
+                        <input type="number" name="items[0][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
+                    </td>
+                    <td>-</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <input type="text" name="items[1][type]" value="Service" class="form-control" readonly>
+                    </td>
+                    <td>
+                        <input type="text" name="items[1][description]" value="Service Charges" class="form-control">
+                    </td>
+                    <td>
+                        <input type="number" name="items[1][quantity]" class="form-control qty" value="1">
+                    </td>
+                    <td>
+                        <input type="number" name="items[1][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
+                    </td>
+                    <td>-</td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <input type="text" name="items[2][type]" value="Lab" class="form-control" readonly>
+                    </td>
+                    <td>
+                        <input type="text" name="items[2][description]" value="Lab Charges" class="form-control">
+                    </td>
+                    <td>
+                        <input type="number" name="items[2][quantity]" class="form-control qty" value="1">
+                    </td>
+                    <td>
+                        <input type="number" name="items[2][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
+                    </td>
+                    <td>-</td>
+                </tr>
+
+                </tbody>
             </table>
         </div>
     </div>
 
     {{-- ================= SUMMARY ================= --}}
-    <div class="card" id="summarySection" style="display:none;">
+    <div class="card">
         <div class="card-header">Bill Summary</div>
         <div class="card-body">
+
             <div class="row">
+
                 <div class="col-md-3">
                     <label>Total</label>
-                    <input type="text" id="total" class="form-control" readonly>
+                    <input type="text" id="total" name="total" class="form-control" readonly>
                 </div>
+
                 <div class="col-md-3">
                     <label>Discount</label>
-                    <input type="number" id="discount" class="form-control" value="0">
+                    <input type="number" name="discount" id="discount" class="form-control" value="0">
                 </div>
+
                 <div class="col-md-3">
                     <label>Tax</label>
-                    <input type="number" id="tax" class="form-control" value="0">
+                    <input type="number" name="tax" id="tax" class="form-control" value="0">
                 </div>
+
                 <div class="col-md-3">
-                    <label>Grand Total</label>
-                    <input type="text" id="grand_total" class="form-control" readonly>
+                    <label>Advance</label>
+                    <input type="text" id="advance" value="{{ $patient->advance_amount }}" class="form-control" readonly>
                 </div>
+
+                <div class="col-md-3 mt-3">
+                    <label>Grand Total</label>
+                    <input type="text" id="grand_total" name="grand_total" class="form-control" readonly>
+                </div>
+
             </div>
 
             <div class="mt-4 text-end">
-                <button class="btn btn-primary">Save Bill</button>
+                <button type="submit" class="btn btn-primary">Save Bill</button>
             </div>
+
         </div>
     </div>
+
+</form>
 
 </div>
 
 {{-- ================= SCRIPT ================= --}}
 <script>
 
-document.getElementById('patientSelect').addEventListener('change', function() {
-    let selected = this.options[this.selectedIndex];
+// ADD EXTRA ROW
+function addCharge() {
 
-    if (!this.value) return;
+    let index = document.querySelectorAll('#chargesTable tbody tr').length;
 
-    // Show sections
-    document.getElementById('patientCard').style.display = 'block';
-    document.getElementById('chargesSection').style.display = 'block';
-    document.getElementById('summarySection').style.display = 'block';
+    let row = `
+        <tr>
+            <td>
+                <input type="text" name="items[${index}][type]" class="form-control">
+            </td>
 
-    // Fill details
-    document.getElementById('p_name').innerText = selected.dataset.name;
-    document.getElementById('p_ipd').innerText = selected.dataset.ipd;
-    document.getElementById('p_doc').innerText = selected.dataset.doctor;
-    document.getElementById('p_room').innerText = selected.dataset.room;
-    document.getElementById('p_date').innerText = selected.dataset.date;
+            <td>
+                <input type="text" name="items[${index}][description]" class="form-control">
+            </td>
 
-    // Simulate existing charges
-    loadDummyCharges();
-});
+            <td>
+                <input type="number" name="items[${index}][quantity]" class="form-control" value="1">
+            </td>
 
-// Dummy charges (later replace with API)
-function loadDummyCharges() {
-    let table = document.querySelector('#chargesTable tbody');
-    table.innerHTML = '';
+            <td>
+                <input type="number" name="items[${index}][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
+            </td>
 
-    let data = [
-        {type:'Room', desc:'Room Charge', qty:2, rate:2000},
-        {type:'Lab', desc:'Blood Test', qty:1, rate:500},
-    ];
+            <td>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+            </td>
+        </tr>
+    `;
 
-    data.forEach(c => {
-        let amount = c.qty * c.rate;
+    document.querySelector('#chargesTable tbody').insertAdjacentHTML('beforeend', row);
+}   
 
-        let row = `
-            <tr>
-                <td>${new Date().toLocaleDateString()}</td>
-                <td>${c.type}</td>
-                <td>${c.desc}</td>
-                <td>${c.qty}</td>
-                <td>${c.rate}</td>
-                <td class="amount">${amount}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
-            </tr>
-        `;
-
-        table.insertAdjacentHTML('beforeend', row);
-    });
-
-    calculateTotal();
-}
-
-// Remove
+// REMOVE ROW
 function removeRow(btn){
     btn.closest('tr').remove();
     calculateTotal();
 }
 
-// Total
+
+// TOTAL CALCULATION
 function calculateTotal(){
+
     let total = 0;
+
     document.querySelectorAll('.amount').forEach(el=>{
-        total += parseFloat(el.innerText) || 0;
+        total += parseFloat(el.value) || 0;
     });
 
     document.getElementById('total').value = total;
 
-    let discount = document.getElementById('discount').value || 0;
-    let tax = document.getElementById('tax').value || 0;
+    let discount = parseFloat(document.getElementById('discount').value) || 0;
+    let tax = parseFloat(document.getElementById('tax').value) || 0;
+    let advance = parseFloat(document.getElementById('advance').value) || 0;
 
-    document.getElementById('grand_total').value = total - discount + parseFloat(tax);
+    let grand = total - discount + tax - advance;
+
+    document.getElementById('grand_total').value = grand;
 }
 
+
+// AUTO RUN ON LOAD
+document.addEventListener('DOMContentLoaded', calculateTotal);
+
+// AUTO UPDATE
 document.getElementById('discount').addEventListener('input', calculateTotal);
 document.getElementById('tax').addEventListener('input', calculateTotal);
 

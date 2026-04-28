@@ -3,224 +3,132 @@
 @section('content')
 <div class="container-fluid">
 
+<form method="POST" action="{{ route('admin.accountant.billing.update', $bill->id) }}">
+    @csrf
+
     <h3 class="mb-4">Edit IPD Billing</h3>
 
-    {{-- ================= PATIENT DETAILS ================= --}}
+    {{-- PATIENT DETAILS --}}
     <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            Patient Details
-        </div>
+        <div class="card-header bg-primary text-white">Patient Details</div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-3"><strong>Name:</strong> {{ $patient['name'] }}</div>
-                <div class="col-md-3"><strong>IPD No:</strong> {{ $patient['ipd_no'] }}</div>
-                <div class="col-md-3"><strong>Doctor:</strong> {{ $patient['doctor'] }}</div>
-                <div class="col-md-3"><strong>Room:</strong> {{ $patient['room'] }}</div>
-                <div class="col-md-3 mt-2"><strong>Admission Date:</strong> {{ $patient['admission_date'] }}</div>
-            </div>
+            <p><strong>Patient:</strong> {{ $bill->patient->first_name ?? '' }} {{ $bill->patient->last_name ?? '' }}</p>
+            <p><strong>Bill No:</strong> {{ $bill->bill_no }}</p>
         </div>
     </div>
 
-    {{-- ================= CHARGES SECTION ================= --}}
+    {{-- CHARGES --}}
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between">
             <span>Charges</span>
-            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addChargeModal">
-                + Add Charge
-            </button>
+            <button type="button" class="btn btn-success btn-sm" onclick="addCharge()">+ Add</button>
         </div>
 
         <div class="card-body">
             <table class="table table-bordered" id="chargesTable">
                 <thead>
                     <tr>
-                        <th>Date</th>
                         <th>Type</th>
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Rate</th>
                         <th>Amount</th>
-                        <th>Action</th>
+                        <th></th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach($charges as $c)
+
+                    @foreach($bill->items as $item)
                     <tr>
-                        <td>{{ $c['date'] }}</td>
-                        <td>{{ $c['type'] }}</td>
-                        <td>{{ $c['description'] }}</td>
-                        <td>{{ $c['qty'] }}</td>
-                        <td>{{ $c['rate'] }}</td>
-                        <td class="amount">{{ $c['amount'] }}</td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-                        </td>
+                        <td><input type="text" name="items[][type]" value="{{ $item->type }}" class="form-control"></td>
+                        <td><input type="text" name="items[][description]" value="{{ $item->description }}" class="form-control"></td>
+                        <td><input type="number" name="items[][quantity]" value="{{ $item->quantity }}" class="form-control qty" oninput="calc(this)"></td>
+                        <td><input type="number" name="items[][rate]" value="{{ $item->rate }}" class="form-control rate" oninput="calc(this)"></td>
+                        <td><input type="text" name="items[][amount]" value="{{ $item->amount }}" class="form-control amount" readonly></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
                     </tr>
                     @endforeach
-                </tbody>
 
+                </tbody>
             </table>
         </div>
     </div>
 
-    {{-- ================= SUMMARY ================= --}}
+    {{-- SUMMARY --}}
     <div class="card">
-        <div class="card-header">Bill Summary</div>
-        <div class="card-body">
-            <div class="row">
-
-                <div class="col-md-3">
-                    <label>Total</label>
-                    <input type="text" id="total" class="form-control" readonly>
-                </div>
-
-                <div class="col-md-3">
-                    <label>Discount</label>
-                    <input type="number" id="discount" class="form-control" value="0">
-                </div>
-
-                <div class="col-md-3">
-                    <label>Tax</label>
-                    <input type="number" id="tax" class="form-control" value="0">
-                </div>
-
-                <div class="col-md-3">
-                    <label>Grand Total</label>
-                    <input type="text" id="grand_total" class="form-control" readonly>
-                </div>
-
+        <div class="card-body row">
+            <div class="col-md-3">
+                <label>Total</label>
+                <input type="text" id="total" class="form-control" value="{{ $bill->total_amount }}" readonly>
             </div>
-
-            <div class="mt-4 text-end">
-                <button class="btn btn-primary">Update Bill</button>
-                <button class="btn btn-success">Generate Final Bill</button>
+            <div class="col-md-3">
+                <label>Discount</label>
+                <input type="number" name="discount" id="discount" value="{{ $bill->discount }}" class="form-control">
             </div>
+            <div class="col-md-3">
+                <label>Tax</label>
+                <input type="number" name="tax" id="tax" value="{{ $bill->tax }}" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label>Grand Total</label>
+                <input type="text" id="grand_total" value="{{ $bill->grand_total }}" class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="text-end p-3">
+            <button type="submit" class="btn btn-primary">Update Bill</button>
         </div>
     </div>
 
+</form>
+
 </div>
 
-{{-- ================= MODAL ================= --}}
-<div class="modal fade" id="addChargeModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5>Add Charge</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-
-                <div class="mb-2">
-                    <label>Type</label>
-                    <select id="type" class="form-control">
-                        <option>Room</option>
-                        <option>Lab</option>
-                        <option>Pharmacy</option>
-                        <option>Service</option>
-                    </select>
-                </div>
-
-                <div class="mb-2">
-                    <label>Description</label>
-                    <input type="text" id="description" class="form-control">
-                </div>
-
-                <div class="mb-2">
-                    <label>Quantity</label>
-                    <input type="number" id="qty" class="form-control" value="1">
-                </div>
-
-                <div class="mb-2">
-                    <label>Rate</label>
-                    <input type="number" id="rate" class="form-control">
-                </div>
-
-                <div class="mb-2">
-                    <label>Amount</label>
-                    <input type="text" id="amount" class="form-control" readonly>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" onclick="addCharge()">Add</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-@endsection
-
-@section('scripts')
 <script>
-
-// Initial calculation on page load
-window.onload = calculateTotal;
-
-// Auto calc
-document.getElementById('qty').addEventListener('input', calcAmount);
-document.getElementById('rate').addEventListener('input', calcAmount);
-
-function calcAmount() {
-    let qty = document.getElementById('qty').value || 0;
-    let rate = document.getElementById('rate').value || 0;
-    document.getElementById('amount').value = qty * rate;
+function addCharge(){
+    let row = `
+    <tr>
+        <td><input name="items[][type]" class="form-control"></td>
+        <td><input name="items[][description]" class="form-control"></td>
+        <td><input name="items[][quantity]" class="form-control qty" oninput="calc(this)"></td>
+        <td><input name="items[][rate]" class="form-control rate" oninput="calc(this)"></td>
+        <td><input name="items[][amount]" class="form-control amount" readonly></td>
+        <td><button type="button" onclick="removeRow(this)">X</button></td>
+    </tr>`;
+    document.querySelector('#chargesTable tbody').insertAdjacentHTML('beforeend', row);
 }
 
-// Add new row
-function addCharge() {
-    let type = document.getElementById('type').value;
-    let desc = document.getElementById('description').value;
-    let qty = document.getElementById('qty').value;
-    let rate = document.getElementById('rate').value;
-    let amount = document.getElementById('amount').value;
-
-    let row = `
-        <tr>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td>${type}</td>
-            <td>${desc}</td>
-            <td>${qty}</td>
-            <td>${rate}</td>
-            <td class="amount">${amount}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
-        </tr>
-    `;
-
-    document.querySelector('#chargesTable tbody').insertAdjacentHTML('beforeend', row);
-
+function calc(el){
+    let row = el.closest('tr');
+    let qty = row.querySelector('.qty').value || 0;
+    let rate = row.querySelector('.rate').value || 0;
+    let amount = qty * rate;
+    row.querySelector('.amount').value = amount;
     calculateTotal();
 }
 
-// Remove
-function removeRow(btn) {
+function removeRow(btn){
     btn.closest('tr').remove();
     calculateTotal();
 }
 
-// Total
-function calculateTotal() {
+function calculateTotal(){
     let total = 0;
-    document.querySelectorAll('.amount').forEach(el => {
-        total += parseFloat(el.innerText) || 0;
+    document.querySelectorAll('.amount').forEach(el=>{
+        total += parseFloat(el.value) || 0;
     });
 
     document.getElementById('total').value = total;
 
-    let discount = document.getElementById('discount').value || 0;
-    let tax = document.getElementById('tax').value || 0;
+    let discount = parseFloat(document.getElementById('discount').value) || 0;
+    let tax = parseFloat(document.getElementById('tax').value) || 0;
 
-    let grand = total - discount + parseFloat(tax);
-    document.getElementById('grand_total').value = grand;
+    document.getElementById('grand_total').value = total - discount + tax;
 }
 
 document.getElementById('discount').addEventListener('input', calculateTotal);
 document.getElementById('tax').addEventListener('input', calculateTotal);
-
 </script>
+
 @endsection

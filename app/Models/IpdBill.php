@@ -14,6 +14,7 @@ class IpdBill extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+         'id',
         'patient_id',
         'ipd_id',
         'bill_no',
@@ -22,6 +23,7 @@ class IpdBill extends Model
         'total_amount',
         'discount',
         'tax',
+        'advance_amount',
         'grand_total',
         'payable_amount'
     ];
@@ -31,7 +33,9 @@ class IpdBill extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            if (!$model->id) {
+                $model->id = (string) \Str::uuid();
+            }
         });
     }
 
@@ -39,5 +43,13 @@ class IpdBill extends Model
     public function items()
     {
         return $this->hasMany(IpdBillItem::class, 'bill_id');
+    }
+    public function patient()
+    {
+        return $this->belongsTo(\App\Models\Patient::class, 'patient_id');
+    }
+    public function ipd()
+    {
+        return $this->belongsTo(\App\Models\IpdAdmission::class, 'ipd_id');
     }
 }

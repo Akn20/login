@@ -14,9 +14,10 @@ class IpdBillItem extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+         'id',
         'bill_id',
         'type',
-        'reference_id',
+       // 'reference_id',
         'description',
         'quantity',
         'rate',
@@ -28,7 +29,9 @@ class IpdBillItem extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            if (!$model->id) {
+                $model->id = (string) \Str::uuid();
+            }
         });
     }
 

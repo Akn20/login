@@ -2206,21 +2206,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Accountant Billing
 
-Route::prefix('admin/accountant/billing')
-    ->name('admin.accountant.billing.')
-    ->group(function () {
+Route::middleware(['auth'])->group(function () {
 
-        Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+    Route::prefix('admin/accountant/billing')
+        ->name('admin.accountant.billing.')
+        ->group(function () {
 
-        Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+            Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+            Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+            Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
+            Route::post('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
 
-        Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+        });
 
-        Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
-
-        Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
-    });
-
+});
 //IPD (Doctor Module)
 
 Route::prefix('doctor/ipd')->group(function () {

@@ -22,20 +22,30 @@
             <small>Address | Phone | Email</small>
         </div>
 
-        {{-- PATIENT INFO --}}
+        {{-- BODY --}}
         <div class="card-body">
 
+            {{-- PATIENT INFO --}}
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <p><strong>Patient Name:</strong> {{ $patient['name'] }}</p>
-                    <p><strong>IPD No:</strong> {{ $patient['ipd_no'] }}</p>
-                    <p><strong>Doctor:</strong> {{ $patient['doctor'] }}</p>
+                    <p><strong>Patient Name:</strong> 
+                        {{ $bill->patient->first_name ?? '' }} 
+                        {{ $bill->patient->last_name ?? '' }}
+                    </p>
+
+                    <p><strong>Bill No:</strong> {{ $bill->bill_no }}</p>
+
+                    <p><strong>Date:</strong> 
+                        {{ \Carbon\Carbon::parse($bill->bill_date)->format('d-m-Y') }}
+                    </p>
                 </div>
 
                 <div class="col-md-6 text-end">
-                    <p><strong>Room:</strong> {{ $patient['room'] }}</p>
-                    <p><strong>Admission Date:</strong> {{ $patient['admission_date'] }}</p>
-                    <p><strong>Date:</strong> {{ date('d-m-Y') }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge bg-success text-uppercase">
+                            {{ $bill->status }}
+                        </span>
+                    </p>
                 </div>
             </div>
 
@@ -44,7 +54,6 @@
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Date</th>
                         <th>Type</th>
                         <th>Description</th>
                         <th>Qty</th>
@@ -54,16 +63,14 @@
                 </thead>
 
                 <tbody>
-                    @php $i = 1; @endphp
-                    @foreach($charges as $c)
+                    @foreach($bill->items as $item)
                     <tr>
-                        <td>{{ $i++ }}</td>
-                        <td>{{ $c['date'] }}</td>
-                        <td>{{ $c['type'] }}</td>
-                        <td>{{ $c['description'] }}</td>
-                        <td>{{ $c['qty'] }}</td>
-                        <td>{{ $c['rate'] }}</td>
-                        <td>{{ $c['amount'] }}</td>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->type }}</td>
+                        <td>{{ $item->description }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $item->rate }}</td>
+                        <td>{{ $item->amount }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -75,22 +82,39 @@
 
                 <div class="col-md-6">
                     <table class="table table-bordered">
+
                         <tr>
                             <th>Total</th>
-                            <td>{{ $summary['total'] }}</td>
+                            <td>{{ $bill->total_amount }}</td>
                         </tr>
+
                         <tr>
                             <th>Discount</th>
-                            <td>{{ $summary['discount'] }}</td>
+                            <td>{{ $bill->discount }}</td>
                         </tr>
+
                         <tr>
                             <th>Tax</th>
-                            <td>{{ $summary['tax'] }}</td>
+                            <td>{{ $bill->tax }}</td>
                         </tr>
+
                         <tr class="table-success">
                             <th>Grand Total</th>
-                            <td><strong>{{ $summary['grand_total'] }}</strong></td>
+                            <td><strong>{{ $bill->grand_total }}</strong></td>
                         </tr>
+
+                        <tr class="table-warning">
+                            <th>Advance Paid</th>
+                            <td>
+                                {{ optional($bill->ipd)->advance_amount ?? 0 }}
+                            </td>
+                        </tr>
+
+                        <tr class="table-primary">
+                            <th>Payable Amount</th>
+                            <td><strong>{{ $bill->payable_amount }}</strong></td>
+                        </tr>
+
                     </table>
                 </div>
             </div>

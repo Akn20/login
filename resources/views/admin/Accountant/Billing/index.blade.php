@@ -7,10 +7,6 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>IPD Billing Management</h3>
 
-        <a href="{{ route('admin.accountant.billing.create') }}" 
-           class="btn btn-success">
-            + New Billing
-        </a>
     </div>
 
     {{-- TABLE --}}
