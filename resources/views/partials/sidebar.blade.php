@@ -246,7 +246,7 @@
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a href="{{ route('admin.nurse.dashboard') }}" class="nxl-link">
-                                <span class="nxl-micon"><i class="as fa-chart-line"></i></span>
+                                <span class="nxl-micon"><i class="fas fa-chart-line"></i></span>
                                 <span class="nxl-mtext"> Dashboard </span>
                             </a>
                         </li>
