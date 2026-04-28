@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
@@ -2641,7 +2642,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
+    Route::prefix('nurse-dhischarge')->name('nurse-discharge.')->group(function () {
         Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
         Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
         Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
@@ -2722,3 +2723,32 @@ Route::prefix('doctor/ipd')->group(function () {
     ->name('doctor.ipd.storeLabRadiology');
 
 });
+
+
+// Patient EMR - Discharge Summary
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+       Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    // ✅ LIST PAGE (must be first)
+    Route::get('/discharge', 
+        [PatientEmrController::class, 'index']
+    )->name('discharge.list');
+
+    // ✅ DETAIL PAGE
+    Route::get('/discharge/{ipd_id}', 
+        [PatientEmrController::class, 'dischargeSummary']
+    )->name('discharge');
+
+    // ✅ PDF DOWNLOAD
+    Route::get('/discharge/{ipd_id}/pdf', 
+        [PatientEmrController::class, 'download']
+    )->name('discharge.pdf');
+
+});
+
+    });

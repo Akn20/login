@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 use App\Http\Controllers\Api\Billing\BillingApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
+use App\Http\Controllers\Api\PatientPortal\PatientEmrApiController;
 use App\Http\Controllers\Api\PatientPortal\PatientPortalApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
@@ -1960,5 +1961,15 @@ Route::prefix('doctor/ipd')->group(function () {
 
     // ✅ SUBMIT DISCHARGE
     Route::post('/submit-discharge/{id}', [IpdController::class, 'apiDischargeSubmit']);
+
+});
+
+Route::prefix('patient-portal')->group(function () {
+
+    // List Discharge Summaries
+    Route::get('/discharges', [PatientEmrApiController::class, 'index']);
+
+    // Single Discharge Summary
+    Route::get('/discharges/{ipd_id}', [PatientEmrApiController::class, 'show']);
 
 });
