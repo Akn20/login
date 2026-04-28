@@ -1972,4 +1972,9 @@ Route::prefix('patient-portal')->group(function () {
     // Single Discharge Summary
     Route::get('/discharges/{ipd_id}', [PatientEmrApiController::class, 'show']);
 
+    Route::get('/doctor-notes/{ipd_id}', 
+        [PatientEmrApiController::class, 'doctorNotes']
+    );
+
+
 });

@@ -64,4 +64,31 @@ class PatientEmrApiController extends Controller
             ]
         ]);
     }
+    public function doctorNotes($ipd_id)
+{
+    $notes = \App\Models\IpdNote::where('ipd_id', $ipd_id)
+        ->latest()
+        ->get();
+
+    // 🔒 Optional filter (hide internal words)
+    $filtered = $notes->filter(function ($note) {
+        $text = strtolower($note->notes);
+
+        return !str_contains($text, 'internal') &&
+               !str_contains($text, 'confidential') &&
+               !str_contains($text, 'private');
+    });
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Doctor notes fetched successfully',
+        'data' => $filtered->map(function ($note) {
+            return [
+                'visit_id' => $note->ipd_id,
+                'notes' => $note->notes,
+                'date' => $note->created_at
+            ];
+        })
+    ]);
+}
 }

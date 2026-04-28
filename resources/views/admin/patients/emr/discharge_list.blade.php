@@ -47,6 +47,11 @@
            class="btn btn-info btn-sm">
            View
         </a>
+
+        <a href="{{ route('admin.patient.portal.doctor.notes', $ipd->id) }}"
+                class="btn btn-warning btn-sm">
+                Notes
+                </a>
     </td>
 </tr>
 

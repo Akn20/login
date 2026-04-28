@@ -54,4 +54,34 @@ class PatientEmrController extends Controller
 
     return view('admin.patients.emr.discharge_list', compact('ipds'));
 }
+
+public function doctorNotes($ipd_id)
+{
+    $notes = \App\Models\IpdNote::where('ipd_id', $ipd_id)
+        ->latest()
+        ->get();
+
+    // 🔒 Apply same masking logic
+    $filtered = $notes->map(function ($note) {
+
+        $text = strtolower($note->notes);
+
+        if (str_contains($text, 'internal') || 
+            str_contains($text, 'doctor only')) {
+            return null;
+        }
+
+        if (str_contains($text, 'critical') || 
+            str_contains($text, 'serious')) {
+            $note->notes = '*** Sensitive information hidden ***';
+        }
+
+        return $note;
+
+    })->filter();
+
+    return view('admin.patients.emr.doctor_notes', [
+        'notes' => $filtered
+    ]);
+}
 }

@@ -2749,6 +2749,10 @@ Route::middleware(['auth', 'role:admin'])
         [PatientEmrController::class, 'download']
     )->name('discharge.pdf');
 
+    Route::get('/doctor-notes/{ipd_id}', 
+        [PatientEmrController::class, 'doctorNotes']
+    )->name('doctor.notes');
+
 });
 
     });

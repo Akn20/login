@@ -173,6 +173,11 @@
                             <i class="feather-file-text me-2"></i> Discharge Summary
                         </a>
                     </li>
+                     <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Doctor Notes
+                        </a>
+                    </li>
 
                 </ul>
 
