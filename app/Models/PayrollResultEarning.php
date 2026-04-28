@@ -28,4 +28,10 @@ class PayrollResultEarning extends Model
         'pf_applicable' => 'boolean',
         'esi_applicable' => 'boolean',
     ];
+
+// In PayrollResultEarning.php model
+//public function payrollResult()
+//{
+  //  return $this->belongsTo(PayrollResult::class, 'payroll_result_id');
+//}
 }

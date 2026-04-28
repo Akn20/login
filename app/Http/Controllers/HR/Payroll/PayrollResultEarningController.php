@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PayrollResultEarning;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PayrollResultEarningController extends Controller
 {
@@ -26,11 +27,23 @@ class PayrollResultEarningController extends Controller
     {
         $request->validate([
             'payroll_result_id' => 'required',
-            'earning_code' => 'required',
+           'earning_code' => ['required', Rule::unique(...)],
             'earning_name' => 'required',
             'earning_type' => 'required',
             'amount' => 'required|numeric|min:0',
+            'calculation_base'  => 'required_if:earning_type,Variable,OT',
+            'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
+            ]);
+        if (
+    $request->earning_type === 'Fixed' &&
+    ($request->filled('calculation_base') || $request->filled('calculation_value'))
+) {
+    return redirect()->back()
+        ->withInput()
+        ->withErrors([
+            'calculation_base' => 'Earning type is Fixed — Calculation Base and Value are not required and will be ignored.',
         ]);
+}
 
         PayrollResultEarning::create([
             ...$request->all(),
@@ -52,6 +65,10 @@ class PayrollResultEarningController extends Controller
     public function edit($id)
     {
         $record = PayrollResultEarning::findOrFail($id);
+         // ✅ Block edit if payroll is finalized
+    if ($record->payrollResult && $record->payrollResult->status === 'finalized') {
+        return redirect()->back()->with('error', 'Cannot edit after payroll finalization.');
+    }
         return view('hr.payroll.payroll_result_earnings.edit', compact('record'));
     }
 
@@ -59,13 +76,28 @@ class PayrollResultEarningController extends Controller
     public function update(Request $request, $id)
     {
         $record = PayrollResultEarning::findOrFail($id);
+         if ($record->payrollResult && $record->payrollResult->status === 'finalized') {
+        return redirect()->back()->with('error', 'Cannot edit after payroll finalization.');
+    }
 
         $request->validate([
-            'earning_code' => 'required',
+          'earning_code' => ['required', Rule::unique(...)],
             'earning_name' => 'required',
             'earning_type' => 'required',
             'amount' => 'required|numeric|min:0',
+            'calculation_base'  => 'required_if:earning_type,Variable,OT',
+           'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
         ]);
+        if (
+    $request->earning_type === 'Fixed' &&
+    ($request->filled('calculation_base') || $request->filled('calculation_value'))
+) {
+    return redirect()->back()
+        ->withInput()
+        ->withErrors([
+            'calculation_base' => 'Earning type is Fixed — Calculation Base and Value are not required and will be ignored.',
+        ]);
+}
 
         $record->update($request->all());
 
@@ -77,6 +109,9 @@ class PayrollResultEarningController extends Controller
     public function destroy($id)
     {
         $record = PayrollResultEarning::findOrFail($id);
+        if ($record->payrollResult && $record->payrollResult->status === 'finalized') {
+        return redirect()->back()->with('error', 'Cannot delete after payroll finalization.');
+    }
         $record->delete();
 
         return redirect()->back()->with('success', 'Deleted');
