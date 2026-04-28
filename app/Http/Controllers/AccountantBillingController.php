@@ -252,4 +252,206 @@ class AccountantBillingController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    //API FUNCTIONS 
+    public function apiIndex()
+{
+    $patients = DB::table('ipd_admissions as ipd')
+        ->leftJoin('patients as p', 'p.id', '=', 'ipd.patient_id')
+        ->leftJoin('users as d', 'd.id', '=', 'ipd.doctor_id')
+        ->leftJoin('rooms as r', 'r.id', '=', 'ipd.room_id')
+        ->leftJoin('ipd_bills as b', 'b.ipd_id', '=', 'ipd.id')
+
+        ->select(
+            'ipd.id',
+            DB::raw("CONCAT(p.first_name, ' ', p.last_name) as name"),
+            'ipd.admission_id as ipd_no',
+            'ipd.admission_date',
+            DB::raw("IFNULL(r.room_number, '-') as room"),
+            DB::raw("IFNULL(d.name, '-') as doctor"),
+            'b.id as bill_id',
+            DB::raw("IFNULL(b.status, 'interim') as status")
+        )
+        ->orderBy('ipd.created_at', 'desc')
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $patients
+    ]);
+}
+
+public function apiPatient($ipd_id)
+{
+    $patient = DB::table('ipd_admissions as ipd')
+        ->leftJoin('patients as p', 'p.id', '=', 'ipd.patient_id')
+        ->leftJoin('users as d', 'd.id', '=', 'ipd.doctor_id')
+        ->leftJoin('rooms as r', 'r.id', '=', 'ipd.room_id')
+
+        ->select(
+            'ipd.id as ipd_id',
+            'ipd.patient_id',
+            'ipd.admission_id',
+            DB::raw("CONCAT(p.first_name, ' ', p.last_name) as name"),
+            DB::raw("IFNULL(d.name, '-') as doctor"),
+            DB::raw("IFNULL(r.room_number, '-') as room"),
+            'ipd.advance_amount'
+        )
+
+        ->where('ipd.id', $ipd_id)
+        ->first();
+
+    return response()->json([
+        'status' => true,
+        'data' => $patient
+    ]);
+}
+
+public function apiStore(Request $request)
+{
+    DB::beginTransaction();
+
+    try {
+
+        $total = collect($request->items)->sum(fn($i) => (float)$i['amount']);
+
+        $discount = (float) $request->discount;
+        $tax = (float) $request->tax;
+
+        $grandTotal = $total - $discount + $tax;
+
+        $ipd = DB::table('ipd_admissions')
+            ->where('id', $request->ipd_id)
+            ->first();
+
+        $advance = $ipd->advance_amount ?? 0;
+
+        $payable = max($grandTotal - $advance, 0);
+
+        $billId = Str::uuid();
+
+        DB::table('ipd_bills')->insert([
+            'id' => $billId,
+            'patient_id' => $request->patient_id,
+            'ipd_id' => $request->ipd_id,
+            'bill_no' => 'IPD-' . rand(1000, 9999),
+            'bill_date' => now()->toDateString(),
+            'status' => 'interim',
+            'total_amount' => $total,
+            'discount' => $discount,
+            'tax' => $tax,
+            'grand_total' => $grandTotal,
+            'payable_amount' => $payable,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        foreach ($request->items as $item) {
+            DB::table('ipd_bill_items')->insert([
+                'id' => Str::uuid(),
+                'bill_id' => $billId,
+                'type' => $item['type'] ?? '',
+                'description' => $item['description'] ?? '',
+                'quantity' => $item['quantity'] ?? 1,
+                'rate' => $item['rate'] ?? 0,
+                'amount' => $item['amount'] ?? 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bill Created',
+            'bill_id' => $billId
+        ]);
+
+    } catch (\Exception $e) {
+
+        DB::rollback();
+
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function apiShow($id)
+{
+    $bill = IpdBill::with('items')
+        ->where('id', $id)
+        ->first();
+
+    return response()->json([
+        'status' => true,
+        'data' => $bill
+    ]);
+}
+
+public function apiUpdate(Request $request, $id)
+{
+    DB::beginTransaction();
+
+    try {
+
+        $bill = IpdBill::findOrFail($id);
+
+        $total = collect($request->items)->sum(fn($i) => (float)$i['amount']);
+
+        $discount = (float) $request->discount;
+        $tax = (float) $request->tax;
+
+        $grandTotal = $total - $discount + $tax;
+
+        $ipd = DB::table('ipd_admissions')
+            ->where('id', $bill->ipd_id)
+            ->first();
+
+        $advance = $ipd->advance_amount ?? 0;
+
+        $payable = max($grandTotal - $advance, 0);
+
+        $bill->update([
+            'total_amount' => $total,
+            'discount' => $discount,
+            'tax' => $tax,
+            'grand_total' => $grandTotal,
+            'payable_amount' => $payable,
+        ]);
+
+        IpdBillItem::where('bill_id', $bill->id)->delete();
+
+        foreach ($request->items as $item) {
+            IpdBillItem::create([
+                'bill_id' => $bill->id,
+                'type' => $item['type'],
+                'description' => $item['description'],
+                'quantity' => $item['quantity'] ?? 1,
+                'rate' => $item['rate'] ?? 0,
+                'amount' => $item['amount'] ?? 0,
+            ]);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Bill Updated'
+        ]);
+
+    } catch (\Exception $e) {
+
+        DB::rollback();
+
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
 }

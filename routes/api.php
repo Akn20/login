@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -1576,4 +1577,19 @@ Route::prefix('doctor/ipd')->group(function () {
 
     // Lab Test
     Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
+});
+
+//Billing(Accountant)
+
+Route::prefix('accountant/billing')->group(function () {
+
+    Route::get('/list', [AccountantBillingController::class, 'apiIndex']);
+
+    Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
+
+    Route::post('/store', [AccountantBillingController::class, 'apiStore']);
+
+    Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
+
+    Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
 });
