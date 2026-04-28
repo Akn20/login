@@ -953,7 +953,42 @@ Route::middleware(['auth'])
             Route::resource('statutory-contribution', StatutoryContributionController::class);
 
             Route::resource('pre-payroll', PrePayrollAdjustmentController::class);
-        });
+
+            Route::post(
+                    'pre-payroll/{id}/approve',
+                    [PrePayrollAdjustmentController::class, 'approve']
+                )->name('pre-payroll.approve');
+                        });
+
+                        Route::get(
+                            'pre-payroll/deleted',
+                            [PrePayrollAdjustmentController::class, 'deleted']
+                        )->name('pre-payroll.deleted');
+
+                        Route::put(
+                            'pre-payroll/{id}/restore',
+                            [PrePayrollAdjustmentController::class, 'restore']
+                        )->name('pre-payroll.restore');
+
+                        Route::delete(
+                            'pre-payroll/{id}/force-delete',
+                            [PrePayrollAdjustmentController::class, 'forceDelete']
+                        )->name('pre-payroll.force-delete');
+
+                        Route::get(
+                        'hourly-pay-approval/trash',
+                        [HourlyPayApprovalController::class, 'trash']
+                    )->name('hourly-pay-approval.trash');
+
+                    Route::put(
+                    'hourly-pay-approval/{id}/restore',
+                    [HourlyPayApprovalController::class, 'restore']
+                )->name('hourly-pay-approval.restore');
+
+                Route::delete(
+                    'hourly-pay-approval/{id}/force-delete',
+                    [HourlyPayApprovalController::class, 'forceDelete']
+                )->name('hourly-pay-approval.force-delete');
 
     });
 

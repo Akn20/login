@@ -103,7 +103,7 @@ class PrePayrollAdjustmentController extends Controller
     //  SAVE
     PrePayrollAdjustment::create($data);
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Created Successfully');
 }
 
@@ -171,7 +171,7 @@ public function update(Request $request, $id)
 
     $record->update($data);
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Updated Successfully');
 }
 public function approve($id)
@@ -192,7 +192,7 @@ public function approve($id)
         ]);
     }
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Approved Successfully');
 }
 
