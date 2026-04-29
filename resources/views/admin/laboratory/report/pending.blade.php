@@ -101,7 +101,8 @@
 
                             {{-- TEST REQUESTED --}}
                             <td>
-                                {{ $report->sample->labRequest->labTest->test_name ?? 'N/A' }}
+                                {{ $labTest->test_name ?? ($report->sample->labRequest->test_name ?? 'N/A') }}
+                            </td>
 
                             {{-- SAMPLE ID --}}
                             <td>

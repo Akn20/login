@@ -11,6 +11,7 @@ use App\Models\FileAuditLog;
 use App\Models\SampleCollection;
 use App\Models\EquipmentMaintenance;
 use App\Models\InventoryUsageLog;
+use App\Models\CriticalValueAlert;
 use Illuminate\Support\Facades\Storage;
 use App\Models\LabRequest;
 use Carbon\Carbon;
@@ -549,12 +550,12 @@ public function reagentUsageReport(Request $request)
     $reagents = \App\Models\InventoryItem::where('category', 'Reagent')->get();
     
     // Calculate total quantity used
-    $totalUsed = $logs->sum('quantity');
+    $totalUsed = $logs->sum('quantity_used');
     
     // Group by reagent for usage pattern analysis
     $usageByReagent = $logs->groupBy('item_id')->map(function ($group) {
         return [
-            'total_quantity' => $group->sum('quantity'),
+            'total_quantity' => $group->sum('quantity_used'),
             'usage_count' => $group->count(),
             'first_use' => $group->min('created_at'),
             'last_use' => $group->max('created_at')
@@ -978,18 +979,15 @@ public function apiMaintenanceReport(Request $request)
     ]);
 }
 
-public function apiReagentUsageReport(Request $request)
+public function apiReagentUsage()
 {
-    $logs = InventoryUsageLog::with('item')
-        ->latest()
-        ->get();
+    $logs = InventoryUsageLog::with('item')->get();
 
     return response()->json([
         'status' => true,
-        'total_used' => $logs->sum('quantity'),
+        'total_used' => $logs->sum('quantity_used'),
         'data' => $logs
-    ]); 
-
+    ]);
 }
 
 
