@@ -156,23 +156,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const valueInput = document.getElementById('calculation_value');
     const amountInput = document.getElementById('amount');
 
-    // 🔹 Dummy values (replace later with real data)
+    // Dummy values
     const baseValues = {
         basic: 20000,
         gross: 30000
     };
 
     function calculateAmount() {
-        let baseKey = baseSelect.value;
-        let baseAmount = baseValues[baseKey] || 0;
-        let percent = parseFloat(valueInput.value) || 0;
 
-        if (baseAmount > 0 && percent > 0) {
-            let result = (baseAmount * percent) / 100;
-            amountInput.value = result.toFixed(2);
-        }
+        let baseKey = baseSelect.value;
+
+        // stop if base not selected
+        if (!baseKey) return;
+
+        let baseAmount = baseValues[baseKey];
+
+        let percent = parseFloat(valueInput.value);
+
+        // stop if invalid percentage
+        if (isNaN(percent)) return;
+
+        let result = (baseAmount * percent) / 100;
+
+        amountInput.value = result.toFixed(2);
     }
 
+    // ONLY these fields trigger calculation
     baseSelect.addEventListener('change', calculateAmount);
     valueInput.addEventListener('input', calculateAmount);
 
