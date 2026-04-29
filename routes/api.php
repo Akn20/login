@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -837,3 +838,10 @@ Route::prefix('nurse-discharge')->group(function () {
     Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
 
 });
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::get('/nurse/dashboard', [NurseDashboardController::class, 'apiDashboard']);
