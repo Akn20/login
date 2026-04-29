@@ -828,6 +828,15 @@ Route::prefix('laboratories')->group(function () {
     // ================= REPORTS ================= 
     Route::prefix('reports')->group(function () {
 
+
+        Route::get('/daily', [ReportController::class, 'apiDailyReport']);
+    Route::get('/pending', [ReportController::class, 'apiPendingReport']);
+    Route::get('/summary', [ReportController::class, 'apiCompletionSummary']);
+    Route::get('/critical', [ReportController::class, 'apiCriticalReport']);
+    Route::get('/maintenance', [ReportController::class, 'apiMaintenanceReport']);
+    Route::get('/reagent-usage', [ReportController::class, 'apiReagentUsage']);
+
+
         Route::get('/', [ReportController::class, 'apiIndex']);
         Route::get('/deleted', [ReportController::class, 'apiDeleted']);
         Route::get('/{id}', [ReportController::class, 'apiShow']);
@@ -845,6 +854,8 @@ Route::prefix('laboratories')->group(function () {
         Route::post('/{id}/sign', [ReportController::class, 'apiSign']);
         Route::post('/{id}/finalize', [ReportController::class, 'apiFinalize']);
 
+
+         
     });
 
     // Sample Collection

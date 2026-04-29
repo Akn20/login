@@ -517,6 +517,58 @@
                         </a>
                     </li>
                 </ul>
+
+
+            <ul class="nxl-submenu">
+
+    <!-- MAIN HEADING -->
+    <a href="javascript:void(0);" class="nxl-link">
+        <i class="feather-bar-chart-2 me-2"></i>
+        <span>Reports</span>
+              <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+    </a>
+
+    <!-- SUBMENU -->
+    <ul class="nxl-submenu custom-submenu">
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.daily') }}" class="nxl-link">
+                <i class="feather-calendar me-2"></i> Daily Test Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.pending') }}" class="nxl-link">
+                <i class="feather-clock me-2"></i> Pending Reports
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.summary') }}" class="nxl-link">
+                <i class="feather-pie-chart me-2"></i> Test Summary
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.critical') }}" class="nxl-link">
+                <i class="feather-alert-triangle me-2"></i> Critical Results
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.maintenance') }}" class="nxl-link">
+                <i class="feather-tool me-2"></i> Equipment Maintenance
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.reagent') }}" class="nxl-link">
+                <i class="feather-droplet me-2"></i> Reagent Usage
+            </a>
+        </li>
+
+    </ul>
+</ul>
             </li>
             {{-- Radiology Module --}}
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/radiology*') ? 'active nxl-trigger' : '' }}">

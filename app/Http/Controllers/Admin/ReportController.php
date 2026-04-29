@@ -9,7 +9,11 @@ use App\Models\LabReport;
 use App\Models\ReportFile;
 use App\Models\FileAuditLog;
 use App\Models\SampleCollection;
+use App\Models\EquipmentMaintenance;
+use App\Models\InventoryUsageLog;
 use Illuminate\Support\Facades\Storage;
+use App\Models\LabRequest;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -287,7 +291,357 @@ class ReportController extends Controller
         return back()->with('success', 'Report finalized');
     }
 
+    public function dailyReport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
 
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereDate('created_at', $date)
+    ->where('status', 'Completed')
+    ->get();
+    
+    $total = $reports->count();
+
+    return view('admin.laboratory.report.daily', compact('reports', 'total', 'date'));
+}
+
+
+
+public function pendingReport(Request $request)
+{
+    $query = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->where('verification_status', 'Pending'); // ✅ FIXED
+
+   // FILTER
+    if ($request->filter == 'Pending') {
+        $query->where('verification_status', 'Pending');
+    } elseif ($request->filter == 'Finalized') {
+        $query->where('verification_status', 'Finalized');
+    }
+
+    // SEARCH
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->whereHas('sample.labRequest.patient', function ($sub) use ($request) {
+                $sub->where('first_name', 'like', '%' . $request->search . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->search . '%');
+            })
+            ->orWhereHas('sample.labRequest.labTest', function ($sub) use ($request) {
+                $sub->where('test_name', 'like', '%' . $request->search . '%');
+            });
+        });
+    }
+
+
+    $reports = $query->latest()->get();
+
+    return view('admin.laboratory.report.pending', compact('reports'));
+}
+
+
+
+public function completionSummary(Request $request)
+{
+    $period = $request->period ?? 'daily';
+
+    switch ($period) {
+
+   case 'daily':
+    $latestDate = LabReport::max('created_at');
+
+    $startDate = \Carbon\Carbon::parse($latestDate)->subDays(6)->startOfDay();
+    $endDate = \Carbon\Carbon::parse($latestDate)->endOfDay();
+    break;
+
+    case 'weekly':
+        $startDate = now()->subWeeks(3)->startOfWeek(); // last 4 weeks
+        $endDate = now()->endOfWeek();
+        break;
+
+    case 'monthly':
+        $startDate = now()->subMonths(5)->startOfMonth(); // last 6 months
+        $endDate = now()->endOfMonth();
+        break;
+}
+
+    $completed = LabReport::whereBetween('created_at', [$startDate, $endDate])
+        ->where('status', 'completed')
+        ->count();
+
+    $pending = LabReport::where('status', 'pending')->count();
+
+    $total = LabReport::count();
+
+    $completionRate = $total > 0 ? round(($completed / $total) * 100) : 0;
+
+  $categoryCounts = LabReport::with('sample.labRequest')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->where('status', 'Completed')
+    ->get()
+    ->groupBy(function ($r) {
+
+        return optional($r->sample->labRequest)->test_name
+            ?? 'Not Assigned';
+
+    })
+    ->map(fn($group) => $group->count());
+
+    $dailySummary = LabReport::where('status', 'completed')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+    ->groupBy('date')
+    ->orderBy('date')
+    ->get();
+
+    
+
+$weeklySummary = LabReport::where('status', 'Completed')
+    ->where('created_at', '>=', now()->subWeeks(4))
+    ->selectRaw("
+        YEAR(created_at) as year,
+        WEEK(created_at, 1) as week,
+        COUNT(*) as count
+    ")
+    ->groupBy('year', 'week')
+    ->orderBy('year')
+    ->orderBy('week')
+    ->get()
+    ->map(function ($item) {
+
+        $startOfWeek = Carbon::now()
+            ->setISODate($item->year, $item->week)
+            ->startOfWeek();
+
+        $endOfWeek = Carbon::now()
+            ->setISODate($item->year, $item->week)
+            ->endOfWeek();
+
+        $item->label = $startOfWeek->format('d M') . ' - ' . $endOfWeek->format('d M');
+
+        return $item;
+    });
+
+    $monthlySummary = LabReport::where('status', 'Completed')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+    return view('admin.laboratory.report.summary', compact(
+        'total',
+        'completed',
+        'pending',
+        'completionRate',
+        'categoryCounts',
+        'dailySummary',
+        'weeklySummary',
+        'monthlySummary',
+        'period'
+    ));
+}
+
+public function criticalReport(Request $request)
+{
+    $query = \App\Models\CriticalValueAlert::with([
+        'report.sample.labRequest.patient',
+        'report.sample.labRequest.labTest'
+    ]);
+
+    // FILTER STATUS
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+
+    // FILTER DATE
+    if ($request->from_date) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+
+    if ($request->to_date) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+
+    $alerts = $query->latest()->get();
+
+    // FIXED COUNTS (NO FILTER IMPACT)
+    $totalCount = \App\Models\CriticalValueAlert::count();
+
+    $unresolvedCount = \App\Models\CriticalValueAlert::where('status', 'Pending')->count();
+
+    $resolvedCount = \App\Models\CriticalValueAlert::where('status', 'Resolved')->count();
+
+    return view('admin.laboratory.report.critical', compact(
+        'alerts',
+        'totalCount',
+        'unresolvedCount',
+        'resolvedCount'
+    ));
+}
+
+public function maintenanceReport(Request $request)
+{
+    $query = EquipmentMaintenance::with('equipment');
+
+    // FILTER: STATUS
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+
+    // FILTER: EQUIPMENT
+    if ($request->equipment_id) {
+        $query->where('equipment_id', $request->equipment_id);
+    }
+
+    $maintenances = $query->latest()->get();
+
+    // ALL EQUIPMENT
+    $equipment = EquipmentMaintenance::where('status', 1)->get();
+
+    // OVERDUE (maintenance_date + 30 < today)
+    $overdueCount = $maintenances->filter(function ($m) {
+        return \Carbon\Carbon::parse($m->maintenance_date)
+            ->addDays(30)
+            ->isPast() && $m->status != 'Completed';
+    })->count();
+
+    // UPCOMING (next 7 days)
+    $upcomingCount = $maintenances->filter(function ($m) {
+        $nextDate = \Carbon\Carbon::parse($m->maintenance_date)->addDays(30);
+        return $nextDate->between(now(), now()->addDays(7));
+    })->count();
+
+    return view('admin.laboratory.report.maintenance', compact(
+        'maintenances',
+        'equipment',
+        'overdueCount',
+        'upcomingCount'
+    ));
+}
+
+
+public function reagentUsageReport(Request $request)
+{
+    $query = InventoryUsageLog::with('item');
+    
+    // Filter by date range
+    if ($request->from_date) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+    if ($request->to_date) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+    
+    // Filter by item (reagent)
+    if ($request->item_id) {
+        $query->where('item_id', $request->item_id);
+    }
+    
+    $logs = $query->latest()->get();
+    
+    // Get all inventory items (reagents) for filter dropdown
+    $reagents = \App\Models\InventoryItem::where('category', 'Reagent')->get();
+    
+    // Calculate total quantity used
+    $totalUsed = $logs->sum('quantity');
+    
+    // Group by reagent for usage pattern analysis
+    $usageByReagent = $logs->groupBy('item_id')->map(function ($group) {
+        return [
+            'total_quantity' => $group->sum('quantity'),
+            'usage_count' => $group->count(),
+            'first_use' => $group->min('created_at'),
+            'last_use' => $group->max('created_at')
+        ];
+    });
+    
+    // Identify high usage patterns (above average)
+    $avgUsage = $usageByReagent->avg('total_quantity') ?? 0;
+    $highUsageReagents = $usageByReagent->filter(function ($usage) use ($avgUsage) {
+        return $usage['total_quantity'] > $avgUsage;
+    });
+    
+    // Low stock alerts (quantity below threshold)
+    $lowStockItems = \App\Models\InventoryItem::where('category', 'Reagent')
+        ->whereRaw('quantity <= threshold')
+        ->get();
+
+    return view('admin.laboratory.report.reagent', compact(
+        'logs',
+        'reagents',
+        'totalUsed',
+        'usageByReagent',
+        'highUsageReagents',
+        'lowStockItems'
+    ));
+}
+
+// ================= EXPORT: DAILY REPORT =================
+public function dailyReportExport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
+
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereDate('created_at', $date)
+    ->where('status', 'Completed')
+    ->get();
+
+    $filename = 'daily_report_' . $date . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function() use ($reports) {
+        $handle = fopen('php://output', 'w');
+        
+        // Header row
+        fputcsv($handle, ['#', 'Patient Name', 'Test Name', 'Sample ID', 'Status', 'Completion Time']);
+        
+        // Data rows
+        foreach ($reports as $index => $report) {
+            $patient = $report->sample->labRequest->patient ?? null;
+            $labTest = $report->sample->labRequest->labTest ?? null;
+            
+            fputcsv($handle, [
+                $index + 1,
+                $patient ? $patient->first_name . ' ' . $patient->last_name : 'N/A',
+                $labTest ? $labTest->test_name : ($report->sample->labRequest->test_name ?? 'N/A'),
+                $report->sample->barcode ?? $report->sample_id ?? '-',
+                $report->status,
+                $report->created_at ? $report->created_at->format('h:i A') : '-'
+            ]);
+        }
+        
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
+// ================= RESOLVE CRITICAL ALERT =================
+public function resolveCritical($id)
+{
+    $alert = \App\Models\CriticalValueAlert::findOrFail($id);
+    
+    $alert->update([
+        'status' => 'Resolved',
+        'resolved_by' => auth()->id(),
+        'resolved_at' => now()
+    ]);
+
+    return back()->with('success', 'Critical alert resolved successfully');
+}
     // ================= API: LIST REPORTS =================
     public function apiIndex()
     {
@@ -529,6 +883,113 @@ public function apiFinalize($id)
         'status' => true,
         'message' => 'Report finalized successfully'
     ]);
+}
+
+public function apiDailyReport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
+
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereDate('created_at', $date)
+    ->where('status', 'Completed')
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'date' => $date,
+        'total' => $reports->count(),
+        'data' => $reports
+    ]);
+}
+
+public function apiPendingReport(Request $request)
+{
+    $query = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ]);
+
+    if ($request->filter) {
+        $query->where('verification_status', $request->filter);
+    }
+
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->whereHas('sample.labRequest.patient', function ($sub) use ($request) {
+                $sub->where('first_name', 'like', '%' . $request->search . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->search . '%');
+            });
+        });
+    }
+
+    $reports = $query->latest()->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $reports
+    ]);
+}
+
+public function apiCompletionSummary(Request $request)
+{
+    $completed = LabReport::where('status', 'Completed')->count();
+    $pending = LabReport::where('status', 'Pending')->count();
+    $total = LabReport::count();
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'total' => $total,
+            'completed' => $completed,
+            'pending' => $pending,
+            'completion_rate' => $total > 0 ? round(($completed / $total) * 100) : 0
+        ]
+    ]);
+}
+
+public function apiCriticalReport(Request $request)
+{
+    $alerts = CriticalValueAlert::with([
+        'report.sample.labRequest.patient',
+        'report.sample.labRequest.labTest'
+    ])
+    ->latest()
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'total' => $alerts->count(),
+        'data' => $alerts
+    ]);
+}
+
+public function apiMaintenanceReport(Request $request)
+{
+    $maintenances = EquipmentMaintenance::with('equipment')
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $maintenances
+    ]);
+}
+
+public function apiReagentUsageReport(Request $request)
+{
+    $logs = InventoryUsageLog::with('item')
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'total_used' => $logs->sum('quantity'),
+        'data' => $logs
+    ]); 
+
 }
 
 

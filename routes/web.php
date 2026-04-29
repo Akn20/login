@@ -1215,6 +1215,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::resource('equipment', EquipmentController::class);
 
         // 🔧 Equipment Maintenance
+        Route::get('/maintenance', [EquipmentMaintenanceController::class, 'show'])
+            ->name('maintenance.show');
         Route::get('/maintenance/deleted', [EquipmentMaintenanceController::class, 'deleted'])
             ->name('maintenance.deleted');
 
@@ -1324,6 +1326,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
                 ->name('alerts.ack');
 
         }); 
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+    Route::get('/daily', [AdminReportController::class, 'dailyReport'])->name('daily');
+    Route::get('/daily/export', [AdminReportController::class, 'dailyReportExport'])->name('daily.export');
+    Route::get('/pending', [AdminReportController::class, 'pendingReport'])->name('pending');
+    Route::get('/summary', [AdminReportController::class, 'completionSummary'])->name('summary');
+    Route::get('/critical', [AdminReportController::class, 'criticalReport'])->name('critical');
+    Route::get('/critical/{id}/resolve', [AdminReportController::class, 'resolveCritical'])->name('critical.resolve');
+    Route::get('/maintenance', [AdminReportController::class, 'maintenanceReport'])->name('maintenance');
+    Route::get('/reagent', [AdminReportController::class, 'reagentUsageReport'])->name('reagent');
+
+});
 
         Route::prefix('inventory') ->name('inventory.')->group(function () {
 
