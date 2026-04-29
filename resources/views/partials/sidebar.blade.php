@@ -712,7 +712,16 @@
     <a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
        class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result-earnings.*') ? 'active' : '' }}"
        up-follow up-target="#main-container">
-        <i class="feather-dollar-sign me-2"></i>Payroll Earnings
+        <i class="feather-dollar-sign me-2"></i>Payroll Earnings Breakdown
+    </a>
+</li>
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.payroll-result-deductions.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result-deductions.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-minus-circle me-2"></i>
+        Payroll Deductions Breakdown
     </a>
 </li>
         {{-----Hourly Pay Approval------}}

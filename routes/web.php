@@ -78,6 +78,7 @@ use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
+use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 
 
@@ -1722,6 +1723,34 @@ Route::prefix('payroll/payroll-result-earnings')
 
     Route::post('/restore/{id}', [PayrollResultEarningController::class, 'restore'])->name('restore');
     Route::delete('/force-delete/{id}', [PayrollResultEarningController::class, 'forceDelete'])->name('forceDelete');
+});
+
+//---------Payroll - Payroll Result -deduction breakdown-----------//
+Route::prefix('payroll/payroll-result-deductions')
+    ->name('payroll.payroll-result-deductions.')
+    ->group(function () {
+
+    Route::get('/', [PayrollResultDeductionController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [PayrollResultDeductionController::class, 'create'])
+        ->name('create');
+
+    Route::post('/', [PayrollResultDeductionController::class, 'store'])
+        ->name('store');
+
+    Route::get('/{id}', [PayrollResultDeductionController::class, 'show'])
+        ->name('show');
+
+    Route::get('/{id}/edit', [PayrollResultDeductionController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/{id}', [PayrollResultDeductionController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/{id}', [PayrollResultDeductionController::class, 'destroy'])
+        ->name('delete');
+
 });
 });
 
