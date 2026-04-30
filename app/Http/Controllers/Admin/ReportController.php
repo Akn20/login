@@ -317,30 +317,46 @@ public function pendingReport(Request $request)
         'sample.labRequest.patient',
         'sample.labRequest.labTest'
     ])
-    ->where('verification_status', 'Pending'); // ✅ FIXED
+    ->where('verification_status', 'Pending');
 
-   // FILTER
+    // FILTER (All / Pending / Finalized)
     if ($request->filter == 'Pending') {
         $query->where('verification_status', 'Pending');
     } elseif ($request->filter == 'Finalized') {
         $query->where('verification_status', 'Finalized');
     }
 
-    // SEARCH
+    
     if ($request->search) {
-        $query->where(function ($q) use ($request) {
-            $q->whereHas('sample.labRequest.patient', function ($sub) use ($request) {
-                $sub->where('first_name', 'like', '%' . $request->search . '%')
-                    ->orWhere('last_name', 'like', '%' . $request->search . '%');
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+
+            // 🔹 Patient Name
+            $q->whereHas('sample.labRequest.patient', function ($p) use ($search) {
+                $p->where('first_name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%");
             })
-            ->orWhereHas('sample.labRequest.labTest', function ($sub) use ($request) {
-                $sub->where('test_name', 'like', '%' . $request->search . '%');
+
+            // 🔹 Test Name (from lab_requests)
+            ->orWhereHas('sample.labRequest', function ($t) use ($search) {
+                $t->where('test_name', 'like', "%$search%");
             });
+
         });
     }
 
-
     $reports = $query->latest()->get();
+
+   
+    foreach ($reports as $report) {
+
+        $createdDate = Carbon::parse($report->created_at)->startOfDay();
+        $today = now()->startOfDay();
+
+        $report->daysPending = $createdDate->diffInDays($today);
+        $report->isOverdue = $today->gt($createdDate);
+    }
 
     return view('admin.laboratory.report.pending', compact('reports'));
 }
@@ -584,6 +600,7 @@ public function reagentUsageReport(Request $request)
 }
 
 // ================= EXPORT: DAILY REPORT =================
+
 public function dailyReportExport(Request $request)
 {
     $date = $request->date ?? now()->toDateString();
@@ -592,7 +609,10 @@ public function dailyReportExport(Request $request)
         'sample.labRequest.patient',
         'sample.labRequest.labTest'
     ])
-    ->whereDate('created_at', $date)
+    ->whereBetween('created_at', [
+        Carbon::parse($date)->startOfDay(),
+        Carbon::parse($date)->endOfDay()
+    ])
     ->where('status', 'Completed')
     ->get();
 
@@ -603,27 +623,37 @@ public function dailyReportExport(Request $request)
         'Content-Disposition' => "attachment; filename=\"$filename\"",
     ];
 
-    $callback = function() use ($reports) {
+    $callback = function () use ($reports) {
+
         $handle = fopen('php://output', 'w');
-        
-        // Header row
-        fputcsv($handle, ['#', 'Patient Name', 'Test Name', 'Sample ID', 'Status', 'Completion Time']);
-        
-        // Data rows
+
+        // ✅ HEADER ROW
+        fputcsv($handle, [
+            '#',
+            'Patient Name',
+            'Test Name',
+            'Sample ID',
+            'Status',
+            'Completion Time'
+        ]);
+
+        // ✅ DATA ROWS
         foreach ($reports as $index => $report) {
-            $patient = $report->sample->labRequest->patient ?? null;
-            $labTest = $report->sample->labRequest->labTest ?? null;
-            
+
+            $labRequest = optional($report->sample)->labRequest;
+            $patient = optional($labRequest)->patient;
+            $labTest = optional($labRequest)->labTest;
+
             fputcsv($handle, [
                 $index + 1,
                 $patient ? $patient->first_name . ' ' . $patient->last_name : 'N/A',
-                $labTest ? $labTest->test_name : ($report->sample->labRequest->test_name ?? 'N/A'),
-                $report->sample->barcode ?? $report->sample_id ?? '-',
-                $report->status,
-                $report->created_at ? $report->created_at->format('h:i A') : '-'
+                $labTest ? $labTest->test_name : ($labRequest->test_name ?? 'N/A'),
+                optional($report->sample)->barcode ?? $report->sample_id ?? '-',
+                $report->status ?? '-',
+                optional($report->created_at)->format('h:i A') ?? '-'
             ]);
         }
-        
+
         fclose($handle);
     };
 
