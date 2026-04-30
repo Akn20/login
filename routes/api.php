@@ -65,6 +65,8 @@ use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
+use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
+
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\InstitutionController;
@@ -1428,7 +1430,7 @@ Route::prefix('employee-salary-assignment')->group(function () {
 });
 /*
 |--------------------------------------------------------------------------
-| 35. Payroll: Pre payroll adjustment
+| 36. Payroll: Pre payroll adjustment
 |--------------------------------------------------------------------------
 */
 Route::prefix('pre-payroll')->group(function () {
@@ -1443,3 +1445,24 @@ Route::prefix('pre-payroll')->group(function () {
     Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDelete']);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| 37. Payroll: PayrollResultEarningController
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('payroll-earnings')->group(function () {
+
+    Route::get('/', [PayrollResultEarningController::class, 'apiIndex']);
+    Route::get('{id}', [PayrollResultEarningController::class, 'apiShow']);
+    Route::post('/', [PayrollResultEarningController::class, 'apiStore']);
+    Route::put('{id}', [PayrollResultEarningController::class, 'apiUpdate']);
+    Route::delete('{id}', [PayrollResultEarningController::class, 'apiDelete']);
+
+});
+
+
+    
+

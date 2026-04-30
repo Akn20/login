@@ -141,4 +141,98 @@ class PayrollResultEarningController extends Controller
 
         return redirect()->back()->with('success', 'Permanently Deleted');
     }
+
+
+
+    //api methods
+    public function apiIndex()
+{
+    $records = PayrollResultEarning::latest()->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $records
+    ]);
+}public function apiShow($id)
+{
+    $record = PayrollResultEarning::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $record
+    ]);
+}public function apiStore(Request $request)
+{
+    $request->validate([
+        'payroll_result_id' => 'required',
+        'earning_code' => 'required',
+        'earning_name' => 'required',
+        'earning_type' => 'required',
+        'amount' => 'required|numeric|min:0',
+        'calculation_base' => 'required_if:earning_type,Variable,OT',
+        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
+    ]);
+
+    $record = PayrollResultEarning::create([
+        ...$request->all(),
+        'created_by' => Auth::id()
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Created successfully',
+        'data' => $record
+    ], 201);
+}public function apiUpdate(Request $request, $id)
+{
+    $record = PayrollResultEarning::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Not found'
+        ], 404);
+    }
+
+    $request->validate([
+        'earning_code' => 'required',
+        'earning_name' => 'required',
+        'earning_type' => 'required',
+        'amount' => 'required|numeric|min:0',
+        'calculation_base' => 'required_if:earning_type,Variable,OT',
+        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
+    ]);
+
+    $record->update($request->all());
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Updated successfully',
+        'data' => $record
+    ]);
+}public function apiDelete($id)
+{
+    $record = PayrollResultEarning::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Not found'
+        ], 404);
+    }
+
+    $record->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Deleted successfully'
+    ]);
+}
 }
