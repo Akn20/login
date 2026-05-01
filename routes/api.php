@@ -1978,3 +1978,24 @@ Route::prefix('patient-portal')->group(function () {
 
 
 });
+Route::prefix('emr')->group(function () {
+
+    Route::get(
+        '/discharge-summary-list',
+        [PatientEmrApiController::class, 'index']
+    );
+
+    Route::get(
+        '/discharge-summary/{ipd_id}',
+        [PatientEmrApiController::class, 'show']
+    );
+
+    Route::get(
+        '/doctor-notes/{ipd_id}',
+        [PatientEmrApiController::class, 'doctorNotes']
+    );
+ Route::post(
+    '/doctor-notes/{ipd_id}',
+    [PatientEmrApiController::class, 'storeDoctorNotes']
+);
+});
