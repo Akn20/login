@@ -916,6 +916,8 @@ Route::prefix('laboratories')->group(function () {
 */
 
 Route::prefix('edm')->group(function () {
+ Route::get('/employees', [EmployeeDocumentApiController::class, 'employees']);
+
     Route::get('/', [EmployeeDocumentApiController::class, 'index']);
     Route::post('/', [EmployeeDocumentApiController::class, 'store']);
     Route::get('/{id}', [EmployeeDocumentApiController::class, 'show']);
@@ -923,6 +925,8 @@ Route::prefix('edm')->group(function () {
     Route::delete('/{id}', [EmployeeDocumentApiController::class, 'destroy']);
     Route::get('/download/{id}', [EmployeeDocumentApiController::class, 'download']);
     Route::get('/file/{id}', [EmployeeDocumentApiController::class, 'file']);
+   
+
 });
 
 
@@ -1904,6 +1908,29 @@ Route::prefix('billing')->group(function () {
 
 });
 
+Route::prefix('admin/patient-portal')->group(function () {
+
+    Route::get(
+        '/dashboard',
+        [PatientPortalApiController::class, 'dashboard']
+    );
+
+    Route::get(
+        '/appointments',
+        [PatientPortalApiController::class, 'appointments']
+    );
+
+    Route::get(
+        '/lab-reports',
+        [PatientPortalApiController::class, 'labReports']
+    );
+
+    Route::get(
+        '/radiology-reports',
+        [PatientPortalApiController::class, 'radiology']
+    );
+
+});
 
 
 // API FOR IPD MODULE(DOCTOR)
