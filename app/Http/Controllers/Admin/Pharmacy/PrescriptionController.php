@@ -9,6 +9,7 @@ use App\Models\OfflinePrescription;
 use App\Models\OfflinePrescriptionItem;
 use App\Models\SalesBillItem;
 use Illuminate\Support\Str;
+use App\Models\Prescription;
  
 class PrescriptionController extends Controller
 {
@@ -815,179 +816,202 @@ return response()->json([
 }
 public function apiShow($id)
 {
- 
-$prescription = DB::table('consultations')
-->join('patients','consultations.patient_id','=','patients.id')
-->join('staff','consultations.doctor_id','=','staff.id')
-->where('consultations.id',$id)
-->select(
- 
-'consultations.id',
- 
-DB::raw("CONCAT('PR-',LPAD(consultations.id,4,'0')) as prescription_number"),
- 
-DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
- 
-'patients.mobile',
- 
-'staff.name as doctor_name'
- 
-)->first();
- 
- 
-$items = DB::table('consultation_medicines')
-->join('medicines','consultation_medicines.medicine_id','=','medicines.id')
-->where('consultation_medicines.consultation_id',$id)
-->select(
- 
-'medicines.medicine_name',
-'consultation_medicines.dosage',
-'consultation_medicines.frequency',
-'consultation_medicines.duration'
- 
-)->get();
- 
- 
-return response()->json([
-'success'=>true,
-'prescription'=>$prescription,
-'medicines'=>$items
-]);
- 
+
+    /* ---------- CHECK OFFLINE PRESCRIPTION ---------- */
+
+    $offline = DB::table('offline_prescriptions')->where('id', $id)->first();
+
+    if ($offline) {
+
+        $items = DB::table('offline_prescription_items')
+            ->where('offline_prescription_id', $id)
+            ->select(
+                'medicine_name',
+                'dosage',
+                'frequency',
+                'duration'
+            )
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'prescription' => [
+                'id' => $offline->id,
+                'prescription_number' => 'OFF-' . str_pad($offline->id, 4, '0', STR_PAD_LEFT),
+                'patient_name' => $offline->patient_name,
+                'mobile' => $offline->patient_phone,
+                'doctor_name' => $offline->doctor_name,
+                'prescription_date' => $offline->prescription_date,
+                'prescription_type' => 'Offline',
+                'status' => $offline->status,
+            ],
+            'medicines' => $items
+        ]);
+    }
+
+
+    /* ---------- DIGITAL PRESCRIPTION ---------- */
+
+    $prescription = DB::table('consultations')
+        ->join('patients', 'consultations.patient_id', '=', 'patients.id')
+        ->join('staff', 'consultations.doctor_id', '=', 'staff.id')
+        ->where('consultations.id', $id)
+        ->select(
+            'consultations.id',
+            DB::raw("CONCAT('PR-',LPAD(consultations.id,4,'0')) as prescription_number"),
+            DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
+            'patients.mobile',
+            'staff.name as doctor_name',
+            'consultations.consultation_date as prescription_date'
+        )
+        ->first();
+
+    if (!$prescription) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Prescription not found'
+        ], 404);
+    }
+
+    $items = DB::table('consultation_medicines')
+        ->join('medicines', 'consultation_medicines.medicine_id', '=', 'medicines.id')
+        ->where('consultation_medicines.consultation_id', $id)
+        ->select(
+            'medicines.medicine_name',
+            'consultation_medicines.dosage',
+            'consultation_medicines.frequency',
+            'consultation_medicines.duration'
+        )
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'prescription' => [
+            'id' => $prescription->id,
+            'prescription_number' => $prescription->prescription_number,
+            'patient_name' => $prescription->patient_name,
+            'mobile' => $prescription->mobile,
+            'doctor_name' => $prescription->doctor_name,
+            'prescription_date' => $prescription->prescription_date,
+            'prescription_type' => 'Digital',
+            'status' => 'Pending'
+        ],
+        'medicines' => $items
+    ]);
 }
 public function apiDispense(Request $request,$id)
 {
- 
-$bill_id = Str::uuid();
- $patientName = null;
+    $bill_id = Str::uuid();
 
-    // ONLINE
-    if ($request->patient_id) {
-        $patient = Patient::find($request->patient_id);
+    // Patient name
+    if($request->patient_id){
+        $patient = DB::table('patients')->where('id',$request->patient_id)->first();
         $patientName = $patient->name ?? null;
-    }
-    // OFFLINE
-    else {
-        $offline = OfflinePrescription::where('id', $id)->first();
+    } else {
+        $offline = DB::table('offline_prescriptions')->where('id',$id)->first();
         $patientName = $offline->patient_name ?? null;
     }
-DB::table('sales_bills')->insert([
- 
-'bill_id'=>$bill_id,
- 
-'bill_number'=>'BILL'.time(),
- 
-'patient_id'=>$request->patient_id,
- 
-'patient_name' => $patientName,
-'prescription_id'=>$id,
- 
-'total_amount'=>0,
- 
-'created_at'=>now(),
- 
-'updated_at'=>now()
- 
-]);
- 
-foreach($request->medicine_id as $key=>$medicine){
- 
-SalesBillItem::create([
- 
-'sales_bill_id'=>$bill_id,
- 
-'medicine_id'=>$medicine,
- 
-'batch_id'=>$request->batch_id[$key],
- 
-'quantity'=>$request->quantity[$key],
- 
-'unit_price'=>10,
- 
-'total_price'=>$request->quantity[$key]*10
- 
-]);
- 
-}
- $total = DB::table('sales_bill_items')
-    ->where('sales_bill_id', $bill_id)
-    ->sum('total_price');
 
-DB::table('sales_bills')
-    ->where('bill_id', $bill_id)
-    ->update([
-        'total_amount' => $total,
-        'balance_amount' => $total
+    DB::table('sales_bills')->insert([
+        'bill_id'=>$bill_id,
+        'bill_number'=>'BILL'.time(),
+        'patient_id'=>$request->patient_id,
+        'patient_name'=>$patientName,
+        'prescription_id'=>$id,
+        'total_amount'=>0,
+        'created_at'=>now(),
+        'updated_at'=>now()
     ]);
-return response()->json([
- 
-'success'=>true,
- 
-'message'=>'Prescription Dispensed',
- 
-'bill_id'=>$bill_id
- 
-]);
- 
+
+    foreach($request->items as $item){
+
+        DB::table('sales_bill_items')->insert([
+            'id' => Str::uuid(), // ✅ ADD THIS
+            'sales_bill_id'=>$bill_id,
+            'medicine_id'=>$item['medicine_id'],
+            'batch_id'=>$item['batch_id'],
+            'quantity'=>$item['qty'],
+            'unit_price'=>10,
+            'total_price'=>$item['qty'] * 10
+        ]);
+
+        DB::table('medicine_batches')
+            ->where('id',$item['batch_id'])
+            ->decrement('quantity',$item['qty']);
+    }
+
+    $total = DB::table('sales_bill_items')
+        ->where('sales_bill_id',$bill_id)
+        ->sum('total_price');
+
+    DB::table('sales_bills')
+        ->where('bill_id',$bill_id)
+        ->update([
+            'total_amount'=>$total
+        ]);
+
+    return response()->json([
+        'success'=>true,
+        'message'=>'Medicines dispensed successfully'
+    ]);
 }
 public function apiReject($id)
 {
- 
-DB::table('prescription_status')
-->updateOrInsert(
- 
-['consultation_id'=>$id],
- 
-[
-'id'=>Str::uuid(),
-'status'=>'Rejected',
-'updated_at'=>now(),
-'created_at'=>now()
-]
- 
-);
- 
-return response()->json([
- 
-'success'=>true,
- 
-'message'=>'Prescription Rejected'
- 
-]);
- 
+    $prescription = Prescription::find($id);
+
+    if (!$prescription) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Prescription not found'
+        ], 404);
+    }
+
+    // ✅ UPDATE STATUS
+    $prescription->status = 'rejected';
+    $prescription->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Prescription rejected successfully',
+        'data' => $prescription   // return updated data
+    ]);
 }
 public function apiBill($id)
 {
- 
-$bill = DB::table('sales_bills')
-->where('bill_id',$id)
-->first();
- 
- 
-$items = DB::table('sales_bill_items')
-->join('medicines','sales_bill_items.medicine_id','=','medicines.id')
-->where('sales_bill_items.sales_bill_id',$id)
-->select(
- 
-'medicines.medicine_name',
- 
-'sales_bill_items.quantity',
- 
-'sales_bill_items.unit_price'
- 
-)->get();
- 
- 
-return response()->json([
- 
-'success'=>true,
- 
-'bill'=>$bill,
- 
-'items'=>$items
- 
-]);
- 
+    // ✅ Get bill using prescription_id
+    $bill = DB::table('sales_bills')
+        ->where('prescription_id', $id)
+        ->first();
+
+    if (!$bill) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Bill not found'
+        ]);
+    }
+
+    // ✅ Use bill_id (NOT id)
+    $items = DB::table('sales_bill_items')
+        ->join('medicines', 'sales_bill_items.medicine_id', '=', 'medicines.id')
+        ->where('sales_bill_items.sales_bill_id', $bill->bill_id) // ✅ FIXED
+        ->select(
+            'medicines.medicine_name',
+            'sales_bill_items.quantity',
+            'sales_bill_items.unit_price as price',
+            DB::raw('sales_bill_items.quantity * sales_bill_items.unit_price as total')
+        )
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'patient_name' => $bill->patient_name,
+            'bill_number' => $bill->bill_number,
+            'date' => $bill->created_at,
+            'items' => $items,
+            'grand_total' => $bill->total_amount
+        ]
+    ]);
 }
 public function print($id)
 {
@@ -1045,6 +1069,177 @@ $bill->prescription_number = $bill->prescription_number ?? '-';
     $bill->items = $items;
 
     return view('admin.pharmacy.prescriptions.bill',compact('bill'));
+}
+
+//added
+public function apiStoreOffline(Request $request)
+{
+    $request->validate([
+        'patient_name' => 'required',
+        'prescription_date' => 'required'
+    ]);
+
+    $count = DB::table('consultations')->count()
+        + DB::table('offline_prescriptions')->count() + 1;
+
+    $prescription_number = 'PR-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+    $imagePath = null;
+
+    if ($request->hasFile('prescription_image')) {
+        $imagePath = $request->file('prescription_image')
+            ->store('prescriptions', 'public');
+    }
+
+    $prescription = OfflinePrescription::create([
+        'id' => Str::uuid(),
+        'prescription_number' => $prescription_number,
+        'patient_name' => $request->patient_name,
+        'patient_phone' => $request->patient_phone,
+        'doctor_name' => $request->doctor_name,
+        'clinic_name' => $request->clinic_name,
+        'prescription_date' => $request->prescription_date,
+        'uploaded_prescription' => $imagePath,
+        'status' => 'Pending'
+    ]);
+
+    foreach ($request->medicine_name as $key => $medicine) {
+        OfflinePrescriptionItem::create([
+            'id' => Str::uuid(),
+            'offline_prescription_id' => $prescription->id,
+            'medicine_name' => $medicine,
+            'dosage' => $request->dosage[$key],
+            'frequency' => $request->frequency[$key],
+            'duration' => $request->duration[$key],
+            'instructions' => $request->instructions[$key]
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Offline Prescription Created',
+        'data' => $prescription
+    ]);
+}
+
+public function apiDispenseData($id)
+{
+    /* ---------- CHECK OFFLINE ---------- */
+    $offline = DB::table('offline_prescriptions')->where('id',$id)->first();
+
+    if($offline){
+
+        $items = DB::table('offline_prescription_items')
+            ->where('offline_prescription_id',$id)
+            ->get();
+
+        foreach($items as $item){
+
+            /* ✅ CALCULATE REQUIRED QTY (same as web) */
+            $frequencyParts = explode('-', $item->frequency);
+            $dosesPerDay = array_sum($frequencyParts);
+            $requiredQty = $dosesPerDay * ($item->duration ?? 1);
+
+            /* ✅ FIND MEDICINE ID FROM NAME */
+            $medicine = DB::table('medicines')
+                ->where('medicine_name',$item->medicine_name)
+                ->first();
+
+            $batches = [];
+
+            if($medicine){
+
+                $item->medicine_id = $medicine->id;
+
+                /* ✅ FETCH BATCHES (IMPORTANT) */
+                $batches = DB::table('medicine_batches')
+                    ->where('medicine_id',$medicine->id)
+                    ->where('quantity','>',0)
+                    ->orderBy('expiry_date','asc')
+                    ->get()
+                    ->map(function($batch){
+                        return [
+                            'id' => $batch->id,
+                            'batch_number' => $batch->batch_number,
+                            'expiry_date' => $batch->expiry_date,
+                            'quantity_available' => $batch->quantity
+                        ];
+                    });
+            }
+
+            $item->required_qty = $requiredQty;
+            $item->batches = $batches;
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'id' => $offline->id,
+                'patient_name' => $offline->patient_name,
+                'doctor_name' => $offline->doctor_name,
+                'items' => $items
+            ]
+        ]);
+    }
+
+    /* ---------- DIGITAL ---------- */
+
+    $prescription = DB::table('consultations')
+        ->join('patients','consultations.patient_id','=','patients.id')
+        ->join('staff','consultations.doctor_id','=','staff.id')
+        ->where('consultations.id',$id)
+        ->select(
+            'consultations.id',
+            DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
+            'staff.name as doctor_name'
+        )
+        ->first();
+
+    if(!$prescription){
+        return response()->json([
+            'status'=>false,
+            'message'=>'Prescription not found'
+        ]);
+    }
+
+    $items = DB::table('consultation_medicines')
+        ->join('medicines','consultation_medicines.medicine_id','=','medicines.id')
+        ->where('consultation_medicines.consultation_id',$id)
+        ->select(
+            'consultation_medicines.medicine_id',
+            'medicines.medicine_name',
+            'consultation_medicines.duration as required_qty'
+        )
+        ->get();
+
+    foreach($items as $item){
+
+        $batches = DB::table('medicine_batches')
+            ->where('medicine_id',$item->medicine_id)
+            ->where('quantity','>',0)
+            ->orderBy('expiry_date','asc')
+            ->get()
+            ->map(function($batch){
+                return [
+                    'id'=>$batch->id,
+                    'batch_number'=>$batch->batch_number,
+                    'expiry_date'=>$batch->expiry_date,
+                    'quantity_available'=>$batch->quantity
+                ];
+            });
+
+        $item->batches = $batches;
+    }
+
+    return response()->json([
+        'status'=>true,
+        'data'=>[
+            'id'=>$prescription->id,
+            'patient_name'=>$prescription->patient_name,
+            'doctor_name'=>$prescription->doctor_name,
+            'items'=>$items
+        ]
+    ]);
 }
  
 }

@@ -1,53 +1,57 @@
 @if ($errors->any())
 <div class="alert alert-danger">
-<ul>
-@foreach ($errors->all() as $error)
-<li>{{ $error }}</li>
-@endforeach
-</ul>
+    <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
 </div>
 @endif
-<div class="page-header mb-4 d-flex justify-content-between">
-     <h5>Add Earning</h5>
-<a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
+
+<div class="page-header mb-4 d-flex align-items-center justify-content-between">
+
+    <div>
+        <h5 class="mb-1">
+            {{ isset($record) ? 'Edit Earning' : 'Add Earning' }}
+        </h5>
+    </div>
+
+    <a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
        class="btn btn-secondary btn-sm">
         Back
-    </a></div>
-{{-- DUMMY Payroll Result ID --}}
-<input type="hidden" name="payroll_result_id" value="1">
+    </a>
+
+</div>
+
+<div class="card">
+<div class="card-body">
 
 <div class="row">
 
-    <!-- Code -->
+    {{-- PAYROLL RESULT --}}
     <div class="col-md-6 mb-3">
-        <label>Earning Code *</label>
-        <input type="text" name="earning_code" class="form-control"
-            value="{{ old('earning_code', $record->earning_code ?? '') }}">
-    </div>
+        <label class="form-label">Payroll Result *</label>
 
-    <!-- Name -->
-    <div class="col-md-6 mb-3">
-        <label>Earning Name *</label>
-        <input type="text" name="earning_name" class="form-control"
-            value="{{ old('earning_name', $record->earning_name ?? '') }}">
-    </div>
+        <select name="payroll_result_id"
+                class="form-control">
 
-    <!-- Type -->
-    <div class="col-md-6 mb-3">
-        <label>Earning Type *</label>
-        <select name="earning_type" class="form-control">
-            <option value="Fixed"
-                {{ old('earning_type', $record->earning_type ?? '') == 'Fixed' ? 'selected' : '' }}>
-                Fixed
+            <option value="">Select Payroll Result</option>
+
+            @foreach($payrollResults as $result)
+
+            <option value="{{ $result->id }}"
+                {{ old('payroll_result_id', $record->payroll_result_id ?? '') == $result->id ? 'selected' : '' }}>
+
+                {{ $result->payroll_month }}
+                -
+                {{ $result->payroll_run_id }}
+                -
+                Staff: {{ $result->staff_id }}
+
             </option>
-            <option value="Variable"
-                {{ old('earning_type', $record->earning_type ?? '') == 'Variable' ? 'selected' : '' }}>
-                Variable
-            </option>
-            <option value="OT"
-                {{ old('earning_type', $record->earning_type ?? '') == 'OT' ? 'selected' : '' }}>
-                OT
-            </option>
+
+            @endforeach
+
         </select>
     </div>
 
@@ -55,14 +59,72 @@
 
 <hr>
 
-<h6>Calculation</h6>
+<h6 class="mb-3">Earning Details</h6>
 
 <div class="row">
 
-    <!-- Base -->
+    {{-- CODE --}}
     <div class="col-md-6 mb-3">
-        <label>Calculation Base</label>
-        <select name="calculation_base" class="form-control" id="calculation_base">
+        <label class="form-label">Earning Code *</label>
+
+        <input type="text"
+               name="earning_code"
+               class="form-control"
+               value="{{ old('earning_code', $record->earning_code ?? '') }}">
+    </div>
+
+    {{-- NAME --}}
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Earning Name *</label>
+
+        <input type="text"
+               name="earning_name"
+               class="form-control"
+               value="{{ old('earning_name', $record->earning_name ?? '') }}">
+    </div>
+
+    {{-- TYPE --}}
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Earning Type *</label>
+
+        <select name="earning_type"
+                class="form-control"
+                id="earning_type">
+
+            <option value="Fixed"
+                {{ old('earning_type', $record->earning_type ?? '') == 'Fixed' ? 'selected' : '' }}>
+                Fixed
+            </option>
+
+            <option value="Variable"
+                {{ old('earning_type', $record->earning_type ?? '') == 'Variable' ? 'selected' : '' }}>
+                Variable
+            </option>
+
+            <option value="OT"
+                {{ old('earning_type', $record->earning_type ?? '') == 'OT' ? 'selected' : '' }}>
+                OT
+            </option>
+
+        </select>
+    </div>
+
+</div>
+
+<hr>
+
+<h6 class="mb-3">Calculation</h6>
+
+<div class="row">
+
+    {{-- BASE --}}
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Calculation Base</label>
+
+        <select name="calculation_base"
+                class="form-control"
+                id="calculation_base">
+
             <option value="">Select</option>
 
             <option value="basic"
@@ -74,60 +136,101 @@
                 {{ old('calculation_base', $record->calculation_base ?? '') == 'gross' ? 'selected' : '' }}>
                 Gross
             </option>
+
         </select>
     </div>
 
-    <!-- Value -->
+    {{-- VALUE --}}
     <div class="col-md-6 mb-3">
-        <label>Calculation Value (%)</label>
-        <input type="number" step="0.01" name="calculation_value" class="form-control"
-            id="calculation_value"
-            value="{{ old('calculation_value', $record->calculation_value ?? '') }}">
+        <label class="form-label">
+            Calculation Value (%)
+        </label>
+
+        <input type="number"
+               step="0.01"
+               name="calculation_value"
+               class="form-control"
+               id="calculation_value"
+               value="{{ old('calculation_value', $record->calculation_value ?? '') }}">
     </div>
 
-    <!-- Amount -->
+    {{-- AMOUNT --}}
     <div class="col-md-6 mb-3">
-        <label>Amount *</label>
-        <input type="number" step="0.01" name="amount" class="form-control"
-            id="amount"
-            value="{{ old('amount', $record->amount ?? '') }}">
+        <label class="form-label">Amount *</label>
+
+        <input type="number"
+               step="0.01"
+               name="amount"
+               class="form-control"
+               id="amount"
+               value="{{ old('amount', $record->amount ?? '') }}">
     </div>
 
 </div>
 
 <hr>
 
-<h6>Statutory</h6>
+<h6 class="mb-3">Statutory Flags</h6>
 
 <div class="row">
 
-    <div class="col-md-4">
-        <label>Taxable</label>
-        <select name="taxable" class="form-control">
+    {{-- TAXABLE --}}
+    <div class="col-md-4 mb-3">
+        <label class="form-label">Taxable</label>
+
+        <select name="taxable"
+                class="form-control">
+
             <option value="1"
-                {{ old('taxable', $record->taxable ?? '') == 1 ? 'selected' : '' }}>Yes</option>
+                {{ old('taxable', $record->taxable ?? 1) == 1 ? 'selected' : '' }}>
+                Yes
+            </option>
+
             <option value="0"
-                {{ old('taxable', $record->taxable ?? '') == 0 ? 'selected' : '' }}>No</option>
+                {{ old('taxable', $record->taxable ?? 1) == 0 ? 'selected' : '' }}>
+                No
+            </option>
+
         </select>
     </div>
 
-    <div class="col-md-4">
-        <label>PF Applicable</label>
-        <select name="pf_applicable" class="form-control">
+    {{-- PF --}}
+    <div class="col-md-4 mb-3">
+        <label class="form-label">PF Applicable</label>
+
+        <select name="pf_applicable"
+                class="form-control">
+
             <option value="1"
-                {{ old('pf_applicable', $record->pf_applicable ?? '') == 1 ? 'selected' : '' }}>Yes</option>
+                {{ old('pf_applicable', $record->pf_applicable ?? 0) == 1 ? 'selected' : '' }}>
+                Yes
+            </option>
+
             <option value="0"
-                {{ old('pf_applicable', $record->pf_applicable ?? '') == 0 ? 'selected' : '' }}>No</option>
+                {{ old('pf_applicable', $record->pf_applicable ?? 0) == 0 ? 'selected' : '' }}>
+                No
+            </option>
+
         </select>
     </div>
 
-    <div class="col-md-4">
-        <label>ESI Applicable</label>
-        <select name="esi_applicable" class="form-control">
+    {{-- ESI --}}
+    <div class="col-md-4 mb-3">
+        <label class="form-label">ESI Applicable</label>
+
+        <select name="esi_applicable"
+                class="form-control">
+
             <option value="1"
-                {{ old('esi_applicable', $record->esi_applicable ?? '') == 1 ? 'selected' : '' }}>Yes</option>
+                {{ old('esi_applicable', $record->esi_applicable ?? 0) == 1 ? 'selected' : '' }}>
+                Yes
+            </option>
+
             <option value="0"
-                {{ old('esi_applicable', $record->esi_applicable ?? '') == 0 ? 'selected' : '' }}>No</option>
+                {{ old('esi_applicable', $record->esi_applicable ?? 0) == 0 ? 'selected' : '' }}>
+                No
+            </option>
+
         </select>
     </div>
 
@@ -135,55 +238,146 @@
 
 <hr>
 
-<div class="col-md-4 mb-3">
-    <label>Display Order</label>
-    <input type="number" name="display_order" class="form-control"
-        value="{{ old('display_order', $record->display_order ?? '') }}">
+<div class="row">
+
+    {{-- DISPLAY ORDER --}}
+    <div class="col-md-4 mb-3">
+        <label class="form-label">Display Order</label>
+
+        <input type="number"
+               name="display_order"
+               class="form-control"
+               value="{{ old('display_order', $record->display_order ?? '') }}">
+    </div>
+
 </div>
 
 <hr>
 
 <div class="d-flex justify-content-end">
-    <button class="btn btn-primary">Save</button>
+    <button class="btn btn-primary">
+        {{ isset($record) ? 'Update' : 'Save' }}
+    </button>
 </div>
 
+</div>
+</div>
 
-{{-- 🔥 AUTO CALCULATION SCRIPT --}}
+{{-- AUTO CALCULATION --}}
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
 
-    const baseSelect = document.getElementById('calculation_base');
-    const valueInput = document.getElementById('calculation_value');
-    const amountInput = document.getElementById('amount');
+    const payrollResultSelect =
+        document.querySelector('[name="payroll_result_id"]');
 
-    // Dummy values
-    const baseValues = {
-        basic: 20000,
-        gross: 30000
-    };
+    const earningType =
+        document.getElementById('earning_type');
 
-    function calculateAmount() {
+    const baseSelect =
+        document.getElementById('calculation_base');
+
+    const valueInput =
+        document.getElementById('calculation_value');
+
+    const amountInput =
+        document.getElementById('amount');
+
+    // PAYROLL RESULT DATA
+    // fetched from blade
+    const payrollData = @json(
+        $payrollResults->keyBy('id')
+    );
+
+    // GET BASE VALUE
+    function getBaseAmount() {
+
+        let payrollId = payrollResultSelect.value;
 
         let baseKey = baseSelect.value;
 
-        // stop if base not selected
-        if (!baseKey) return;
+        if (!payrollId || !baseKey) {
+            return 0;
+        }
 
-        let baseAmount = baseValues[baseKey];
+        let payroll = payrollData[payrollId];
+
+        if (!payroll) {
+            return 0;
+        }
+
+        // BASIC
+        if (baseKey === 'basic') {
+
+            return parseFloat(
+                payroll.fixed_earnings_total || 0
+            );
+        }
+
+        // GROSS
+        if (baseKey === 'gross') {
+
+            return parseFloat(
+                payroll.gross_earnings || 0
+            );
+        }
+
+        return 0;
+    }
+
+    // CALCULATE AMOUNT
+    function calculateAmount() {
+
+        // FIXED earnings do not auto calculate
+        if (earningType.value === 'Fixed') {
+            return;
+        }
+
+        let baseAmount = getBaseAmount();
 
         let percent = parseFloat(valueInput.value);
 
-        // stop if invalid percentage
-        if (isNaN(percent)) return;
+        if (!baseAmount || isNaN(percent)) {
+            return;
+        }
 
         let result = (baseAmount * percent) / 100;
 
         amountInput.value = result.toFixed(2);
     }
 
-    // ONLY these fields trigger calculation
+    // ENABLE/DISABLE FIELDS
+    function toggleCalculationFields() {
+
+        let isFixed = earningType.value === 'Fixed';
+
+        baseSelect.disabled = isFixed;
+
+        valueInput.disabled = isFixed;
+
+        if (isFixed) {
+
+            baseSelect.value = '';
+
+            valueInput.value = '';
+        }
+    }
+
+    toggleCalculationFields();
+
+    earningType.addEventListener('change', function () {
+
+        toggleCalculationFields();
+
+        calculateAmount();
+    });
+
+    payrollResultSelect.addEventListener('change', calculateAmount);
+
     baseSelect.addEventListener('change', calculateAmount);
+
     valueInput.addEventListener('input', calculateAmount);
 
 });
+
 </script>

@@ -151,9 +151,10 @@
             </a>
 
             <!-- Delete -->
-            <form action="{{ route('hr.payroll.salary-structure.delete', $item->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Move to trash?')">
+            <form action="{{ route('hr.payroll.salary-structure.destroy', $item->id) }}"
+                method="POST"
+                onsubmit="return confirm('Move to trash?')">
+
                 @csrf
                 @method('DELETE')
 

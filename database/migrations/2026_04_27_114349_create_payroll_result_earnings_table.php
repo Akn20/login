@@ -9,37 +9,58 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payroll_result_earnings', function (Blueprint $table) {
-            $table->id();
 
-// FK (dummy for now)
-$table->unsignedBigInteger('payroll_result_id');
+            // PRIMARY KEY (UUID)
+            $table->uuid('id')->primary();
 
-// Earning Details
-$table->string('earning_code');
-$table->string('earning_name');
-$table->enum('earning_type', ['Fixed', 'Variable', 'OT']);
+            // FK → Payroll Result
+            $table->uuid('payroll_result_id');
 
-// Calculation
-$table->string('calculation_base')->nullable();
-$table->string('calculation_value')->nullable();
-$table->decimal('amount', 10, 2);
+            $table->foreign('payroll_result_id')
+                  ->references('id')
+                  ->on('payroll_results')
+                  ->onDelete('cascade');
 
-// Statutory
-$table->boolean('taxable')->default(1);
-$table->boolean('pf_applicable')->default(0);
-$table->boolean('esi_applicable')->default(0);
+            // Earning Details
+            $table->string('earning_code');
 
-// Display
-$table->integer('display_order')->nullable();
+            $table->string('earning_name');
 
-// ✅ FIXED HERE
-$table->uuid('created_by')->nullable();
+            $table->enum('earning_type', [
+                'Fixed',
+                'Variable',
+                'OT'
+            ]);
 
-$table->timestamps();
-$table->softDeletes();
+            // Calculation
+            $table->string('calculation_base')->nullable();
 
-// UNIQUE
-$table->unique(['payroll_result_id', 'earning_code']);
+            $table->string('calculation_value')->nullable();
+
+            $table->decimal('amount', 10, 2);
+
+            // Statutory
+            $table->boolean('taxable')->default(1);
+
+            $table->boolean('pf_applicable')->default(0);
+
+            $table->boolean('esi_applicable')->default(0);
+
+            // Display
+            $table->integer('display_order')->nullable();
+
+            // Audit
+            $table->uuid('created_by')->nullable();
+
+            $table->timestamps();
+
+            $table->softDeletes();
+
+            // UNIQUE RULE
+            $table->unique(
+                ['payroll_result_id', 'earning_code'],
+                'pre_payroll_earning_unique'
+            );
         });
     }
 

@@ -252,7 +252,7 @@
     </button>
 @endif
 
-<a href="{{ route('hr.pre-payroll.index') }}"
+<a href="{{ route('hr.payroll.pre-payroll.index') }}"
    class="btn btn-light btn-sm px-4">
     Cancel
 </a>

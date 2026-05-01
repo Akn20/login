@@ -10,13 +10,15 @@ return new class extends Migration
     {
         Schema::create('payroll_result_deductions', function (Blueprint $table) {
 
-            $table->id();
+            // UUID PRIMARY KEY
+            $table->uuid('id')->primary();
 
-            // FK (dummy for now)
-            $table->unsignedBigInteger('payroll_result_id');
+            // FK → PAYROLL RESULTS
+            $table->uuid('payroll_result_id');
 
-            // Deduction Details
+            // DEDUCTION DETAILS
             $table->string('deduction_code');
+
             $table->string('deduction_name');
 
             $table->enum('deduction_type', [
@@ -25,35 +27,55 @@ return new class extends Migration
                 'Statutory'
             ]);
 
-            // Rule
+            // CALCULATION
             $table->string('rule_set_code')->nullable();
 
+            // calculation base
+            $table->enum('calculation_base', [
+                'Gross'
+            ])->nullable();
+
+            // logic
             $table->enum('calculation_logic', [
                 '%',
                 'Slab',
                 'EMI'
-            ]);
+            ])->nullable();
 
-            // Amount
+            // percentage / value
+            $table->decimal('calculation_value', 10, 2)
+                  ->nullable();
+
+            // FINAL AMOUNT
             $table->decimal('amount', 10, 2);
 
-            // Control
-            $table->boolean('editable_flag')->default(1);
+            // CONTROL
+            $table->boolean('editable_flag')
+                  ->default(1);
 
-            // Display
-            $table->integer('display_order')->nullable();
+            // DISPLAY
+            $table->integer('display_order')
+                  ->nullable();
 
-            // Audit
-            $table->uuid('created_by')->nullable();
+            // AUDIT
+            $table->uuid('created_by')
+                  ->nullable();
 
             $table->timestamps();
+
             $table->softDeletes();
 
             // UNIQUE
-           $table->unique(
-    ['payroll_result_id', 'deduction_code'],
-    'prd_result_code_unique'
-);
+            $table->unique(
+                ['payroll_result_id', 'deduction_code'],
+                'prd_result_code_unique'
+            );
+
+            // FK CONSTRAINT
+            $table->foreign('payroll_result_id')
+                  ->references('id')
+                  ->on('payroll_results')
+                  ->onDelete('cascade');
         });
     }
 

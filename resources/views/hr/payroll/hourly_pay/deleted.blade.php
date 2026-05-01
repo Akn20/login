@@ -39,18 +39,23 @@
 
                                     <!-- Restore -->
                                     <form action="{{ route('hr.payroll.hourly-pay.restore', $item->id) }}"
-                                          method="POST">
+                                        method="POST">
+
                                         @csrf
+                                        @method('PUT')
+
                                         <button class="btn btn-outline-success btn-icon rounded-circle btn-sm"
                                                 title="Restore">
                                             <i class="feather-rotate-ccw"></i>
                                         </button>
+
                                     </form>
 
                                     <!-- Permanent Delete -->
-                                    <form action="{{ route('hr.payroll.hourly-pay.forceDelete', $item->id) }}"
-                                          method="POST"
-                                          onsubmit="return confirm('Permanently delete?')">
+                                    <form action="{{ route('hr.payroll.hourly-pay.force-delete', $item->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Permanently delete?')">
+
                                         @csrf
                                         @method('DELETE')
 
@@ -58,6 +63,7 @@
                                                 title="Delete Permanently">
                                             <i class="feather-trash-2"></i>
                                         </button>
+
                                     </form>
 
                                 </div>

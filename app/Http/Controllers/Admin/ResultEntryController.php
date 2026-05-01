@@ -12,6 +12,7 @@ use App\Models\TestParameter;
 use App\Models\CriticalValueAlert;
 use App\Models\AlertAuditLog;
 use App\Models\Notification;
+use App\Models\LabRequest;
 
 
 
@@ -171,9 +172,17 @@ class ResultEntryController extends Controller
 }
 
         if ($status == 'Completed') {
-            $sample->status = 'Completed';
-            $sample->save();
-        }
+
+    // Update Sample
+    $sample->status = 'Completed';
+    $sample->save();
+
+    
+    if ($sample->lab_request_id) {
+        LabRequest::where('id', $sample->lab_request_id)
+            ->update(['status' => 'Completed']);
+    }
+}
 
         return back()->with('success', 'Result saved successfully!');
     }
@@ -293,6 +302,11 @@ class ResultEntryController extends Controller
         if ($status == 'Completed') {
             $sample->status = 'Completed';
             $sample->save();
+
+            if ($sample->lab_request_id) {
+                LabRequest::where('id', $sample->lab_request_id)
+                    ->update(['status' => 'Completed']);
+            }
         }
 
         return response()->json([
