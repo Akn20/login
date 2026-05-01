@@ -170,6 +170,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Doctor\Surgery\ConsentController;
 
 use App\Http\Controllers\ReceptionistDashboardController;
 
@@ -970,7 +971,42 @@ Route::middleware(['auth'])
             Route::resource('statutory-contribution', StatutoryContributionController::class);
 
             Route::resource('pre-payroll', PrePayrollAdjustmentController::class);
-        });
+
+            Route::post(
+                    'pre-payroll/{id}/approve',
+                    [PrePayrollAdjustmentController::class, 'approve']
+                )->name('pre-payroll.approve');
+                        });
+
+                        Route::get(
+                            'pre-payroll/deleted',
+                            [PrePayrollAdjustmentController::class, 'deleted']
+                        )->name('pre-payroll.deleted');
+
+                        Route::put(
+                            'pre-payroll/{id}/restore',
+                            [PrePayrollAdjustmentController::class, 'restore']
+                        )->name('pre-payroll.restore');
+
+                        Route::delete(
+                            'pre-payroll/{id}/force-delete',
+                            [PrePayrollAdjustmentController::class, 'forceDelete']
+                        )->name('pre-payroll.force-delete');
+
+                        Route::get(
+                        'hourly-pay-approval/trash',
+                        [HourlyPayApprovalController::class, 'trash']
+                    )->name('hourly-pay-approval.trash');
+
+                    Route::put(
+                    'hourly-pay-approval/{id}/restore',
+                    [HourlyPayApprovalController::class, 'restore']
+                )->name('hourly-pay-approval.restore');
+
+                Route::delete(
+                    'hourly-pay-approval/{id}/force-delete',
+                    [HourlyPayApprovalController::class, 'forceDelete']
+                )->name('hourly-pay-approval.force-delete');
 
     });
 
@@ -2678,6 +2714,7 @@ Route::prefix('admin/accountant/billing')
 
     });
 
+
 //IPD (Doctor Module)
 
 Route::prefix('doctor/ipd')->group(function () {
@@ -2720,5 +2757,29 @@ Route::prefix('doctor/ipd')->group(function () {
 
     Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
     ->name('doctor.ipd.storeLabRadiology');
+});
 
+Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
+    /*
+|--------------------------------------------------------------------------
+| Surgery Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/surgery-consent', [ConsentController::class, 'index'])
+    ->name('consent.index');
+Route::get('/surgery-consent/create',
+    [ConsentController::class, 'create'])
+    ->name('consent.create');
+Route::get('/surgery-consent/create/{surgery_id}', [ConsentController::class, 'create'])
+    ->name('consent.create');
+
+Route::post('/surgery-consent/store', [ConsentController::class, 'store'])
+    ->name('consent.store');
+
+Route::get('/surgery-consent/{id}', [ConsentController::class, 'show'])
+    ->name('consent.show');
+
+Route::get('/surgery-consent/history/{patient_id}', [ConsentController::class, 'history'])
+    ->name('consent.history');
 });

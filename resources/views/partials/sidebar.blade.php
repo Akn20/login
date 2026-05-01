@@ -254,6 +254,17 @@
                     <li class="nxl-item"><a href="{{ route('post.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-plus-square me-2"></i>Post-Op Notes</a></li>
                 </ul>
+                <li class="nxl-item">
+                        <a href="{{ route('consent.index') }}"
+                        class="nxl-link"
+                        up-follow
+                        up-target="#main-container">
+
+                            <i class="feather-shield me-2"></i>
+
+                            Surgery Consent
+                        </a>
+                    </li>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/beds*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">

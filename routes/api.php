@@ -48,6 +48,7 @@ use App\Http\Controllers\Api\Reports\LeaveReportApiController;
 use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
 use App\Http\Controllers\Api\Reports\PayrollReportApiController;
 use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
+use App\Http\Controllers\Api\Surgery\SurgeryConsentApiController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\ReceptionistDashboardController;
@@ -1933,5 +1934,12 @@ Route::prefix('doctor/ipd')->group(function () {
 
     // ✅ SUBMIT DISCHARGE
     Route::post('/submit-discharge/{id}', [IpdController::class, 'apiDischargeSubmit']);
+
+});
+
+
+Route::prefix('surgery-consent')->group(function () {
+
+    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
 
 });
