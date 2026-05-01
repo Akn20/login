@@ -44,6 +44,7 @@ use App\Http\Controllers\Api\Reports\LeaveReportApiController;
 use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
 use App\Http\Controllers\Api\Reports\PayrollReportApiController;
 use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
+use App\Http\Controllers\Api\Surgery\SurgeryConsentApiController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\InsuranceController;
 use App\Models\Patient;
@@ -1604,5 +1605,11 @@ Route::prefix('pre-payroll')->group(function () {
     Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
     Route::put('/{id}', [PrePayrollAdjustmentController::class, 'apiUpdate']);
     Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDelete']);
+
+});
+
+Route::prefix('surgery-consent')->group(function () {
+
+    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
 
 });
