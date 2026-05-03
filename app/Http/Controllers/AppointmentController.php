@@ -52,6 +52,7 @@ class AppointmentController extends Controller
             'department_id' => 'required',
             'appointment_date' => 'required',
             'appointment_time' => 'required',
+            
         ]);
 
         $exists = Appointment::where('doctor_id', $request->doctor_id)
@@ -76,7 +77,7 @@ class AppointmentController extends Controller
             'appointment_time' => $request->appointment_time,
             'consultation_fee' => $request->consultation_fee,
             'appointment_status' => $request->appointment_status,
-            'institution_id' => $institution->id,   // FIX HERE
+            'institution_id' => auth()->user()->institution_id ?? null,
             'receptionist_user_id' => auth()->id(),
         ]);
 

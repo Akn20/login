@@ -17,23 +17,31 @@
 
             <i class="feather-plus me-1"></i>
             Add Deduction
+
         </a>
 
     </div>
 
 </div>
 
+
 @if(session('success'))
+
 <div class="alert alert-success">
     {{ session('success') }}
 </div>
+
 @endif
 
+
 @if(session('error'))
+
 <div class="alert alert-danger">
     {{ session('error') }}
 </div>
+
 @endif
+
 
 <div class="card">
 
@@ -44,7 +52,12 @@
             <table class="table table-hover align-middle mb-0">
 
                 <thead>
+
                     <tr>
+
+                        <th>Payroll Month</th>
+
+                        <th>Employee</th>
 
                         <th>Code</th>
 
@@ -61,6 +74,7 @@
                         <th class="text-end">Actions</th>
 
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -69,21 +83,51 @@
 
                     <tr>
 
-                        <!-- CODE -->
+                        {{-- PAYROLL MONTH --}}
                         <td>
+
+                            <span class="badge bg-soft-dark text-dark">
+
+                                {{ optional($item->payrollResult)->payroll_month ?? '-' }}
+
+                            </span>
+
+                        </td>
+
+
+                        {{-- EMPLOYEE --}}
+                        <td>
+
                             <span class="badge bg-soft-primary text-primary">
-                                {{ $item->deduction_code }}
+
+                                {{ optional(optional($item->payrollResult)->employee)->name ?? optional($item->payrollResult)->staff_id ?? '-' }}
+
                             </span>
+
                         </td>
 
-                        <!-- NAME -->
+
+                        {{-- CODE --}}
                         <td>
+
                             <span class="badge bg-soft-info text-info">
-                                {{ $item->deduction_name }}
+
+                                {{ $item->deduction_code }}
+
                             </span>
+
                         </td>
 
-                        <!-- TYPE -->
+
+                        {{-- NAME --}}
+                        <td>
+
+                            {{ $item->deduction_name }}
+
+                        </td>
+
+
+                        {{-- TYPE --}}
                         <td>
 
                             @if($item->deduction_type == 'Fixed')
@@ -108,17 +152,24 @@
 
                         </td>
 
-                        <!-- LOGIC -->
+
+                        {{-- LOGIC --}}
                         <td>
-                            {{ $item->calculation_logic }}
+
+                            {{ $item->calculation_logic ?? '-' }}
+
                         </td>
 
-                        <!-- AMOUNT -->
+
+                        {{-- AMOUNT --}}
                         <td>
-                            ₹ {{ $item->amount }}
+
+                            ₹ {{ number_format($item->amount, 2) }}
+
                         </td>
 
-                        <!-- EDITABLE -->
+
+                        {{-- EDITABLE --}}
                         <td>
 
                             @if($item->editable_flag)
@@ -137,12 +188,13 @@
 
                         </td>
 
-                        <!-- ACTIONS -->
+
+                        {{-- ACTIONS --}}
                         <td class="text-end">
 
                             <div class="d-flex gap-2 justify-content-end">
 
-                                <!-- VIEW -->
+                                {{-- VIEW --}}
                                 <a href="{{ route('hr.payroll.payroll-result-deductions.show', $item->id) }}"
                                    class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
 
@@ -150,8 +202,12 @@
 
                                 </a>
 
-                                <!-- EDIT -->
-                                @if($item->editable_flag)
+
+                                {{-- EDIT --}}
+                                @if(
+                                    $item->editable_flag &&
+                                    optional($item->payrollResult)->status !== 'finalized'
+                                )
 
                                 <a href="{{ route('hr.payroll.payroll-result-deductions.edit', $item->id) }}"
                                    class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
@@ -171,10 +227,13 @@
 
                                 @endif
 
-                                <!-- DELETE -->
+
+                                {{-- DELETE --}}
+                                @if(optional($item->payrollResult)->status !== 'finalized')
+
                                 <form action="{{ route('hr.payroll.payroll-result-deductions.delete', $item->id) }}"
                                       method="POST"
-                                      onsubmit="return confirm('Move to trash?')">
+                                      onsubmit="return confirm('Delete this deduction?')">
 
                                     @csrf
                                     @method('DELETE')
@@ -188,6 +247,8 @@
 
                                 </form>
 
+                                @endif
+
                             </div>
 
                         </td>
@@ -198,7 +259,7 @@
 
                     <tr>
 
-                        <td colspan="7"
+                        <td colspan="9"
                             class="text-center text-muted">
 
                             No records found
@@ -214,7 +275,9 @@
             </table>
 
             <div class="p-3">
+
                 {{ $records->links() }}
+
             </div>
 
         </div>

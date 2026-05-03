@@ -16,7 +16,7 @@
     </div>
 
     <div>
-   <a href="{{ route('hr.pre-payroll.create') }}" class="btn btn-primary">
+   <a href="{{ route('hr.payroll.pre-payroll.create') }}" class="btn btn-primary">
             <i class="feather-plus me-1"></i> Add Adjustment
         </a>
     </div>
@@ -27,7 +27,7 @@
     {{ session('success') }}
 </div>
 @endif
-<form method="GET" action="{{ route('hr.pre-payroll.index') }}" class="row mb-3">
+<form method="GET" action="{{ route('hr.payroll.pre-payroll.index') }}" class="row mb-3">
 
     {{-- Employee --}}
     <div class="col-md-3">
@@ -62,8 +62,8 @@
     <div class="col-md-3 d-flex gap-2">
         <button class="btn btn-primary w-100">Filter</button>
 
-        <a href="{{ route('hr.pre-payroll.index') }}" 
-           class="btn btn-outline-secondary w-100">
+        <a href="{{ route('hr.payroll.pre-payroll.index') }}" 
+        class="btn btn-outline-secondary w-100">
             Reset
         </a>
     </div>
@@ -130,7 +130,7 @@
 
  {{-- EDIT ICON --}}
 @if($item->status != 'Approved')
-    <a href="{{ route('hr.pre-payroll.edit', $item->id) }}" 
+    <a href="{{ route('hr.payroll.pre-payroll.edit', $item->id) }}" 
        class="btn btn-sm btn-light border"
        title="Edit">
         <i class="feather-edit text-primary"></i>
@@ -139,7 +139,7 @@
 
     {{-- APPROVE BUTTON --}}
     @if($item->status == 'Submitted')
-        <form action="{{ route('hr.pre-payroll.approve', $item->id) }}" 
+        <form action="{{ route('hr.payroll.pre-payroll.approve', $item->id) }}" 
               method="POST" 
               style="display:inline;">
             @csrf

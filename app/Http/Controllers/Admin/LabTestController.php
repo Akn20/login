@@ -7,6 +7,8 @@ use App\Models\LabTest;
 use Illuminate\Http\Request;
 use App\Models\LabRequest;
 use App\Models\Department;
+use App\Models\RadiologyReport;
+use App\Models\LabReport;
 use Illuminate\Support\Str;
 
 class LabTestController extends Controller
@@ -73,15 +75,77 @@ class LabTestController extends Controller
         );
     }
     /* =====================================
-       API: LIST LAB TESTS
+       API: LIST LAB & RADIOLOGY REPORTS (COMBINED)
     ===================================== */
     public function apiIndex()
     {
-        $tests = LabTest::select('id', 'test_name')->get();
+        // Get Lab Reports
+        $labReports = LabReport::with([
+            'sample.labRequest',
+            'sample.patient:id,patient_code,first_name,last_name'
+        ])->select([
+            'id',
+            'sample_id',
+            'result_data',
+            'status',
+            'created_at',
+            'entered_at'
+        ])->get()->map(function ($report) {
+            return [
+                'id' => $report->id,
+                'type' => 'lab',
+                'sample_id' => $report->sample_id,
+                'test_name' => $report->sample->labRequest->test_name ?? 'Lab Test',
+                'test_type' => 'Lab',
+                'patient' => $report->sample->patient,
+                'patient_id' => $report->sample->patient_id,
+                'status' => $report->status,
+                'result_data' => $report->result_data ?? [],
+                'created_at' => $report->created_at,
+                'entered_at' => $report->entered_at
+            ];
+        });
+
+        // Get Radiology Reports
+        $radiologyReports = RadiologyReport::with([
+            'request.patient:id,patient_code,first_name,last_name',
+            'request.scanType:id,name'
+        ])->select([
+            'id',
+            'scan_request_id',
+            'observations',
+            'findings',
+            'diagnosis',
+            'status',
+            'created_at'
+        ])->get()->map(function ($report) {
+            return [
+                'id' => $report->id,
+                'type' => 'radiology',
+                'scan_request_id' => $report->scan_request_id,
+                'test_name' => $report->request->scanType->name ?? 'Radiology',
+                'test_type' => 'Radiology',
+                'patient' => $report->request->patient,
+                'patient_id' => $report->request->patient_id,
+                'status' => $report->status,
+                'result_data' => [
+                    'observations' => $report->observations,
+                    'findings' => $report->findings,
+                    'diagnosis' => $report->diagnosis
+                ],
+                'created_at' => $report->created_at,
+                'entered_at' => $report->created_at
+            ];
+        });
+
+        // Merge and sort by date
+        $allReports = collect($labReports)->merge(collect($radiologyReports))
+            ->sortByDesc('created_at')
+            ->values();
 
         return response()->json([
             'status' => true,
-            'data' => $tests
+            'data' => $allReports
         ]);
     }
 

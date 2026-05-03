@@ -3,10 +3,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\PayrollResult;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class PayrollResultEarning extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasUuids;
+     public $incrementing = false;
+
+    protected $keyType = 'string';
 
     protected $fillable = [
         'payroll_result_id',
@@ -29,9 +34,11 @@ class PayrollResultEarning extends Model
         'esi_applicable' => 'boolean',
     ];
 
-// In PayrollResultEarning.php model
-//public function payrollResult()
-//{
-  //  return $this->belongsTo(PayrollResult::class, 'payroll_result_id');
-//}
+public function payrollResult()
+{
+    return $this->belongsTo(
+        PayrollResult::class,
+        'payroll_result_id'
+    );
+}
 }

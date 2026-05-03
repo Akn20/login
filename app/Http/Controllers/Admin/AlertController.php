@@ -38,4 +38,59 @@ class AlertController extends Controller
 
         return back()->with('success', 'Alert acknowledged');
     }
+    // ================= GET ALERTS =================
+    public function apiIndex(Request $request)
+    {
+        $query = CriticalValueAlert::with('report.sample')->latest();
+
+        // 🔍 SEARCH
+        if ($request->search) {
+            $query->where('parameter_name', 'like', '%' . $request->search . '%');
+        }
+
+        // 🔘 FILTER
+        if ($request->status && $request->status !== 'All') {
+            $query->where('status', $request->status);
+        }
+
+        $alerts = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $alerts
+        ]);
+    }
+
+    // ================= ACKNOWLEDGE =================
+    public function apiAcknowledge($id)
+    {
+        $alert = CriticalValueAlert::findOrFail($id);
+
+        if ($alert->status === 'Acknowledged') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Already acknowledged'
+            ]);
+        }
+
+        $alert->update([
+            'status' => 'Acknowledged',
+            'acknowledged_at' => now(),
+            'acknowledged_by' => Auth::id(),
+        ]);
+
+        // 📝 AUDIT LOG
+        AlertAuditLog::create([
+            'alert_id' => $alert->id,
+            'user_id' => Auth::id(),
+            'action' => 'ACKNOWLEDGED',
+            'timestamp' => now()
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Alert acknowledged successfully'
+        ]);
+    }
+
 }

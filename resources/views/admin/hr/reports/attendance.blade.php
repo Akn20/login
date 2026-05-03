@@ -20,7 +20,7 @@
             <select name="department_id" class="form-control">
                 <option value="">All Departments</option>
                 @foreach($departments as $d)
-                    <option value="{{ $d->id }}">{{ $d->name }}</option>
+                    <option value="{{ $d->id }}">{{ $d->department_name }}</option>
                 @endforeach
             </select>
         </div>
@@ -101,7 +101,7 @@
 
             <tr>
                 <td>{{ $a->staff->name ?? '-' }}</td>
-                <td>{{ $a->department->name ?? '-' }}</td>
+                <td>{{ $a->department->department_name ?? '-' }}</td>
                 <td>{{ $a->attendance_date }}</td>
                 <td>{{ $a->check_in }}</td>
                 <td>{{ $a->check_out }}</td>
