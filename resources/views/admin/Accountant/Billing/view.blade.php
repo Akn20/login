@@ -2,125 +2,146 @@
 
 @section('content')
 <div class="container-fluid">
+    <div id="printArea"> 
+        <div class="text-center mb-3">
+            <h4>Hospital Name</h4>
+            <p>Address | Phone</p>
+            <hr>
+        </div>
 
-    {{-- TOP ACTIONS --}}
-    <div class="d-flex justify-content-between mb-3">
-        <h3>Final Bill</h3>
-        <div>
-            <button onclick="window.print()" class="btn btn-primary btn-sm">
-                Print
-            </button>
+    <h3 class="mb-4">IPD Billing Details</h3>
+
+    {{-- ================= PATIENT DETAILS ================= --}}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Patient Details</div>
+        <div class="card-body row">
+
+            <div class="col-md-3"><strong>Name:</strong> {{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</div>
+            <div class="col-md-3"><strong>IPD ID:</strong> {{ $bill->ipd_id }}</div>
+            <div class="col-md-3"><strong>Bill No:</strong> {{ $bill->bill_no }}</div>
+            <div class="col-md-3"><strong>Status:</strong> 
+                <span class="badge bg-{{ $bill->status == 'discharged' ? 'success' : 'warning' }}">
+                    {{ ucfirst($bill->status) }}
+                </span>
+            </div>
+
+            <div class="col-md-3 mt-2"><strong>Bill Date:</strong> {{ $bill->bill_date }}</div>
+            <div class="col-md-3 mt-2"><strong>Advance:</strong> ₹{{ $bill->patient->ipdAdmission->advance_amount ?? 0 }}</div>
+
         </div>
     </div>
 
-    {{-- BILL CARD --}}
-    <div class="card" id="printArea">
+    {{-- ================= ITEMS ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Charges</strong></div>
+        <div class="card-body table-responsive">
 
-        {{-- HEADER --}}
-        <div class="card-header text-center">
-            <h4 class="mb-0">Hospital Name</h4>
-            <small>Address | Phone | Email</small>
-        </div>
-
-        {{-- PATIENT INFO --}}
-        <div class="card-body">
-
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <p><strong>Patient Name:</strong> {{ $patient['name'] }}</p>
-                    <p><strong>IPD No:</strong> {{ $patient['ipd_no'] }}</p>
-                    <p><strong>Doctor:</strong> {{ $patient['doctor'] }}</p>
-                </div>
-
-                <div class="col-md-6 text-end">
-                    <p><strong>Room:</strong> {{ $patient['room'] }}</p>
-                    <p><strong>Admission Date:</strong> {{ $patient['admission_date'] }}</p>
-                    <p><strong>Date:</strong> {{ date('d-m-Y') }}</p>
-                </div>
-            </div>
-
-            {{-- CHARGES TABLE --}}
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
-                        <th>Date</th>
                         <th>Type</th>
                         <th>Description</th>
-                        <th>Qty</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
+                        <th width="100">Qty</th>
+                        <th width="120">Rate</th>
+                        <th width="120">Amount</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @php $i = 1; @endphp
-                    @foreach($charges as $c)
+                    @foreach($bill->items as $item)
                     <tr>
-                        <td>{{ $i++ }}</td>
-                        <td>{{ $c['date'] }}</td>
-                        <td>{{ $c['type'] }}</td>
-                        <td>{{ $c['description'] }}</td>
-                        <td>{{ $c['qty'] }}</td>
-                        <td>{{ $c['rate'] }}</td>
-                        <td>{{ $c['amount'] }}</td>
+                        <td>{{ $item->type }}</td>
+                        <td>{{ $item->description }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>
+                            ₹{{ number_format(
+                                ($item->rate > 0 ? $item->rate : $item->amount),
+                            2) }}
+                        </td>
+                        <td>₹{{ $item->amount }}</td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
 
-            {{-- SUMMARY --}}
-            <div class="row mt-4">
-                <div class="col-md-6"></div>
-
-                <div class="col-md-6">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Total</th>
-                            <td>{{ $summary['total'] }}</td>
-                        </tr>
-                        <tr>
-                            <th>Discount</th>
-                            <td>{{ $summary['discount'] }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tax</th>
-                            <td>{{ $summary['tax'] }}</td>
-                        </tr>
-                        <tr class="table-success">
-                            <th>Grand Total</th>
-                            <td><strong>{{ $summary['grand_total'] }}</strong></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            {{-- FOOTER --}}
-            <div class="mt-5 text-center">
-                <p>Thank you for choosing our hospital</p>
-            </div>
-
         </div>
     </div>
 
+    {{-- ================= SUMMARY ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Bill Summary</strong></div>
+        <div class="card-body row">
+
+            <div class="col-md-3">
+                <strong>Total:</strong> ₹{{ $bill->total_amount }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Discount ({{ $bill->discount_percent }}%):</strong> ₹{{ $bill->discount }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Tax ({{ $bill->tax_percent }}%):</strong> ₹{{ $bill->tax }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Grand Total:</strong> ₹{{ $bill->grand_total }}
+            </div>
+
+            <div class="col-md-3 mt-2">
+                <strong>Payable:</strong> ₹{{ $bill->payable_amount }}
+            </div>
+
+        </div>
+
+        <div class="p-3">
+            <strong>Notes:</strong>
+            <p>{{ $bill->notes ?? '—' }}</p>
+        </div>
+    </div>
+
+    {{-- ================= ACTION BUTTONS ================= --}}
+    <div class="d-flex justify-content-end gap-2 no-print">
+
+        <a href="{{ route('admin.accountant.billing.index') }}" class="btn btn-secondary">
+            Back
+        </a>
+
+        <button onclick="window.print()" class="btn btn-success">
+            Print
+        </button>
+
+        @if($bill->status != 'discharged')
+            <a href="{{ route('admin.accountant.billing.edit', $bill->id) }}" class="btn btn-primary">
+                Edit
+            </a>
+        @endif
+
+    </div>
+    </div>
 </div>
-@endsection
 
-
-{{-- PRINT STYLES --}}
 <style>
 @media print {
+
     body * {
         visibility: hidden;
     }
+
     #printArea, #printArea * {
         visibility: visible;
     }
+
     #printArea {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
     }
+
+    .no-print {
+        display: none !important;
+    }
 }
 </style>
+@endsection

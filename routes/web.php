@@ -2673,22 +2673,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Nurse: Discharge Preparation
-|--------------------------------------------------------------------------
-*/
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
-        Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
-        Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
-        Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
-        Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
-        Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
-    });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Nurse: Reports
+| Nurse: Lab & Reports view
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -2700,21 +2685,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 // Accountant Billing
-Route::prefix('admin/accountant/billing')
-    ->name('admin.accountant.billing.')
-    ->group(function () {
 
-        Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+Route::middleware(['auth'])->group(function () {
 
-        Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+    Route::prefix('admin/accountant/billing')
+        ->name('admin.accountant.billing.')
+        ->group(function () {
 
-        Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+            Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+            Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+            Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
+            Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
+        });
 
-        Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
-
-    });
-
-
+});
 //IPD (Doctor Module)
 
 Route::prefix('doctor/ipd')->group(function () {
@@ -2782,4 +2768,19 @@ Route::get('/surgery-consent/{id}', [ConsentController::class, 'show'])
 
 Route::get('/surgery-consent/history/{patient_id}', [ConsentController::class, 'history'])
     ->name('consent.history');
+});
+    /*
+|--------------------------------------------------------------------------
+
+| Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
+        Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
+        Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
+        Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
+        Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
+        Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
+    });
 });

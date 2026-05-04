@@ -3,224 +3,310 @@
 @section('content')
 <div class="container-fluid">
 
+<form method="POST" action="{{ route('admin.accountant.billing.update', $bill->id) }}">
+    @csrf
+    @method('PUT')
+
     <h3 class="mb-4">Edit IPD Billing</h3>
 
-    {{-- ================= PATIENT DETAILS ================= --}}
+    {{-- HIDDEN --}}
+    <input type="hidden" name="patient_id" value="{{ $patient->patient_id }}">
+    <input type="hidden" name="ipd_id" value="{{ $patient->ipd_id }}">
+
+    {{-- ================= PATIENT ================= --}}
     <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            Patient Details
-        </div>
+        <div class="card-header bg-primary text-white">Patient Details</div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3"><strong>Name:</strong> {{ $patient['name'] }}</div>
-                <div class="col-md-3"><strong>IPD No:</strong> {{ $patient['ipd_no'] }}</div>
-                <div class="col-md-3"><strong>Doctor:</strong> {{ $patient['doctor'] }}</div>
-                <div class="col-md-3"><strong>Room:</strong> {{ $patient['room'] }}</div>
-                <div class="col-md-3 mt-2"><strong>Admission Date:</strong> {{ $patient['admission_date'] }}</div>
+                <div class="col-md-3"><strong>Name:</strong> {{ $patient->name }}</div>
+                <div class="col-md-3"><strong>IPD:</strong> {{ $patient->admission_id }}</div>
+                <div class="col-md-3"><strong>Doctor:</strong> {{ $patient->doctor }}</div>
+                <div class="col-md-3"><strong>Room:</strong> {{ $patient->room }}</div>
+                <div class="col-md-3 mt-2">
+                    <strong>Advance:</strong> ₹{{ $patient->advance_amount }}
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- ================= CHARGES SECTION ================= --}}
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between">
-            <span>Charges</span>
-            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addChargeModal">
-                + Add Charge
-            </button>
-        </div>
+    @php $index = 0; @endphp
 
-        <div class="card-body">
-            <table class="table table-bordered" id="chargesTable">
+    {{-- ================= PHARMACY ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Pharmacy Charges</strong></div>
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Description</th>
+                        <th>Medicine</th>
                         <th>Qty</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
-                        <th>Action</th>
+                        <th>Price</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach($charges as $c)
-                    <tr>
-                        <td>{{ $c['date'] }}</td>
-                        <td>{{ $c['type'] }}</td>
-                        <td>{{ $c['description'] }}</td>
-                        <td>{{ $c['qty'] }}</td>
-                        <td>{{ $c['rate'] }}</td>
-                        <td class="amount">{{ $c['amount'] }}</td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
+                @foreach($pharmacyItems as $item)
 
+                @php
+                    $existing = $bill->items
+                        ->where('type','Pharmacy')
+                        ->where('description',$item->medicine_name)
+                        ->first();
+
+                    $total = $existing->amount ?? ($item->qty * $item->price);
+                @endphp
+
+                <tr>
+                    <td>
+                        {{ $item->medicine_name }}
+                        <input type="hidden" name="items[{{ $index }}][type]" value="Pharmacy">
+                        <input type="hidden" name="items[{{ $index }}][description]" value="{{ $item->medicine_name }}">
+                        <input type="hidden" name="items[{{ $index }}][reference_id]" value="">
+                    </td>
+
+                    <td>
+                        <input type="number" name="items[{{ $index }}][quantity]"
+                               value="{{ $item->qty }}" class="form-control" readonly>
+                    </td>
+
+                    <td>
+                        <input type="number" name="items[{{ $index }}][rate]"
+                               value="{{ $item->price }}" class="form-control" readonly>
+                    </td>
+
+                    <td>
+                        <input type="number" name="items[{{ $index }}][amount]"
+                               value="{{ $total }}" class="form-control amount" readonly>
+                    </td>
+                </tr>
+
+                @php $index++; @endphp
+                @endforeach
+                </tbody>
             </table>
+
+        </div>
+    </div>
+
+    {{-- ================= LAB ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Lab Tests</strong></div>
+        <div class="card-body">
+
+            @foreach($labItems as $lab)
+
+            @php
+                $existing = $bill->items
+                    ->where('type','Lab')
+                    ->where('description',$lab->test_name)
+                    ->first();
+
+                $amount = $existing->amount ?? $lab->price;
+            @endphp
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    {{ $lab->test_name }}
+                    <input type="hidden" name="items[{{ $index }}][type]" value="Lab">
+                    <input type="hidden" name="items[{{ $index }}][description]" value="{{ $lab->test_name }}">
+                    <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $lab->test_name }}">
+                </div>
+
+                <div class="col-md-3">
+                    <input type="number" name="items[{{ $index }}][amount]"
+                           value="{{ $amount }}" class="form-control amount" readonly>
+                </div>
+            </div>
+
+            @php $index++; @endphp
+            @endforeach
+
+        </div>
+    </div>
+
+    {{-- ================= SCAN ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Scan</strong></div>
+        <div class="card-body">
+
+            @foreach($scanItems as $scan)
+
+            @php
+                $existing = $bill->items
+                    ->where('type','Scan')
+                    ->where('description',$scan->scan_name)
+                    ->first();
+
+                $amount = $existing->amount ?? 0;
+            @endphp
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    {{ $scan->scan_name }}
+                    <input type="hidden" name="items[{{ $index }}][type]" value="Scan">
+                    <input type="hidden" name="items[{{ $index }}][description]" value="{{ $scan->scan_name }}">
+                    <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $scan->scan_name }}">
+                </div>
+
+                <div class="col-md-3">
+                    <input type="number" name="items[{{ $index }}][amount]"
+                           value="{{ $amount }}" class="form-control amount">
+                </div>
+            </div>
+
+            @php $index++; @endphp
+            @endforeach
+
+        </div>
+    </div>
+
+    {{-- ================= ROOM ================= --}}
+    @if($roomCharge)
+    @php
+        $existing = $bill->items->where('type','Room')->first();
+        $amount = $existing->amount ?? 0;
+    @endphp
+
+    <div class="card mb-4">
+        <div class="card-header"><strong>Room Charges</strong></div>
+        <div class="card-body">
+
+            Room: {{ $roomCharge->room_number }}
+
+            <input type="hidden" name="items[{{ $index }}][type]" value="Room">
+            <input type="hidden" name="items[{{ $index }}][description]" value="Room Charges">
+            <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $roomCharge->room_number }}">
+
+            <input type="number" name="items[{{ $index }}][amount]"
+                   value="{{ $amount }}" class="form-control amount mt-2">
+
+        </div>
+    </div>
+
+    @php $index++; @endphp
+    @endif
+
+    {{-- ================= SERVICES ================= --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Other Services</strong></div>
+        <div class="card-body">
+
+            <div id="serviceSection">
+
+                @foreach($bill->items->where('type','Service') as $service)
+                <div class="row mb-2">
+                    <div class="col-md-5">
+                        <input type="text" name="items[{{ $index }}][description]"
+                               value="{{ $service->description }}" class="form-control">
+                        <input type="hidden" name="items[{{ $index }}][type]" value="Service">
+                    </div>
+
+                    <div class="col-md-3">
+                        <input type="number" name="items[{{ $index }}][amount]"
+                               value="{{ $service->amount }}"
+                               class="form-control amount" oninput="calculateTotal()">
+                    </div>
+                </div>
+
+                @php $index++; @endphp
+                @endforeach
+
+            </div>
+
+            <button type="button" class="btn btn-success btn-sm" onclick="addService()">
+                + Add Service
+            </button>
+
         </div>
     </div>
 
     {{-- ================= SUMMARY ================= --}}
     <div class="card">
-        <div class="card-header">Bill Summary</div>
-        <div class="card-body">
-            <div class="row">
+        <div class="card-body row">
 
-                <div class="col-md-3">
-                    <label>Total</label>
-                    <input type="text" id="total" class="form-control" readonly>
-                </div>
-
-                <div class="col-md-3">
-                    <label>Discount</label>
-                    <input type="number" id="discount" class="form-control" value="0">
-                </div>
-
-                <div class="col-md-3">
-                    <label>Tax</label>
-                    <input type="number" id="tax" class="form-control" value="0">
-                </div>
-
-                <div class="col-md-3">
-                    <label>Grand Total</label>
-                    <input type="text" id="grand_total" class="form-control" readonly>
-                </div>
-
+            <div class="col-md-3">
+                <label>Total</label>
+                <input type="text" id="total" class="form-control" readonly>
             </div>
 
-            <div class="mt-4 text-end">
-                <button class="btn btn-primary">Update Bill</button>
-                <button class="btn btn-success">Generate Final Bill</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-{{-- ================= MODAL ================= --}}
-<div class="modal fade" id="addChargeModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5>Add Charge</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="col-md-3">
+                <label>Discount %</label>
+                <input type="number" name="discount" id="discount"
+                       value="{{ $bill->discount_percent }}" class="form-control">
             </div>
 
-            <div class="modal-body">
-
-                <div class="mb-2">
-                    <label>Type</label>
-                    <select id="type" class="form-control">
-                        <option>Room</option>
-                        <option>Lab</option>
-                        <option>Pharmacy</option>
-                        <option>Service</option>
-                    </select>
-                </div>
-
-                <div class="mb-2">
-                    <label>Description</label>
-                    <input type="text" id="description" class="form-control">
-                </div>
-
-                <div class="mb-2">
-                    <label>Quantity</label>
-                    <input type="number" id="qty" class="form-control" value="1">
-                </div>
-
-                <div class="mb-2">
-                    <label>Rate</label>
-                    <input type="number" id="rate" class="form-control">
-                </div>
-
-                <div class="mb-2">
-                    <label>Amount</label>
-                    <input type="text" id="amount" class="form-control" readonly>
-                </div>
-
+            <div class="col-md-3">
+                <label>Tax %</label>
+                <input type="number" name="tax" id="tax"
+                       value="{{ $bill->tax_percent }}" class="form-control">
             </div>
 
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" onclick="addCharge()">Add</button>
+            <div class="col-md-3">
+                <label>Advance</label>
+                <input type="text" id="advance"
+                       value="{{ $patient->advance_amount }}" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-3 mt-3">
+                <label>Grand Total</label>
+                <input type="text" id="grand_total" name="grand_total" class="form-control" readonly>
             </div>
 
         </div>
+
+        <div class="p-3">
+            <textarea name="notes" class="form-control">{{ $bill->notes }}</textarea>
+        </div>
+
+        <div class="text-end p-3">
+            <button class="btn btn-primary">Update Bill</button>
+        </div>
     </div>
+
+</form>
 </div>
 
-@endsection
-
-@section('scripts')
 <script>
-
-// Initial calculation on page load
-window.onload = calculateTotal;
-
-// Auto calc
-document.getElementById('qty').addEventListener('input', calcAmount);
-document.getElementById('rate').addEventListener('input', calcAmount);
-
-function calcAmount() {
-    let qty = document.getElementById('qty').value || 0;
-    let rate = document.getElementById('rate').value || 0;
-    document.getElementById('amount').value = qty * rate;
-}
-
-// Add new row
-function addCharge() {
-    let type = document.getElementById('type').value;
-    let desc = document.getElementById('description').value;
-    let qty = document.getElementById('qty').value;
-    let rate = document.getElementById('rate').value;
-    let amount = document.getElementById('amount').value;
-
-    let row = `
-        <tr>
-            <td>${new Date().toLocaleDateString()}</td>
-            <td>${type}</td>
-            <td>${desc}</td>
-            <td>${qty}</td>
-            <td>${rate}</td>
-            <td class="amount">${amount}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
-        </tr>
-    `;
-
-    document.querySelector('#chargesTable tbody').insertAdjacentHTML('beforeend', row);
-
-    calculateTotal();
-}
-
-// Remove
-function removeRow(btn) {
-    btn.closest('tr').remove();
-    calculateTotal();
-}
-
-// Total
-function calculateTotal() {
+function calculateTotal(){
     let total = 0;
-    document.querySelectorAll('.amount').forEach(el => {
-        total += parseFloat(el.innerText) || 0;
+    document.querySelectorAll('.amount').forEach(el=>{
+        total += parseFloat(el.value) || 0;
     });
 
     document.getElementById('total').value = total;
 
     let discount = document.getElementById('discount').value || 0;
     let tax = document.getElementById('tax').value || 0;
+    let advance = document.getElementById('advance').value || 0;
 
-    let grand = total - discount + parseFloat(tax);
-    document.getElementById('grand_total').value = grand;
+    let d = total * discount / 100;
+    let t = total * tax / 100;
+
+    document.getElementById('grand_total').value = total - d + t - advance;
 }
 
+document.addEventListener('DOMContentLoaded', calculateTotal);
 document.getElementById('discount').addEventListener('input', calculateTotal);
 document.getElementById('tax').addEventListener('input', calculateTotal);
 
+function addService(){
+    let index = Date.now(); // always unique
+
+    let html = `
+    <div class="row mb-2">
+        <div class="col-md-5">
+            <input type="text" name="items[${index}][description]" class="form-control">
+            <input type="hidden" name="items[${index}][type]" value="Service">
+        </div>
+        <div class="col-md-3">
+            <input type="number" name="items[${index}][amount]" class="form-control amount" oninput="calculateTotal()">
+        </div>
+    </div>`;
+
+    document.getElementById('serviceSection').insertAdjacentHTML('beforeend', html);
+}
 </script>
+
 @endsection

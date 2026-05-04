@@ -9,14 +9,19 @@ class IpdPrescriptionItem extends Model
 {
     protected $table = 'ipd_prescription_items';
 
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'prescription_id',
-        'medicine_name',
-        'dosage',
-        'frequency',
-        'duration',
-        'instructions'
-    ];
+    'id', // added
+    'prescription_id',
+    'medicine_name',
+    'dosage',
+    'frequency',
+    'duration',
+    'instructions'
+];
 
     protected static function boot()
     {

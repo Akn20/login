@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 use App\Http\Controllers\ReceptionistReportController;
 use App\Models\Patient;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
+use App\Modles\LabTest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
@@ -1543,7 +1545,22 @@ Route::prefix('billing')->group(function () {
     Route::get('/appointments', [BasicBillingController::class, 'apiAppointments']);
     Route::post('/store', [BasicBillingController::class, 'apiStore']);
     Route::get('/{id}', [BasicBillingController::class, 'apiShow']);
+
 });
+
+
+//ReceptionistReport
+
+Route::prefix('receptionist/reports')->group(function () {
+
+    Route::get('registration', [ReceptionistReportController::class, 'apiRegistration']);
+    Route::get('appointment', [ReceptionistReportController::class, 'apiAppointment']);
+    Route::get('token', [ReceptionistReportController::class, 'apiToken']);
+    Route::get('collection', [ReceptionistReportController::class, 'apiCollection']);
+    Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
+
+});
+
 Route::prefix('receptionist/ipd')->group(function () {
 
     // =========================
@@ -1961,6 +1978,47 @@ Route::prefix('doctor/ipd')->group(function () {
 
     // ✅ SUBMIT DISCHARGE
     Route::post('/submit-discharge/{id}', [IpdController::class, 'apiDischargeSubmit']);
+
+    // 🔥 ADD THIS HERE (correct place)
+    Route::get('/medicines', [IpdController::class, 'apiMedicines']);
+
+    // Scan Types
+    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']); 
+
+    // Lab Test
+    Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
+});
+
+//Billing(Accountant)
+
+Route::prefix('accountant/billing')->group(function () {
+
+    // 🔹 LIST (with filters)
+    Route::get('/', [AccountantBillingController::class, 'apiIndex']);
+
+    // 🔹 GET PATIENT DATA (for create screen)
+    Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
+
+    // 🔹 GET BILL DETAILS (view)
+    Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
+
+    // 🔹 CREATE BILL
+    Route::post('/store', [AccountantBillingController::class, 'apiStore']);
+
+    // 🔹 UPDATE BILL
+    Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+});
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-discharge')->group(function () {
+
+    Route::get('/', [DischargePreparationController::class, 'apiIndex']);
+    Route::get('/{ipd_id}', [DischargePreparationController::class, 'apiShow']);
+    Route::post('/save', [DischargePreparationController::class, 'apiSave']);
+    Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
 
 });
 
