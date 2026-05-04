@@ -25,13 +25,7 @@
 
     <div class="row mb-4">
 
-        <div class="col-md-4">
-            <label class="text-muted">Payroll Result ID</label>
-
-            <div>
-                {{ $record->payrollResult->id ?? '-' }}
-            </div>
-        </div>
+        
 
         <div class="col-md-4">
             <label class="text-muted">Payroll Month</label>
@@ -203,11 +197,7 @@
         </div>
 
         <div class="col-md-4">
-            <label class="text-muted">Created By</label>
-
-            <div>
-                {{ $record->created_by ?? '-' }}
-            </div>
+          
         </div>
 
     </div>

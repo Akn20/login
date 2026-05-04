@@ -283,100 +283,94 @@ document.addEventListener('DOMContentLoaded', function () {
     const amountInput =
         document.getElementById('amount');
 
+    // ✅ FLAG to stop recalculation
+    let isManualAmount = false;
+
     // PAYROLL RESULT DATA
-    // fetched from blade
     const payrollData = @json(
         $payrollResults->keyBy('id')
     );
 
-    // GET BASE VALUE
     function getBaseAmount() {
 
         let payrollId = payrollResultSelect.value;
-
         let baseKey = baseSelect.value;
 
-        if (!payrollId || !baseKey) {
-            return 0;
-        }
+        if (!payrollId || !baseKey) return 0;
 
         let payroll = payrollData[payrollId];
 
-        if (!payroll) {
-            return 0;
-        }
+        if (!payroll) return 0;
 
-        // BASIC
         if (baseKey === 'basic') {
-
-            return parseFloat(
-                payroll.fixed_earnings_total || 0
-            );
+            return parseFloat(payroll.fixed_earnings_total || 0);
         }
 
-        // GROSS
         if (baseKey === 'gross') {
-
-            return parseFloat(
-                payroll.gross_earnings || 0
-            );
+            return parseFloat(payroll.gross_earnings || 0);
         }
 
         return 0;
     }
 
-    // CALCULATE AMOUNT
     function calculateAmount() {
 
-        // FIXED earnings do not auto calculate
-        if (earningType.value === 'Fixed') {
-            return;
-        }
+        // ❌ stop if user manually edited
+        if (isManualAmount) return;
+
+        if (earningType.value === 'Fixed') return;
 
         let baseAmount = getBaseAmount();
-
         let percent = parseFloat(valueInput.value);
 
-        if (!baseAmount || isNaN(percent)) {
-            return;
-        }
+        if (!baseAmount || isNaN(percent)) return;
 
         let result = (baseAmount * percent) / 100;
 
         amountInput.value = result.toFixed(2);
     }
 
-    // ENABLE/DISABLE FIELDS
     function toggleCalculationFields() {
 
         let isFixed = earningType.value === 'Fixed';
 
         baseSelect.disabled = isFixed;
-
         valueInput.disabled = isFixed;
 
         if (isFixed) {
-
             baseSelect.value = '';
-
             valueInput.value = '';
         }
     }
 
-    toggleCalculationFields();
+    // 🔥 If user types manually → lock auto calc
+    amountInput.addEventListener('input', function () {
+        isManualAmount = true;
+    });
 
-    earningType.addEventListener('change', function () {
-
-        toggleCalculationFields();
-
+    // 🔄 If user changes calculation → unlock auto calc
+    baseSelect.addEventListener('change', function () {
+        isManualAmount = false;
         calculateAmount();
     });
 
-    payrollResultSelect.addEventListener('change', calculateAmount);
+    valueInput.addEventListener('input', function () {
+        isManualAmount = false;
+        calculateAmount();
+    });
 
-    baseSelect.addEventListener('change', calculateAmount);
+    payrollResultSelect.addEventListener('change', function () {
+        isManualAmount = false;
+        calculateAmount();
+    });
 
-    valueInput.addEventListener('input', calculateAmount);
+    earningType.addEventListener('change', function () {
+        isManualAmount = false;
+        toggleCalculationFields();
+        calculateAmount();
+    });
+
+    toggleCalculationFields();
 
 });
 
