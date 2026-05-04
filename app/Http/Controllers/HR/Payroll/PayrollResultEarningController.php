@@ -89,20 +89,12 @@ class PayrollResultEarningController extends Controller
         }
 
         // CREATE
-       PayrollResultEarning::create([
-    'payroll_result_id' => (int) $request->payroll_result_id,
-    'earning_code' => $request->earning_code,
-    'earning_name' => $request->earning_name,
-    'earning_type' => $request->earning_type,
-    'calculation_base' => $request->calculation_base,
-    'calculation_value' => $request->calculation_value,
-    'amount' => $request->amount,
-    'taxable' => $request->taxable,
-    'pf_applicable' => $request->pf_applicable,
-    'esi_applicable' => $request->esi_applicable,
-    'display_order' => $request->display_order,
-    'created_by' => Auth::id(),
-]);
+        PayrollResultEarning::create([
+
+            ...$request->all(),
+
+            'created_by' => Auth::id()
+        ]);
 
         return redirect()
             ->route('hr.payroll.payroll-result-earnings.index')
