@@ -34,6 +34,9 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 use App\Http\Controllers\Api\Billing\BillingApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
+use App\Http\Controllers\Api\InsuranceConsentApiController;
+use App\Http\Controllers\Api\PatientPortal\DataUsageConsentApiController;
+use App\Http\Controllers\Api\PatientPortal\PatientEmrApiController;
 use App\Http\Controllers\Api\PatientPortal\PatientPortalApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
@@ -2022,9 +2025,73 @@ Route::prefix('nurse-discharge')->group(function () {
 
 });
 
+Route::prefix('patient-portal')->group(function () {
+
+    // List Discharge Summaries
+    Route::get('/discharges', [PatientEmrApiController::class, 'index']);
+
+    // Single Discharge Summary
+    Route::get('/discharges/{ipd_id}', [PatientEmrApiController::class, 'show']);
+
+    Route::get('/doctor-notes/{ipd_id}', 
+        [PatientEmrApiController::class, 'doctorNotes']
+    );
+});
 
 Route::prefix('surgery-consent')->group(function () {
 
     Route::post('/store', [SurgeryConsentApiController::class, 'store']);
 
+});
+
+/*
+|--------------------------------------------------------------------------
+| Data Usage Consent API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('data-consent')->group(function () {
+
+    Route::get('/',
+        [DataUsageConsentApiController::class, 'index']);
+
+    Route::post('/',
+        [DataUsageConsentApiController::class, 'store']);
+
+    Route::get('/{id}',
+        [DataUsageConsentApiController::class, 'show']);
+
+    Route::put('/{id}',
+        [DataUsageConsentApiController::class, 'update']);
+
+    Route::delete('/{id}',
+        [DataUsageConsentApiController::class, 'destroy']);
+
+    Route::get('/history/{patient_id}',
+        [DataUsageConsentApiController::class, 'history']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Insurance Consent API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('insurance-consent')->group(function () {
+
+    Route::get('/',
+        [InsuranceConsentApiController::class, 'index']);
+
+    Route::post('/',
+        [InsuranceConsentApiController::class, 'store']);
+
+    Route::get('/{id}',
+        [InsuranceConsentApiController::class, 'show']);
+
+    Route::post('/update/{id}',
+        [InsuranceConsentApiController::class, 'update']);
+
+    Route::delete('/delete/{id}',
+        [InsuranceConsentApiController::class, 'destroy']);
 });

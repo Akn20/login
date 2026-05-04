@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class DataUsageConsent extends Model
+class InsuranceConsent extends Model
 {
-    protected $table = 'data_usage_consents';
+    protected $table = 'insurance_consents';
 
     public $incrementing = false;
 
@@ -17,13 +17,17 @@ class DataUsageConsent extends Model
 
         'id',
         'patient_id',
-        'purpose',
+        'insurance_id',
+        'consent_text',
         'consent_status',
-        'remarks',
-        'document_path',
-        'consent_taken_at',
+        'consent_given_at',
+        'document',
         'recorded_by'
+    ];
 
+    protected $casts = [
+
+        'consent_given_at' => 'datetime',
     ];
 
     /*
@@ -54,5 +58,21 @@ class DataUsageConsent extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function insurance()
+    {
+        return $this->belongsTo(
+            PatientInsurance::class,
+            'insurance_id'
+        );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(
+            User::class,
+            'recorded_by'
+        );
     }
 }

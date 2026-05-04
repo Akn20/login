@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PatientPortal;
+namespace App\Http\Controllers\Admin\PatientPortal;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class DataUsageConsentController extends Controller
             ->paginate(10);
 
         return view(
-            'patient-portal.data-consent.index',
+            'admin.patient-portal.data-consent.index',
             compact('consents')
         );
     }
@@ -32,7 +32,7 @@ class DataUsageConsentController extends Controller
         $patients = Patient::latest()->get();
 
         return view(
-            'patient-portal.data-consent.create',
+            'admin.patient-portal.data-consent.create',
             compact('patients')
         );
     }
@@ -95,7 +95,7 @@ class DataUsageConsentController extends Controller
         ]);
 
         return redirect()
-            ->route('data-consent.index')
+            ->route('admin.data-consent.index')
             ->with(
                 'success',
                 'Data usage consent recorded successfully'
@@ -111,7 +111,7 @@ class DataUsageConsentController extends Controller
             ->findOrFail($id);
 
         return view(
-            'patient-portal.data-consent.show',
+            'admin.patient-portal.data-consent.show',
             compact('consent')
         );
     }
@@ -131,7 +131,7 @@ class DataUsageConsentController extends Controller
             ->get();
 
         return view(
-            'patient-portal.data-consent.history',
+            'admin.patient-portal.data-consent.history',
             compact('patient', 'consents')
         );
     }

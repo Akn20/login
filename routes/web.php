@@ -13,11 +13,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\InsuranceConsentController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
+
 // Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
@@ -32,6 +34,7 @@ use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
@@ -120,6 +123,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PatientApiController;
+use App\Http\Controllers\Admin\PatientPortal\DataUsageConsentController;
 use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
@@ -2505,6 +2509,38 @@ Route::middleware(['auth', 'role:admin'])
                 ->name('billing');
         });
 
+        /*
+|--------------------------------------------------------------------------
+| Data Usage Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('data-consent')
+    ->name('data-consent.')
+    ->group(function () {
+
+        Route::get('/',
+            [DataUsageConsentController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create',
+            [DataUsageConsentController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store',
+            [DataUsageConsentController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}',
+            [DataUsageConsentController::class, 'show'])
+            ->name('show');
+
+        Route::get('/history/{patient_id}',
+            [DataUsageConsentController::class, 'history'])
+            ->name('history');
+
+    });
+
 });
 
 
@@ -2745,6 +2781,40 @@ Route::prefix('doctor/ipd')->group(function () {
     ->name('doctor.ipd.storeLabRadiology');
 });
 
+
+
+
+// Patient EMR - Discharge Summary
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+       Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    // ✅ LIST PAGE (must be first)
+    Route::get('/discharge', 
+        [PatientEmrController::class, 'index']
+    )->name('discharge.list');
+
+    // ✅ DETAIL PAGE
+    Route::get('/discharge/{ipd_id}', 
+        [PatientEmrController::class, 'dischargeSummary']
+    )->name('discharge');
+
+    // ✅ PDF DOWNLOAD
+    Route::get('/discharge/{ipd_id}/pdf', 
+        [PatientEmrController::class, 'download']
+    )->name('discharge.pdf');
+
+    Route::get('/doctor-notes/{ipd_id}', 
+        [PatientEmrController::class, 'doctorNotes']
+    )->name('doctor.notes');
+
+});
+
+    });
 Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
     /*
 |--------------------------------------------------------------------------
@@ -2784,3 +2854,48 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
     });
 });
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        /*
+|--------------------------------------------------------------------------
+| Insurance Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('insurance-consent')
+    ->name('insurance-consent.')
+    ->group(function () {
+
+        Route::get('/',
+            [InsuranceConsentController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create',
+            [InsuranceConsentController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store',
+            [InsuranceConsentController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}',
+            [InsuranceConsentController::class, 'show'])
+            ->name('show');
+
+        Route::get('/edit/{id}',
+            [InsuranceConsentController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}',
+            [InsuranceConsentController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}',
+            [InsuranceConsentController::class, 'destroy'])
+            ->name('delete');
+    });
+    });

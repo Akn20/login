@@ -167,6 +167,49 @@
                             <i class="feather-camera me-2"></i> Radiology Reports
                         </a>
                     </li>
+                    <li class="nxl-item">
+
+                            <a href="{{ route('admin.data-consent.index') }}"
+                            class="nxl-link"
+                            up-follow
+                            up-target="#main-container">
+
+                                <i class="feather-shield me-2"></i>
+
+                                Data Usage Consent
+
+                            </a>
+
+                        </li>
+                        <li class="nxl-item">
+
+                        <a href="{{ route('admin.insurance-consent.index') }}"
+                        class="nxl-link"
+                        up-follow
+                        up-target="#main-container">
+
+                            <span class="nxl-micon">
+                                <i class="feather-shield"></i>
+                            </span>
+
+                            <span class="nxl-mtext">
+                                Insurance Consent
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Discharge Summary
+                        </a>
+                    </li>
+                     <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Doctor Notes
+                        </a>
+                    </li>
 
                 </ul>
 
