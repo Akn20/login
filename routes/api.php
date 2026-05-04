@@ -1024,37 +1024,39 @@ Route::prefix('vitals')->group(function () {
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| 23. Nurse: PPE Compliance
-|--------------------------------------------------------------------------
-*/
+// /*
+// |--------------------------------------------------------------------------
+// | 23. Nurse: PPE Compliance
+// |--------------------------------------------------------------------------
+// */
 
-Route::prefix('ppe-compliance')->group(function () {
-    Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
-    Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
-    Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
-    Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
-    Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
-    Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
-    Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
-});
+// Route::prefix('ppe-compliance')->group(function () {
+//     Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
+//     Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
+//     Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
+//     Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
+//     Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
+//     Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
+//     Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
+// });
 
-/*
-|--------------------------------------------------------------------------
-| 24. Nurse: Medication Administration
-|--------------------------------------------------------------------------
-*/
+// /*
+// |--------------------------------------------------------------------------
+// | 24. Nurse: Medication Administration
+// |--------------------------------------------------------------------------
+// */
 
-Route::prefix('medication-administration')->group(function () {
-    Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
-    Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
-    Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
-    Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
-    Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
-    Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
-    Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
-});
+// Route::prefix('medication-administration')->group(function () {
+//     Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
+//     Route::get('/{id}', [NursePatientMonitoringController::class, 'apiShow']);
+//     Route::post('/', [NursePatientMonitoringController::class, 'apiStore']);
+//     Route::put('/{id}', [NursePatientMonitoringController::class, 'apiUpdate']);
+//     Route::delete('/{id}', [NursePatientMonitoringController::class, 'apiDestroy']);
+//     Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
+//     Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
+// });
+
+
 /*
 |--------------------------------------------------------------------------
 
