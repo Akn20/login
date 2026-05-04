@@ -104,14 +104,13 @@
 <form action="{{ route('hr.payroll.rate-employee-mapping.restore', $item->id) }}"
       method="POST">
 
-@csrf
+    @csrf
+    @method('PUT')
 
-<button type="submit"
-        class="btn btn-success btn-sm">
-
-RESTORE
-
-</button>
+    <button type="submit"
+            class="btn btn-success btn-sm">
+        RESTORE
+    </button>
 
 </form>
 
