@@ -73,13 +73,13 @@ class IpdController extends Controller
             ->first();
 
         // Prescription
-        $prescriptionIds = IpdPrescription::where('patient_id', $ipd->patient_id)
+        $prescriptionIds = IpdPrescription::where('ipd_id', $id)
             ->pluck('id');
 
         $prescriptionItems = IpdPrescriptionItem::whereIn(
             'prescription_id',
             $prescriptionIds
-        )->latest()->get();
+        )->get();
 
         // Existing Lab Requests
         $labTests = DB::table('lab_requests')

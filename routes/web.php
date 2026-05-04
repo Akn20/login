@@ -2217,8 +2217,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
             Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
-            Route::post('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
-
+            Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
         });
 
 });

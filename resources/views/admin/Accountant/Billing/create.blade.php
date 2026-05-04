@@ -29,78 +29,218 @@
     </div>
 
     {{-- ================= CHARGES ================= --}}
+{{--Pharmacy --}}
     <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between">
-            <span>Charges</span>
-            <button type="button" class="btn btn-success btn-sm" onclick="addCharge()">
-                + Add Charge
-            </button>
+        <div class="card-header">
+            <strong>Pharmacy Charges</strong>
         </div>
 
-        <div class="card-body">
-            <table class="table table-bordered" id="chargesTable">
-                <thead>
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered">
+                <thead class="table-light">
                     <tr>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>QTY</th>
-                        <th>Amount</th>
-                        <th>Action</th>
+                        <th>Medicine</th>
+                        <th width="120">Qty</th>
+                        <th width="120">Price</th>
+                        <th width="150">Total</th>
                     </tr>
                 </thead>
 
                 <tbody>
 
-                <tr>
-                    <td>
-                        <input type="text" name="items[0][type]" value="Pharmacy" class="form-control" readonly>
-                    </td>
-                    <td>
-                        <input type="text" name="items[0][description]" value="Pharmacy Charges" class="form-control">
-                    </td>
-                    <td>
-                        <input type="number" name="items[0][quantity]" class="form-control qty" value="1">
-                    </td>
-                    <td>
-                        <input type="number" name="items[0][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
-                    </td>
-                    <td>-</td>
-                </tr>
+                    @php $index = 0; @endphp
 
-                <tr>
-                    <td>
-                        <input type="text" name="items[1][type]" value="Service" class="form-control" readonly>
-                    </td>
-                    <td>
-                        <input type="text" name="items[1][description]" value="Service Charges" class="form-control">
-                    </td>
-                    <td>
-                        <input type="number" name="items[1][quantity]" class="form-control qty" value="1">
-                    </td>
-                    <td>
-                        <input type="number" name="items[1][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
-                    </td>
-                    <td>-</td>
-                </tr>
+                    @forelse($pharmacyItems as $item)
+                    @php
+                        $total = $item->qty * $item->price;
+                    @endphp
 
-                <tr>
-                    <td>
-                        <input type="text" name="items[2][type]" value="Lab" class="form-control" readonly>
-                    </td>
-                    <td>
-                        <input type="text" name="items[2][description]" value="Lab Charges" class="form-control">
-                    </td>
-                    <td>
-                        <input type="number" name="items[2][quantity]" class="form-control qty" value="1">
-                    </td>
-                    <td>
-                        <input type="number" name="items[2][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
-                    </td>
-                    <td>-</td>
-                </tr>
+                    <tr>
+                        <td>
+                            {{ $item->medicine_name }}
+
+                            <input type="hidden" name="items[{{ $index }}][type]" value="Pharmacy">
+                            <input type="hidden" name="items[{{ $index }}][description]" value="{{ $item->medicine_name }}">
+                            <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $item->medicine_id ?? '' }}">
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                name="items[{{ $index }}][quantity]"
+                                value="{{ $item->qty }}"
+                                class="form-control qty"
+                                readonly>
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                name="items[{{ $index }}][rate]"
+                                value="{{ $item->price }}"
+                                class="form-control rate"
+                                readonly>
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                name="items[{{ $index }}][amount]"
+                                value="{{ $total }}"
+                                class="form-control amount"
+                                readonly>
+                        </td>
+                    </tr>
+
+                    @php $index++; @endphp
+
+                    @empty
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No pharmacy records found
+                        </td>
+                    </tr>
+                    @endforelse
 
                 </tbody>
             </table>
+
+        </div>
+    </div>
+
+{{--Lab --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Lab Tests</strong></div>
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Test Name</th>
+                        <th width="150">Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @php $index = count($pharmacyItems); @endphp
+
+                @forelse($labItems as $lab)
+                <tr>
+                    <td>
+                        {{ $lab->test_name }}
+
+                        <input type="hidden" name="items[{{ $index }}][type]" value="Lab">
+                        <input type="hidden" name="items[{{ $index }}][description]" value="{{ $lab->test_name }}">
+                        <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $lab->test_name }}">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                            name="items[{{ $index }}][amount]"
+                            value="{{ $lab->price }}"
+                            class="form-control amount"
+                            readonly>
+                    </td>
+                </tr>
+                @php $index++; @endphp
+                @empty
+                <tr><td colspan="2" class="text-center">No Lab Tests</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+{{--Scan --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Radiology / Scan</strong></div>
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Scan Name</th>
+                        <th width="150">Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                @forelse($scanItems as $scan)
+                <tr>
+                    <td>
+                        {{ $scan->scan_name }}
+
+                        <input type="hidden" name="items[{{ $index }}][type]" value="Scan">
+                        <input type="hidden" name="items[{{ $index }}][description]" value="{{ $scan->scan_name }}">
+                        <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $scan->scan_name }}">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                            name="items[{{ $index }}][amount]"
+                            value="0"
+                            class="form-control amount">
+                    </td>
+                </tr>
+                @php $index++; @endphp
+                @empty
+                <tr><td colspan="2" class="text-center">No Scans</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+{{--Room --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Room Charges</strong></div>
+        <div class="card-body">
+
+            @if($roomCharge)
+            <div class="row">
+                <div class="col-md-4">
+                    Room: {{ $roomCharge->room_number }}
+                </div>
+
+                <div class="col-md-4">
+                    From: {{ \Carbon\Carbon::parse($roomCharge->admission_date)->format('d-m-Y') }}
+                </div>
+
+                <div class="col-md-4">
+                    To: {{ $roomCharge->discharge_date 
+                            ? \Carbon\Carbon::parse($roomCharge->discharge_date)->format('d-m-Y') 
+                            : 'Active' }}
+                </div>
+
+                <div class="col-md-4 mt-2">
+                    <label>Room Charges</label>
+                    <input type="number"
+                        name="items[{{ $index }}][amount]"
+                        class="form-control amount"
+                        value="0">
+                    <input type="hidden" name="items[{{ $index }}][type]" value="Room">
+                    <input type="hidden" name="items[{{ $index }}][description]" value="Room Charges">
+                    <input type="hidden" name="items[{{ $index }}][reference_id]" value="{{ $roomCharge->room_number }}">
+                </div>
+            </div>
+
+            @php $index++; @endphp
+            @endif
+
+        </div>
+    </div>
+
+{{--Service --}}
+    <div class="card mb-4">
+        <div class="card-header"><strong>Other / Service Charges</strong></div>
+        <div class="card-body">
+
+            <div id="serviceSection"></div>
+
+            <button type="button" class="btn btn-sm btn-success" onclick="addService()">
+                + Add Service
+            </button>
+
         </div>
     </div>
 
@@ -118,12 +258,12 @@
 
                 <div class="col-md-3">
                     <label>Discount</label>
-                    <input type="number" name="discount" id="discount" class="form-control" value="0">
+                    <input type="number" name="discount" id="discount" class="form-control" value="0" placeholder="%">
                 </div>
 
                 <div class="col-md-3">
                     <label>Tax</label>
-                    <input type="number" name="tax" id="tax" class="form-control" value="0">
+                    <input type="number" name="tax" id="tax" class="form-control" value="0" placeholder="%">
                 </div>
 
                 <div class="col-md-3">
@@ -136,6 +276,11 @@
                     <input type="text" id="grand_total" name="grand_total" class="form-control" readonly>
                 </div>
 
+            </div>
+
+            <div class="col-md-12 mt-3">
+                <label>Notes</label>
+                <textarea name="notes" class="form-control" rows="3" placeholder="Enter remarks (optional)"></textarea>
             </div>
 
             <div class="mt-4 text-end">
@@ -152,43 +297,6 @@
 {{-- ================= SCRIPT ================= --}}
 <script>
 
-// ADD EXTRA ROW
-function addCharge() {
-
-    let index = document.querySelectorAll('#chargesTable tbody tr').length;
-
-    let row = `
-        <tr>
-            <td>
-                <input type="text" name="items[${index}][type]" class="form-control">
-            </td>
-
-            <td>
-                <input type="text" name="items[${index}][description]" class="form-control">
-            </td>
-
-            <td>
-                <input type="number" name="items[${index}][quantity]" class="form-control" value="1">
-            </td>
-
-            <td>
-                <input type="number" name="items[${index}][amount]" class="form-control amount" value="0" oninput="calculateTotal()">
-            </td>
-
-            <td>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
-            </td>
-        </tr>
-    `;
-
-    document.querySelector('#chargesTable tbody').insertAdjacentHTML('beforeend', row);
-}   
-
-// REMOVE ROW
-function removeRow(btn){
-    btn.closest('tr').remove();
-    calculateTotal();
-}
 
 
 // TOTAL CALCULATION
@@ -196,21 +304,23 @@ function calculateTotal(){
 
     let total = 0;
 
-    document.querySelectorAll('.amount').forEach(el=>{
+    document.querySelectorAll('input[name*="[amount]"]').forEach(el=>{
         total += parseFloat(el.value) || 0;
     });
 
     document.getElementById('total').value = total;
 
-    let discount = parseFloat(document.getElementById('discount').value) || 0;
-    let tax = parseFloat(document.getElementById('tax').value) || 0;
+    let discountPercent = parseFloat(document.getElementById('discount').value) || 0;
+    let taxPercent = parseFloat(document.getElementById('tax').value) || 0;
     let advance = parseFloat(document.getElementById('advance').value) || 0;
+
+    let discount = (total * discountPercent) / 100;
+    let tax = (total * taxPercent) / 100;
 
     let grand = total - discount + tax - advance;
 
     document.getElementById('grand_total').value = grand;
 }
-
 
 // AUTO RUN ON LOAD
 document.addEventListener('DOMContentLoaded', calculateTotal);
@@ -218,6 +328,27 @@ document.addEventListener('DOMContentLoaded', calculateTotal);
 // AUTO UPDATE
 document.getElementById('discount').addEventListener('input', calculateTotal);
 document.getElementById('tax').addEventListener('input', calculateTotal);
+
+//SErvice
+function addService() {
+
+    let index = document.querySelectorAll('.amount').length;
+
+    let html = `
+        <div class="row mb-2">
+            <div class="col-md-5">
+                <input type="text" name="items[${index}][description]" placeholder="Service Name" class="form-control">
+                <input type="hidden" name="items[${index}][type]" value="Service">
+            </div>
+
+            <div class="col-md-3">
+                <input type="number" name="items[${index}][amount]" class="form-control amount" placeholder="Amount" oninput="calculateTotal()">
+            </div>
+        </div>
+    `;
+
+    document.getElementById('serviceSection').insertAdjacentHTML('beforeend', html);
+}
 
 </script>
 

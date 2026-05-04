@@ -1583,13 +1583,18 @@ Route::prefix('doctor/ipd')->group(function () {
 
 Route::prefix('accountant/billing')->group(function () {
 
-    Route::get('/list', [AccountantBillingController::class, 'apiIndex']);
+    // 🔹 LIST (with filters)
+    Route::get('/', [AccountantBillingController::class, 'apiIndex']);
 
+    // 🔹 GET PATIENT DATA (for create screen)
     Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
 
-    Route::post('/store', [AccountantBillingController::class, 'apiStore']);
-
+    // 🔹 GET BILL DETAILS (view)
     Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
 
+    // 🔹 CREATE BILL
+    Route::post('/store', [AccountantBillingController::class, 'apiStore']);
+
+    // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
 });

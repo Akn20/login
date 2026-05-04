@@ -23,9 +23,12 @@ class IpdBill extends Model
         'total_amount',
         'discount',
         'tax',
+        'discount_percent',
+        'tax_percent',
         'advance_amount',
         'grand_total',
-        'payable_amount'
+        'payable_amount',
+        'notes',
     ];
 
     protected static function boot()

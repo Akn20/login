@@ -17,7 +17,7 @@ class IpdBillItem extends Model
          'id',
         'bill_id',
         'type',
-       // 'reference_id',
+        'reference_id',
         'description',
         'quantity',
         'rate',

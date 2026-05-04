@@ -3,6 +3,48 @@
 @section('content')
 <div class="container-fluid">
 
+<form method="GET" class="mb-4">
+    <div class="row align-items-end">
+
+        {{-- SEARCH --}}
+        <div class="col-md-4">
+            <label class="form-label">Search</label>
+            <input type="text" name="search"
+                   value="{{ request('search') }}"
+                   class="form-control"
+                   placeholder="Patient / IPD No">
+        </div>
+
+        {{-- STATUS --}}
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control">
+                <option value="">All</option>
+                <option value="final" {{ request('status')=='final'?'selected':'' }}>Final</option>
+                <option value="interim" {{ request('status')=='interim'?'selected':'' }}>Interim</option>
+                <option value="not_created" {{ request('status')=='not_created'?'selected':'' }}>Not Created</option>
+            </select>
+        </div>
+
+        {{-- BUTTONS --}}
+        <div class="col-md-5">
+            <div class="d-flex gap-2">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="feather-search"></i> Search
+                </button>
+
+                <a href="{{ route('admin.accountant.billing.index') }}"
+                   class="btn btn-secondary">
+                    Reset
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</form>
+
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>IPD Billing Management</h3>
