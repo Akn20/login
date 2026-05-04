@@ -23,11 +23,13 @@
 
     <a href="{{ route('hr.payroll.payroll-result-deductions.index') }}"
        class="btn btn-secondary btn-sm">
-
         Back
     </a>
 
 </div>
+
+<div class="card">
+    <div class="card-body">
 
 
 {{-- PAYROLL RESULT --}}
@@ -125,12 +127,22 @@
     {{-- RULE SET CODE --}}
     <div class="col-md-6 mb-3">
 
-        <label>Rule Set Code</label>
+      <select name="rule_set_code" class="form-control" id="rule_set_code">
 
-        <input type="text"
-               name="rule_set_code"
-               class="form-control"
-               value="{{ old('rule_set_code', $record->rule_set_code ?? '') }}">
+    <option value="">Select Rule</option>
+
+    @foreach($ruleSets as $rule)
+
+        <option value="{{ $rule->rule_set_code }}"
+            {{ old('rule_set_code', $record->rule_set_code ?? '') == $rule->rule_set_code ? 'selected' : '' }}>
+
+            {{ $rule->rule_set_name }}
+
+        </option>
+
+    @endforeach
+
+</select>
 
     </div>
 
@@ -292,155 +304,127 @@
     </button>
 
 </div>
+  </div>
+</div>
 
 
 {{-- AUTO CALCULATION --}}
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
 
-    const payrollResultSelect =
-        document.getElementById('payroll_result_id');
+    const payrollResultSelect = document.getElementById('payroll_result_id');
+    const deductionType       = document.getElementById('deduction_type');
+    const ruleSetSelect       = document.getElementById('rule_set_code');
 
-    const deductionType =
-        document.getElementById('deduction_type');
+    const calculationBase     = document.getElementById('calculation_base');
+    const calculationLogic    = document.getElementById('calculation_logic');
+    const calculationValue    = document.getElementById('calculation_value');
 
-    const calculationBase =
-        document.getElementById('calculation_base');
+    const amountInput         = document.getElementById('amount');
 
-    const calculationLogic =
-        document.getElementById('calculation_logic');
+    // 🔥 REAL DATA FROM BACKEND
+    const payrollData = @json($payrollResults->keyBy('id'));
+    const ruleSets    = @json($ruleSets->keyBy('rule_set_code'));
 
-    const calculationValue =
-        document.getElementById('calculation_value');
-
-    const amountInput =
-        document.getElementById('amount');
-
-    // PAYROLL RESULT DATA
-    const payrollData = @json(
-        $payrollResults->keyBy('id')
-    );
-
-    // ENABLE/DISABLE
+    // ✅ ENABLE / DISABLE FIELDS
     function toggleCalculationFields() {
 
-        let isFixed =
-            deductionType.value === 'Fixed';
+        let isFixed = deductionType.value === 'Fixed';
 
-        calculationBase.disabled = isFixed;
-
+        calculationBase.disabled  = isFixed;
         calculationLogic.disabled = isFixed;
-
         calculationValue.disabled = isFixed;
 
         if (isFixed) {
-
-            calculationBase.value = '';
-
+            calculationBase.value  = '';
             calculationLogic.value = '';
-
             calculationValue.value = '';
         }
     }
 
-    // GET BASE AMOUNT
+    // ✅ GET BASE AMOUNT (from Payroll Result)
     function getBaseAmount() {
 
-        let payrollId =
-            payrollResultSelect.value;
+        let payrollId = payrollResultSelect.value;
 
-        if (!payrollId) {
-            return 0;
-        }
+        if (!payrollId) return 0;
 
-        let payroll =
-            payrollData[payrollId];
+        let payroll = payrollData[payrollId];
 
-        if (!payroll) {
-            return 0;
-        }
+        if (!payroll) return 0;
 
-        return parseFloat(
-            payroll.gross_earnings || 0
-        );
+        // currently using Gross Earnings
+        return parseFloat(payroll.gross_earnings || 0);
     }
 
-    // AUTO CALCULATE
+    // ✅ AUTO-FILL FROM RULE SET
+    function applyRuleSet() {
+
+        let selected = ruleSets[ruleSetSelect.value];
+
+        if (!selected) return;
+
+        // fill fields
+        calculationLogic.value = selected.calculation_type || '';
+        calculationBase.value  = selected.calculation_base || '';
+        calculationValue.value = selected.calculation_value || '';
+
+        calculateAmount();
+    }
+
+    // ✅ MAIN CALCULATION
     function calculateAmount() {
 
-        if (
-            deductionType.value === 'Fixed'
-        ) {
+        // Fixed → manual entry only
+        if (deductionType.value === 'Fixed') {
             return;
         }
 
-        let logic =
-            calculationLogic.value;
-
-        let value =
-            parseFloat(
-                calculationValue.value
-            );
-
-        let baseAmount =
-            getBaseAmount();
+        let logic = calculationLogic.value;
+        let value = parseFloat(calculationValue.value);
+        let baseAmount = getBaseAmount();
 
         if (!logic || isNaN(value)) {
             return;
         }
 
-        // %
+        // % LOGIC
         if (logic === '%') {
 
-            let result =
-                (baseAmount * value) / 100;
+            let result = (baseAmount * value) / 100;
 
-            amountInput.value =
-                result.toFixed(2);
+            amountInput.value = result.toFixed(2);
         }
 
-        // EMI
+        // EMI LOGIC (fixed monthly deduction)
         else if (logic === 'EMI') {
 
-            amountInput.value =
-                value.toFixed(2);
+            amountInput.value = value.toFixed(2);
         }
 
+        // SLAB (TEMP FIX)
+        else if (logic === 'Slab') {
+
+            // until slab module integrated
+            amountInput.value = value.toFixed(2);
+        }
     }
 
+    // INIT
     toggleCalculationFields();
 
-    deductionType.addEventListener(
-        'change',
-        function () {
+    // EVENTS
+    deductionType.addEventListener('change', function () {
+        toggleCalculationFields();
+        calculateAmount();
+    });
 
-            toggleCalculationFields();
+    ruleSetSelect.addEventListener('change', applyRuleSet);
 
-            calculateAmount();
-        }
-    );
-
-    payrollResultSelect.addEventListener(
-        'change',
-        calculateAmount
-    );
-
-    calculationBase.addEventListener(
-        'change',
-        calculateAmount
-    );
-
-    calculationLogic.addEventListener(
-        'change',
-        calculateAmount
-    );
-
-    calculationValue.addEventListener(
-        'input',
-        calculateAmount
-    );
+    payrollResultSelect.addEventListener('change', calculateAmount);
+    calculationBase.addEventListener('change', calculateAmount);
+    calculationLogic.addEventListener('change', calculateAmount);
+    calculationValue.addEventListener('input', calculateAmount);
 
 });
-
 </script>

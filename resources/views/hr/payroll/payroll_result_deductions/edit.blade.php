@@ -8,7 +8,11 @@
     @csrf
     @method('PUT')
 
-    @include('hr.payroll.payroll_result_deductions.form')
+    @include('hr.payroll.payroll_result_deductions.form', [
+    'record' => $record,
+    'ruleSets' => $ruleSets,
+    'payrollResults' => $payrollResults
+])
 
 </form>
 

@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 
 use App\Models\PayrollResult;
 use App\Models\PayrollResultDeduction;
+use App\Models\DeductionRuleSet;
 
 class PayrollResultDeductionController extends Controller
 {
@@ -38,6 +39,7 @@ class PayrollResultDeductionController extends Controller
 
     public function create()
 {
+      $ruleSets = DeductionRuleSet::where('status', 'active')->get();
     $payrollResults = PayrollResult::orderBy(
         'created_on',
         'desc'
@@ -45,7 +47,7 @@ class PayrollResultDeductionController extends Controller
 
     return view(
         'hr.payroll.payroll_result_deductions.create',
-        compact('payrollResults')
+        compact('payrollResults','ruleSets')
     );
 }
 
@@ -175,12 +177,13 @@ class PayrollResultDeductionController extends Controller
             'created_on',
             'desc'
         )->get();
+          $ruleSets = DeductionRuleSet::where('status', 'active')->get();
 
         return view(
             'hr.payroll.payroll_result_deductions.edit',
             compact(
                 'record',
-                'payrollResults'
+                'payrollResults','ruleSets'
             )
         );
     }
