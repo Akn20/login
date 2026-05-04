@@ -197,8 +197,7 @@ if (!$payrollRunId) {
             'paid_days' =>
                 $ppa->days_paid,
 
-            'lop_days' =>
-                $ppa->lop_days,
+            'lop_days' => $ppa->lop_days ?? 0,
 
             'overtime_hours' =>
                 $ppa->ot_hours,
@@ -211,6 +210,7 @@ if (!$payrollRunId) {
 
             'gross_earnings' =>
                 $ppa->gross_earnings,
+                
 
             'fixed_deductions_total' =>
                 $ppa->fixed_deductions_total,

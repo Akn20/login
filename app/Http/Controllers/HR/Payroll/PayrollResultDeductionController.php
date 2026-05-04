@@ -301,4 +301,137 @@ class PayrollResultDeductionController extends Controller
             'Deleted Successfully'
         );
     }
+
+    // ---------------- API METHODS ---------------- //
+
+// LIST
+public function apiIndex()
+{
+    $records = PayrollResultDeduction::latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deduction list fetched',
+        'data' => $records
+    ]);
+}
+
+// SHOW
+public function apiShow($id)
+{
+    $record = PayrollResultDeduction::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $record
+    ]);
+}
+
+// STORE
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'payroll_result_id' => 'required',
+        'deduction_code' => 'required',
+        'deduction_name' => 'required',
+        'deduction_type' => 'required|in:Fixed,Variable,Statutory',
+        'calculation_logic' => 'required',
+        'amount' => 'required|numeric|min:0',
+    ]);
+
+    $record = PayrollResultDeduction::create([
+        'payroll_result_id' => $request->payroll_result_id,
+        'deduction_code' => $request->deduction_code,
+        'deduction_name' => $request->deduction_name,
+        'deduction_type' => $request->deduction_type,
+        'calculation_logic' => $request->calculation_logic,
+        'amount' => round($request->amount, 2),
+        'editable_flag' => true, // default
+        'display_order' => $request->display_order,
+        'created_by' => Auth::id()
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deduction created successfully',
+        'data' => $record
+    ], 201);
+}
+
+// UPDATE
+public function apiUpdate(Request $request, $id)
+{
+    $record = PayrollResultDeduction::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    if (!$record->editable_flag) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Editing not allowed'
+        ], 403);
+    }
+
+    $request->validate([
+        'deduction_code' => 'required',
+        'deduction_name' => 'required',
+        'deduction_type' => 'required|in:Fixed,Variable,Statutory',
+        'calculation_logic' => 'required',
+        'amount' => 'required|numeric|min:0',
+    ]);
+
+    $record->update([
+        'deduction_code' => $request->deduction_code,
+        'deduction_name' => $request->deduction_name,
+        'deduction_type' => $request->deduction_type,
+        'calculation_logic' => $request->calculation_logic,
+        'amount' => round($request->amount, 2),
+        'display_order' => $request->display_order,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Updated successfully',
+        'data' => $record
+    ]);
+}
+
+// DELETE
+public function apiDelete($id)
+{
+    $record = PayrollResultDeduction::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    if (!$record->editable_flag) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Deletion not allowed'
+        ], 403);
+    }
+
+    $record->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deleted successfully'
+    ]);
+}
 }
