@@ -15,6 +15,8 @@ use App\Models\CriticalValueAlert;
 use Illuminate\Support\Facades\Storage;
 use App\Models\LabRequest;
 use Carbon\Carbon;
+use Log;
+use function logAudit;
 
 class ReportController extends Controller
 {
@@ -23,7 +25,7 @@ class ReportController extends Controller
     {
         $query = LabReport::with('sample');
 
-        // 🔍 SEARCH
+        // SEARCH
         if ($request->search) {
             $query->whereHas('sample', function ($q) use ($request) {
                 $q->where('sample_id', 'like', '%' . $request->search . '%');
@@ -35,7 +37,7 @@ class ReportController extends Controller
         return view('admin.laboratory.report.index', compact('reports'));
     }
 
-    // ➕ Create Page
+    // Create Page
     public function create()
     {
         $samples = SampleCollection::where('status', 'Completed')->get();
@@ -77,9 +79,22 @@ class ReportController extends Controller
         // 🔥 ADD FILES (NOT NEW REPORT)
         $this->storeFile($request->file('report_file'), $report, true);
 
+        logAudit(
+    'report',
+    'REPORT_UPLOADED',
+    $report->id,
+    'Main report uploaded for sample ID: ' . $request->sample_id
+    );
+
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPLOADED',
+                    $report->id,
+                    'Supporting file uploaded: ' . $file->getClientOriginalName()
+                );
             }
         }
 
@@ -105,6 +120,13 @@ class ReportController extends Controller
         $report = LabReport::findOrFail($id);
         $report->delete();
 
+        logAudit(
+            'report',
+            'REPORT_DELETED',
+            $report->id,
+            'Report deleted'
+        );
+
         return redirect()
             ->route('admin.laboratory.report.index')
             ->with('success', 'Report deleted successfully');
@@ -115,6 +137,12 @@ class ReportController extends Controller
     {
         $report = LabReport::withTrashed()->findOrFail($id);
         $report->restore();
+            logAudit(
+                'report',
+                'REPORT_RESTORED',
+                $report->id,
+                'Report restored'
+            );
 
         return back()->with('success', 'Report restored successfully');
     }
@@ -124,6 +152,13 @@ class ReportController extends Controller
     {
         $report = LabReport::withTrashed()->findOrFail($id);
         $report->forceDelete();
+
+        logAudit(
+            'report',
+            'REPORT_PERMANENTLY_DELETED',
+            $report->id,
+            'Report permanently deleted'
+        );
 
         return back()->with('success', 'Report permanently deleted');
     }
@@ -162,12 +197,24 @@ class ReportController extends Controller
         // Main file (new version)
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+            logAudit(
+                'report',
+                'MAIN_FILE_UPDATED',
+                $report->id,
+                'Main report file updated (new version)'
+            );
         }
 
         // Supporting files
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPDATED',  
+                    $report->id,
+                    'Supporting file updated'     
+                );
             }
         }
 
@@ -228,6 +275,12 @@ class ReportController extends Controller
             'action' => 'UPLOAD',
             'timestamp' => now()
         ]);
+                logAudit(
+            'report_file',
+            'FILE_VERSION_CREATED',
+            $report->id,
+            'Version ' . $newVersion . ' uploaded: ' . $file->getClientOriginalName()
+        );
     }
 
     public function verify($id)
@@ -243,6 +296,12 @@ class ReportController extends Controller
             'verified_by' => auth()->id(),
             'verified_at' => now(),
         ]);
+        logAudit(
+            'report',
+            'REPORT_VERIFIED',
+            $report->id,
+            'Verified by user ID: ' . auth()->id()
+        );
 
         return back()->with('success', 'Report verified');
     }
@@ -258,6 +317,12 @@ class ReportController extends Controller
             'verified_at' => now(),
         ]);
 
+            logAudit(
+            'report',
+            'REPORT_REJECTED',
+            $report->id,
+            'Rejected with notes: ' . $request->notes
+        );
         return back()->with('success', 'Report rejected');
     }
 
@@ -272,7 +337,12 @@ class ReportController extends Controller
         $report->update([
             'digital_signature' => auth()->user()->name
         ]);
-
+            logAudit(
+                'report',
+                'REPORT_SIGNED',
+                $report->id,
+                'Digitally signed by: ' . auth()->user()->name
+            );
         return back()->with('success', 'Signed successfully');
     }
 
@@ -288,6 +358,12 @@ class ReportController extends Controller
             'verification_status' => 'Finalized',
             'finalized_at' => now(),
         ]);
+        logAudit(
+            'report',
+            'REPORT_FINALIZED',
+            $report->id,
+            'Report finalized'
+        );
 
         return back()->with('success', 'Report finalized');
     }
@@ -670,6 +746,12 @@ public function resolveCritical($id)
         'resolved_by' => auth()->id(),
         'resolved_at' => now()
     ]);
+        logAudit(
+    'alert',
+    'ALERT_RESOLVED',
+    $alert->id,
+    'Resolved by user ID: ' . auth()->id()
+);
 
     return back()->with('success', 'Critical alert resolved successfully');
 }
@@ -699,6 +781,7 @@ public function resolveCritical($id)
             }
         ])->findOrFail($id);
 
+
         return response()->json([
             'status' => true,
             'data' => $report
@@ -721,18 +804,33 @@ public function resolveCritical($id)
                 'entered_at' => now()
             ]
         );
+       
 
         // MAIN FILE
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+                        logAudit(
+                'report',
+                'REPORT_UPLOADED',
+                $report->id,
+                'Main report uploaded'
+            );
         }
 
         // SUPPORTING FILES
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPLOADED',
+                    $report->id,
+                    'Supporting file uploaded'
+                );
             }
         }
+
+        
 
         return response()->json([
             'status' => true,
@@ -756,18 +854,39 @@ public function resolveCritical($id)
                 'status' => $request->status
             ]);
         }
+        logAudit(
+            'report',
+            'REPORT_UPDATED',
+            $report->id,
+            'Report status updated to: ' . ($request->status ?? 'No change')
+        );
+
 
         // MAIN FILE (NEW VERSION)
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+            logAudit(
+                'report',
+                'MAIN_FILE_UPDATED',
+                $report->id,
+                'Main report file updated (new version)'
+            );
         }
 
         // SUPPORTING FILES
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPDATED',
+                    $report->id,
+                    'Supporting file updated'
+                );
             }
         }
+        
+        
 
         return response()->json([
             'status' => true,
@@ -780,6 +899,12 @@ public function resolveCritical($id)
     {
         $report = LabReport::findOrFail($id);
         $report->delete();
+        logAudit(
+            'report',
+            'API_REPORT_DELETED',
+            $report->id,
+            'Report deleted via API'
+        );
 
         return response()->json([
             'status' => true,
@@ -806,6 +931,13 @@ public function resolveCritical($id)
         $report = LabReport::onlyTrashed()->findOrFail($id);
         $report->restore();
 
+        logAudit(
+            'report',
+            'API_REPORT_RESTORED',
+            $report->id,
+            'Report restored via API'
+        );
+
         return response()->json([
             'status' => true,
             'message' => 'Report restored successfully'
@@ -823,6 +955,13 @@ public function resolveCritical($id)
         }
 
         $report->forceDelete();
+
+        logAudit(
+            'report',
+            'API_REPORT_PERMANENTLY_DELETED',
+            $report->id,
+            'Report permanently deleted via API'
+        );
 
         return response()->json([
             'status' => true,
@@ -847,6 +986,13 @@ public function apiVerify($id)
         'verified_at' => now(),
     ]);
 
+    logAudit(
+        'report',
+        'API_REPORT_VERIFIED',
+        $report->id,
+        'Report verified via API'
+    );
+
     return response()->json([
         'status' => true,
         'message' => 'Report verified successfully'
@@ -864,6 +1010,13 @@ public function apiReject(Request $request, $id)
         'verified_by' => auth()->id(),
         'verified_at' => now(),
     ]);
+
+    logAudit(
+        'report',
+        'API_REPORT_REJECTED',
+        $report->id,
+        'Report rejected via API'
+    );
 
     return response()->json([
         'status' => true,
@@ -887,6 +1040,13 @@ public function apiSign($id)
         'digital_signature' => auth()->user()->name
     ]);
 
+    logAudit(
+        'report',
+        'API_REPORT_SIGNED',
+        $report->id,
+        'Report signed via API'
+    );
+
     return response()->json([
         'status' => true,
         'message' => 'Signed successfully'
@@ -909,6 +1069,13 @@ public function apiFinalize($id)
         'verification_status' => 'Finalized',
         'finalized_at' => now(),
     ]);
+
+    logAudit(
+        'report',
+        'API_REPORT_FINALIZED',
+        $report->id,
+        'Report finalized via API'
+    );
 
     return response()->json([
         'status' => true,
