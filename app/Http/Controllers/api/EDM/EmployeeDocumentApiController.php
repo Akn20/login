@@ -5,32 +5,48 @@ namespace App\Http\Controllers\Api\EDM;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDocument;
-use App\Models\Staff;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeDocumentApiController extends Controller
 {
-    // 📄 List all documents
-    public function index()
+    /**
+     * 📄 List documents (with pagination)
+     */
+    public function index(Request $request)
     {
-        $documents = EmployeeDocument::with('staff')->latest()->get();
+        $documents = EmployeeDocument::with('staff')
+            ->latest()
+            ->paginate(10);
 
         return response()->json([
             'status' => true,
+            'message' => 'Documents fetched successfully',
             'data' => $documents
         ]);
     }
 
-    // 📄 Store document
+    /**
+     * 📄 Store document
+     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'staff_id' => 'required|exists:staff,id',
-            'document_type' => 'required',
-            'file' => 'required|file',
+            'document_type' => 'required|string|max:100',
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120', // 5MB
+            'expiry_date' => 'nullable|date'
         ]);
 
-        $path = $request->file('file')->store('private_documents', 'local');
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Store file
+        $path = $request->file('file')->store('private_documents');
 
         $doc = EmployeeDocument::create([
             'staff_id' => $request->staff_id,
@@ -46,7 +62,9 @@ class EmployeeDocumentApiController extends Controller
         ]);
     }
 
-    // 📄 Show single document
+    /**
+     * 📄 Show single document
+     */
     public function show($id)
     {
         $doc = EmployeeDocument::with('staff')->findOrFail($id);
@@ -57,16 +75,34 @@ class EmployeeDocumentApiController extends Controller
         ]);
     }
 
-    // 📄 Update
+    /**
+     * 📄 Update document
+     */
     public function update(Request $request, $id)
     {
         $doc = EmployeeDocument::findOrFail($id);
 
-        if ($request->hasFile('file')) {
-            Storage::delete($doc->file_path);
+        $validator = Validator::make($request->all(), [
+            'staff_id' => 'required|exists:staff,id',
+            'document_type' => 'required|string|max:100',
+            'file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120',
+            'expiry_date' => 'nullable|date'
+        ]);
 
-            $path = $request->file('file')->store('private_documents', 'local');
-            $doc->file_path = $path;
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Replace file if new uploaded
+        if ($request->hasFile('file')) {
+            if ($doc->file_path && Storage::exists($doc->file_path)) {
+                Storage::delete($doc->file_path);
+            }
+
+            $doc->file_path = $request->file('file')->store('private_documents');
         }
 
         $doc->update([
@@ -77,16 +113,22 @@ class EmployeeDocumentApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Document updated'
+            'message' => 'Document updated successfully',
+            'data' => $doc
         ]);
     }
 
-    // 📄 Delete
+    /**
+     * 📄 Delete document
+     */
     public function destroy($id)
     {
         $doc = EmployeeDocument::findOrFail($id);
 
-        Storage::delete($doc->file_path);
+        if ($doc->file_path && Storage::exists($doc->file_path)) {
+            Storage::delete($doc->file_path);
+        }
+
         $doc->delete();
 
         return response()->json([
@@ -95,28 +137,37 @@ class EmployeeDocumentApiController extends Controller
         ]);
     }
 
-    // 📄 Download (for mobile)
+    /**
+     * 📄 Download file (direct download)
+     */
     public function download($id)
     {
         $doc = EmployeeDocument::findOrFail($id);
 
-        return response()->json([
-            'status' => true,
-            'file_url' => url('api/edm/file/'.$doc->id)
-        ]);
+        if (!Storage::exists($doc->file_path)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'File not found'
+            ], 404);
+        }
+
+        return Storage::download($doc->file_path);
     }
 
-    // 📄 Serve file
-    public function file($id)
+    /**
+     * 📄 View file in browser (for mobile preview)
+     */
+    public function view($id)
     {
         $doc = EmployeeDocument::findOrFail($id);
 
-        $path = storage_path('app/' . $doc->file_path);
-
-        if (!file_exists($path)) {
-            return response()->json(['error' => 'File not found'], 404);
+        if (!Storage::exists($doc->file_path)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'File not found'
+            ], 404);
         }
 
-        return response()->file($path);
+        return response()->file(storage_path('app/' . $doc->file_path));
     }
 }

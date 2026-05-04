@@ -1,4 +1,4 @@
-USE `hims`;
+USE `himssecond_db`;
 
 -- Helpful: disable FK checks while seeding
 SET

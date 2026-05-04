@@ -8,15 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('sales_bills', function (Blueprint $table) {
-         //$table->string('patient_name')->nullable()->after('patient_id');
+        Schema::create('hourly_pay_approvals', function (Blueprint $table) {
+
+            // Primary Key
+            $table->id();
+
+            // Required timestamps
+            $table->timestamps();
+
         });
     }
 
     public function down(): void
     {
-        Schema::table('sales_bills', function (Blueprint $table) {
-            $table->dropColumn('patient_name');
-        });
+        Schema::dropIfExists('hourly_pay_approvals');
     }
 };
