@@ -385,6 +385,8 @@
 
                     </ul>
 
+                    
+
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
                             <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
@@ -393,6 +395,16 @@
                             </a>
                         </li>
                     </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-discharge.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-procedures"></i></span>
+                                <span class="nxl-mtext">Discharge Preparation</span>
+                            </a>
+                        </li>
+                    </ul>
+
                 </li>   
                 </ul>
 
