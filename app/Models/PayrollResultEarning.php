@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class PayrollResultEarning extends Model
 {
-    use SoftDeletes, HasUuids;
+    use SoftDeletes;
      public $incrementing = false;
 
-    protected $keyType = 'string';
+  
 
     protected $fillable = [
         'payroll_result_id',
