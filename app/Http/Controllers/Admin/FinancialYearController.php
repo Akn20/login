@@ -8,22 +8,16 @@ use Illuminate\Http\Request;
 
 class FinancialYearController extends Controller
 {
-    /**
-     * Display a listing of financial years (with filters).
-     */
     public function index(Request $request)
     {
         $query = FinancialYear::query();
 
-        // Filter by active/inactive (TC_FY_009)
         if ($request->filled('is_active')) {
             $query->where('is_active', $request->boolean('is_active'));
         }
 
-        // Filter by start year
         if ($request->filled('start_year')) {
-            $year = (int) $request->input('start_year');
-            $query->whereYear('start_date', $year);
+            $query->whereYear('start_date', (int) $request->input('start_year'));
         }
 
         $financialYears = $query
@@ -31,21 +25,18 @@ class FinancialYearController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // ✅ API RESPONSE
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'data' => $financialYears
+            ]);
+        }
+
+        // ✅ WEB RESPONSE
         return view('admin.financial-years.index', compact('financialYears'));
     }
 
-    /**
-     * Show the form for creating a new financial year.
-     */
-    public function create()
-    {
-        return view('admin.financial-years.create');
-    }
-
-    /**
-     * Store a newly created financial year in storage.
-     * Covers TC_FY_001, 002, 003, 004, 005, 013, AUD_001.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -55,42 +46,49 @@ class FinancialYearController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $data['is_active'] = $request->boolean('is_active'); // checkbox
+        $data['is_active'] = $request->boolean('is_active');
 
-        // Prevent overlapping financial years (TC_FY_003)
+        // Overlap check
         $overlapExists = FinancialYear::where(function ($q) use ($data) {
             $q->where('start_date', '<', $data['end_date'])
-                ->where('end_date', '>', $data['start_date']);
+              ->where('end_date', '>', $data['start_date']);
         })->exists();
 
         if ($overlapExists) {
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Date range overlaps existing financial year.'
+                ], 422);
+            }
+
             return back()
                 ->withErrors(['start_date' => 'The selected date range overlaps an existing financial year.'])
                 ->withInput();
         }
 
-        // No more global deactivation of other FYs
-        FinancialYear::create($data);
+        if ($data['is_active']) {
+            FinancialYear::where('is_active', true)->update(['is_active' => false]);
+        }
 
+        $financialYear = FinancialYear::create($data);
+
+        // ✅ API RESPONSE
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Financial year created successfully.',
+                'data' => $financialYear
+            ], 201);
+        }
+
+        // ✅ WEB RESPONSE
         return redirect()
             ->route('admin.financial-years.index')
             ->with('success', 'Financial year created successfully.');
     }
 
-    /**
-     * Show the form for editing the specified financial year.
-     */
-    public function edit(FinancialYear $financial_year)
-    {
-        return view('admin.financial-years.edit', [
-            'financialYear' => $financial_year,
-        ]);
-    }
-
-    /**
-     * Update the specified financial year in storage.
-     * Covers edit + overlap + unique + status (TC_FY_006, 007, 013, AUD_002).
-     */
     public function update(Request $request, FinancialYear $financial_year)
     {
         $data = $request->validate([
@@ -102,91 +100,82 @@ class FinancialYearController extends Controller
 
         $data['is_active'] = $request->boolean('is_active');
 
-        // Prevent overlapping financial years (excluding current) (TC_FY_007)
         $overlapExists = FinancialYear::where('id', '!=', $financial_year->id)
             ->where(function ($q) use ($data) {
                 $q->where('start_date', '<', $data['end_date'])
-                    ->where('end_date', '>', $data['start_date']);
+                  ->where('end_date', '>', $data['start_date']);
             })
             ->exists();
 
         if ($overlapExists) {
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Date range overlaps existing financial year.'
+                ], 422);
+            }
+
             return back()
                 ->withErrors(['start_date' => 'The selected date range overlaps an existing financial year.'])
                 ->withInput();
         }
 
-        // No more global "only one active FY" change here
+        if ($data['is_active']) {
+            FinancialYear::where('id', '!=', $financial_year->id)
+                ->where('is_active', true)
+                ->update(['is_active' => false]);
+        }
+
         $financial_year->update($data);
 
+        // ✅ API RESPONSE
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Financial year updated successfully.',
+                'data' => $financial_year
+            ]);
+        }
+
+        // ✅ WEB RESPONSE
         return redirect()
             ->route('admin.financial-years.index')
             ->with('success', 'Financial year updated successfully.');
     }
 
-    /**
-     * Soft delete the specified financial year. (TC_FY_010)
-     */
-    public function destroy(FinancialYear $financial_year)
+    public function destroy(Request $request, FinancialYear $financial_year)
     {
         $financial_year->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Financial year deleted successfully.'
+            ]);
+        }
 
         return redirect()
             ->route('admin.financial-years.index')
             ->with('success', 'Financial year deleted successfully.');
     }
 
-    /**
-     * List soft-deleted financial years (Recycle Bin view).
-     */
-    public function deleted()
-    {
-        $financialYears = FinancialYear::onlyTrashed()
-            ->orderBy('deleted_at', 'desc')
-            ->paginate(15);
-
-        return view('admin.financial-years.deleted', compact('financialYears'));
-    }
-
-    /**
-     * Restore a soft-deleted financial year.
-     */
-    public function restore(string $id)
-    {
-        $financialYear = FinancialYear::onlyTrashed()->findOrFail($id);
-
-        $financialYear->restore();
-
-        return redirect()
-            ->route('admin.financial-years.deleted')
-            ->with('success', 'Financial year restored successfully.');
-    }
-
-    /**
-     * Permanently delete a soft-deleted financial year.
-     */
-    public function forceDelete(string $id)
-    {
-        $financialYear = FinancialYear::onlyTrashed()->findOrFail($id);
-
-        $financialYear->forceDelete();
-
-        return redirect()
-            ->route('admin.financial-years.deleted')
-            ->with('success', 'Financial year permanently deleted.');
-    }
-
-    /**
-     * Toggle active/inactive status via AJAX
-     */
-    public function toggleStatus(FinancialYear $financial_year)
+    public function toggleStatus(Request $request, FinancialYear $financial_year)
     {
         $financial_year->is_active = !$financial_year->is_active;
         $financial_year->save();
 
-        return response()->json([
-            'success' => true,
-            'is_active' => (bool) $financial_year->is_active,
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Financial year status updated successfully.',
+                'data' => [
+                    'id' => $financial_year->id,
+                    'is_active' => (bool) $financial_year->is_active,
+                ]
+            ]);
+        }
+
+        return back()->with('success', 'Status updated successfully.');
     }
 }

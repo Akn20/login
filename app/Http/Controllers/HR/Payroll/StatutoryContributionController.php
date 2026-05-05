@@ -4,7 +4,6 @@ namespace App\Http\Controllers\HR\Payroll;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\StatutoryContribution;
 use App\Models\DeductionRuleSet;
 
@@ -12,135 +11,112 @@ class StatutoryContributionController extends Controller
 {
 
     // ================= INDEX =================
-
-    public function index()
+    public function index(Request $request)
     {
+        $contributions = StatutoryContribution::latest()->paginate(10);
 
-        $contributions =
-            StatutoryContribution::latest()
-                ->paginate(10);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $contributions
+            ]);
+        }
 
         return view(
             'hr.payroll.statutory_contribution.index',
-            [
-                'contributions' => $contributions
-            ]
+            ['contributions' => $contributions]
         );
-
     }
 
-
-
     // ================= CREATE =================
-
-    public function create()
+    public function create(Request $request)
     {
+        $ruleSets = DeductionRuleSet::pluck('rule_set_code');
 
-        $ruleSets =
-            DeductionRuleSet::pluck('rule_set_code');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'ruleSets' => $ruleSets
+            ]);
+        }
 
         return view(
             'hr.payroll.statutory_contribution.create',
-            [
-                'ruleSets' => $ruleSets
-            ]
+            ['ruleSets' => $ruleSets]
         );
-
     }
 
-
-
     // ================= STORE =================
-
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'contribution_code' => 'required|unique:statutory_contributions,contribution_code',
+            'contribution_name' => 'required',
+            'statutory_category' => 'required',
+            'rule_set_code' => 'required',
+            'status' => 'required',
+            'compliance_head' => 'required',
+            'statutory_code' => 'required',
 
-        $request->validate([
+            'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
+            'applicable_states' => 'required_if:state_applicable,1|nullable|array',
 
-            'contribution_code' =>
-                'required|unique:statutory_contributions,contribution_code',
-
-            'contribution_name' =>
-                'required',
-
-            'statutory_category' =>
-                'required',
-
-            'rule_set_code' =>
-                'required',
-
-            'status' =>
-                'required',
-
-            'compliance_head' =>
-                'required',
-
-            'statutory_code' =>
-                'required',
-
-            // ⭐ REQUIRED TEST CASE VALIDATIONS
-
-            'salary_ceiling_amount' =>
-                'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
-
-            'applicable_states' =>
-                'required_if:state_applicable,1|nullable|array',
-
-            // ⭐ SAFE VALIDATIONS
-
-            'prorata_applicable' =>
-                'required',
-
-            'lop_impact' =>
-                'required',
-
-            'show_in_payslip' =>
-                'required',
-
-            'included_in_ctc' =>
-                'required',
-
-            'payslip_order' =>
-                'nullable|integer|min:1',
-
+            'prorata_applicable' => 'required',
+            'lop_impact' => 'required',
+            'show_in_payslip' => 'required',
+            'included_in_ctc' => 'required',
+            'payslip_order' => 'nullable|integer|min:1',
         ]);
 
-
-        // Convert states array to JSON
-        $data = $request->all();
-
         if ($request->has('applicable_states')) {
+$validated['applicable_states'] = $request->applicable_states;        }
 
-            $data['applicable_states'] =
-                json_encode($request->applicable_states);
+        $contribution = StatutoryContribution::create($validated);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Statutory Contribution Created Successfully',
+                'data' => $contribution
+            ]);
         }
-
-
-        StatutoryContribution::create($data);
-
 
         return redirect()
             ->route('hr.payroll.statutory-contribution.index')
-            ->with(
-                'success',
-                'Statutory Contribution Created Successfully'
-            );
-
+            ->with('success', 'Statutory Contribution Created Successfully');
     }
 
+    // ================= SHOW =================
+    public function show(Request $request, $id)
+    {
+        $statutoryContribution = StatutoryContribution::findOrFail($id);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $statutoryContribution
+            ]);
+        }
+
+        return view(
+            'hr.payroll.statutory_contribution.view',
+            ['statutoryContribution' => $statutoryContribution]
+        );
+    }
 
     // ================= EDIT =================
-
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
+        $statutoryContribution = StatutoryContribution::findOrFail($id);
+        $ruleSets = DeductionRuleSet::pluck('rule_set_code');
 
-        $statutoryContribution =
-            StatutoryContribution::findOrFail($id);
-
-        $ruleSets =
-            DeductionRuleSet::pluck('rule_set_code');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $statutoryContribution,
+                'ruleSets' => $ruleSets
+            ]);
+        }
 
         return view(
             'hr.payroll.statutory_contribution.edit',
@@ -149,198 +125,119 @@ class StatutoryContributionController extends Controller
                 'ruleSets' => $ruleSets
             ]
         );
-
     }
-
-
-
-    // ================= SHOW =================
-
-    public function show($id)
-    {
-
-        $statutoryContribution =
-            StatutoryContribution::findOrFail($id);
-
-        return view(
-            'hr.payroll.statutory_contribution.view',
-            [
-                'statutoryContribution'
-                    => $statutoryContribution
-            ]
-        );
-
-    }
-
-
 
     // ================= UPDATE =================
-
     public function update(Request $request, $id)
     {
+        $statutoryContribution = StatutoryContribution::findOrFail($id);
 
-        $statutoryContribution =
-            StatutoryContribution::findOrFail($id);
+        $validated = $request->validate([
+            'contribution_code' => 'required|unique:statutory_contributions,contribution_code,' . $id,
+            'contribution_name' => 'required',
+            'statutory_category' => 'required',
+            'rule_set_code' => 'required',
+            'status' => 'required',
+            'compliance_head' => 'required',
+            'statutory_code' => 'required',
 
+            'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
+            'applicable_states' => 'required_if:state_applicable,1|nullable|array',
 
-        $request->validate([
-
-            'contribution_code' =>
-                'required|unique:statutory_contributions,contribution_code,' . $id,
-
-            'contribution_name' =>
-                'required',
-
-            'statutory_category' =>
-                'required',
-
-            'rule_set_code' =>
-                'required',
-
-            'status' =>
-                'required',
-
-            'compliance_head' =>
-                'required',
-
-            'statutory_code' =>
-                'required',
-
-            // ⭐ REQUIRED TEST CASE VALIDATIONS
-
-            'salary_ceiling_amount' =>
-                'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
-
-            'applicable_states' =>
-                'required_if:state_applicable,1|nullable|array',
-
-            // ⭐ SAFE VALIDATIONS
-
-            'prorata_applicable' =>
-                'required',
-
-            'lop_impact' =>
-                'required',
-
-            'show_in_payslip' =>
-                'required',
-
-            'included_in_ctc' =>
-                'required',
-
-            'payslip_order' =>
-                'nullable|integer|min:1',
-
+            'prorata_applicable' => 'required',
+            'lop_impact' => 'required',
+            'show_in_payslip' => 'required',
+            'included_in_ctc' => 'required',
+            'payslip_order' => 'nullable|integer|min:1',
         ]);
 
-
-        // Convert states array to JSON
-        $data = $request->all();
-
         if ($request->has('applicable_states')) {
+$validated['applicable_states'] = $request->applicable_states;        }
 
-            $data['applicable_states'] =
-                json_encode($request->applicable_states);
+        $statutoryContribution->update($validated);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Updated Successfully',
+                'data' => $statutoryContribution
+            ]);
         }
 
-
-        $statutoryContribution->update($data);
-
-
         return redirect()
             ->route('hr.payroll.statutory-contribution.index')
-            ->with(
-                'success',
-                'Updated Successfully'
-            );
-
+            ->with('success', 'Updated Successfully');
     }
-
-
 
     // ================= DELETE =================
-
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-
-        $statutoryContribution =
-            StatutoryContribution::findOrFail($id);
-
+        $statutoryContribution = StatutoryContribution::findOrFail($id);
         $statutoryContribution->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Deleted Successfully'
+            ]);
+        }
 
         return redirect()
             ->route('hr.payroll.statutory-contribution.index')
-            ->with(
-                'success',
-                'Deleted Successfully'
-            );
-
+            ->with('success', 'Deleted Successfully');
     }
 
-
-
     // ================= DELETED LIST =================
-
-    public function deleted()
+    public function deleted(Request $request)
     {
+        $contributions = StatutoryContribution::onlyTrashed()->latest()->paginate(10);
 
-        $contributions =
-            StatutoryContribution::onlyTrashed()
-                ->latest()
-                ->paginate(10);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $contributions
+            ]);
+        }
 
         return view(
             'hr.payroll.statutory_contribution.deleted',
-            [
-                'contributions' => $contributions
-            ]
+            ['contributions' => $contributions]
         );
-
     }
-
-
 
     // ================= RESTORE =================
-
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
-
-        $contribution =
-            StatutoryContribution::onlyTrashed()
-                ->findOrFail($id);
-
+        $contribution = StatutoryContribution::onlyTrashed()->findOrFail($id);
         $contribution->restore();
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Restored Successfully'
+            ]);
+        }
+
         return redirect()
             ->route('hr.payroll.statutory-contribution.deleted')
-            ->with(
-                'success',
-                'Restored Successfully'
-            );
-
+            ->with('success', 'Restored Successfully');
     }
 
-
-
-    // ================= PERMANENT DELETE =================
-
-    public function forceDelete($id)
+    // ================= FORCE DELETE =================
+    public function forceDelete(Request $request, $id)
     {
-
-        $contribution =
-            StatutoryContribution::onlyTrashed()
-                ->findOrFail($id);
-
+        $contribution = StatutoryContribution::onlyTrashed()->findOrFail($id);
         $contribution->forceDelete();
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Permanently Deleted Successfully'
+            ]);
+        }
+
         return redirect()
             ->route('hr.payroll.statutory-contribution.deleted')
-            ->with(
-                'success',
-                'Permanently Deleted Successfully'
-            );
-
+            ->with('success', 'Permanently Deleted Successfully');
     }
-
 }
