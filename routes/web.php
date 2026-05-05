@@ -89,8 +89,11 @@ use App\Http\Controllers\HR\Payroll\StatutoryDeductionController;
 use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\SalaryStructureController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
+use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
+use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
 use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
+use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\RateEmployeeMappingController;
 
 
@@ -1892,6 +1895,27 @@ Route::prefix('payroll/statutory-contribution')
 
 });
 
+//---------Payroll - Payroll Result-----------//
+
+Route::prefix('payroll/payroll-result')
+    ->name('payroll.payroll-result.')
+    ->group(function () {
+
+    Route::get('/',
+        [PayrollResultController::class, 'index']
+    )->name('index');
+
+    Route::get('/{id}/show',
+        [PayrollResultController::class, 'show']
+    )->name('show');
+
+    // Generate Payroll Results
+    Route::get('/generate',
+        [PayrollResultController::class, 'generate']
+    )->name('generate');
+
+});
+
 
 // --- Payroll Rate Employee Mapping --- //
 
@@ -1957,7 +1981,7 @@ Route::prefix('payroll/rate-employee-mapping')
 
 });
 
-  });
+
     //---------Payroll -Statutory deduction-----------//
 Route::prefix('payroll/statutory-deduction')
     ->name('payroll.statutory-deduction.')
@@ -1979,6 +2003,9 @@ Route::prefix('payroll/statutory-deduction')
     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
+
+
+
 
 
 //---------Payroll - Salary Structure-----------//
@@ -2051,7 +2078,56 @@ Route::put('pre-payroll/{id}',
     [PrePayrollAdjustmentController::class, 'update']
 )->name('pre-payroll.update');
 });
+ 
+//---------Payroll - Payroll Result -earnings breakdown-----------//
+Route::prefix('payroll/payroll-result-earnings')
+    ->name('payroll.payroll-result-earnings.')
+    ->group(function () {
+    Route::get('/', [PayrollResultEarningController::class, 'index'])->name('index');
 
+    Route::get('/create', [PayrollResultEarningController::class, 'create'])->name('create');
+    Route::post('/', [PayrollResultEarningController::class, 'store'])->name('store');
+
+    Route::get('/deleted', [PayrollResultEarningController::class, 'deleted'])->name('deleted');
+
+    Route::get('/{id}', [PayrollResultEarningController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [PayrollResultEarningController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PayrollResultEarningController::class, 'update'])->name('update');
+
+    Route::delete('/{id}', [PayrollResultEarningController::class, 'destroy'])->name('delete');
+
+    Route::post('/restore/{id}', [PayrollResultEarningController::class, 'restore'])->name('restore');
+    Route::delete('/force-delete/{id}', [PayrollResultEarningController::class, 'forceDelete'])->name('forceDelete');
+});
+
+//---------Payroll - Payroll Result -deduction breakdown-----------//
+Route::prefix('payroll/payroll-result-deductions')
+    ->name('payroll.payroll-result-deductions.')
+    ->group(function () {
+
+    Route::get('/', [PayrollResultDeductionController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [PayrollResultDeductionController::class, 'create'])
+        ->name('create');
+
+    Route::post('/', [PayrollResultDeductionController::class, 'store'])
+        ->name('store');
+
+    Route::get('/{id}', [PayrollResultDeductionController::class, 'show'])
+        ->name('show');
+
+    Route::get('/{id}/edit', [PayrollResultDeductionController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/{id}', [PayrollResultDeductionController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/{id}', [PayrollResultDeductionController::class, 'destroy'])
+        ->name('delete');
+
+});
+});
 
 
 /*
