@@ -13,6 +13,8 @@ use App\Models\CriticalValueAlert;
 use App\Models\AlertAuditLog;
 use App\Models\Notification;
 use App\Models\LabRequest;
+use function logAudit;
+
 
 
 
@@ -96,12 +98,16 @@ class ResultEntryController extends Controller
         $data = array_merge($existingData, $newData);
 
 
-
-
-
         // Handle attachments separately
         if (!empty($files)) {
             $data['attachments'] = $files;
+
+                    logAudit(
+            'report',
+            'FILE_UPLOADED',
+            $sample->id,
+            count($files) . ' attachment(s) uploaded'
+        );
         }
 
         $status = ($request->action == 'draft') ? 'Draft' : 'Completed';
@@ -115,6 +121,13 @@ class ResultEntryController extends Controller
                 'entered_at' => now()
             ]
         );
+                logAudit(
+            'report',
+            'RESULT_ENTERED',
+            $sample->id,
+            'Result entered/updated for sample ID: ' . ($sample->sample_id ?? $sample->id)
+        );
+
         foreach ($newData as $paramName => $value) {
 
     // Skip non-numeric or attachments
@@ -167,11 +180,25 @@ class ResultEntryController extends Controller
                 'action' => 'CREATED',
                 'timestamp' => now()
             ]);
-        }
-    }
-}
+
+                logAudit(
+                'alert',
+                'CRITICAL_VALUE_DETECTED',
+                $alert->id,
+                'Critical value: ' . $paramName . ' = ' . $value
+            );
+                    }
+                }
+            }
 
         if ($status == 'Completed') {
+
+                logAudit(
+            'report',
+            'REPORT_COMPLETED',
+            $sample->id,
+            'Report marked as completed'
+        );
 
     // Update Sample
     $sample->status = 'Completed';
@@ -236,6 +263,12 @@ class ResultEntryController extends Controller
 
         if (!empty($files)) {
             $data['attachments'] = $files;
+                logAudit(
+                'report',
+                'FILE_UPLOADED',
+                $sample->id,
+                count($files) . ' attachment(s) uploaded via API'
+            );
         }
 
         $report = LabReport::updateOrCreate(
@@ -245,6 +278,13 @@ class ResultEntryController extends Controller
                 'status' => $status,
                 'entered_at' => now()
             ]
+        );
+
+        logAudit(
+            'report',
+            'RESULT_ENTERED',
+            $report->id,
+            'Result saved via API'
         );
 
         foreach ($data as $paramName => $value) {

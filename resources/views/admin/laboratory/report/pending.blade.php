@@ -126,8 +126,13 @@
                             {{-- REQUEST DATE --}}
                             <td>
                                 {{ $report->created_at->format('d M Y') }}
-                                @if($isOverdue)
-                                    <br><small class="text-danger">({{ $daysPending }} days)</small>
+
+                                @if($report->isOverdue)
+                                    <br>
+                                    <small class="text-danger">
+                                        {{ $report->daysPending }} 
+                                        {{ $report->daysPending == 1 ? 'day' : 'days' }} overdue
+                                    </small>
                                 @endif
                             </td>
 
