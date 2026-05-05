@@ -142,19 +142,20 @@
                                                             <i class="feather-edit"></i>
                                                         </a>
 
-                                                        <form
-                                                            action="{{ route('hr.payroll.deduction.delete', $deduction->id) }}"
-                                                            method="POST" class="d-inline"
-                                                            onsubmit="return confirm('Are you sure you want to delete this deduction?');">
-                                                            @csrf
-                                                            @method('DELETE')
+                      <form action="{{ route('hr.payroll.deduction.destroy', $deduction->id) }}"
+                        method="POST"
+                        class="d-inline"
+                        onsubmit="return confirm('Are you sure you want to delete this deduction?');">
 
-                                                            <button type="submit"
-                                                                class="avatar-text avatar-md action-icon action-delete"
-                                                                title="Delete">
-                                                                <i class="feather-trash-2"></i>
-                                                            </button>
-                                                        </form>
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                                class="avatar-text avatar-md action-icon action-delete"
+                                title="Delete">
+                            <i class="feather-trash-2"></i>
+                        </button>
+                    </form>
                                                     </div>
                                                 </td>
                                             </tr>

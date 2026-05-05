@@ -73,21 +73,23 @@
                                                 <td class="text-end">
                                                     <div class="hstack gap-2 justify-content-end">
                                                         {{-- Restore --}}
-                                                        <form
-                                                            action="{{ route('hr.payroll.deduction.restore', $deduction->id) }}"
-                                                            method="POST" class="d-inline"
-                                                            onsubmit="return confirm('Restore this deduction?');">
+                                                       <form action="{{ route('hr.payroll.deduction.restore', $deduction->id) }}"
+                                                            method="POST">
+
                                                             @csrf
+                                                            @method('PUT')
+
                                                             <button type="submit"
                                                                 class="avatar-text avatar-md action-icon action-edit"
                                                                 title="Restore">
                                                                 <i class="feather-rotate-ccw"></i>
                                                             </button>
+
                                                         </form>
 
                                                         {{-- Force Delete --}}
                                                         <form
-                                                            action="{{ route('hr.payroll.deduction.forceDelete', $deduction->id) }}"
+                                                            action="{{route('hr.payroll.deduction.force-delete', $deduction->id)  }}"
                                                             method="POST" class="d-inline"
                                                             onsubmit="return confirm('This will permanently delete the deduction. Continue?');">
                                                             @csrf

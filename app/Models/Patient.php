@@ -65,4 +65,8 @@ class Patient extends Model
     {
         return $this->hasMany(PatientMedicalFlag::class);
     }
+    public function dataUsageConsents()
+    {
+        return $this->hasMany(DataUsageConsent::class);
+    }
 }

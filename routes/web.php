@@ -161,6 +161,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Doctor\Surgery\ConsentController;
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -2565,4 +2566,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
       //  Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
     });
+});
+
+Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
+    /*
+|--------------------------------------------------------------------------
+| Surgery Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/surgery-consent', [ConsentController::class, 'index'])
+    ->name('consent.index');
+Route::get('/surgery-consent/create',
+    [ConsentController::class, 'create'])
+    ->name('consent.create');
+Route::get('/surgery-consent/create/{surgery_id}', [ConsentController::class, 'create'])
+    ->name('consent.create');
+
+Route::post('/surgery-consent/store', [ConsentController::class, 'store'])
+    ->name('consent.store');
+
+Route::get('/surgery-consent/{id}', [ConsentController::class, 'show'])
+    ->name('consent.show');
+
+Route::get('/surgery-consent/history/{patient_id}', [ConsentController::class, 'history'])
+    ->name('consent.history');
 });
