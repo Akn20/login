@@ -2278,5 +2278,6 @@ Route::prefix('admin/accountant')->group(function () {
     Route::get('payment/{bill_id}', [AccountantPaymentController::class, 'create'])->name('admin.accountant.payment.create');
     Route::post('payment/store', [AccountantPaymentController::class, 'store'])->name('admin.accountant.payment.store');
     Route::get('/billing/{id}', [AccountantBillingController::class, 'show'])->name('admin.accountant.billing.show');
+    Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
 
 });

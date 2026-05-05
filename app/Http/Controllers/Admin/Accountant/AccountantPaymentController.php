@@ -9,20 +9,14 @@ use App\Models\IpdBill;
 use Illuminate\Support\Facades\DB;
 
 class AccountantPaymentController extends Controller
-{
-    /**
-     * 🔹 SHOW PAYMENT PAGE
-     */
+{    
     public function create($bill_id)
     {
-        $bill = IpdBill::with('patient')->findOrFail($bill_id);
+        $bill = IpdBill::with(['patient','payments'])->findOrFail($bill_id);
 
         return view('admin.Accountant.Payment.create', compact('bill'));
     }
 
-    /**
-     * 🔹 STORE PAYMENT
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -37,15 +31,15 @@ class AccountantPaymentController extends Controller
 
             $bill = IpdBill::findOrFail($request->bill_id);
 
-            // 🔥 Calculate current paid
+            //  Calculate current paid
             $totalPaid = AccountantPayment::where('bill_id', $bill->id)->sum('amount');
 
-            // 🔥 Prevent overpayment
+            //  Prevent overpayment
             if (($totalPaid + $request->amount) > $bill->payable_amount) {
                 return back()->with('error', 'Payment exceeds bill amount');
             }
 
-            // 🔹 Create Payment
+            //  Create Payment
             AccountantPayment::create([
                 'bill_id' => $bill->id,
                 'patient_id' => $bill->patient_id,
@@ -57,13 +51,21 @@ class AccountantPaymentController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.accountant.billing.show', $bill->id)
-                ->with('success', 'Payment recorded successfully');
+            return redirect()->route('admin.accountant.payment.create', $bill->id)->with('success', 'Payment recorded successfully');
 
         } catch (\Exception $e) {
-
             DB::rollback();
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    public function receipt($id)
+    {
+        $payment = AccountantPayment::with([
+            'bill.patient',
+            'bill'
+        ])->findOrFail($id);
+
+        return view('admin.Accountant.Payment.receipt', compact('payment'));
     }
 }
