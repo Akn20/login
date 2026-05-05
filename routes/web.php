@@ -154,6 +154,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2263,5 +2264,19 @@ Route::prefix('doctor/ipd')->group(function () {
 
     Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
     ->name('doctor.ipd.storeLabRadiology');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Accountant: Payment Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/accountant')->group(function () {
+
+    Route::get('payment/{bill_id}', [AccountantPaymentController::class, 'create'])->name('admin.accountant.payment.create');
+    Route::post('payment/store', [AccountantPaymentController::class, 'store'])->name('admin.accountant.payment.store');
+    Route::get('/billing/{id}', [AccountantBillingController::class, 'show'])->name('admin.accountant.billing.show');
 
 });
