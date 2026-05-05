@@ -81,6 +81,7 @@ use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
+use App\Http\Controllers\HR\Payroll\PayrollResultController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1642,4 +1643,10 @@ Route::prefix('payroll-earnings')->group(function () {
     Route::put('/{id}', [PayrollResultDeductionController::class, 'apiUpdate']);
     Route::delete('/{id}', [PayrollResultDeductionController::class, 'apiDelete']);
 });  
+//Payroll Results
+Route::prefix('payroll-results')->group(function () {
 
+    Route::get('/', [PayrollResultController::class, 'apiIndex']);
+    Route::get('{id}', [PayrollResultController::class, 'apiShow']);
+
+});

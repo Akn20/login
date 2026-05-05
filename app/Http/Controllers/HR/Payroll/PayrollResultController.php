@@ -269,5 +269,49 @@ if (!$payrollRunId) {
         );
 
 }
+// ================= API METHODS =================
 
+// GET ALL PAYROLL RESULTS (for dropdown + app)
+public function apiIndex()
+{
+    $records = PayrollResult::select(
+        'id',
+        'payroll_month',
+        'staff_id',
+        'fixed_earnings_total',
+        'gross_earnings'
+    )
+    ->orderBy('created_on', 'desc')
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $records
+    ]);
+}
+
+
+// GET SINGLE PAYROLL RESULT
+public function apiShow($id)
+{
+    $record = PayrollResult::select(
+        'id',
+        'payroll_month',
+        'staff_id',
+        'fixed_earnings_total',
+        'gross_earnings'
+    )->find($id);
+
+    if (!$record) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Not found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $record
+    ]);
+}
 }

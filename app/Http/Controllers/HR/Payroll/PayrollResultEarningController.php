@@ -237,17 +237,20 @@ class PayrollResultEarningController extends Controller
 
 
     //api methods
-    public function apiIndex()
+public function apiIndex()
 {
-    $records = PayrollResultEarning::latest()->get();
+    $records = PayrollResultEarning::with('payrollResult')
+        ->latest()
+        ->get();
 
     return response()->json([
         'status' => true,
         'data' => $records
     ]);
-}public function apiShow($id)
+}
+public function apiShow($id)
 {
-    $record = PayrollResultEarning::find($id);
+    $record = PayrollResultEarning::with('payrollResult')->find($id);
 
     if (!$record) {
         return response()->json([
@@ -260,17 +263,53 @@ class PayrollResultEarningController extends Controller
         'status' => true,
         'data' => $record
     ]);
-}public function apiStore(Request $request)
+}
+
+public function apiStore(Request $request)
 {
     $request->validate([
-        'payroll_result_id' => 'required',
-        'earning_code' => 'required',
+
+        'payroll_result_id' => [
+            'required',
+            'exists:payroll_results,id'
+        ],
+
+        'earning_code' => [
+            'required',
+
+            Rule::unique('payroll_result_earnings')
+                ->where(function ($query) use ($request) {
+                    return $query->where(
+                        'payroll_result_id',
+                        $request->payroll_result_id
+                    );
+                })
+        ],
+
         'earning_name' => 'required',
         'earning_type' => 'required',
         'amount' => 'required|numeric|min:0',
-        'calculation_base' => 'required_if:earning_type,Variable,OT',
-        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
+
+        'calculation_base' =>
+            'required_if:earning_type,Variable,OT|nullable',
+
+        'calculation_value' =>
+            'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
     ]);
+
+    // FIXED type restriction
+    if (
+        $request->earning_type === 'Fixed' &&
+        (
+            $request->filled('calculation_base') ||
+            $request->filled('calculation_value')
+        )
+    ) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Calculation fields not allowed for Fixed'
+        ], 422);
+    }
 
     $record = PayrollResultEarning::create([
         ...$request->all(),
@@ -282,9 +321,11 @@ class PayrollResultEarningController extends Controller
         'message' => 'Created successfully',
         'data' => $record
     ], 201);
-}public function apiUpdate(Request $request, $id)
+}
+
+public function apiUpdate(Request $request, $id)
 {
-    $record = PayrollResultEarning::find($id);
+    $record = PayrollResultEarning::with('payrollResult')->find($id);
 
     if (!$record) {
         return response()->json([
@@ -293,14 +334,62 @@ class PayrollResultEarningController extends Controller
         ], 404);
     }
 
+    // BLOCK finalized payroll edits
+    if (
+        $record->payrollResult &&
+        strtolower($record->payrollResult->status) === 'finalized'
+    ) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Cannot edit after payroll finalization'
+        ], 422);
+    }
+
     $request->validate([
-        'earning_code' => 'required',
+
+        'payroll_result_id' => [
+            'required',
+            'exists:payroll_results,id'
+        ],
+
+        'earning_code' => [
+
+            'required',
+
+            Rule::unique('payroll_result_earnings')
+                ->ignore($record->id)
+                ->where(function ($query) use ($request) {
+                    return $query->where(
+                        'payroll_result_id',
+                        $request->payroll_result_id
+                    );
+                })
+        ],
+
         'earning_name' => 'required',
         'earning_type' => 'required',
         'amount' => 'required|numeric|min:0',
-        'calculation_base' => 'required_if:earning_type,Variable,OT',
-        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
+
+        'calculation_base' =>
+            'required_if:earning_type,Variable,OT|nullable',
+
+        'calculation_value' =>
+            'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
     ]);
+
+    // FIXED restriction
+    if (
+        $request->earning_type === 'Fixed' &&
+        (
+            $request->filled('calculation_base') ||
+            $request->filled('calculation_value')
+        )
+    ) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Calculation fields not allowed for Fixed'
+        ], 422);
+    }
 
     $record->update($request->all());
 
@@ -309,15 +398,29 @@ class PayrollResultEarningController extends Controller
         'message' => 'Updated successfully',
         'data' => $record
     ]);
-}public function apiDelete($id)
+}
+
+
+public function apiDelete($id)
 {
-    $record = PayrollResultEarning::find($id);
+    $record = PayrollResultEarning::with('payrollResult')->find($id);
 
     if (!$record) {
         return response()->json([
             'status' => false,
             'message' => 'Not found'
         ], 404);
+    }
+
+    // BLOCK finalized payroll delete
+    if (
+        $record->payrollResult &&
+        strtolower($record->payrollResult->status) === 'finalized'
+    ) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Cannot delete after payroll finalization'
+        ], 422);
     }
 
     $record->delete();
