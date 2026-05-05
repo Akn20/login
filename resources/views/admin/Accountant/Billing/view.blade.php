@@ -116,6 +116,9 @@
                 Edit
             </a>
         @endif
+        <a href="{{ route('admin.accountant.payment.create', $bill->id) }}" class="btn btn-warning">
+            Pay Now
+        </a>
 
     </div>
     </div>
