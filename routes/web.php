@@ -47,6 +47,8 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
+
 // Attendance
 use App\Http\Controllers\Admin\UserController;
 // Doctor
@@ -56,6 +58,8 @@ use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\Doctor\IpdController;
+
 // HR
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
@@ -111,7 +115,9 @@ use App\Http\Controllers\WorkStatusController;
 //use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\ReturnController;
 //use App\Http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\IPDAdmissionController;
 
+use App\Http\Controllers\ReceptionistReportController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\EquipmentController;
@@ -137,6 +143,7 @@ use App\Http\Controllers\Admin\InventoryExpiryController;
 
 use App\Http\Controllers\Admin\Nurse\IsolationController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+use App\Http\Controllers\Admin\Nurse\LabReportController;
 
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
@@ -144,7 +151,15 @@ use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
+use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+
+use App\Http\Controllers\ReceptionistDashboardController;
+
+//Accountant
+use App\Http\Controllers\AccountantBillingController;
+
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -609,6 +624,21 @@ Route::middleware(['auth', 'role:admin'])
             Route::post('/approve/{id}', [ExpiryController::class, 'approve'])->name('approve');
             Route::post('/complete/{id}', [ExpiryController::class, 'complete'])->name('complete');
         });
+
+        Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('/sales', [PharmacyReportController::class, 'sales'])->name('reports.sales');
+    Route::get('/medicine', [PharmacyReportController::class, 'medicine'])->name('reports.medicine');
+    Route::get('/batch', [PharmacyReportController::class, 'batch'])->name('reports.batch');
+    Route::get('/expiry', [PharmacyReportController::class, 'expiry'])->name('reports.expiry');
+    Route::get('/low-stock', [PharmacyReportController::class, 'lowStock'])->name('reports.lowstock');
+    Route::get('/controlled-drugs', [PharmacyReportController::class, 'controlled'])->name('reports.controlled');
+    Route::get('/vendor', [PharmacyReportController::class, 'vendor'])->name('reports.vendor');
+    Route::get('/grn', [PharmacyReportController::class, 'grn'])->name('reports.grn');
+    Route::get('/billing', [PharmacyReportController::class, 'billing'])->name('reports.billing');
+
+});
+
 
         /*
         |--------------------------------------------------------------------------
@@ -1708,7 +1738,31 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth'])
     ->group(function () {
+        // ==============================
+// RECEPTIONIST REPORTS
+// ==============================
+Route::prefix('receptionist')->name('receptionist.')->group(function () {
 
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+        Route::get('registration', [ReceptionistReportController::class, 'registration'])
+            ->name('registration');
+
+        Route::get('appointment', [ReceptionistReportController::class, 'appointment'])
+            ->name('appointment');
+
+        Route::get('token', [ReceptionistReportController::class, 'token'])
+            ->name('token');
+
+        Route::get('collection', [ReceptionistReportController::class, 'collection'])
+            ->name('collection');
+
+        Route::get('admission', [ReceptionistReportController::class, 'admission'])
+            ->name('admission');
+
+    });
+
+});
         /*
         |--------------------------------------------------------------------------
         | Sales Return Module
@@ -1731,6 +1785,9 @@ Route::prefix('admin')
             'salesReturn/{id}/reject',
             [SalesReturnController::class, 'reject']
         )->name('salesReturn.reject');
+
+
+        
 
     });
 
@@ -1940,12 +1997,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('billing/print/{bill_id}', [PharmacyBillingController::class, 'print'])
             ->name('billing.print');
-
-
-
     });
 });
 
+
+//insurance (Receptionist)
 /*
 |--------------------------------------------------------------------------
 | Nurse: shift Management
@@ -2081,3 +2137,183 @@ Route::middleware(['auth', 'role:admin'])
 
 });
 
+
+//insurance (Receptionist)
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('insurance')->name('insurance.')->group(function () {
+
+        Route::get('/', [InsuranceController::class, 'index'])->name('index');
+
+        Route::get('/create', [InsuranceController::class, 'create'])->name('create');
+
+        Route::post('/store', [InsuranceController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [InsuranceController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}', [InsuranceController::class, 'update'])->name('update');
+
+        Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
+
+    });
+
+    Route::prefix('billing')->name('billing.')->group(function () {
+
+        Route::get('/', [BasicBillingController::class, 'index'])->name('index');
+        Route::get('/create', [BasicBillingController::class, 'create'])->name('create');
+        Route::post('/store', [BasicBillingController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
+        Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
+
+    });
+});
+ 
+
+//IPD
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
+
+        // IPD Admission Routes
+
+        Route::get('ipd', [IPDAdmissionController::class, 'index'])
+            ->name('ipd.index');
+
+        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])
+            ->name('ipd.create');
+
+        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])
+            ->name('ipd.store');
+
+        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])
+            ->name('ipd.view');
+
+        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])
+            ->name('ipd.edit');
+
+        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])
+            ->name('ipd.update');
+
+        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])
+            ->name('ipd.print');
+        
+        Route::get('get-patient/{id}', [IPDAdmissionController::class, 'getPatient']);
+
+    });
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Lab & Reports view
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-lab-reports')->name('nurse-lab-reports.')->group(function () {
+        Route::get('/', [LabReportController::class, 'index'])->name('index');
+        Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('billing')->name('billing.')->group(function () {
+
+        Route::get('/', [BasicBillingController::class, 'index'])->name('index');
+        Route::get('/create', [BasicBillingController::class, 'create'])->name('create');
+        Route::post('/store', [BasicBillingController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
+        Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
+
+    });
+    
+});
+
+//Receptionist dashboard
+
+Route::prefix('admin')->group(function () {
+    Route::get('/receptionist-dashboard', [ReceptionistDashboardController::class, 'index'])
+        ->name('receptionist.dashboard');
+});
+
+//IPD
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
+
+        // ==============================
+        // IPD ROUTES
+        // ==============================
+        Route::get('/', [IPDAdmissionController::class, 'index'])->name('ipd.index');
+
+        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])->name('ipd.create');
+        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])->name('ipd.store');
+        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])->name('ipd.view');
+        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])->name('ipd.edit');
+        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])->name('ipd.update');
+        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])->name('ipd.print');
+        Route::get('get-patient/{id}', [IPDAdmissionController::class, 'getPatient']);
+
+    });
+
+});
+
+// Accountant Billing
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('admin/accountant/billing')
+        ->name('admin.accountant.billing.')
+        ->group(function () {
+
+            Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+            Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+            Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
+            Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
+        });
+
+});
+//IPD (Doctor Module)
+
+Route::prefix('doctor/ipd')->group(function () {
+
+    // 🔹 INDEX
+    Route::get('/', [IpdController::class, 'index'])
+        ->name('doctor.ipd.index');
+
+    // 🔹 SHOW
+    Route::get('/{id}', [IpdController::class, 'show'])
+        ->name('doctor.ipd.show');
+
+    // 🔹 NOTES
+    Route::post('/{id}/note', [IpdController::class, 'storeNote'])
+        ->name('doctor.ipd.storeNote');
+
+    // 🔹 TREATMENT
+    Route::post('/{id}/treatment', [IpdController::class, 'updateTreatment'])
+        ->name('doctor.ipd.updateTreatment');
+
+    // 🔹 PRESCRIPTION
+    Route::post('/{id}/prescription', [IpdController::class, 'storePrescription'])
+        ->name('doctor.ipd.storePrescription');
+
+    // 🔹 LAB TEST
+    //Route::post('/{id}/lab', [IpdController::class, 'storeLabTest'])
+    //    ->name('doctor.ipd.storeLabTest');
+
+    // 🔹 RADIOLOGY (OPTIONAL – if you add later)
+    //Route::post('/{id}/scan', [IpdController::class, 'storeScan'])
+    //    ->name('doctor.ipd.storeScan');
+
+    // 🔹 DISCHARGE FORM
+    Route::get('/{id}/discharge', [IpdController::class, 'dischargeForm'])
+        ->name('doctor.ipd.discharge');
+
+    // 🔹 DISCHARGE SUBMIT
+    Route::post('/{id}/discharge', [IpdController::class, 'dischargeSubmit'])
+        ->name('doctor.ipd.dischargeSubmit');
+
+    Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
+    ->name('doctor.ipd.storeLabRadiology');
+
+});

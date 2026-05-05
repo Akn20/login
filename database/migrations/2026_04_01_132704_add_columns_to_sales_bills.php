@@ -14,12 +14,15 @@ return new class extends Migration
 
 
     Schema::table('sales_bills', function (Blueprint $table) {
-        $table->decimal('paid_amount', 10, 2)->default(0);
-        $table->decimal('balance_amount', 10, 2)->default(0);
-        $table->string('payment_status')->default('Unpaid');
-        $table->string('invoice_status')->default('Draft');
-        $table->string('payment_mode')->nullable();
-        $table->text('remarks')->nullable();
+        //$table->decimal('paid_amount', 10, 2)->default(0);
+        //$table->decimal('balance_amount', 10, 2)->default(0);
+        //$table->string('payment_status')->default('Unpaid');
+       //$table->decimal('paid_amount', 10, 2)->default(0);
+     //table->decimal('balance_amount', 10, 2)->default(0);
+       //$table->string('payment_status')->default('Unpaid');
+        //$table->string('invoice_status')->default('Draft');
+        //$table->string('payment_mode')->nullable();
+        //$table->text('remarks')->nullable();
     });
 
     }

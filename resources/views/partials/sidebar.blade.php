@@ -41,12 +41,64 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('receptionist.dashboard') }}" class="nxl-link {{ request()->routeIs('receptionist.dashboard') ? 'active' : '' }}" 
+                        up-follow up-target="#main-container"><i class="feather-home me-2"></i> Dashboard</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.appointments.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-calendar me-2"></i>Appointments</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.receptionist.ipd.index') }}" class="nxl-link" up-follow 
+                    up-target="#main-container"><i class="fas fa-procedures me-2"></i>IPD Admission</a></li>       
                     <li class="nxl-item"><a href="{{ route('admin.tokens.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-list me-2"></i>Token & Queue</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.emergency.create') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-activity me-2"></i>Emergency Cases</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.insurance.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-shield me-2"></i>Insurance</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.billing.index') }}" class="nxl-link" up-follow
+                     up-target="#main-container"><i class="feather-dollar-sign me-2"></i>Billing</a></li>
+                   <li class="nxl-item has-submenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <i class="feather-bar-chart-2"></i> Reports
+    </a>
+
+    <ul class="nxl-submenu">
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.registration') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Registration Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.appointment') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Appointment Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.token') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Token Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.collection') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Collection Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.receptionist.reports.admission') }}" 
+               class="nxl-link" up-follow up-target="#main-container">
+                Admission Report
+            </a>
+        </li>
+
+    </ul>
+</li>
                 </ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patients*') ? 'active nxl-trigger' : '' }}">
@@ -73,6 +125,49 @@
                 </ul>
             </li>
 
+            {{-- ---  ACCOUNTANT --- --}}
+            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
+
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
+                    <span class="nxl-mtext">Accountant</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+
+                <ul class="nxl-submenu">
+
+                    {{-- Billing Menu --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Billing
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            {{-- OPD → Receptionist Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    OPD Billing
+                                </a>
+                            </li>
+
+                            {{-- IPD → Accountant Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.accountant.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    IPD Billing
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+
             {{-- --- 3. MEDICAL SERVICES --- --}}
             <li class="nxl-item nxl-caption"><label>Medical Services</label></li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('doctor/*') ? 'active nxl-trigger' : '' }}">
@@ -84,6 +179,11 @@
                 <ul class="nxl-submenu">
                     <li class="nxl-item"><a href="{{ route('doctor.view-appointment') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-file-text me-2"></i>OPD List</a></li>
+                    <li class="nxl-item">
+                        <a href="{{ route('doctor.ipd.index') }}" class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-activity me-2"></i>IPD List
+                        </a>
+                    </li>
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
                     </li>
@@ -138,26 +238,110 @@
                     <span class="nxl-mtext">Pharmacy</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
-                <ul class="nxl-submenu">
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-truck me-2"></i>Vendors</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-file-text me-2"></i>GRN Entry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.stock.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-box me-2"></i>Stock</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.expiry.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-alert-triangle me-2"></i>Expiry</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-lock me-2"></i>Controlled Drug</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-edit-3 me-2"></i>Prescriptions</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link"
-                            up-follow up-target="#main-container"><i class="feather-dollar-sign"></i>Billing</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-rotate-ccw me-2"></i>Sales Return</a></li>
-                </ul>
+               <ul class="nxl-submenu">
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.pharmacy.dashboard') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.vendors.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-truck me-2"></i> Vendors
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.grn.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-file-text me-2"></i> GRN Entry
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.stock.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-box me-2"></i> Stock
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.expiry.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-alert-triangle me-2"></i> Expiry
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.controlledDrug.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-lock me-2"></i> Controlled Drug
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.prescriptions.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-edit-3 me-2"></i> Prescriptions
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.pharmacy.billing.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-dollar-sign"></i> Billing
+        </a>
+    </li>
+
+    <li class="nxl-item">
+        <a href="{{ route('admin.salesReturn.index') }}" class="nxl-link" up-follow up-target="#main-container">
+            <i class="feather-rotate-ccw me-2"></i> Sales Return
+        </a>
+    </li>
+    <!-- ✅ REPORTS DROPDOWN -->
+    <li class="nxl-item has-submenu">
+        <a href="javascript:void(0);" class="nxl-link">
+            <i class="feather-bar-chart-2"></i> Reports
+        </a>
+
+        <ul class="nxl-submenu">
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.sales') }}" class="nxl-link">Sales Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.medicine') }}" class="nxl-link">Medicine Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.batch') }}" class="nxl-link">Batch Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.expiry') }}" class="nxl-link">Expiry Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.lowstock') }}" class="nxl-link">Low Stock</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.controlled') }}" class="nxl-link">Controlled Drugs</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.vendor') }}" class="nxl-link">Vendor Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.grn') }}" class="nxl-link">GRN Report</a>
+            </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.reports.billing') }}" class="nxl-link">Billing Report</a>
+            </li>
+
+        </ul>
+    </li>
+    
+
+</ul>
             </li>
 
             {{-- ================= Nurse Module ================= --}}
@@ -244,6 +428,16 @@
                     </li>
 
                 </ul>
+
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.nurse-lab-reports.index') }}" class="nxl-link">
+                            <span class="nxl-micon"><i class="feather-file-text"></i></span>
+                            <span class="nxl-mtext">Lab & Report View</span>
+                        </a>
+                    </li>
+                </ul>
+
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
