@@ -13,11 +13,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
+use App\Http\Controllers\Admin\InsuranceConsentController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
+
 // Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
@@ -27,9 +29,13 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
+use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
 use App\Http\Controllers\Admin\Radiology\RadiologyController;
@@ -58,6 +64,8 @@ use App\Http\Controllers\Auth\SignInController;
 use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
+use App\Http\Controllers\Doctor\IpdController;
+
 // HR
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
@@ -118,6 +126,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\NurseNotesController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PatientApiController;
+use App\Http\Controllers\Admin\PatientPortal\DataUsageConsentController;
 use App\Http\Controllers\PharmacyDashboardController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
@@ -130,6 +139,7 @@ use App\Http\Controllers\ReturnController;
 //use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\IPDAdmissionController;
 
+use App\Http\Controllers\ReceptionistReportController;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\EquipmentController;
@@ -142,6 +152,11 @@ use App\Http\Controllers\Admin\ParameterController;
 use App\Http\Controllers\Admin\TestParameterController;
 use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Admin\AlertController;
+use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\InventoryItemController;
+use App\Http\Controllers\Admin\InventoryUsageController;
+use App\Http\Controllers\Admin\InventoryAlertController;
+use App\Http\Controllers\Admin\InventoryExpiryController;
 // use App\Http\Controllers\ExpiryController;
 // use App\Http\Controllers\ControlledDrugController;
 // use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -158,9 +173,17 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 // use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
+//use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+use App\Http\Controllers\Doctor\Surgery\ConsentController;
+
+use App\Http\Controllers\ReceptionistDashboardController;
+
+//Accountant
+use App\Http\Controllers\AccountantBillingController;
+
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -1325,7 +1348,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
-        
 
         Route::get('/tests', [LabTestController::class, 'index'])->name('tests.index');
 
@@ -1458,8 +1480,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             ->name('report.finalize');
 
             
-Route::get('dashboard', [LabDashboardController::class, 'index'])
-    ->name('dashboard.index');
+        Route::get('dashboard', [LabDashboardController::class, 'index'])
+            ->name('dashboard.index');
 
         Route::prefix('alerts')->group(function () {
 
@@ -1470,9 +1492,42 @@ Route::get('dashboard', [LabDashboardController::class, 'index'])
                 ->name('alerts.ack');
 
         }); 
+
+        Route::prefix('inventory') ->name('inventory.')->group(function () {
+
+        // Dashboard
+        Route::get('/', [InventoryController::class, 'index'])
+            ->name('dashboard');
+
+        Route::post('use/{id}', [InventoryController::class, 'useItem'])
+    ->name('use');
+
+        Route::resource('items', InventoryItemController::class);
+
+        // Usage Logs
+        Route::get('usage', [InventoryUsageController::class, 'index'])
+            ->name('usage.index');
+
+        // Alerts
+        Route::get('alerts', [InventoryAlertController::class, 'index'])
+            ->name('alerts.index');
+
+        Route::post('alerts/{id}/acknowledge', [InventoryAlertController::class, 'acknowledge'])
+            ->name('alerts.acknowledge');
+
+        Route::post('alerts/{id}/resolve', [InventoryAlertController::class, 'resolve'])
+            ->name('alerts.resolve');
+
+        // Expiry
+        Route::get('expiry', [InventoryExpiryController::class, 'index'])
+            ->name('expiry.index');
+    
+        });
     });
 
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -2117,7 +2172,31 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth'])
     ->group(function () {
+        // ==============================
+// RECEPTIONIST REPORTS
+// ==============================
+Route::prefix('receptionist')->name('receptionist.')->group(function () {
 
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+        Route::get('registration', [ReceptionistReportController::class, 'registration'])
+            ->name('registration');
+
+        Route::get('appointment', [ReceptionistReportController::class, 'appointment'])
+            ->name('appointment');
+
+        Route::get('token', [ReceptionistReportController::class, 'token'])
+            ->name('token');
+
+        Route::get('collection', [ReceptionistReportController::class, 'collection'])
+            ->name('collection');
+
+        Route::get('admission', [ReceptionistReportController::class, 'admission'])
+            ->name('admission');
+
+    });
+
+});
         /*
         |--------------------------------------------------------------------------
         | Sales Return Module
@@ -2140,6 +2219,9 @@ Route::prefix('admin')
             'salesReturn/{id}/reject',
             [SalesReturnController::class, 'reject']
         )->name('salesReturn.reject');
+
+
+        
 
     });
 
@@ -2485,6 +2567,56 @@ Route::middleware(['auth', 'role:admin'])
         )->name('patients.emergency.view');
 
 
+        Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    Route::get('/', [PatientPortalController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/appointments', [PatientPortalController::class, 'appointments'])->name('appointments');
+
+    Route::get('/lab-reports', [PatientPortalController::class, 'labReports'])->name('lab');
+
+    Route::get('/radiology-reports', [PatientPortalController::class, 'radiology'])->name('radiology');
+
+    Route::get('/profile', [PatientPortalController::class, 'profile'])->name('profile');
+
+    Route::post('/profile/update', [PatientPortalController::class, 'updateProfile'])->name('profile.update');
+      
+    Route::get('/billing', [PatientPortalController::class, 'billing'])
+                ->name('billing');
+        });
+
+        /*
+|--------------------------------------------------------------------------
+| Data Usage Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('data-consent')
+    ->name('data-consent.')
+    ->group(function () {
+
+        Route::get('/',
+            [DataUsageConsentController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create',
+            [DataUsageConsentController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store',
+            [DataUsageConsentController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}',
+            [DataUsageConsentController::class, 'show'])
+            ->name('show');
+
+        Route::get('/history/{patient_id}',
+            [DataUsageConsentController::class, 'history'])
+            ->name('history');
+
+    });
+
 });
 
 
@@ -2563,6 +2695,283 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('nurse-lab-reports')->name('nurse-lab-reports.')->group(function () {
         Route::get('/', [LabReportController::class, 'index'])->name('index');
         Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('billing')->name('billing.')->group(function () {
+
+        Route::get('/', [BasicBillingController::class, 'index'])->name('index');
+        Route::get('/create', [BasicBillingController::class, 'create'])->name('create');
+        Route::post('/store', [BasicBillingController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
+        Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
+
+    });
+    
+});
+ 
+
+//Receptionist dashboard
+
+Route::prefix('admin')->group(function () {
+    Route::get('/receptionist-dashboard', [ReceptionistDashboardController::class, 'index'])
+        ->name('receptionist.dashboard');
+});
+
+//IPD
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
+
+        // ==============================
+        // IPD ROUTES
+        // ==============================
+        Route::get('/', [IPDAdmissionController::class, 'index'])->name('ipd.index');
+
+        Route::get('ipd/create', [IPDAdmissionController::class, 'create'])->name('ipd.create');
+        Route::post('ipd/store', [IPDAdmissionController::class, 'store'])->name('ipd.store');
+        Route::get('ipd/show/{id}', [IPDAdmissionController::class, 'view'])->name('ipd.view');
+        Route::get('ipd/{id}/edit', [IPDAdmissionController::class, 'edit'])->name('ipd.edit');
+        Route::put('ipd/{id}', [IPDAdmissionController::class, 'update'])->name('ipd.update');
+        Route::get('ipd/print/{id}', [IPDAdmissionController::class, 'print'])->name('ipd.print');
+        Route::get('get-patient/{id}', [IPDAdmissionController::class, 'getPatient']);
+
+    });
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Lab & Reports view
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-lab-reports')->name('nurse-lab-reports.')->group(function () {
+        Route::get('/', [LabReportController::class, 'index'])->name('index');
+        Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
       //  Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
     });
 });
+
+
+// admin billing
+Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('billing')->name('billing.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\BillingController::class, 'index'])->name('index');
+    Route::get('/create', [\App\Http\Controllers\Admin\BillingController::class, 'create'])->name('create');
+    Route::post('/store', [\App\Http\Controllers\Admin\BillingController::class, 'store'])->name('store');
+    Route::get('/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'show'])->name('show');
+    Route::get('/receipt/{id}', [\App\Http\Controllers\Admin\BillingController::class, 'receipt'])->name('receipt');
+});
+});
+    
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: shift Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-shifts')->name('nurse-shifts.')->group(function () {
+        Route::get('/', [NurseShiftsController::class, 'index'])->name('index');
+        Route::get('/{id}/create', [NurseShiftsController::class, 'create'])->name('create');
+        Route::post('/store', [NurseShiftsController::class, 'store'])->name('store');
+        Route::get('/{id}', [NurseShiftsController::class, 'show'])->name('show');
+        Route::post('/handover/{id}/complete', [NurseShiftsController::class, 'markComplete'])->name('complete');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: Lab & Reports view
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-reports')->name('nurse-reports.')->group(function () {
+        Route::get('/vitals', [NurseReportController::class, 'vitals'])->name('vitals');
+        Route::get('/medications', [NurseReportController::class, 'medications'])->name('medications');
+        Route::get('/shift', [NurseReportController::class, 'shiftReport'])->name('shift');
+        Route::get('/patient-summary', [NurseReportController::class, 'patientSummary'])->name('patient-summary');
+    });
+});
+// Accountant Billing
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('admin/accountant/billing')
+        ->name('admin.accountant.billing.')
+        ->group(function () {
+
+            Route::get('/', [AccountantBillingController::class, 'index'])->name('index');
+            Route::get('/create', [AccountantBillingController::class, 'create'])->name('create');
+            Route::post('/store', [AccountantBillingController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [AccountantBillingController::class, 'edit'])->name('edit');
+            Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
+            Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
+        });
+
+});
+//IPD (Doctor Module)
+
+Route::prefix('doctor/ipd')->group(function () {
+
+    // 🔹 INDEX
+    Route::get('/', [IpdController::class, 'index'])
+        ->name('doctor.ipd.index');
+
+    // 🔹 SHOW
+    Route::get('/{id}', [IpdController::class, 'show'])
+        ->name('doctor.ipd.show');
+
+    // 🔹 NOTES
+    Route::post('/{id}/note', [IpdController::class, 'storeNote'])
+        ->name('doctor.ipd.storeNote');
+
+    // 🔹 TREATMENT
+    Route::post('/{id}/treatment', [IpdController::class, 'updateTreatment'])
+        ->name('doctor.ipd.updateTreatment');
+
+    // 🔹 PRESCRIPTION
+    Route::post('/{id}/prescription', [IpdController::class, 'storePrescription'])
+        ->name('doctor.ipd.storePrescription');
+
+    // 🔹 LAB TEST
+    //Route::post('/{id}/lab', [IpdController::class, 'storeLabTest'])
+    //    ->name('doctor.ipd.storeLabTest');
+
+    // 🔹 RADIOLOGY (OPTIONAL – if you add later)
+    //Route::post('/{id}/scan', [IpdController::class, 'storeScan'])
+    //    ->name('doctor.ipd.storeScan');
+
+    // 🔹 DISCHARGE FORM
+    Route::get('/{id}/discharge', [IpdController::class, 'dischargeForm'])
+        ->name('doctor.ipd.discharge');
+
+    // 🔹 DISCHARGE SUBMIT
+    Route::post('/{id}/discharge', [IpdController::class, 'dischargeSubmit'])
+        ->name('doctor.ipd.dischargeSubmit');
+
+    Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
+    ->name('doctor.ipd.storeLabRadiology');
+});
+
+
+
+
+// Patient EMR - Discharge Summary
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+       Route::prefix('patient-portal')->name('patient.portal.')->group(function () {
+
+    // ✅ LIST PAGE (must be first)
+    Route::get('/discharge', 
+        [PatientEmrController::class, 'index']
+    )->name('discharge.list');
+
+    // ✅ DETAIL PAGE
+    Route::get('/discharge/{ipd_id}', 
+        [PatientEmrController::class, 'dischargeSummary']
+    )->name('discharge');
+
+    // ✅ PDF DOWNLOAD
+    Route::get('/discharge/{ipd_id}/pdf', 
+        [PatientEmrController::class, 'download']
+    )->name('discharge.pdf');
+
+    Route::get('/doctor-notes/{ipd_id}', 
+        [PatientEmrController::class, 'doctorNotes']
+    )->name('doctor.notes');
+
+});
+
+    });
+Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
+    /*
+|--------------------------------------------------------------------------
+| Surgery Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/surgery-consent', [ConsentController::class, 'index'])
+    ->name('consent.index');
+Route::get('/surgery-consent/create',
+    [ConsentController::class, 'create'])
+    ->name('consent.create');
+Route::get('/surgery-consent/create/{surgery_id}', [ConsentController::class, 'create'])
+    ->name('consent.create');
+
+Route::post('/surgery-consent/store', [ConsentController::class, 'store'])
+    ->name('consent.store');
+
+Route::get('/surgery-consent/{id}', [ConsentController::class, 'show'])
+    ->name('consent.show');
+
+Route::get('/surgery-consent/history/{patient_id}', [ConsentController::class, 'history'])
+    ->name('consent.history');
+});
+    /*
+|--------------------------------------------------------------------------
+
+| Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
+        Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
+        Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
+        Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
+        Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
+        Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
+    });
+});
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        /*
+|--------------------------------------------------------------------------
+| Insurance Consent
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('insurance-consent')
+    ->name('insurance-consent.')
+    ->group(function () {
+
+        Route::get('/',
+            [InsuranceConsentController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create',
+            [InsuranceConsentController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store',
+            [InsuranceConsentController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}',
+            [InsuranceConsentController::class, 'show'])
+            ->name('show');
+
+        Route::get('/edit/{id}',
+            [InsuranceConsentController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}',
+            [InsuranceConsentController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}',
+            [InsuranceConsentController::class, 'destroy'])
+            ->name('delete');
+    });
+    });
