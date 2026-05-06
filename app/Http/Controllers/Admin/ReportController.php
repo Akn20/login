@@ -1218,16 +1218,8 @@ class ReportController extends Controller
     public function apiVerifyReport($id)
     {
         $report = \App\Models\LabReport::findOrFail($id);
-
-        $report->update([
-            'verification_status' => 'Finalized',
-            'verified_at' => now()
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Report verified successfully'
-        ]);
+        $report->update(['verification_status' => 'Finalized', 'verified_at' => now()]);
+        return response()->json(['status' => true, 'message' => 'Report verified successfully']);
     }
 
 }
