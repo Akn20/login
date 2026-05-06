@@ -1765,11 +1765,46 @@ Route::prefix('pre-payroll')->group(function () {
     Route::post('/', [PrePayrollAdjustmentController::class, 'apiStore']);
     Route::put('/{id}', [PrePayrollAdjustmentController::class, 'apiUpdate']);
     Route::delete('/{id}', [PrePayrollAdjustmentController::class, 'apiDelete']);
-
     Route::post('/restore/{id}', [PrePayrollAdjustmentController::class, 'restore']);
     Route::delete('/force-delete/{id}', [PrePayrollAdjustmentController::class, 'forceDelete']);
 
 });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| 37. Payroll: PayrollResultEarningController
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('payroll-earnings')->group(function () {
+
+    Route::get('/', [PayrollResultEarningController::class, 'apiIndex']);
+    Route::get('{id}', [PayrollResultEarningController::class, 'apiShow']);
+    Route::post('/', [PayrollResultEarningController::class, 'apiStore']);
+    Route::put('{id}', [PayrollResultEarningController::class, 'apiUpdate']);
+    Route::delete('{id}', [PayrollResultEarningController::class, 'apiDelete']);
+
+});
+
+
+
+/*
+|--------------------------------------------------------------------------
+| 38. Payroll: PayrollResultDeductionController
+|--------------------------------------------------------------------------
+*/
+  Route::prefix('payroll-deductions')->group(function () {
+
+    Route::get('/', [PayrollResultDeductionController::class, 'apiIndex']);
+    Route::get('/{id}', [PayrollResultDeductionController::class, 'apiShow']);
+    Route::post('/', [PayrollResultDeductionController::class, 'apiStore']);
+    Route::put('/{id}', [PayrollResultDeductionController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PayrollResultDeductionController::class, 'apiDelete']);
+});  
+
+  
 /*
 |--------------------------------------------------------------------------
 | INVENTORY
