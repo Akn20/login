@@ -55,4 +55,27 @@ class IpdBill extends Model
     {
         return $this->belongsTo(\App\Models\IpdAdmission::class, 'ipd_id');
     }
+
+    //payments
+    public function payments()
+    {
+        return $this->hasMany(AccountantPayment::class, 'bill_id');
+    }
+
+    public function getPaidAmountAttribute()
+    {
+        return $this->payments()->sum('amount');
+    }
+
+    public function getDueAmountAttribute()
+    {
+        return $this->payable_amount - $this->paid_amount;
+    }
+
+    public function getPaymentStatusAttribute()
+    {
+        if ($this->paid_amount == 0) return 'unpaid';
+        if ($this->paid_amount < $this->payable_amount) return 'partial';
+        return 'paid';
+    }
 }

@@ -183,6 +183,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2915,9 +2916,21 @@ Route::get('/surgery-consent/{id}', [ConsentController::class, 'show'])
 Route::get('/surgery-consent/history/{patient_id}', [ConsentController::class, 'history'])
     ->name('consent.history');
 });
+/*
+|--------------------------------------------------------------------------
+| Accountant: Payment Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/accountant')->group(function () {
+
+    Route::get('payment/{bill_id}', [AccountantPaymentController::class, 'create'])->name('admin.accountant.payment.create');
+    Route::post('payment/store', [AccountantPaymentController::class, 'store'])->name('admin.accountant.payment.store');
+    Route::get('/billing/{id}', [AccountantBillingController::class, 'show'])->name('admin.accountant.billing.show');
+    Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
+
+});
     /*
 |--------------------------------------------------------------------------
-
 | Nurse: Discharge Preparation
 |--------------------------------------------------------------------------
 */
