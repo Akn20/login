@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -1630,6 +1631,12 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+});
+
+Route::prefix('accountant/payment')->group(function () {
+    Route::get('/{bill_id}', [AccountantPaymentController::class, 'apiCreate']);
+    Route::post('/store', [AccountantPaymentController::class, 'apiStore']);
+    Route::get('/receipt/{id}', [AccountantPaymentController::class, 'apiReceipt']);
 });
 /*
 |--------------------------------------------------------------------------
