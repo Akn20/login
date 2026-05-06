@@ -32,7 +32,13 @@ class AccountantBillingController extends Controller
                 DB::raw("IFNULL(r.room_number, '-') as room"),
                 DB::raw("IFNULL(s.name, '-') as doctor"), // ✅ FIX
                 'b.id as bill_id',
-                DB::raw("IFNULL(b.status, 'interim') as status")
+                DB::raw("
+                    CASE 
+                        WHEN ipd.status = 'discharged' THEN 'final'
+                        WHEN b.status IS NULL THEN 'not_created'
+                        ELSE b.status
+                    END as status
+                ")
             )
             ->when(request('search'), function ($q) {
                 $search = request('search');
@@ -472,13 +478,12 @@ class AccountantBillingController extends Controller
         ]);
     }
 
-    public function apiPatient($ipd_id)
+    public function apiCreateData($ipd_id)
     {
         $patient = DB::table('ipd_admissions as ipd')
             ->leftJoin('patients as p', 'p.id', '=', 'ipd.patient_id')
             ->leftJoin('staff as s', 's.id', '=', 'ipd.doctor_id')
             ->leftJoin('rooms as r', 'r.id', '=', 'ipd.room_id')
-
             ->select(
                 'ipd.id as ipd_id',
                 'ipd.patient_id',
@@ -488,25 +493,101 @@ class AccountantBillingController extends Controller
                 DB::raw("IFNULL(r.room_number, '-') as room"),
                 'ipd.advance_amount'
             )
+            ->where('ipd.id', $ipd_id)
+            ->first();
 
+
+// ✅ ADD THIS CHECK
+if (!$patient) {
+    return response()->json([
+        'status' => false,
+        'message' => 'Invalid IPD ID'
+    ], 404);
+}
+
+        $pharmacyItems = DB::table('pharmacy_ipd_dispense as pd')
+            ->join('ipd_prescriptions as pr', 'pr.id', '=', 'pd.prescription_id')
+            ->join('ipd_admissions as ipd', 'ipd.id', '=', 'pr.ipd_id')
+            ->leftJoin('medicines as m', 'm.id', '=', 'pd.medicine_id')
+            ->leftJoin('medicine_batches as mb', 'mb.id', '=', 'pd.batch_id')
+            ->select(
+                DB::raw('IFNULL(m.medicine_name, pd.medicine_name) as medicine_name'),
+                DB::raw('SUM(pd.dispensed_quantity) as qty'),
+                DB::raw('IFNULL(mb.mrp, 0) as price')
+            )
+            ->where('ipd.id', $ipd_id)
+            ->where('pd.dispensed_quantity', '>', 0)
+            ->groupBy('pd.medicine_id', 'mb.mrp', 'm.medicine_name', 'pd.medicine_name')
+            ->get();
+
+//dd($ipd_id, $patient);
+
+        $labItems = DB::table('lab_requests as lr')
+            ->leftJoin('lab_tests as lt', 'lt.test_name', '=', 'lr.test_name')
+            ->select(
+                'lr.test_name',
+                DB::raw('IFNULL(lt.price, 0) as price')
+            )
+            ->where('lr.patient_id', $patient->patient_id)
+            ->where('lr.status', '!=', 'cancelled')
+            ->get();
+
+        $scanItems = DB::table('scan_requests as sr')
+            ->leftJoin('scan_types as st', 'st.id', '=', 'sr.scan_type_id')
+            ->select(
+                'st.name as scan_name',
+                DB::raw('0 as price')
+            )
+            ->where('sr.patient_id', $patient->patient_id)
+            ->get();
+
+        $roomCharge = DB::table('ipd_admissions as ipd')
+            ->leftJoin('rooms as r', 'r.id', '=', 'ipd.room_id')
+            ->select(
+                'r.room_number',
+                'ipd.admission_date',
+                'ipd.discharge_date'
+            )
             ->where('ipd.id', $ipd_id)
             ->first();
 
         return response()->json([
             'status' => true,
-            'data' => $patient
+            'data' => [
+                'patient' => $patient,
+                'pharmacyItems' => $pharmacyItems,
+                'labItems' => $labItems,
+                'scanItems' => $scanItems,
+                'roomCharge' => $roomCharge,
+            ]
         ]);
     }
 
     public function apiShow($id)
     {
-        $bill = IpdBill::with(['items', 'patient'])
-            ->where('id', $id)
+        $bill = DB::table('ipd_bills as b')
+            ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
+            ->leftJoin('patients as p', 'p.id', '=', 'b.patient_id')
+
+            ->select(
+                'b.*',
+                'ipd.admission_id as ipd_no',
+                DB::raw("CONCAT(p.first_name, ' ', p.last_name) as patient_name"),
+                'ipd.advance_amount'
+            )
+            ->where('b.id', $id)
             ->first();
+
+        $items = DB::table('ipd_bill_items')
+            ->where('bill_id', $id)
+            ->get();
 
         return response()->json([
             'status' => true,
-            'data' => $bill
+            'data' => [
+                ... (array)$bill,
+                'items' => $items
+            ]
         ]);
     }
 
