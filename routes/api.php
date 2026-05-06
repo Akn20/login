@@ -1618,7 +1618,9 @@ Route::prefix('accountant/billing')->group(function () {
     Route::get('/', [AccountantBillingController::class, 'apiIndex']);
 
     // 🔹 GET PATIENT DATA (for create screen)
-    Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
+    Route::get('/create-data/{ipd_id}', [AccountantBillingController::class, 'apiCreateData']);
+
+    //Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
 
     // 🔹 GET BILL DETAILS (view)
     Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
