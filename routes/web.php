@@ -156,7 +156,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
-
+use App\Http\Controllers\AccountantRevenueController;
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -2300,6 +2300,18 @@ Route::prefix('admin/accountant')->group(function () {
     Route::post('payment/store', [AccountantPaymentController::class, 'store'])->name('admin.accountant.payment.store');
     Route::get('/billing/{id}', [AccountantBillingController::class, 'show'])->name('admin.accountant.billing.show');
     Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
+
+});
+/*
+|--------------------------------------------------------------------------
+| Accountant: Revenue Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin/accountant')->group(function () {
+
+    Route::get('/revenue-management', [AccountantRevenueController::class, 'index'])
+        ->name('admin.accountant.revenue.index');
 
 });
     /*

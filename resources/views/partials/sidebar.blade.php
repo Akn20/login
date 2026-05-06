@@ -162,10 +162,28 @@
                                 </a>
                             </li>
 
+
+
                         </ul>
                     </li>
+{{-- Revenue Management --}}
+<li class="nxl-item">
+    <a href="{{ route('admin.accountant.revenue.index') }}"
+       class="nxl-link {{ request()->routeIs('admin.accountant.revenue.*') ? 'active' : '' }}"
+       up-follow
+       up-target="#main-container">
 
+        <span class="nxl-micon">
+            <i class="feather-bar-chart-2"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Revenue Management
+        </span>
+    </a>
+</li>
                 </ul>
+                
             </li>
 
             {{-- --- 3. MEDICAL SERVICES --- --}}
