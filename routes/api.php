@@ -47,6 +47,7 @@ use App\Http\Controllers\Api\Radiology\ScanRequestApiController;
 use App\Http\Controllers\Api\Radiology\ScanScheduleApiController;
 use App\Http\Controllers\Api\Radiology\ScanUploadApiController;
 use App\Http\Controllers\Api\Radiology\ScanTypeApiController;
+use App\Http\Controllers\Api\Refund\RefundApiController;
 use App\Http\Controllers\Api\Reports\AttendanceReportApiController;
 use App\Http\Controllers\Api\Reports\DashboardApiController;
 use App\Http\Controllers\Api\Reports\DepartmentSalaryApiController;
@@ -2335,4 +2336,68 @@ Route::prefix('payroll/payroll-result')->group(function () {
     Route::get('/', [PayrollResultController::class, 'index']);
       Route::get('/{id}', [PayrollResultController::class, 'show']);
     Route::post('/generate', [PayrollResultController::class, 'generate']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Refund Management APIs
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('refunds')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/', [RefundApiController::class, 'index']);
+
+    Route::post('/', [RefundApiController::class, 'store']);
+
+    Route::get('/{id}', [RefundApiController::class, 'show']);
+
+    Route::put('/{id}', [RefundApiController::class, 'update']);
+
+    Route::delete('/{id}', [RefundApiController::class, 'destroy']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Approval
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/{id}/approve', [
+        RefundApiController::class,
+        'approve'
+    ]);
+
+    Route::post('/{id}/reject', [
+        RefundApiController::class,
+        'reject'
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/{id}/process-payment', [
+        RefundApiController::class,
+        'processPayment'
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bill Fetch
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/fetch/bill-details', [
+        RefundApiController::class,
+        'fetchBillDetails'
+    ]);
 });

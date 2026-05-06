@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Accountant\RefundController;
 use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 /*
 |--------------------------------------------------------------------------
@@ -2986,5 +2987,54 @@ Route::prefix('insurance-consent')
         Route::delete('/delete/{id}',
             [InsuranceConsentController::class, 'destroy'])
             ->name('delete');
+    });
+    });
+
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+    Route::prefix('refunds')
+    ->name('refunds.')
+    ->group(function () {
+
+        Route::get('/', [RefundController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [RefundController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [RefundController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}', [RefundController::class, 'show'])
+            ->name('show');
+
+        Route::get('/edit/{id}', [RefundController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [RefundController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [RefundController::class, 'destroy'])
+            ->name('delete');
+
+        Route::post('/approve/{id}', [RefundController::class, 'approve'])
+            ->name('approve');
+
+        Route::post('/reject/{id}', [RefundController::class, 'reject'])
+            ->name('reject');
+
+        Route::post('/process-payment/{id}', [RefundController::class, 'processPayment'])
+            ->name('process-payment');
+
+        Route::get('/receipt/{id}', [RefundController::class, 'receipt'])
+            ->name('receipt');
+
+        Route::get('/fetch-bill-details', [RefundController::class, 'fetchBillDetails'])
+            ->name('fetch-bill-details');
     });
     });
