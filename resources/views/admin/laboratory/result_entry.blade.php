@@ -105,7 +105,7 @@
                     $data = $sample->labReport->result_data ?? [];
                 @endphp
 
-                <form method="POST" action="{{ route('admin.laboratory.result.submit', $sample->id) }} "
+                <form method="POST" action="{{ route('admin.laboratory.result.submit', $sample->id) }}"
                     enctype="multipart/form-data">
                     @csrf
 

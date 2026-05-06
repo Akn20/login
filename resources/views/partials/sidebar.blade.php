@@ -161,9 +161,16 @@
                                     IPD Billing
                                 </a>
                             </li>
-
                         </ul>
-                    </li>
+
+                            {{-- Insurance Claims Menu --}}
+                            <li class="nxl-item {{ request()->is('admin/accountant/claims*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.accountant.claims.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    <i class="feather-briefcase me-2"></i> Insurance Claims
+                                </a>
+                            </li>
+                        </li>
 
                 </ul>
             </li>

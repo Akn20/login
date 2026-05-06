@@ -159,6 +159,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\InsuranceClaimController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -1206,6 +1207,31 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/bill/{id}', [PrescriptionController::class, 'showBill'])->name('bill');
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
+
+    Route::prefix('accountant/claims')->name('accountant.claims.')->group(function () {
+
+    Route::get('/', [InsuranceClaimController::class, 'index'])->name('index');
+    Route::get('/create', [InsuranceClaimController::class, 'create'])->name('create');
+    Route::post('/store', [InsuranceClaimController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [InsuranceClaimController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [InsuranceClaimController::class, 'update'])->name('update');
+
+    Route::get('/view/{id}', [InsuranceClaimController::class, 'view'])->name('view');
+
+    Route::post('/approval', [InsuranceClaimController::class, 'storeApproval'])->name('approval');
+    Route::post('/payment', [InsuranceClaimController::class, 'storePayment'])->name('payment');
+
+    Route::post('/reconcile/{id}', [InsuranceClaimController::class, 'reconcile'])->name('reconcile');
+
+    Route::delete('/delete/{id}', [InsuranceClaimController::class, 'destroy'])->name('delete');
+
+        Route::put('/restore/{id}', [InsuranceClaimController::class, 'restore'])->name('restore');
+
+        Route::delete('/force-delete/{id}', [InsuranceClaimController::class, 'forceDelete'])->name('forceDelete');
+        Route::get('/deleted', [InsuranceClaimController::class, 'deleted'])->name('deleted');
+        Route::get('/reports', [InsuranceClaimController::class, 'reports'])->name('reports');
+});
 
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
