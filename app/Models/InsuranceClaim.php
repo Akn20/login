@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Models\ClaimApproval;
+use App\Models\ClaimPayment;
+use App\Models\ClaimReconciliation;
+use App\Models\Patient;
 
 class InsuranceClaim extends Model
 {
@@ -60,4 +64,5 @@ class InsuranceClaim extends Model
     {
         return $this->belongsTo(Patient::class, 'patient_id');
     }
+
 }

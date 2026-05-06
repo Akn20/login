@@ -283,5 +283,164 @@ class InsuranceClaimController extends Controller
     $claim->save();
 }
 
+public function apiIndex(Request $request)
+{
+    $query = InsuranceClaim::with(['approval', 'payments', 'patient'])->latest();
+
+    if ($request->search) {
+        $query->where('claim_number', 'like', "%{$request->search}%")
+              ->orWhere('insurance_provider', 'like', "%{$request->search}%");
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $query->get()
+    ]);
+}
+
+public function apiShow($id)
+{
+    $claim = InsuranceClaim::with(['approval', 'payments', 'patient'])
+        ->findOrFail($id);
+
+    return response()->json([
+        'status' => true,
+        'data' => $claim
+    ]);
+}
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'patient_id' => 'required|exists:patients,id',
+        'insurance_provider' => 'required|string|max:255',
+        'billed_amount' => 'required|numeric|min:0',
+    ]);
+
+    $claim = InsuranceClaim::create([
+        'claim_number' => 'CLM-' . now()->timestamp,
+        'patient_id' => $request->patient_id,
+        'insurance_provider' => $request->insurance_provider,
+        'billed_amount' => $request->billed_amount,
+        'claim_date' => now(),
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Claim created successfully',
+        'data' => $claim
+    ]);
+}
+
+public function apiUpdate(Request $request, $id)
+{
+    $claim = InsuranceClaim::findOrFail($id);
+
+    $claim->update([
+        'patient_id' => $request->patient_id,
+        'insurance_provider' => $request->insurance_provider,
+        'billed_amount' => $request->billed_amount,
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Claim updated successfully'
+    ]);
+}
+
+public function apiDelete($id)
+{
+    $claim = InsuranceClaim::findOrFail($id);
+    $claim->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Claim deleted'
+    ]);
+}
+
+public function apiRestore($id)
+{
+    $claim = InsuranceClaim::withTrashed()->findOrFail($id);
+    $claim->restore();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Claim restored'
+    ]);
+}
+
+public function apiForceDelete($id)
+{
+    $claim = InsuranceClaim::withTrashed()->findOrFail($id);
+    $claim->forceDelete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Claim permanently deleted'
+    ]);
+}
+
+public function apiApproval(Request $request)
+{
+    $request->validate([
+        'claim_id' => 'required|exists:insurance_claims,id',
+        'approved_amount' => 'required|numeric|min:0',
+    ]);
+
+    ClaimApproval::updateOrCreate(
+        ['claim_id' => $request->claim_id],
+        [
+            'approved_amount' => $request->approved_amount,
+            'approval_date' => now()
+        ]
+    );
+
+    $this->autoReconcile($request, $request->claim_id);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Approval saved'
+    ]);
+}
+
+public function apiPayment(Request $request)
+{
+    $request->validate([
+        'claim_id' => 'required|exists:insurance_claims,id',
+        'payment_amount' => 'required|numeric|min:0',
+    ]);
+
+    ClaimPayment::create([
+        'claim_id' => $request->claim_id,
+        'payment_amount' => $request->payment_amount,
+        'payment_date' => now(),
+    ]);
+
+    $this->autoReconcile($request, $request->claim_id);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Payment added'
+    ]);
+}
+
+public function apiReports()
+{
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'total_claims' => InsuranceClaim::count(),
+            'total_billed' => InsuranceClaim::sum('billed_amount'),
+            'total_approved' => ClaimApproval::sum('approved_amount'),
+            'total_paid' => ClaimPayment::sum('payment_amount'),
+            'pending' => InsuranceClaim::where('status', 'pending')->count(),
+            'partial' => InsuranceClaim::where('status', 'partial')->count(),
+            'approved' => InsuranceClaim::where('status', 'approved')->count(),
+            'discrepancies' => ClaimReconciliation::where('difference_amount', '!=', 0)->count()
+        ]
+    ]);
+}
+
 
 }

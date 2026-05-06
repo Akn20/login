@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\InsuranceClaim;
+
 class ClaimReconciliation extends Model
 {
     protected $table = 'claim_reconciliations';

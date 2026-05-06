@@ -25,6 +25,8 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+
+use App\Http\Controllers\Admin\InsuranceClaimController;
 // Admin > Lab
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
@@ -102,6 +104,8 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
+
+
 
 use App\Models\User;
 //added by sushan for api
@@ -1614,4 +1618,24 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+
+});
+
+        Route::prefix('claims')->group(function () {
+
+            Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
+            Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
+
+            Route::post('/', [InsuranceClaimController::class, 'apiStore']);
+            Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
+
+            Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
+            Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
+            Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
+
+            Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
+            Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
+
+            Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+
 });
