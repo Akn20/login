@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +104,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
+
 
 use App\Models\User;
 //added by sushan for api
@@ -1628,6 +1630,17 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+});
+//Revenue managemnt(Accountant)
+Route::prefix('revenue')->group(function () {
+
+    Route::get('/', [AccountantRevenueController::class, 'apiIndex']);
+    Route::get('/list', [AccountantRevenueController::class, 'revenueList']);
+    Route::get('/dropdowns', [AccountantRevenueController::class, 'dropdowns']);
+
+    Route::get('/department', [AccountantRevenueController::class, 'departmentRevenue']);
+    Route::get('/doctor', [AccountantRevenueController::class, 'doctorRevenue']);
+    Route::get('/service', [AccountantRevenueController::class, 'serviceRevenue']);
 });
 /*
 |--------------------------------------------------------------------------

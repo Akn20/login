@@ -155,51 +155,54 @@
 
         {{-- TABLE --}}
         <div class="col-12">
-            <div class="card">
-                <div class="card-body p-0">
+    <div class="card">
+        <div class="card-body p-0">
 
-                    <div class="table-responsive">
+            <div class="table-responsive">
 
-                        <table class="table table-bordered mb-0">
+                <table class="table table-bordered mb-0">
 
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Department</th>
-                                    <th>Doctor</th>
-                                    <th>Service</th>
-                                    <th class="text-end">Amount</th>
-                                </tr>
-                            </thead>
+                    {{-- ✅ HEADINGS --}}
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Department</th>
+                            <th>Doctor</th>
+                            <th>Service</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
 
-                          <tbody>
-    @forelse($revenues as $row)
-        <tr>
-            <td>{{ \Carbon\Carbon::parse($row->bill_date)->format('d-m-Y') }}</td>
-         
-                        <td>{{ $row->doctor }}</td>
-            <td>-</td>
-            <td class="text-end">₹ {{ number_format($row->grand_total, 2) }}</td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="5" class="text-center py-4">
-                No revenue data found
-            </td>
-        </tr>
-    @endforelse
-</tbody>
+                    {{-- ✅ DATA --}}
+                    <tbody>
+                        @forelse($revenues as $item)
+                            <tr>
+                                <td>{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
+                                <td>{{ $item->department }}</td>
+                                <td>{{ $item->doctor }}</td>
+                                <td>{{ $item->service }}</td>
+                                <td class="text-end">₹ {{ number_format($item->amount, 2) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    No revenue data found
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
 
-                            <tfoot>
-                                <tr>
-                                    <th colspan="4" class="text-end">Total</th>
-                                    <th class="text-end">
-                                        ₹ {{ number_format($totalRevenue, 2) }}
-                                    </th>
-                                </tr>
-                            </tfoot>
+                    {{-- ✅ TOTAL --}}
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="text-end">Total</th>
+                            <th class="text-end">
+                                ₹ {{ number_format($revenues->sum('amount'), 2) }}
+                            </th>
+                        </tr>
+                    </tfoot>
 
-                        </table>
+                </table>
 
                     </div>
 
