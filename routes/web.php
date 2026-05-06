@@ -155,6 +155,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\ExpenseCategoryController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2239,6 +2240,30 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
             Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
         });
+
+
+// ================= EXPENSE CATEGORY =================
+Route::prefix('admin/accountant/expense-management/category')
+    ->name('admin.accountant.expense.category.')
+    ->group(function () {
+
+        Route::get('/', [ExpenseCategoryController::class, 'index'])->name('index');
+
+        Route::get('/create', [ExpenseCategoryController::class, 'create'])->name('create');
+
+        Route::post('/store', [ExpenseCategoryController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [ExpenseCategoryController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}', [ExpenseCategoryController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}', [ExpenseCategoryController::class, 'destroy'])->name('delete');
+
+    
+        Route::get('/deleted', [ExpenseCategoryController::class, 'deleted'])->name('deleted');
+
+        Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore'])->name('restore');
+});
 
 });
 //IPD (Doctor Module)

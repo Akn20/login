@@ -162,9 +162,34 @@
                                 </a>
                             </li>
 
+                            
                         </ul>
                     </li>
 
+
+
+            {{-- Expense Management --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/expense-management*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-credit-card me-2"></i> Expense Management
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            <li class="nxl-item">
+                                <a href="{{route('admin.accountant.expense.category.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    Expense Categories
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+
+
+                    
                 </ul>
             </li>
 
