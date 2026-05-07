@@ -20,9 +20,10 @@
                 </div>
 
                 <div>
-                    <button class="btn btn-outline-primary btn-sm">
+                  <a href="{{ route('admin.accountant.revenue.export') }}"
+   class="btn btn-outline-primary btn-sm">
                         <i class="feather-download me-1"></i> Export
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -97,24 +98,100 @@
 
                             <div class="col-md-2 mb-3">
                                 <label>Department</label>
-                                <select name="department" class="form-control">
-                                    <option value="">All</option>
-                                </select>
+                            <select name="department" class="form-control">
+
+    <option value="">All</option>
+
+    @foreach($departments as $dept)
+        <option value="{{ $dept->id }}"
+            {{ request('department') == $dept->id ? 'selected' : '' }}>
+            {{ $dept->department_name }}
+        </option>
+    @endforeach
+
+</select>
                             </div>
 
                             <div class="col-md-2 mb-3">
-                                <label>Doctor</label>
+                                     <label>Doctor</label>
                                 <select name="doctor" class="form-control">
-                                    <option value="">All</option>
-                                </select>
+
+    <option value="">All</option>
+
+    @foreach($doctors as $doc)
+        <option value="{{ $doc->id }}"
+            {{ request('doctor') == $doc->id ? 'selected' : '' }}>
+            {{ $doc->name }}
+        </option>
+    @endforeach
+
+</select>
                             </div>
 
-                            <div class="col-md-2 mb-3">
-                                <label>Service</label>
-                                <select name="service" class="form-control">
-                                    <option value="">All</option>
-                                </select>
-                            </div>
+                          <div class="col-md-2 mb-3">
+    <label>Service</label>
+
+    <select name="service" class="form-control">
+
+        <option value="">All</option>
+
+        @foreach($services as $srv)
+            <option value="{{ $srv->description }}"
+                {{ request('service') == $srv->description ? 'selected' : '' }}>
+                {{ $srv->description }}
+            </option>
+        @endforeach
+
+    </select>
+</div>
+
+<div class="col-md-2 mb-3">
+    <label>Payment Mode</label>
+
+    <select name="payment_mode" class="form-control">
+        <option value="">All</option>
+
+        <option value="cash"
+            {{ request('payment_mode') == 'cash' ? 'selected' : '' }}>
+            Cash
+        </option>
+
+        <option value="card"
+            {{ request('payment_mode') == 'card' ? 'selected' : '' }}>
+            Card
+        </option>
+
+        <option value="upi"
+            {{ request('payment_mode') == 'upi' ? 'selected' : '' }}>
+            UPI
+        </option>
+    </select>
+</div>
+
+<!-- <div class="col-md-2 mb-3">
+    <label>Group By</label>
+
+    <select name="group_by" class="form-control">
+
+        <option value="">None</option>
+
+        <option value="department"
+            {{ request('group_by') == 'department' ? 'selected' : '' }}>
+            Department
+        </option>
+
+        <option value="doctor"
+            {{ request('group_by') == 'doctor' ? 'selected' : '' }}>
+            Doctor
+        </option>
+
+        <option value="service"
+            {{ request('group_by') == 'service' ? 'selected' : '' }}>
+            Service
+        </option>
+
+    </select>
+</div> -->
 
                         </div>
 
@@ -137,19 +214,7 @@
             </div>
         </div>
 
-        {{-- GROUP BY --}}
-        <div class="col-12 d-flex justify-content-between align-items-center">
-
-            <h6 class="mb-0">Revenue List</h6>
-
-            <div style="width:200px;">
-            <select name="group_by" class="form-control">
-    <option value="">Group By</option>
-    <option value="department">Department</option>
-    <option value="doctor">Doctor</option>
-    <option value="service">Service</option>
-</select>
-            </div>
+     
 
         </div>
 
@@ -168,8 +233,9 @@
                             <th>Date</th>
                             <th>Department</th>
                             <th>Doctor</th>
-                            <th>Service</th>
-                            <th class="text-end">Amount</th>
+                        <th>Service</th>
+<th>Payment Mode</th>
+<th class="text-end">Amount</th>
                         </tr>
                     </thead>
 
@@ -181,6 +247,7 @@
                                 <td>{{ $item->department }}</td>
                                 <td>{{ $item->doctor }}</td>
                                 <td>{{ $item->service }}</td>
+                                <td>{{ $item->payment_mode ??'-' }}</td>
                                 <td class="text-end">₹ {{ number_format($item->amount, 2) }}</td>
                             </tr>
                         @empty
@@ -213,21 +280,7 @@
         {{-- PAGINATION --}}
         <div class="col-12 d-flex justify-content-end">
 
-            <nav>
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item disabled">
-                        <a class="page-link">Previous</a>
-                    </li>
-
-                    <li class="page-item active">
-                        <a class="page-link">1</a>
-                    </li>
-
-                    <li class="page-item disabled">
-                        <a class="page-link">Next</a>
-                    </li>
-                </ul>
-            </nav>
+         {{ $revenues->links() }}
 
         </div>
 

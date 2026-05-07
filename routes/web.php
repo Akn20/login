@@ -2312,6 +2312,10 @@ Route::prefix('admin/accountant')->group(function () {
 
     Route::get('/revenue-management', [AccountantRevenueController::class, 'index'])
         ->name('admin.accountant.revenue.index');
+        Route::get(
+    '/admin/accountant/revenue-management/export',
+    [AccountantRevenueController::class, 'export']
+)->name('admin.accountant.revenue.export');
 
 });
     /*

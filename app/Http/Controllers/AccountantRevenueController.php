@@ -16,9 +16,12 @@ class AccountantRevenueController extends Controller
 
         $fromDate   = $request->from_date;
         $toDate     = $request->to_date;
-        $department = $request->department;
-        $doctor     = $request->doctor;
+      $department = $request->department;
+$doctor     = $request->doctor;
+$service    = $request->service;
+$paymentMode = $request->payment_mode;
 
+$groupBy = $request->group_by;
         // ============================================
         //  DROPDOWN DATA
         // ============================================
@@ -30,7 +33,11 @@ class AccountantRevenueController extends Controller
         $doctors = DB::table('staff')
             ->orderBy('name')
             ->get();
-
+        $services = DB::table('ipd_bill_items')
+    ->select('description')
+    ->distinct()
+    ->orderBy('description')
+    ->get();
         // ============================================
         //  SUMMARY QUERY
         // ============================================
@@ -85,6 +92,18 @@ class AccountantRevenueController extends Controller
                 '=',
                 'ipd.department_id'
             )
+            ->leftJoin(
+    'ipd_bill_items as items',
+    'items.bill_id',
+    '=',
+    'b.id'
+)
+->leftJoin(
+    'ipd_payments as pay',
+    'pay.ipd_id',
+    '=',
+    'b.ipd_id'
+)
 
             ->select(
     'b.bill_date as date',
@@ -92,9 +111,9 @@ class AccountantRevenueController extends Controller
     DB::raw("IFNULL(d.department_name, '-') as department"),
     DB::raw("IFNULL(s.name, '-') as doctor"),
 
-    DB::raw("'IPD Bill' as service"), // ✅ temporary service
-
-    'b.grand_total as amount' // ✅ FIXED
+  DB::raw("IFNULL(items.description, 'N/A') as service"),
+    DB::raw("IFNULL(pay.payment_mode, '-') as payment_mode"),
+    'b.grand_total as amount' //  FIXED
 );
         // ============================================
         // 🔹 APPLY FILTERS
@@ -115,6 +134,15 @@ class AccountantRevenueController extends Controller
         if ($doctor) {
             $revenues->where('ipd.doctor_id', $doctor);
         }
+        if ($service) {
+    $revenues->where('items.description', $service);
+    
+}
+if ($paymentMode) {
+    $revenues->where('pay.payment_mode', $paymentMode);
+}
+
+
 
         // ============================================
         //  PAGINATION
@@ -122,7 +150,8 @@ class AccountantRevenueController extends Controller
 
         $revenues = $revenues
             ->orderBy('b.bill_date', 'desc')
-            ->paginate(10);
+          ->paginate(10)
+->appends(request()->query());
 
         // ============================================
         //  RETURN VIEW
@@ -130,17 +159,83 @@ class AccountantRevenueController extends Controller
 
         return view(
             'admin.Accountant.Revenue-Management.index',
-            compact(
-                'totalRevenue',
-                'todayRevenue',
-                'monthlyRevenue',
-                'annualRevenue',
-                'revenues',
-                'departments',
-                'doctors'
-            )
+           compact(
+    'totalRevenue',
+    'todayRevenue',
+    'monthlyRevenue',
+    'annualRevenue',
+    'revenues',
+    'departments',
+    'doctors',
+    'services'
+)
         );
     }
+
+
+
+    public function export()
+{
+    $revenues = DB::table('ipd_bills as b')
+
+        ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
+
+        ->leftJoin('staff as s', 's.id', '=', 'ipd.doctor_id')
+
+        ->leftJoin('department_master as d', 'd.id', '=', 'ipd.department_id')
+
+        ->leftJoin('ipd_bill_items as items', 'items.bill_id', '=', 'b.id')
+
+        ->leftJoin('ipd_payments as pay', 'pay.ipd_id', '=', 'b.ipd_id')
+
+        ->select(
+            'b.bill_date as date',
+            DB::raw("IFNULL(d.department_name, '-') as department"),
+            DB::raw("IFNULL(s.name, '-') as doctor"),
+            DB::raw("IFNULL(items.description, 'N/A') as service"),
+            DB::raw("IFNULL(pay.payment_mode, '-') as payment_mode"),
+            'b.grand_total as amount'
+        )
+        ->orderBy('b.bill_date', 'desc')
+        ->get();
+
+    $filename = "revenue-report.csv";
+
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$filename",
+    ];
+
+    $callback = function () use ($revenues) {
+
+        $file = fopen('php://output', 'w');
+
+        fputcsv($file, [
+            'Date',
+            'Department',
+            'Doctor',
+            'Service',
+            'Payment Mode',
+            'Amount'
+        ]);
+
+        foreach ($revenues as $row) {
+
+            fputcsv($file, [
+                $row->date,
+                $row->department,
+                $row->doctor,
+                $row->service,
+                $row->payment_mode,
+                $row->amount
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 //--------------API methods-----------------------
 public function apiIndex(Request $request)
 {
@@ -287,5 +382,7 @@ public function serviceRevenue()
 
     return response()->json($data);
 }
+
+
 
 }
