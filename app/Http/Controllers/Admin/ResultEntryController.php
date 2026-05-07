@@ -121,6 +121,7 @@ class ResultEntryController extends Controller
                 'entered_at' => now()
             ]
         );
+        //if error occurs here,run composer dump-autoload
                 logAudit(
             'report',
             'RESULT_ENTERED',
