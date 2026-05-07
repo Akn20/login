@@ -193,35 +193,59 @@ public function revenueList(Request $request)
 
         ->leftJoin('staff as s', 's.id', '=', 'ipd.doctor_id')
 
-        ->leftJoin('department_master as d', 'd.id', '=', 'ipd.department_id')
+        ->leftJoin(
+            'department_master as d',
+            'd.id',
+            '=',
+            'ipd.department_id'
+        )
 
         ->select(
-            'b.bill_date as date',
-            DB::raw("COALESCE(d.department_name, 'N/A') as department"),
-            DB::raw("COALESCE(s.name, 'N/A') as doctor"),
-            DB::raw("'IPD Billing' as service"),
-            'b.grand_total as amount'
+            DB::raw('DATE(b.bill_date) as date'),
+            DB::raw('IFNULL(d.department_name, "-") as department'),
+            DB::raw('IFNULL(s.name, "-") as doctor'),
+            DB::raw('"IPD Billing" as service'),
+            DB::raw('b.grand_total as amount')
         );
 
-    // ⚠️ REMOVE filters temporarily for testing
+    // 🔹 FILTERS
 
-    return response()->json(
-        $query->orderBy('b.bill_date', 'desc')->get()
-    );
-}
-public function dropdowns()
-{
-    return response()->json([
-        'departments' => DB::table('department_master')
-            ->select('id', 'department_name as name')
-            ->orderBy('department_name')
-            ->get(),
+    if ($request->from_date) {
+        $query->whereDate('b.bill_date', '>=', $request->from_date);
+    }
 
-        'doctors' => DB::table('staff')
-            ->select('id', 'name')
-            ->orderBy('name')
-            ->get(),
-    ]);
+    if ($request->to_date) {
+        $query->whereDate('b.bill_date', '<=', $request->to_date);
+    }
+
+    if ($request->department) {
+        $query->where(
+            'd.department_name',
+            'LIKE',
+            '%' . trim($request->department) . '%'
+        );
+    }
+
+    if ($request->doctor) {
+        $query->where(
+            's.name',
+            'LIKE',
+            '%' . trim($request->doctor) . '%'
+        );
+    }
+
+    if ($request->service) {
+        $query->whereRaw(
+            '"IPD Billing" LIKE ?',
+            ['%' . trim($request->service) . '%']
+        );
+    }
+
+    $rows = $query
+        ->orderBy('b.bill_date', 'desc')
+        ->get();
+
+    return response()->json($rows);
 }
 public function departmentRevenue()
 {
