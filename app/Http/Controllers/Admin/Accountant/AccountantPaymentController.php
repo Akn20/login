@@ -17,9 +17,12 @@ class AccountantPaymentController extends Controller
         return [
             'id' => $bill->id,
             'bill_no' => $bill->bill_no,
+            'bill_date' => $bill->bill_date,
             'patient_id' => $bill->patient_id,
             'patient_name' => trim(($bill->patient->first_name ?? '') . ' ' . ($bill->patient->last_name ?? '')),
             'advance_amount' => $bill->ipd->advance_amount ?? 0,
+            'advance_applied' => min((float) ($bill->ipd->advance_amount ?? 0), (float) $bill->grand_total),
+            'grand_total' => (float) $bill->grand_total,
             'payable_amount' => (float) $bill->payable_amount,
             'paid_amount' => (float) $bill->paid_amount,
             'due_amount' => (float) $bill->due_amount,
