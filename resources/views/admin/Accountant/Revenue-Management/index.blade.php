@@ -72,6 +72,52 @@
                 </div>
             </div>
         </div>
+{{-- DEPARTMENT REVENUE SUMMARY --}}
+
+@foreach($departmentSummary as $dept)
+
+<div class="col-md-4">
+    <div class="card stretch stretch-full">
+        <div class="card-body text-center">
+
+            <h6>
+                {{ $dept->department }}
+            </h6>
+
+            <h4 class="fw-bold text-info">
+                ₹ {{ number_format($dept->revenue, 2) }}
+            </h4>
+
+        </div>
+    </div>
+</div>
+
+@endforeach
+
+
+{{-- DOCTOR REVENUE SUMMARY --}}
+
+@foreach($doctorSummary as $doc)
+
+<div class="col-md-4">
+    <div class="card stretch stretch-full">
+        <div class="card-body text-center">
+
+            <h6>
+                {{ $doc->doctor }}
+            </h6>
+
+            <h4 class="fw-bold text-success">
+                ₹ {{ number_format($doc->revenue, 2) }}
+            </h4>
+
+        </div>
+    </div>
+</div>
+
+@endforeach
+
+
 
         {{-- FILTER SECTION --}}
         <div class="col-12">
@@ -79,24 +125,32 @@
                 <div class="card-body">
 
                     <h6 class="mb-3">Filters</h6>
-
+                        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                     <form method="GET">
 
                         <div class="row">
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-2 mb-3">
                                 <label>From Date</label>
                                 <input type="date" name="from_date" class="form-control"
                                        value="{{ request('from_date') }}">
                             </div>
 
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-2 mb-3">
                                 <label>To Date</label>
                                 <input type="date" name="to_date" class="form-control"
                                        value="{{ request('to_date') }}">
                             </div>
 
-                            <div class="col-md-2 mb-3">
+                          <div class="col-md-2 col-lg-2 mb-3">
                                 <label>Department</label>
                             <select name="department" class="form-control">
 
@@ -112,7 +166,7 @@
 </select>
                             </div>
 
-                            <div class="col-md-2 mb-3">
+                            <div class="col-md-2 col-lg-2 mb-3">
                                      <label>Doctor</label>
                                 <select name="doctor" class="form-control">
 
@@ -128,10 +182,10 @@
 </select>
                             </div>
 
-                          <div class="col-md-2 mb-3">
+                  <div class="col-md-3 mb-3">
     <label>Service</label>
 
-    <select name="service" class="form-control">
+    <select name="service" class="form-select">
 
         <option value="">All</option>
 
@@ -145,7 +199,7 @@
     </select>
 </div>
 
-<div class="col-md-2 mb-3">
+<div class="col-md-2 col-lg-2 mb-3">
     <label>Payment Mode</label>
 
     <select name="payment_mode" class="form-control">
@@ -259,15 +313,18 @@
                         @endforelse
                     </tbody>
 
-                    {{-- ✅ TOTAL --}}
-                    <tfoot>
-                        <tr>
-                            <th colspan="4" class="text-end">Total</th>
-                            <th class="text-end">
-                                ₹ {{ number_format($revenues->sum('amount'), 2) }}
-                            </th>
-                        </tr>
-                    </tfoot>
+                    {{--  TOTAL --}}
+                <tfoot>
+    <tr>
+        <th colspan="5" class="text-end">
+            Total
+        </th>
+
+        <th class="text-end">
+            ₹ {{ number_format($revenues->sum('amount'), 2) }}
+        </th>
+    </tr>
+</tfoot>
 
                 </table>
 

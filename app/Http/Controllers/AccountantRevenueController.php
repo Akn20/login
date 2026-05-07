@@ -10,6 +10,20 @@ class AccountantRevenueController extends Controller
 {
     public function index(Request $request)
     {
+
+    $request->validate([
+    'from_date' => 'nullable|date',
+    'to_date' => 'nullable|date|after_or_equal:from_date',
+    'department' => 'nullable',
+    'doctor' => 'nullable',
+    'service' => 'nullable',
+    'payment_mode' => 'nullable|in:cash,card,upi',
+], [
+    'to_date.after_or_equal' => 'To Date must be greater than or equal to From Date.',
+    'from_date.date' => 'Please enter a valid From Date.',
+    'to_date.date' => 'Please enter a valid To Date.',
+    'payment_mode.in' => 'Invalid payment mode selected.',
+]);
         // ============================================
         //  FILTER INPUTS
         // ============================================
@@ -21,7 +35,7 @@ $doctor     = $request->doctor;
 $service    = $request->service;
 $paymentMode = $request->payment_mode;
 
-$groupBy = $request->group_by;
+
         // ============================================
         //  DROPDOWN DATA
         // ============================================
@@ -30,14 +44,68 @@ $groupBy = $request->group_by;
             ->orderBy('department_name')
             ->get();
 
-        $doctors = DB::table('staff')
-            ->orderBy('name')
-            ->get();
+   $doctors = DB::table('staff as s')
+
+    ->leftJoin('roles as r', 'r.id', '=', 's.role_id')
+
+    ->where('r.name', 'doctor')
+
+    ->select('s.*')
+
+    ->orderBy('s.name')
+
+    ->get();
         $services = DB::table('ipd_bill_items')
     ->select('description')
     ->distinct()
     ->orderBy('description')
     ->get();
+
+$departmentSummary = DB::table('ipd_bills as b')
+
+    ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
+
+    ->leftJoin(
+        'department_master as d',
+        'd.id',
+        '=',
+        'ipd.department_id'
+    )
+
+    ->select(
+        DB::raw("IFNULL(d.department_name, 'Unknown') as department"),
+        DB::raw('SUM(b.grand_total) as revenue')
+    )
+
+    ->groupBy('d.department_name')
+
+    ->orderByDesc('revenue')
+
+    ->get();
+
+ $doctorSummary = DB::table('ipd_bills as b')
+
+    ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
+
+    ->leftJoin('staff as s', 's.id', '=', 'ipd.doctor_id')
+
+    ->leftJoin('roles as r', 'r.id', '=', 's.role_id')
+
+    ->where('r.name', 'doctor')
+
+    ->select(
+        DB::raw("IFNULL(s.name, 'Unknown') as doctor"),
+        DB::raw('SUM(b.grand_total) as revenue')
+    )
+
+    ->groupBy('s.name')
+
+    ->orderByDesc('revenue')
+
+    ->get();
+
+
+
         // ============================================
         //  SUMMARY QUERY
         // ============================================
@@ -159,7 +227,7 @@ if ($paymentMode) {
 
         return view(
             'admin.Accountant.Revenue-Management.index',
-           compact(
+compact(
     'totalRevenue',
     'todayRevenue',
     'monthlyRevenue',
@@ -167,7 +235,9 @@ if ($paymentMode) {
     'revenues',
     'departments',
     'doctors',
-    'services'
+    'services',
+    'departmentSummary',
+    'doctorSummary'
 )
         );
     }
