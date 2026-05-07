@@ -16,8 +16,8 @@
         <div class="card-header bg-primary text-white">Patient Details</div>
         <div class="card-body row">
 
-            <div class="col-md-3"><strong>Name:</strong> {{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</div>
-            <div class="col-md-3"><strong>IPD ID:</strong> {{ $bill->ipd_id }}</div>
+            <div class="col-md-3"><strong>Name:</strong> {{ $bill->patient_name }}</div>
+            <div class="col-md-3"><strong>IPD No:</strong> {{ $bill->ipd_no }}</div>
             <div class="col-md-3"><strong>Bill No:</strong> {{ $bill->bill_no }}</div>
             <div class="col-md-3"><strong>Status:</strong> 
                 <span class="badge bg-{{ $bill->status == 'discharged' ? 'success' : 'warning' }}">
@@ -26,7 +26,7 @@
             </div>
 
             <div class="col-md-3 mt-2"><strong>Bill Date:</strong> {{ $bill->bill_date }}</div>
-            <div class="col-md-3 mt-2"><strong>Advance:</strong> ₹{{ $bill->patient->ipdAdmission->advance_amount ?? 0 }}</div>
+            <div class="col-md-3 mt-2"><strong>Advance:</strong> ₹{{ $bill->advance_amount ?? 0 }}</div>
 
         </div>
     </div>
@@ -48,7 +48,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach($bill->items as $item)
+                    @foreach($items as $item)
                     <tr>
                         <td>{{ $item->type }}</td>
                         <td>{{ $item->description }}</td>
