@@ -204,6 +204,8 @@ class InsuranceClaimController extends Controller
 
     public function reports()
 {
+    $claims = InsuranceClaim::with(['patient','approval','payments'])->get();
+
     $totalClaims = InsuranceClaim::count();
 
     $totalBilled = InsuranceClaim::sum('billed_amount');
@@ -235,6 +237,7 @@ class InsuranceClaimController extends Controller
     ];
 
     return view('admin.Accountant.InsuranceClaims.reports', compact(
+        'claims',
         'totalClaims',
         'totalBilled',
         'totalApproved',

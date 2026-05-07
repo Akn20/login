@@ -90,6 +90,69 @@
 
 </div>
 
+<div class="card mt-4">
+
+    <div class="card-header">
+        <h5>Insurance Settlement Report</h5>
+    </div>
+
+    <div class="card-body table-responsive">
+
+        <table class="table table-bordered">
+
+            <thead>
+                <tr>
+                    <th>Claim No</th>
+                    <th>Patient</th>
+                    <th>Billed</th>
+                    <th>Approved</th>
+                    <th>Paid</th>
+                    <th>Outstanding</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach($claims as $claim)
+
+                @php
+                    $approved = $claim->approval->approved_amount ?? 0;
+                    $paid = $claim->payments->sum('payment_amount');
+                    $outstanding = $approved - $paid;
+                @endphp
+
+                <tr>
+                    <td>{{ $claim->claim_number }}</td>
+                    <td>{{ $claim->patient->first_name ?? '' }}</td>
+
+                    <td>₹ {{ number_format($claim->billed_amount, 2) }}</td>
+
+                    <td>₹ {{ number_format($approved, 2) }}</td>
+
+                    <td>₹ {{ number_format($paid, 2) }}</td>
+
+                    <td class="{{ $outstanding > 0 ? 'text-danger' : 'text-success' }}">
+                        ₹ {{ number_format($outstanding, 2) }}
+                    </td>
+
+                    <td>
+                        <span class="badge bg-info">
+                            {{ ucfirst($claim->status) }}
+                        </span>
+                    </td>
+                </tr>
+
+                @endforeach
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
