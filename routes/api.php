@@ -855,11 +855,11 @@ Route::prefix('laboratories')->group(function () {
 
 
         Route::get('/daily', [ReportController::class, 'apiDailyReport']);
-    Route::get('/pending', [ReportController::class, 'apiPendingReport']);
-    Route::get('/summary', [ReportController::class, 'apiCompletionSummary']);
-    Route::get('/critical', [ReportController::class, 'apiCriticalReport']);
-    Route::get('/maintenance', [ReportController::class, 'apiMaintenanceReport']);
-    Route::get('/reagent-usage', [ReportController::class, 'apiReagentUsage']);
+        Route::get('/pending', [ReportController::class, 'apiPendingReport']);
+        Route::get('/summary', [ReportController::class, 'apiCompletionSummary']);
+        Route::get('/critical', [ReportController::class, 'apiCriticalReport']);
+        Route::get('/maintenance', [ReportController::class, 'apiMaintenanceReport']);
+        Route::get('/reagent-usage', [ReportController::class, 'apiReagentUsage']);
 
 
         Route::get('/', [ReportController::class, 'apiIndex']);
@@ -880,7 +880,7 @@ Route::prefix('laboratories')->group(function () {
         Route::post('/{id}/finalize', [ReportController::class, 'apiFinalize']);
 
 
-         
+
     });
 
     // Sample Collection
@@ -1459,7 +1459,7 @@ Route::prefix('lab')->group(function () {
     Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
 });
 
-   Route::prefix('pharmacy/reports')->group(function () {
+Route::prefix('pharmacy/reports')->group(function () {
 
     Route::get('sales', [PharmacyReportController::class, 'salesApi']);
     Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
@@ -1490,10 +1490,10 @@ Route::prefix('insurance')->group(function () {
 Route::get('/patient-by-name/{name}', function ($name) {
 
     $patient = Patient::where(
-    DB::raw("CONCAT(first_name, ' ', last_name)"),
-    'like',
-    "%$name%"
-)->first();
+        DB::raw("CONCAT(first_name, ' ', last_name)"),
+        'like',
+        "%$name%"
+    )->first();
 
     if (!$patient) {
         return response()->json([
@@ -1594,7 +1594,7 @@ Route::prefix('doctor/ipd')->group(function () {
     Route::get('/medicines', [IpdController::class, 'apiMedicines']);
 
     // Scan Types
-    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']); 
+    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']);
 
     // Lab Test
     Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
@@ -1621,21 +1621,21 @@ Route::prefix('accountant/billing')->group(function () {
 
 });
 
-        Route::prefix('claims')->group(function () {
+Route::prefix('claims')->group(function () {
 
-            Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
-            Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
+    Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
+    Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
 
-            Route::post('/', [InsuranceClaimController::class, 'apiStore']);
-            Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
+    Route::post('/', [InsuranceClaimController::class, 'apiStore']);
+    Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
 
-            Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
-            Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
-            Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
+    Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
+    Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
 
-            Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
-            Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
+    Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
+    Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
 
-            Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+    Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
 
 });
