@@ -19,7 +19,7 @@ return new class extends Migration
     $table->timestamp('used_at')->useCurrent();
 
     $table->foreign('item_id')->references('id')->on('inventory_items')->cascadeOnDelete();
-});
+    });
     }
 
     /**
