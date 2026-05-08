@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use App\Models\HourlyPayApproval;
 use App\Models\Staff;
 use App\Models\HourlyPay;
-use App\Models\Shift; // ✅ ADDED
+use App\Models\Shift; // ADDED
 
-class HourlyPayApprovalController extends Controller
+class HourlyPayController extends Controller
 {
 
 /* ================= INDEX ================= */
