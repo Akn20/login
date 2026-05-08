@@ -184,6 +184,17 @@
                                 </a>
                             </li>
 
+            {{-- Vendor Management --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.inventory-vendors.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Vendor Management
+                                </a>
+                            </li>
+                            
                         </ul>
                     </li>
 

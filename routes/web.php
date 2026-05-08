@@ -156,6 +156,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\ExpenseCategoryController;
+//use App\Http\Controllers\VendorManagementController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2264,6 +2265,40 @@ Route::prefix('admin/accountant/expense-management/category')
 
         Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore'])->name('restore');
 });
+
+/*
+// ================= VENDOR MANAGEMENT =================
+Route::prefix('admin/accountant/expense-management/vendor')
+    ->name('admin.accountant.vendor.')
+    ->group(function () {
+
+        Route::get('/', [VendorManagementController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [VendorManagementController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [VendorManagementController::class, 'store'])
+            ->name('store');
+
+        Route::get('/edit/{id}', [VendorManagementController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [VendorManagementController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [VendorManagementController::class, 'destroy'])
+            ->name('delete');
+
+        Route::get('/deleted', [VendorManagementController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::post('/restore/{id}', [VendorManagementController::class, 'restore'])
+            ->name('restore');
+
+});
+
+*/
 
 });
 //IPD (Doctor Module)

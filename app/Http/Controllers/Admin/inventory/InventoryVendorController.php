@@ -27,6 +27,10 @@ class InventoryVendorController extends Controller
                 'vendor_name' => 'required|max:150|unique:inventory_vendors,vendor_name',
                 'phone_number' => 'required|digits:10',
                 'email' => 'required|email|max:150',
+
+                // GST NUMBER
+                'gst_number' => 'nullable|max:50',
+
                 'address' => 'required|max:500',
                 'status' => 'required|in:Active,Inactive',
             ],
@@ -45,6 +49,10 @@ class InventoryVendorController extends Controller
             'vendor_name' => $request->vendor_name,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
+
+            // GST NUMBER
+            'gst_number' => $request->gst_number,
+
             'address' => $request->address,
             'status' => $request->status,
             'created_by' => 1,
@@ -76,6 +84,10 @@ class InventoryVendorController extends Controller
                 'vendor_name' => "required|max:150|unique:inventory_vendors,vendor_name,$id",
                 'phone_number' => 'required|digits:10',
                 'email' => 'required|email|max:150',
+
+                // GST NUMBER
+                'gst_number' => 'nullable|max:50',
+
                 'address' => 'required|max:500',
                 'status' => 'required|in:Active,Inactive',
             ],
@@ -96,6 +108,10 @@ class InventoryVendorController extends Controller
             'vendor_name' => $request->vendor_name,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
+
+            // GST NUMBER
+            'gst_number' => $request->gst_number,
+
             'address' => $request->address,
             'status' => $request->status,
             'updated_by' => 1,
