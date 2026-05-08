@@ -27,6 +27,8 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+
+use App\Http\Controllers\Admin\InsuranceClaimController;
 // Admin > Lab
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
@@ -105,6 +107,8 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 
+
+
 use App\Models\User;
 //added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
@@ -121,9 +125,15 @@ use Illuminate\Support\Facades\Route;
 // added by sushan for api
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
-//labaratory
+//laboratory
 use App\Http\Controllers\Admin\AlertController;
 use App\Http\Controllers\Admin\LabDashboardController;
+use App\Http\Controllers\Admin\InventoryItemController;
+use App\Http\Controllers\Admin\InventoryUsageController;
+use App\Http\Controllers\Admin\InventoryExpiryController;
+use App\Http\Controllers\Admin\InventoryAlertController;
+use App\Http\Controllers\Admin\InventoryController;
+
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -846,6 +856,15 @@ Route::prefix('laboratories')->group(function () {
     // ================= REPORTS ================= 
     Route::prefix('reports')->group(function () {
 
+
+        Route::get('/daily', [ReportController::class, 'apiDailyReport']);
+    Route::get('/pending', [ReportController::class, 'apiPendingReport']);
+    Route::get('/summary', [ReportController::class, 'apiCompletionSummary']);
+    Route::get('/critical', [ReportController::class, 'apiCriticalReport']);
+    Route::get('/maintenance', [ReportController::class, 'apiMaintenanceReport']);
+    Route::get('/reagent-usage', [ReportController::class, 'apiReagentUsage']);
+
+
         Route::get('/', [ReportController::class, 'apiIndex']);
         Route::get('/deleted', [ReportController::class, 'apiDeleted']);
         Route::get('/{id}', [ReportController::class, 'apiShow']);
@@ -863,6 +882,8 @@ Route::prefix('laboratories')->group(function () {
         Route::post('/{id}/sign', [ReportController::class, 'apiSign']);
         Route::post('/{id}/finalize', [ReportController::class, 'apiFinalize']);
 
+
+         
     });
 
     // Sample Collection
@@ -1142,16 +1163,16 @@ Route::prefix('nurse-shift-handover')->group(function () {
 
     // Get handover notes by assignment
     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
-    
+
     // Create handover note
     Route::post('/', [NurseShiftsController::class, 'apiStore']);
-    
+
     // Update handover note
     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
-    
+
     // Delete handover note
     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
-    
+
     // Update handover status
     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
 });
@@ -1405,7 +1426,7 @@ Route::prefix('doctor')->group(function () {
 
     Route::put('/notifications/{id}/read', [NotificationController::class, 'apiMarkAsRead']);
 
-    });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -1631,6 +1652,25 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+
+});
+
+        Route::prefix('claims')->group(function () {
+
+            Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
+            Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
+
+            Route::post('/', [InsuranceClaimController::class, 'apiStore']);
+            Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
+
+            Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
+            Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
+            Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
+
+            Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
+            Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
+
+            Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
 });
 
 Route::prefix('accountant/payment')->group(function () {
