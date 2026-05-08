@@ -72,52 +72,49 @@
                 </div>
             </div>
         </div>
-{{-- DEPARTMENT REVENUE SUMMARY --}}
+{{-- REVENUE CHARTS --}}
 
-@foreach($departmentSummary as $dept)
-
-<div class="col-md-4">
+<div class="col-md-6">
     <div class="card stretch stretch-full">
-        <div class="card-body text-center">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Department Revenue
+            </h5>
+        </div>
 
-            <h6>
-                {{ $dept->department }}
-            </h6>
-
-            <h4 class="fw-bold text-info">
-                ₹ {{ number_format($dept->revenue, 2) }}
-            </h4>
-
+        <div class="card-body">
+            <div id="department-revenue-chart"></div>
         </div>
     </div>
 </div>
 
-@endforeach
-
-
-{{-- DOCTOR REVENUE SUMMARY --}}
-
-@foreach($doctorSummary as $doc)
-
-<div class="col-md-4">
+<div class="col-md-6">
     <div class="card stretch stretch-full">
-        <div class="card-body text-center">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Doctor Revenue
+            </h5>
+        </div>
 
-            <h6>
-                {{ $doc->doctor }}
-            </h6>
-
-            <h4 class="fw-bold text-success">
-                ₹ {{ number_format($doc->revenue, 2) }}
-            </h4>
-
+        <div class="card-body">
+            <div id="doctor-revenue-chart"></div>
         </div>
     </div>
 </div>
 
-@endforeach
+<div class="col-12">
+    <div class="card stretch stretch-full">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Monthly Revenue Trend
+            </h5>
+        </div>
 
-
+        <div class="card-body">
+            <div id="monthly-revenue-chart"></div>
+        </div>
+    </div>
+</div>
 
         {{-- FILTER SECTION --}}
         <div class="col-12">
@@ -300,7 +297,13 @@
                                 <td>{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
                                 <td>{{ $item->department }}</td>
                                 <td>{{ $item->doctor }}</td>
-                                <td>{{ $item->service }}</td>
+                            <td>
+    @foreach(explode(',', $item->service) as $srv)
+        <div>
+            • {{ trim($srv) }}
+        </div>
+    @endforeach
+</td>
                                 <td>{{ $item->payment_mode ??'-' }}</td>
                                 <td class="text-end">₹ {{ number_format($item->amount, 2) }}</td>
                             </tr>
@@ -345,3 +348,152 @@
 </div>
 
 @endsection
+
+@push('scripts')
+
+{{-- Department Revenue Chart --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var departmentNames = @json($departmentSummary->pluck('department'));
+    var departmentRevenue = @json($departmentSummary->pluck('revenue'));
+var options = {
+    chart: {
+        type: 'bar',
+        height: 320,
+        toolbar: {
+            show: false
+        }
+    },
+
+    plotOptions: {
+        bar: {
+            horizontal: true
+        }
+    },
+
+    series: [{
+        name: 'Revenue',
+        data: departmentRevenue
+    }],
+
+    xaxis: {
+        categories: departmentNames
+    },
+
+    dataLabels: {
+        enabled: false
+    },
+
+    colors: ['#3454d1']
+};
+
+    new ApexCharts(
+        document.querySelector("#department-revenue-chart"),
+        options
+    ).render();
+
+});
+</script>
+
+
+{{-- Doctor Revenue Chart --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var doctorNames = @json($doctorSummary->pluck('doctor'));
+
+    var doctorRevenue = @json(
+        $doctorSummary->pluck('revenue')->map(fn($r) => (float) $r)
+    );
+
+    var options = {
+        chart: {
+            type: 'donut',
+            height: 320
+        },
+
+        series: doctorRevenue,
+
+        labels: doctorNames,
+
+        dataLabels: {
+            enabled: true
+        },
+
+        legend: {
+            position: 'bottom'
+        },
+
+        colors: [
+         
+           '#6f42c1',
+            '#25b865',
+            '#f4b400',
+            '#d13b4c',
+          
+               '#3454d1',
+        ]
+    };
+
+    new ApexCharts(
+        document.querySelector("#doctor-revenue-chart"),
+        options
+    ).render();
+
+});
+</script>
+
+
+
+
+{{-- Monthly Revenue Trend Chart --}}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var months = @json($monthlyRevenueChart->pluck('month'));
+    var revenues = @json($monthlyRevenueChart->pluck('revenue'));
+
+    var options = {
+        chart: {
+            type: 'line',
+            height: 350,
+            toolbar: {
+                show: false
+            }
+        },
+
+        series: [{
+            name: 'Revenue',
+            data: revenues
+        }],
+
+        xaxis: {
+            categories: months
+        },
+
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+
+        dataLabels: {
+            enabled: false
+        },
+
+        markers: {
+            size: 5
+        },
+
+        colors: ['#28a745']
+    };
+
+    new ApexCharts(
+        document.querySelector("#monthly-revenue-chart"),
+        options
+    ).render();
+
+});
+</script>
+
+@endpush
