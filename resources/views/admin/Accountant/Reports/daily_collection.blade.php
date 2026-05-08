@@ -1,10 +1,66 @@
 @extends('layouts.admin')
 
+<style>
+
+    @media print {
+
+        /* Hide Sidebar */
+        .nxl-navigation,
+        .nxl-sidebar,
+        .sidebar,
+        aside,
+        nav,
+        .main-sidebar {
+
+            display: none !important;
+        }
+
+        /* Remove margins/padding */
+        .main-content,
+        .content,
+        .container-fluid {
+
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        /* Hide buttons/filter section */
+        .btn,
+        form,
+        .card-header input {
+
+            display: none !important;
+        }
+
+        /* Table styling */
+        table {
+
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+
+            border: 1px solid #000 !important;
+            padding: 8px !important;
+        }
+
+        body {
+
+            background: #fff !important;
+        }
+
+    }
+
+</style>
+
 @section('content')
 
 <div class="container-fluid py-4">
 
-    <!-- Page Header -->
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
@@ -17,34 +73,35 @@
             </p>
         </div>
 
-        <div>
-            <button class="btn btn-success me-2">
-                Export Excel
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+
+            <button onclick="window.print()"
+                    class="btn btn-primary">
+
+                <i class="feather-printer me-1"></i>
+                Print
+
             </button>
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
-                Print Report
-            </button>
         </div>
 
     </div>
 
-    <!-- Filter Section -->
+    <!-- Filters -->
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.daily.collection') }}">
 
                 <div class="row">
 
@@ -56,6 +113,8 @@
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
@@ -68,6 +127,8 @@
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
@@ -79,25 +140,30 @@
                             Payment Mode
                         </label>
 
-                        <select class="form-select">
+                        <select name="payment_mode"
+                                class="form-select">
 
-                            <option>
+                            <option value="">
                                 All
                             </option>
 
-                            <option>
+                            <option value="Cash"
+                                {{ request('payment_mode') == 'Cash' ? 'selected' : '' }}>
                                 Cash
                             </option>
 
-                            <option>
+                            <option value="Card"
+                                {{ request('payment_mode') == 'Card' ? 'selected' : '' }}>
                                 Card
                             </option>
 
-                            <option>
+                            <option value="UPI"
+                                {{ request('payment_mode') == 'UPI' ? 'selected' : '' }}>
                                 UPI
                             </option>
 
-                            <option>
+                            <option value="Insurance"
+                                {{ request('payment_mode') == 'Insurance' ? 'selected' : '' }}>
                                 Insurance
                             </option>
 
@@ -105,7 +171,7 @@
 
                     </div>
 
-                    <!-- Search Button -->
+                    <!-- Search -->
                     <div class="col-md-3 mb-3 d-flex align-items-end">
 
                         <button type="submit"
@@ -128,7 +194,7 @@
     <!-- Summary Cards -->
     <div class="row">
 
-        <!-- Total Collection -->
+        <!-- Total -->
         <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
@@ -140,7 +206,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-success mt-3">
-                        ₹ 1,50,000
+                        ₹ {{ number_format($totalCollection, 2) }}
                     </h3>
 
                 </div>
@@ -149,7 +215,7 @@
 
         </div>
 
-        <!-- Cash Collection -->
+        <!-- Cash -->
         <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
@@ -161,7 +227,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        ₹ 60,000
+                        ₹ {{ number_format($cashCollection, 2) }}
                     </h3>
 
                 </div>
@@ -170,7 +236,7 @@
 
         </div>
 
-        <!-- UPI Collection -->
+        <!-- UPI -->
         <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
@@ -182,7 +248,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        ₹ 40,000
+                        ₹ {{ number_format($upiCollection, 2) }}
                     </h3>
 
                 </div>
@@ -191,7 +257,7 @@
 
         </div>
 
-        <!-- Card Collection -->
+        <!-- Card -->
         <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
@@ -203,7 +269,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-info mt-3">
-                        ₹ 50,000
+                        ₹ {{ number_format($cardCollection, 2) }}
                     </h3>
 
                 </div>
@@ -214,7 +280,7 @@
 
     </div>
 
-    <!-- Collection Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -223,9 +289,10 @@
                 Collection Transactions
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Transactions">
+            <span class="badge bg-dark">
+                Total Records :
+                {{ $collections->count() }}
+            </span>
 
         </div>
 
@@ -241,7 +308,7 @@
 
                             <th>#</th>
 
-                            <th>Transaction ID</th>
+                            <th>Type</th>
 
                             <th>Patient Name</th>
 
@@ -251,7 +318,7 @@
 
                             <th>Amount</th>
 
-                            <th>Date</th>
+                            <th>Payment Date</th>
 
                             <th>Status</th>
 
@@ -261,89 +328,113 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($collections as $key => $collection)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>TXN1001</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>Rahul Sharma</td>
+                                <!-- OPD / IPD -->
+                                <td>
 
-                            <td>BILL-101</td>
+                                    @if($collection->type == 'OPD')
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Cash
-                                </span>
-                            </td>
+                                        <span class="badge bg-primary">
+                                            OPD
+                                        </span>
 
-                            <td>₹ 5,000</td>
+                                    @else
 
-                            <td>07-05-2026</td>
+                                        <span class="badge bg-success">
+                                            IPD
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                                    @endif
 
-                        </tr>
+                                </td>
 
-                        <tr>
+                                <!-- Patient -->
+                                <td>
+                                    {{ $collection->patient_name }}
+                                </td>
 
-                            <td>2</td>
+                                <!-- Bill -->
+                                <td>
+                                    {{ $collection->bill_no }}
+                                </td>
 
-                            <td>TXN1002</td>
+                                <!-- Payment Mode -->
+                                <td>
 
-                            <td>Priya Kumar</td>
+                                    @if(strtolower($collection->payment_mode) == 'cash')
 
-                            <td>BILL-102</td>
+                                        <span class="badge bg-success">
+                                            Cash
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    UPI
-                                </span>
-                            </td>
+                                    @elseif(strtolower($collection->payment_mode) == 'upi')
 
-                            <td>₹ 3,500</td>
+                                        <span class="badge bg-warning text-dark">
+                                            UPI
+                                        </span>
 
-                            <td>07-05-2026</td>
+                                    @elseif(strtolower($collection->payment_mode) == 'card')
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                                        <span class="badge bg-info text-dark">
+                                            Card
+                                        </span>
 
-                        </tr>
+                                    @else
 
-                        <tr>
+                                        <span class="badge bg-secondary">
+                                            {{ $collection->payment_mode }}
+                                        </span>
 
-                            <td>3</td>
+                                    @endif
 
-                            <td>TXN1003</td>
+                                </td>
 
-                            <td>Arjun Reddy</td>
+                                <!-- Amount -->
+                                <td class="fw-bold text-success">
 
-                            <td>BILL-103</td>
+                                    ₹ {{ number_format($collection->amount, 2) }}
 
-                            <td>
-                                <span class="badge bg-info text-dark">
-                                    Card
-                                </span>
-                            </td>
+                                </td>
 
-                            <td>₹ 7,000</td>
+                                <!-- Date -->
+                                <td>
 
-                            <td>07-05-2026</td>
+                                    {{ \Carbon\Carbon::parse($collection->payment_date)->format('d-m-Y h:i A') }}
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <!-- Status -->
+                                <td>
+
+                                    <span class="badge bg-primary">
+                                        Completed
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="8"
+                                    class="text-center text-muted py-4">
+
+                                    No collection records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
