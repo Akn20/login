@@ -306,7 +306,7 @@ compact(
 
     return response()->stream($callback, 200, $headers);
 }
-//--------------API methods-----------------------
+//--------------API-----------------------
 public function apiIndex(Request $request)
 {
     $fromDate   = $request->from_date;
@@ -365,11 +365,22 @@ public function revenueList(Request $request)
             'ipd.department_id'
         )
 
+        ->leftJoin(
+            'ipd_bill_items as items',
+            'items.bill_id',
+            '=',
+            'b.id'
+        )
+
         ->select(
             DB::raw('DATE(b.bill_date) as date'),
-            DB::raw('IFNULL(d.department_name, "-") as department'),
-            DB::raw('IFNULL(s.name, "-") as doctor'),
-            DB::raw('"IPD Billing" as service'),
+
+            DB::raw("IFNULL(d.department_name, '-') as department"),
+
+            DB::raw("IFNULL(s.name, '-') as doctor"),
+
+            DB::raw("IFNULL(items.description, 'N/A') as service"),
+
             DB::raw('b.grand_total as amount')
         );
 
@@ -400,9 +411,10 @@ public function revenueList(Request $request)
     }
 
     if ($request->service) {
-        $query->whereRaw(
-            '"IPD Billing" LIKE ?',
-            ['%' . trim($request->service) . '%']
+        $query->where(
+            'items.description',
+            'LIKE',
+            '%' . trim($request->service) . '%'
         );
     }
 
@@ -442,17 +454,27 @@ public function doctorRevenue()
 }
 public function serviceRevenue()
 {
-    $data = DB::table('ipd_services')
-        ->select(
-            'service_name as service',
-            DB::raw('SUM(amount) as revenue')
+    $data = DB::table('ipd_bills as b')
+
+        ->leftJoin(
+            'ipd_bill_items as items',
+            'items.bill_id',
+            '=',
+            'b.id'
         )
-        ->groupBy('service_name')
+
+        ->select(
+            DB::raw("IFNULL(items.description, 'N/A') as service"),
+            DB::raw('SUM(b.grand_total) as revenue')
+        )
+
+        ->groupBy('items.description')
+
+        ->orderByDesc('revenue')
+
         ->get();
 
     return response()->json($data);
 }
-
-
 
 }
