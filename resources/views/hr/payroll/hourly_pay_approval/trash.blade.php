@@ -73,36 +73,37 @@
 
 {{-- RESTORE --}}
 <form method="POST"
-action="{{ route('hr.payroll.hourly-pay-approval.restore',$entry->id) }}">
+      action="{{ route('hr.payroll.hourly-pay-approval.restore',$entry->id) }}">
 
-@csrf
+    @csrf
+    @method('PUT')
 
-<button type="submit"
-class="btn btn-success btn-sm">
+    <button type="submit"
+            class="btn btn-success btn-sm">
 
-<i class="feather-refresh-cw me-1"></i>
-Restore
+        <i class="feather-refresh-cw me-1"></i>
+        Restore
 
-</button>
+    </button>
 
 </form>
 
 
 {{-- PERMANENT DELETE --}}
 <form method="POST"
-action="{{ route('hr.payroll.hourly-pay-approval.forceDelete',$entry->id) }}"
-onsubmit="return confirm('Delete permanently? This cannot be undone.')">
+      action="{{ route('hr.payroll.hourly-pay-approval.force-delete',$entry->id) }}"
+      onsubmit="return confirm('Delete permanently? This cannot be undone.')">
 
-@csrf
-@method('DELETE')
+    @csrf
+    @method('DELETE')
 
-<button type="submit"
-class="btn btn-danger btn-sm">
+    <button type="submit"
+            class="btn btn-danger btn-sm">
 
-<i class="feather-trash-2 me-1"></i>
-Delete
+        <i class="feather-trash-2 me-1"></i>
+        Delete
 
-</button>
+    </button>
 
 </form>
 
