@@ -154,6 +154,8 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\AccountantReportController;
+
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2263,5 +2265,28 @@ Route::prefix('doctor/ipd')->group(function () {
 
     Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
     ->name('doctor.ipd.storeLabRadiology');
+
+});
+
+//Accountant Financial Reports
+Route::prefix('admin/accountant/reports')->group(function () {
+
+    //Route::get('/', [AccountantReportController::class, 'index']);
+
+    Route::get('/daily-collection', [AccountantReportController::class, 'dailyCollection']);
+
+    Route::get('/department-revenue', [AccountantReportController::class, 'departmentRevenue']);
+
+    Route::get('/opd-ipd-revenue', [AccountantReportController::class, 'opdIpdRevenue']);
+
+    Route::get('/outstanding-dues', [AccountantReportController::class, 'outstandingDues']);
+
+    Route::get('/insurance-settlement', [AccountantReportController::class, 'insuranceSettlement']);
+
+    Route::get('/refund-report', [AccountantReportController::class, 'refundReport']);
+
+    Route::get('/expense-report', [AccountantReportController::class, 'expenseReport']);
+
+    Route::get('/profit-loss', [AccountantReportController::class, 'profitLoss']);
 
 });

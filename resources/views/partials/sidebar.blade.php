@@ -165,6 +165,141 @@
                         </ul>
                     </li>
 
+
+                    {{-- Financial Reports Menu --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/reports*') ? 'active nxl-trigger' : '' }}">
+
+                        <a href="javascript:void(0);" class="nxl-link">
+
+                            <i class="feather-bar-chart-2 me-2"></i>
+
+                            Financial Reports
+
+                            <span class="nxl-arrow">
+                                <i class="feather-chevron-right"></i>
+                            </span>
+
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            {{-- Daily Collection --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/daily-collection') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Daily Collection Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Department Revenue --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/department-revenue') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Department Revenue Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- OPD/IPD Revenue --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/opd-ipd-revenue') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    OPD/IPD Revenue Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Outstanding Dues --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/outstanding-dues') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Outstanding Dues Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Insurance Settlement --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/insurance-settlement') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Insurance Settlement Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Refund Report --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/refund-report') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Refund Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Expense Report --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/expense-report') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Expense Report
+
+                                </a>
+
+                            </li>
+
+                            {{-- Profit & Loss --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ url('admin/accountant/reports/profit-loss') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Profit & Loss Summary
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+                    
+
                 </ul>
             </li>
 
