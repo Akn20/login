@@ -4,295 +4,461 @@ namespace App\Http\Controllers\HR\Payroll;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
+use App\Models\HourlyPayApproval;
+use App\Models\Staff;
 use App\Models\HourlyPay;
-use Illuminate\Support\Str;
+use App\Models\Shift; // ✅ ADDED
 
-class HourlyPayController extends Controller
+class HourlyPayApprovalController extends Controller
 {
-    /**
-     * Display list
-     */
-    public function index()
-    {
-        $workTypes = HourlyPay::latest()->get();
-        return view('hr.payroll.hourly_pay.index', compact('workTypes'));
-    }
 
-    /**
-     * Show create form
-     */
-    public function create()
-    {
-        return view('hr.payroll.hourly_pay.create');
-    }
+/* ================= INDEX ================= */
 
-    /**
-     * Store new record
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'code' => 'required|unique:hourly_pays,code',
-            'name' => 'required|string|max:255|unique:hourly_pays,name',
-            'category' => 'required',
-            'earning_type' => 'required',
-        ]);
-
-        HourlyPay::create([
-            'id' => (string) Str::uuid(),
-
-            'code' => $request->code,
-            'name' => $request->name,
-            'category' => $request->category,
-
-            // ✅ CHECKBOX FIX
-            'is_taxable'   => $request->has('is_taxable'),
-            'pf_applicable'=> $request->has('pf_applicable'),
-            'esi_applicable'=> $request->has('esi_applicable'),
-            'pt_applicable'=> $request->has('pt_applicable'),
-            'is_prorata'   => $request->has('is_prorata'),
-            'lop_impact'   => $request->has('lop_impact'),
-
-            'earning_type' => $request->earning_type,
-
-            // Payslip
-            'show_in_payslip' => $request->has('show_in_payslip'),
-            'payslip_label'   => $request->payslip_label,
-            'display_order'   => $request->display_order ?? 0,
-
-            'status' => $request->input('status', 'active'),
-        ]);
-
-        return redirect()
-            ->route('hr.payroll.hourly-pay.index')
-            ->with('success', 'Work Type created successfully');
-    }
-
-    /**
-     * Show edit form
-     */
-    public function edit($id)
-    {
-        $hourlyPay = HourlyPay::findOrFail($id);
-        return view('hr.payroll.hourly_pay.edit', compact('hourlyPay'));
-    }
-
-    /**
-     * Show details
-     */
-    public function show($id)
-    {
-        $hourlyPay = HourlyPay::findOrFail($id);
-        return view('hr.payroll.hourly_pay.show', compact('hourlyPay'));
-    }
-
-    /**
-     * Update record
-     */
-    public function update(Request $request, $id)
-    {
-        $hourlyPay = HourlyPay::findOrFail($id);
-
-        $request->validate([
-            'code' => 'required|unique:hourly_pays,code,' . $id,
-            'name' => 'required|string|max:255|unique:hourly_pays,name,' . $id,
-            'category' => 'required',
-            'earning_type' => 'required',
-        ]);
-
-        $hourlyPay->update([
-
-            'code' => $request->code,
-            'name' => $request->name,
-            'category' => $request->category,
-
-            //  CHECKBOX FIX
-            'is_taxable'   => $request->has('is_taxable'),
-            'pf_applicable'=> $request->has('pf_applicable'),
-            'esi_applicable'=> $request->has('esi_applicable'),
-            'pt_applicable'=> $request->has('pt_applicable'),
-            'is_prorata'   => $request->has('is_prorata'),
-            'lop_impact'   => $request->has('lop_impact'),
-
-            'earning_type' => $request->earning_type,
-
-            // Payslip
-            'show_in_payslip' => $request->has('show_in_payslip'),
-            'payslip_label'   => $request->payslip_label,
-            'display_order'   => $request->display_order ?? 0,
-
-            'status' => $request->input('status', 'active'),
-        ]);
-
-        return redirect()
-            ->route('hr.payroll.hourly-pay.index')
-            ->with('success', 'Work Type updated successfully');
-    }
-
-    /**
-     * Deleted list
-     */
-    public function deleted()
-    {
-        $deleted = HourlyPay::onlyTrashed()->get();
-        return view('hr.payroll.hourly_pay.deleted', compact('deleted'));
-    }
-
-    /**
-     * Restore
-     */
-    public function restore($id)
-    {
-        HourlyPay::withTrashed()->findOrFail($id)->restore();
-
-        return redirect()->back()->with('success', 'Restored successfully');
-    }
-
-    /**
-     * Permanent delete
-     */
-    public function forceDelete($id)
-    {
-        HourlyPay::withTrashed()->findOrFail($id)->forceDelete();
-
-        return redirect()->back()->with('success', 'Deleted permanently');
-    }
-
-    /**
-     * Soft delete
-     */
-    public function destroy($id)
-    {
-        $hourlyPay = HourlyPay::findOrFail($id);
-        $hourlyPay->delete();
-
-        return redirect()
-            ->route('hr.payroll.hourly-pay.index')
-            ->with('success', 'Work Type deleted successfully');
-    }
-
-
-
-    //Api Methods 
-    public function apiIndex()
+public function index(Request $request)
 {
-    return response()->json([
-        'data' => HourlyPay::latest()->get()
-    ]);
+    
+$query = HourlyPayApproval::with('staff'); // ✅ KEEP THIS (WORKING)
+
+    if ($request->search) {
+        $query->whereHas('staff', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    $entries = $query
+                ->latest()
+                ->paginate(10);
+
+    // JSON RESPONSE
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => 200,
+            'message' => 'Records retrieved successfully.',
+            'data' => $entries
+        ]);
+    }
+
+    return view(
+        'hr.payroll.hourly_pay_approval.index',
+        compact('entries')
+    );
 }
-public function apiStore(Request $request)
+
+
+/* ================= CREATE ================= */
+
+public function create()
 {
+    $staffs = Staff::orderBy('name')->get();
+
+    $workTypes = HourlyPay::orderBy('name')->get();
+
+    $approvers = Staff::orderBy('name')->get();
+
+    $shifts = Shift::where('status',1)
+                    ->orderBy('shift_name')
+                    ->get(); // ✅ ADDED
+
+    return view(
+        'hr.payroll.hourly_pay_approval.create',
+        compact(
+            'staffs',
+            'workTypes',
+            'approvers',
+            'shifts' // ✅ ADDED
+        )
+    );
+}
+
+
+
+/* ================= STORE ================= */
+
+public function store(Request $request)
+{
+
     $request->validate([
-        'code' => 'required|unique:hourly_pays,code',
-        'name' => 'required|string|max:255|unique:hourly_pays,name',
-        'category' => 'required',
-        'earning_type' => 'required|in:fixed,variable',
-        'display_order' => 'nullable|numeric',
+
+        'staff_id' => 'required',
+
+        'work_type_code' => 'required',
+
+        'payroll_month' => 'required',
+
+        'attendance_date' => 'required|date',
+
+        'approved_hours' => 'required|numeric|min:0',
+
+        'source_type' => 'required',
+
     ]);
 
-    $data = HourlyPay::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
 
-        'code' => $request->code,
-        'name' => $request->name,
-        'category' => $request->category,
+    if ($request->approval_status == 'Approved') {
 
-        'is_taxable' => (bool) $request->is_taxable,
-        'pf_applicable' => (bool) $request->pf_applicable,
-        'esi_applicable' => (bool) $request->esi_applicable,
-        'pt_applicable' => (bool) $request->pt_applicable,
-        'is_prorata' => (bool) $request->is_prorata,
-        'lop_impact' => (bool) $request->lop_impact,
+        $request->validate([
 
-        'earning_type' => $request->earning_type,
+            'approved_by' => 'required',
 
-        'show_in_payslip' => (bool) $request->show_in_payslip,
-        'payslip_label' => $request->payslip_label,
-        'display_order' => $request->display_order ?? 0,
+            'approved_date' => 'required|date',
 
-        'status' => $request->status ?? 'active',
+        ]);
+
+    }
+
+
+    $data = [
+
+        'staff_id' => $request->staff_id,
+
+        'work_type_code' => $request->work_type_code,
+
+        'payroll_month' => $request->payroll_month,
+
+        'attendance_date' => $request->attendance_date,
+
+        'approved_hours' => $request->approved_hours,
+
+        'shift_code' => $request->shift_code,
+
+        'day_type' => $request->day_type ?? 'Working',
+
+        'source_type' => $request->source_type,
+
+        'approval_status' => $request->approval_status ?? 'Pending',
+
+        'approved_by' => $request->approved_by,
+
+        'approved_date' => $request->approved_date,
+
+        'locked_for_payroll' => $request->locked_for_payroll ?? 0,
+
+    ];
+
+
+    if ($request->approval_status == 'Rejected') {
+
+        $data['approved_by'] = null;
+
+        $data['approved_date'] = null;
+
+    }
+
+
+    $entry = HourlyPayApproval::create($data);
+
+    // JSON RESPONSE
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => 201,
+            'message' => 'Hourly Pay Approval created successfully.',
+            'data' => $entry
+        ], 201);
+    }
+
+    return redirect()
+        ->route('hr.payroll.hourly-pay-approval.index')
+        ->with(
+            'success',
+            'Hourly Pay Approval saved successfully.'
+        );
+
+}
+
+
+
+/* ================= EDIT ================= */
+
+public function edit($id)
+{
+
+    $entry = HourlyPayApproval::findOrFail($id);
+
+    if ($entry->locked_for_payroll == 1) {
+
+        // JSON RESPONSE
+        if (request()->wantsJson()) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Locked records cannot be edited.',
+                'data' => null
+            ], 403);
+        }
+
+        return redirect()
+            ->route('hr.payroll.hourly-pay-approval.index')
+            ->with(
+                'error',
+                'Locked records cannot be edited.'
+            );
+            return redirect()
+    ->route('hr.payroll.hourly-pay-approval.index')
+    ->with('error', 'Locked records cannot be edited.');
+
+    }
+
+
+    $staffs = Staff::orderBy('name')->get();
+
+    $workTypes = HourlyPay::orderBy('name')->get();
+
+    $approvers = Staff::orderBy('name')->get();
+
+    $shifts = Shift::where('status',1)
+                    ->orderBy('shift_name')
+                    ->get(); // ✅ ADDED
+
+    // JSON RESPONSE
+    if (request()->wantsJson()) {
+        return response()->json([
+            'status' => 200,
+            'message' => 'Record retrieved successfully.',
+            'data' => [
+                'entry' => $entry,
+                'staffs' => $staffs,
+                'workTypes' => $workTypes,
+                'approvers' => $approvers,
+                'shifts' => $shifts
+            ]
+        ]);
+    }
+
+    return view(
+        'hr.payroll.hourly_pay_approval.create',
+        compact(
+            'entry',
+            'staffs',
+            'workTypes',
+            'approvers',
+            'shifts' // ✅ ADDED
+        )
+    );
+
+}
+
+
+/* ================= UPDATE ================= */
+
+public function update(Request $request, $id)
+{
+
+    $entry = HourlyPayApproval::findOrFail($id);
+
+    if ($entry->locked_for_payroll == 1) {
+
+        // JSON RESPONSE
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Locked records cannot be updated.',
+                'data' => null
+            ], 403);
+        }
+
+        return redirect()
+            ->route('hr.payroll.hourly-pay-approval.index')
+            ->with(
+                'error',
+                'Locked records cannot be updated.'
+            );
+
+    }
+
+
+    $request->validate([
+
+        'staff_id' => 'required',
+
+        'work_type_code' => 'required',
+
+        'payroll_month' => 'required',
+
+        'attendance_date' => 'required|date',
+
+        'approved_hours' => 'required|numeric|min:0',
+
+        'source_type' => 'required',
+
     ]);
+
+
+    if ($request->approval_status == 'Approved') {
+
+        $request->validate([
+
+            'approved_by' => 'required',
+
+            'approved_date' => 'required|date',
+
+        ]);
+
+    }
+
+
+    $data = [
+
+        'staff_id' => $request->staff_id,
+
+        'work_type_code' => $request->work_type_code,
+
+        'payroll_month' => $request->payroll_month,
+
+        'attendance_date' => $request->attendance_date,
+
+        'approved_hours' => $request->approved_hours,
+
+        'shift_code' => $request->shift_code,
+
+        'day_type' => $request->day_type,
+
+        'source_type' => $request->source_type,
+
+        'approval_status' => $request->approval_status,
+
+        'approved_by' => $request->approved_by,
+
+        'approved_date' => $request->approved_date,
+
+        'locked_for_payroll' => $request->locked_for_payroll ?? 0,
+
+    ];
+
+
+    if ($request->approval_status == 'Rejected') {
+
+        $data['approved_by'] = null;
+
+        $data['approved_date'] = null;
+
+    }
+
+
+    $entry->update($data);
+
+    // JSON RESPONSE
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => 200,
+            'message' => 'Entry updated successfully.',
+            'data' => $entry
+        ]);
+    }
+
+    return redirect()
+        ->route('hr.payroll.hourly-pay-approval.index')
+        ->with(
+            'success',
+            'Entry updated successfully.'
+        );
+
+}
+public function show($id)
+{
+    $data = HourlyPayApproval::with('staff')->find($id);
+
+    if (!$data) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Record not found'
+        ], 404);
+    }
 
     return response()->json([
-        'message' => 'Created successfully',
+        'success' => true,
         'data' => $data
     ]);
 }
-public function apiShow($id)
+
+
+public function destroy($id)
 {
-    return response()->json([
-        'data' => HourlyPay::findOrFail($id)
-    ]);
-}
-public function apiUpdate(Request $request, $id)
-{
-    $data = HourlyPay::findOrFail($id);
+    $entry = HourlyPayApproval::find($id);
 
-    $request->validate([
-        'code' => 'required|unique:hourly_pays,code,' . $id,
-        'name' => 'required|string|max:255|unique:hourly_pays,name,' . $id,
-        'category' => 'required',
-        'earning_type' => 'required|in:fixed,variable',
-        'display_order' => 'nullable|numeric',
-    ]);
+    if (!$entry) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'Record not found',
+            'data' => null
+        ], 404);
+    }
 
-    $data->update([
-        'code' => $request->code,
-        'name' => $request->name,
-        'category' => $request->category,
+    // prevent delete if locked
+    if ($entry->locked_for_payroll == 1) {
+        return response()->json([
+            'status' => 403,
+            'message' => 'Locked records cannot be deleted',
+            'data' => null
+        ], 403);
+    }
 
-        'is_taxable' => (bool) $request->is_taxable,
-        'pf_applicable' => (bool) $request->pf_applicable,
-        'esi_applicable' => (bool) $request->esi_applicable,
-        'pt_applicable' => (bool) $request->pt_applicable,
-        'is_prorata' => (bool) $request->is_prorata,
-        'lop_impact' => (bool) $request->lop_impact,
-
-        'earning_type' => $request->earning_type,
-
-        'show_in_payslip' => (bool) $request->show_in_payslip,
-        'payslip_label' => $request->payslip_label,
-        'display_order' => $request->display_order ?? 0,
-
-        'status' => $request->status ?? 'active',
-    ]);
+    $entry->delete();
 
     return response()->json([
-        'message' => 'Updated successfully',
-        'data' => $data
-    ]);
-}
-public function apiDestroy($id)
-{
-    \Log::info("Deleting ID: " . $id);
-
-    $data = HourlyPay::findOrFail($id);
-    $data->delete();
-
-    return response()->json([
+        'status' => 200,
         'message' => 'Deleted successfully'
     ]);
 }
-public function apiDeleted()
+
+
+
+public function forceDelete($id)
 {
-    return response()->json([
-        'data' => HourlyPay::onlyTrashed()->get()
-    ]);
-}
-public function apiRestore($id)
-{
-    HourlyPay::withTrashed()->findOrFail($id)->restore();
+    $entry = HourlyPayApproval::withTrashed()->find($id);
+
+    if (!$entry) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    $entry->forceDelete(); // 🔥 PERMANENT DELETE
 
     return response()->json([
-        'message' => 'Restored successfully'
+        'status' => 200,
+        'message' => 'Permanently deleted'
     ]);
 }
-public function apiForceDelete($id)
+
+
+public function trash()
 {
-    HourlyPay::withTrashed()->findOrFail($id)->forceDelete();
+    $records = HourlyPayApproval::onlyTrashed()->get();
+
+    // 👉 If API request (Postman / JSON)
+    if (request()->wantsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Trash records fetched',
+            'data' => $records
+        ]);
+    }
+
+    // 👉 If Browser (Web view)
+   return view('hr.payroll.hourly_pay_approval.trash', [
+        'entries' => $records
+    ]);
+}
+
+public function restore($id)
+{
+    $entry = HourlyPayApproval::onlyTrashed()->find($id);
+
+    if (!$entry) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    $entry->restore();
 
     return response()->json([
-        'message' => 'Deleted permanently'
+        'success' => true,
+        'message' => 'Record restored successfully'
     ]);
 }
+
 }
+

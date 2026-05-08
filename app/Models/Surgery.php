@@ -43,4 +43,9 @@ class Surgery extends Model
     {
         return $this->belongsTo(Staff::class, 'anesthetist_id');
     }
+
+    public function consent()
+    {
+        return $this->hasOne(SurgeryConsent::class);
+    }
 }

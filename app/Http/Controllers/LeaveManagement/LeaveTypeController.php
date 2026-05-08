@@ -22,6 +22,15 @@ class LeaveTypeController extends Controller
         $leaveTypes = $query->latest()->paginate(10);
         $leaveTypes->appends($request->all());
 
+
+             // ✅ API response (if request is JSON)
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => true,
+            'data' => $leaveTypes
+        ]);
+    }
+
         return view(
             'admin.Leave_Management.leave_type.index',
             compact('leaveTypes')
@@ -96,6 +105,14 @@ class LeaveTypeController extends Controller
 
         LeaveType::create($validated);
 
+    // ✅ API response
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => true,
+            'message' => 'Leave Type created successfully'
+        ]);
+    }
+
         return redirect()
             ->route('hr.leave-type.index')
             ->with('success', 'Leave Type created successfully!');
@@ -161,8 +178,14 @@ class LeaveTypeController extends Controller
     public function destroy($id)
     {
         $leaveType = LeaveType::findOrFail($id);
-        $leaveType->delete();
+$leaveType->delete();
 
+if ($request->wantsJson()) {
+    return response()->json([
+        'status' => true,
+        'message' => 'Leave Type deleted successfully'
+    ]);
+}
         return redirect()
             ->route('hr.leave-type.index')
             ->with('success', 'Leave Type moved to trash successfully!');
@@ -177,6 +200,12 @@ class LeaveTypeController extends Controller
             ->latest()
             ->paginate(10);
 
+            if (request()->wantsJson()) {
+    return response()->json([
+        'status' => true,
+        'data' => $leaveTypes
+    ]);
+}
         return view(
             'admin.Leave_Management.leave_type.deleted',
             compact('leaveTypes')
@@ -189,8 +218,14 @@ class LeaveTypeController extends Controller
     public function restore($id)
     {
         $leaveType = LeaveType::onlyTrashed()->findOrFail($id);
-        $leaveType->restore();
+$leaveType->restore();
 
+if (request()->wantsJson()) {
+    return response()->json([
+        'status' => true,
+        'message' => 'Leave Type restored successfully'
+    ]);
+}
         return redirect()
             ->route('hr.leave-type.deleted')
             ->with('success', 'Leave Type restored successfully!');
@@ -202,8 +237,14 @@ class LeaveTypeController extends Controller
     public function forceDelete($id)
     {
         $leaveType = LeaveType::onlyTrashed()->findOrFail($id);
-        $leaveType->forceDelete();
+$leaveType->forceDelete();
 
+if (request()->wantsJson()) {
+    return response()->json([
+        'status' => true,
+        'message' => 'Leave Type permanently deleted'
+    ]);
+}
         return redirect()
             ->route('hr.leave-type.deleted')
             ->with('success', 'Leave Type permanently deleted!');
