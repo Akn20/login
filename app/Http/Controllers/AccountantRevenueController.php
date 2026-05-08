@@ -61,7 +61,9 @@ $paymentMode = $request->payment_mode;
     ->orderBy('description')
     ->get();
 
-$departmentSummary = DB::table('ipd_bills as b')
+$departmentSummary = DB::table('ipd_bill_items as items')
+
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
 
     ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
 
@@ -74,7 +76,7 @@ $departmentSummary = DB::table('ipd_bills as b')
 
     ->select(
         DB::raw("IFNULL(d.department_name, 'Unknown') as department"),
-        DB::raw('SUM(b.grand_total) as revenue')
+        DB::raw('SUM(items.amount) as revenue')
     )
 
     ->groupBy('d.department_name')
@@ -83,7 +85,9 @@ $departmentSummary = DB::table('ipd_bills as b')
 
     ->get();
 
- $doctorSummary = DB::table('ipd_bills as b')
+  $doctorSummary = DB::table('ipd_bill_items as items')
+
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
 
     ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
 
@@ -95,7 +99,7 @@ $departmentSummary = DB::table('ipd_bills as b')
 
     ->select(
         DB::raw("IFNULL(s.name, 'Unknown') as doctor"),
-        DB::raw('SUM(b.grand_total) as revenue')
+        DB::raw('SUM(items.amount) as revenue')
     )
 
     ->groupBy('s.name')
@@ -105,44 +109,63 @@ $departmentSummary = DB::table('ipd_bills as b')
     ->get();
 
 
+$monthlyRevenueChart = DB::table('ipd_bill_items as items')
+
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
+
+    ->select(
+        DB::raw("DATE_FORMAT(b.bill_date, '%b %Y') as month"),
+        DB::raw("SUM(items.amount) as revenue")
+    )
+
+    ->groupBy('month')
+
+    ->orderByRaw("MIN(b.bill_date)")
+
+    ->get();
+
+
 
         // ============================================
         //  SUMMARY QUERY
         // ============================================
 
-        $summaryQuery = DB::table('ipd_bills');
+   $summaryQuery = DB::table('ipd_bill_items as items')
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id');
 
-        if ($fromDate) {
-            $summaryQuery->whereDate('bill_date', '>=', $fromDate);
-        }
+ if ($fromDate) {
+    $summaryQuery->whereDate('b.bill_date', '>=', $fromDate);
+}
 
-        if ($toDate) {
-            $summaryQuery->whereDate('bill_date', '<=', $toDate);
-        }
+if ($toDate) {
+    $summaryQuery->whereDate('b.bill_date', '<=', $toDate);
+}
 
         // ============================================
         //  SUMMARY DATA
         // ============================================
 
         // TOTAL REVENUE
-        $totalRevenue = (clone $summaryQuery)
-            ->sum('grand_total');
-
+       $totalRevenue = (clone $summaryQuery)
+    ->sum('items.amount');
         // TODAY REVENUE
-        $todayRevenue = DB::table('ipd_bills')
-            ->whereDate('bill_date', Carbon::today())
-            ->sum('grand_total');
+       $todayRevenue = DB::table('ipd_bill_items as items')
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
+    ->whereDate('b.bill_date', Carbon::today())
+    ->sum('items.amount');
 
         // MONTHLY REVENUE
-        $monthlyRevenue = DB::table('ipd_bills')
-            ->whereMonth('bill_date', Carbon::now()->month)
-            ->whereYear('bill_date', Carbon::now()->year)
-            ->sum('grand_total');
+       $monthlyRevenue = DB::table('ipd_bill_items as items')
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
+    ->whereMonth('b.bill_date', Carbon::now()->month)
+    ->whereYear('b.bill_date', Carbon::now()->year)
+    ->sum('items.amount');
 
         // ANNUAL REVENUE
-        $annualRevenue = DB::table('ipd_bills')
-            ->whereYear('bill_date', Carbon::now()->year)
-            ->sum('grand_total');
+      $annualRevenue = DB::table('ipd_bill_items as items')
+    ->leftJoin('ipd_bills as b', 'b.id', '=', 'items.bill_id')
+    ->whereYear('b.bill_date', Carbon::now()->year)
+    ->sum('items.amount');
 
         // ============================================
         //  REVENUE TABLE QUERY
@@ -173,18 +196,35 @@ $departmentSummary = DB::table('ipd_bills as b')
     'b.ipd_id'
 )
 
-            ->select(
+         ->select(
+    'b.id',
     'b.bill_date as date',
 
     DB::raw("IFNULL(d.department_name, '-') as department"),
+
     DB::raw("IFNULL(s.name, '-') as doctor"),
 
-  DB::raw("IFNULL(items.description, 'N/A') as service"),
+    DB::raw("
+        GROUP_CONCAT(
+            DISTINCT items.description
+            SEPARATOR ', '
+        ) as service
+    "),
+
     DB::raw("IFNULL(pay.payment_mode, '-') as payment_mode"),
-    'b.grand_total as amount' //  FIXED
+
+    DB::raw('SUM(items.amount) as amount')
+)
+
+->groupBy(
+    'b.id',
+    'b.bill_date',
+    'd.department_name',
+    's.name',
+    'pay.payment_mode'
 );
         // ============================================
-        // 🔹 APPLY FILTERS
+        //  APPLY FILTERS
         // ============================================
 
         if ($fromDate) {
@@ -237,7 +277,8 @@ compact(
     'doctors',
     'services',
     'departmentSummary',
-    'doctorSummary'
+    'doctorSummary',
+    'monthlyRevenueChart'
 )
         );
     }
@@ -264,7 +305,7 @@ compact(
             DB::raw("IFNULL(s.name, '-') as doctor"),
             DB::raw("IFNULL(items.description, 'N/A') as service"),
             DB::raw("IFNULL(pay.payment_mode, '-') as payment_mode"),
-            'b.grand_total as amount'
+          DB::raw('IFNULL(items.amount,0) as amount')
         )
         ->orderBy('b.bill_date', 'desc')
         ->get();
