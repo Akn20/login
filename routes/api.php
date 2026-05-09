@@ -860,7 +860,9 @@ Route::prefix('laboratories')->group(function () {
         Route::get('/critical', [ReportController::class, 'apiCriticalReport']);
         Route::get('/maintenance', [ReportController::class, 'apiMaintenanceReport']);
         Route::get('/reagent-usage', [ReportController::class, 'apiReagentUsage']);
-
+        Route::get('/daily/export', [ReportController::class, 'apiDailyReportExport']);
+        Route::post('/critical/{id}/resolve', [ReportController::class, 'apiResolveCritical']);
+        Route::post('/{id}/verify', [ReportController::class, 'apiVerifyReport']);
 
         Route::get('/', [ReportController::class, 'apiIndex']);
         Route::get('/deleted', [ReportController::class, 'apiDeleted']);
@@ -1623,6 +1625,9 @@ Route::prefix('accountant/billing')->group(function () {
 
 Route::prefix('claims')->group(function () {
 
+    Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+    Route::get('/deleted/list', [InsuranceClaimController::class, 'apiDeleted']);
+    
     Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
     Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
 
@@ -1635,7 +1640,8 @@ Route::prefix('claims')->group(function () {
 
     Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
     Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
+    Route::get('/patients/list', [InsuranceClaimController::class, 'apiPatients']);
 
-    Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+
 
 });
