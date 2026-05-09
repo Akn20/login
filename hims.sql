@@ -1,4 +1,4 @@
-USE `himssecond_db`;
+USE `admin`;
 
 -- Helpful: disable FK checks while seeding
 SET

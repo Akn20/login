@@ -751,6 +751,12 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item">
+    <a href="{{ route('hr.payroll.dashboard') }}" class="nxl-link">
+        <i class="feather-grid me-2"></i>
+        Payroll Dashboard
+    </a>
+</li>
 
 
   </li>
