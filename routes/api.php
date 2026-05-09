@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -9,6 +10,7 @@ use App\Http\Controllers\Admin\LabTestController;
 */
 
 // Auth
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\IsolationController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -150,6 +152,7 @@ use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
@@ -1560,6 +1563,35 @@ Route::prefix('receptionist/ipd')->group(function () {
     Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
     Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
     Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
+
+});
+
+Route::prefix('pharmacy/reports')->group(function () {
+
+    Route::get('sales', [PharmacyReportController::class, 'salesApi']);
+    Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
+    Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
+    Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
+    Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
+    Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
+    Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
+    Route::get('grn', [PharmacyReportController::class, 'grnApi']);
+    Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
+
+    Route::get('/', [NurseShiftsController::class, 'apiIndex']);
+    Route::get('/{id}', [NurseShiftsController::class, 'apiShow']);
+    Route::post('/store', [NurseShiftsController::class, 'apiStore']);
+    Route::post('/{id}/complete', [NurseShiftsController::class, 'apiMarkComplete']);
 });
 
 
@@ -1610,7 +1642,9 @@ Route::prefix('accountant/billing')->group(function () {
     Route::get('/', [AccountantBillingController::class, 'apiIndex']);
 
     // 🔹 GET PATIENT DATA (for create screen)
-    Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
+    Route::get('/create-data/{ipd_id}', [AccountantBillingController::class, 'apiCreateData']);
+
+    //Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
 
     // 🔹 GET BILL DETAILS (view)
     Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
@@ -1627,7 +1661,7 @@ Route::prefix('claims')->group(function () {
 
     Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
     Route::get('/deleted/list', [InsuranceClaimController::class, 'apiDeleted']);
-    
+
     Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
     Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
 
@@ -1643,5 +1677,23 @@ Route::prefix('claims')->group(function () {
     Route::get('/patients/list', [InsuranceClaimController::class, 'apiPatients']);
 
 
+});
+
+Route::prefix('accountant/payment')->group(function () {
+    Route::get('/{bill_id}', [AccountantPaymentController::class, 'apiCreate']);
+    Route::post('/store', [AccountantPaymentController::class, 'apiStore']);
+    Route::get('/receipt/{id}', [AccountantPaymentController::class, 'apiReceipt']);
+});
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-discharge')->group(function () {
+
+    Route::get('/', [DischargePreparationController::class, 'apiIndex']);
+    Route::get('/{ipd_id}', [DischargePreparationController::class, 'apiShow']);
+    Route::post('/save', [DischargePreparationController::class, 'apiSave']);
+    Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
 
 });

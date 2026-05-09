@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Nurse\InfectionControlController;
 use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
@@ -160,6 +161,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2229,6 +2231,25 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
 });
+    
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Nurse: shift Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-shifts')->name('nurse-shifts.')->group(function () {
+        Route::get('/', [NurseShiftsController::class, 'index'])->name('index');
+        Route::get('/{id}/create', [NurseShiftsController::class, 'create'])->name('create');
+        Route::post('/store', [NurseShiftsController::class, 'store'])->name('store');
+        Route::get('/{id}', [NurseShiftsController::class, 'show'])->name('show');
+        Route::post('/handover/{id}/complete', [NurseShiftsController::class, 'markComplete'])->name('complete');
+    });
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -2341,5 +2362,35 @@ Route::prefix('doctor/ipd')->group(function () {
 
     Route::post('/{id}/lab-radiology', [IpdController::class, 'storeLabRadiology'])
     ->name('doctor.ipd.storeLabRadiology');
+});
 
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Accountant: Payment Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/accountant')->group(function () {
+
+    Route::get('payment/{bill_id}', [AccountantPaymentController::class, 'create'])->name('admin.accountant.payment.create');
+    Route::post('payment/store', [AccountantPaymentController::class, 'store'])->name('admin.accountant.payment.store');
+    Route::get('/billing/{id}', [AccountantBillingController::class, 'show'])->name('admin.accountant.billing.show');
+    Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
+
+});
+    /*
+|--------------------------------------------------------------------------
+| Nurse: Discharge Preparation
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('nurse-discharge')->name('nurse-discharge.')->group(function () {
+        Route::get('/', [DischargePreparationController::class, 'index'])->name('index');
+        Route::get('/{ipd_id}', [DischargePreparationController::class, 'form'])->name('form');
+        Route::post('/save', [DischargePreparationController::class, 'save'])->name('save');
+        Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
+        Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
+    });
 });
