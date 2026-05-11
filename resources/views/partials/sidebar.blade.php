@@ -170,6 +170,100 @@
                                     <i class="feather-briefcase me-2"></i> Insurance Claims
                                 </a>
                             </li>
+
+
+
+                            {{-- Financial Reconciliation Menu --}}
+
+                            <li class="nxl-item nxl-hasmenu">
+
+                                <a href="javascript:void(0);"
+                                class="nxl-link">
+
+                                    <i class="feather-briefcase me-2"></i>
+
+                                    <span>
+                                        Financial Reconciliation
+                                    </span>
+
+                                    <span class="nxl-arrow">
+                                        <i class="feather-chevron-right"></i>
+                                    </span>
+
+                                </a>
+
+                                <ul class="nxl-submenu">
+
+                                    {{-- Financial Reconciliation --}}
+                                    <li class="nxl-item {{ request()->is('admin/financial-reconciliation*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.financial-reconciliation.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                             Reconciliations
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Bank Verification --}}
+                                    <li class="nxl-item {{ request()->is('admin/bank-verification*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.bank-verification.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Bank Verification
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Digital Payments --}}
+                                    <li class="nxl-item {{ request()->is('admin/digital-payment*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.digital-payment.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Digital Payments
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Discrepancy Management --}} 
+                                    <li class="nxl-item {{ request()->is('admin/financial-discrepancy*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.financial-discrepancy.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Discrepancy Management
+
+                                        </a>
+
+                                    </li>
+                                    <li class="nxl-item">
+
+                <a href="{{ route('admin.reconciliation-reports.index') }}"
+                class="nxl-link">
+
+                    Reconciliation Reports
+
+                </a>
+
+</li>
+
+                                </ul>
+
+                            </li>
+
                         </li>
 
                 </ul>
