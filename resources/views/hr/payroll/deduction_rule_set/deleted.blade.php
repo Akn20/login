@@ -67,23 +67,30 @@
                                 <div class="d-flex gap-2 justify-content-end">
 
                                     <!-- Restore -->
-                                    <form action="{{ route('hr.payroll.deduction-rule-set.restore', $item->id) }}" method="POST">
+                                    <form action="{{ route('hr.payroll.deduction-rule-set.restore', $item->id) }}"
+                                        method="POST">
+
                                         @csrf
+                                        @method('PUT')
+
                                         <button class="btn btn-outline-success btn-icon rounded-circle btn-sm">
                                             <i class="feather-rotate-ccw"></i>
                                         </button>
+
                                     </form>
 
                                     <!-- Permanent Delete -->
-                                    <form action="{{ route('hr.payroll.deduction-rule-set.forceDelete', $item->id) }}"
-                                          method="POST"
-                                          onsubmit="return confirm('Permanently delete?')">
+                                    <form action="{{ route('hr.payroll.deduction-rule-set.force-delete', $item->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Permanently delete?')">
+
                                         @csrf
                                         @method('DELETE')
 
                                         <button class="btn btn-outline-danger btn-icon rounded-circle btn-sm">
                                             <i class="feather-trash-2"></i>
                                         </button>
+
                                     </form>
 
                                 </div>

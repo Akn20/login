@@ -94,19 +94,19 @@
         </a>
 
         <!-- Delete -->
-        <form action="{{ route('hr.payroll.deduction-rule-set.delete', $item->id) }}"
-              method="POST"
-              onsubmit="return confirm('Move to trash?')">
-            @csrf
-            @method('DELETE')
+        <form action="{{ route('hr.payroll.deduction-rule-set.destroy', $item->id) }}"
+      method="POST"
+      onsubmit="return confirm('Move to trash?')">
 
-            <button type="submit"
-                    class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                    title="Delete">
-                <i class="feather-trash-2"></i>
-            </button>
-        </form>
+    @csrf
+    @method('DELETE')
 
+    <button type="submit"
+            class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+            title="Delete">
+        <i class="feather-trash-2"></i>
+    </button>
+</form>
     </div>
 </td>
 

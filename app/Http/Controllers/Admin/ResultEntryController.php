@@ -102,12 +102,12 @@ class ResultEntryController extends Controller
         if (!empty($files)) {
             $data['attachments'] = $files;
 
-            logAudit(
-                'report',
-                'FILE_UPLOADED',
-                $sample->id,
-                count($files) . ' attachment(s) uploaded'
-            );
+                    logAudit(
+            'report',
+            'FILE_UPLOADED',
+            $sample->id,
+            count($files) . ' attachment(s) uploaded'
+        );
         }
 
         $status = ($request->action == 'draft') ? 'Draft' : 'Completed';
@@ -122,7 +122,7 @@ class ResultEntryController extends Controller
             ]
         );
         //if error occurs here,run composer dump-autoload
-        logAudit(
+                logAudit(
             'report',
             'RESULT_ENTERED',
             $sample->id,
@@ -265,7 +265,7 @@ class ResultEntryController extends Controller
 
         if (!empty($files)) {
             $data['attachments'] = $files;
-            logAudit(
+                logAudit(
                 'report',
                 'FILE_UPLOADED',
                 $sample->id,
