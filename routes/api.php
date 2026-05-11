@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
@@ -28,6 +29,8 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
+
+use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\FinancialYearController;
 
 // Admin > Lab
@@ -1226,6 +1229,21 @@ Route::prefix('pharmacy')->group(function () {
 */
 // Route::prefix('nurse-shift-handover')->group(function () {
 
+    // Get handover notes by assignment
+    Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
+
+    // Create handover note
+    Route::post('/', [NurseShiftsController::class, 'apiStore']);
+
+    // Update handover note
+    Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
+
+    // Delete handover note
+    Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
+
+    // Update handover status
+    Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
+});
 //     // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
@@ -1541,7 +1559,7 @@ Route::prefix('lab')->group(function () {
     Route::get('/dashboard', [LabDashboardController::class, 'apiDashboard']);
 });
 
-   Route::prefix('pharmacy/reports')->group(function () {
+Route::prefix('pharmacy/reports')->group(function () {
 
     Route::get('sales', [PharmacyReportController::class, 'salesApi']);
     Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
@@ -1572,10 +1590,10 @@ Route::prefix('insurance')->group(function () {
 Route::get('/patient-by-name/{name}', function ($name) {
 
     $patient = Patient::where(
-    DB::raw("CONCAT(first_name, ' ', last_name)"),
-    'like',
-    "%$name%"
-)->first();
+        DB::raw("CONCAT(first_name, ' ', last_name)"),
+        'like',
+        "%$name%"
+    )->first();
 
     if (!$patient) {
         return response()->json([
@@ -1643,7 +1661,7 @@ Route::prefix('receptionist/ipd')->group(function () {
 
 });
 
-   Route::prefix('pharmacy/reports')->group(function () {
+Route::prefix('pharmacy/reports')->group(function () {
 
     Route::get('sales', [PharmacyReportController::class, 'salesApi']);
     Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
@@ -2075,7 +2093,7 @@ Route::prefix('doctor/ipd')->group(function () {
     Route::get('/medicines', [IpdController::class, 'apiMedicines']);
 
     // Scan Types
-    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']); 
+    Route::get('/scan-types', [IpdController::class, 'apiScanTypes']);
 
     // Lab Test
     Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
@@ -2089,7 +2107,9 @@ Route::prefix('accountant/billing')->group(function () {
     Route::get('/', [AccountantBillingController::class, 'apiIndex']);
 
     // 🔹 GET PATIENT DATA (for create screen)
-    Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
+    Route::get('/create-data/{ipd_id}', [AccountantBillingController::class, 'apiCreateData']);
+
+    //Route::get('/patient/{ipd_id}', [AccountantBillingController::class, 'apiPatient']);
 
     // 🔹 GET BILL DETAILS (view)
     Route::get('/view/{id}', [AccountantBillingController::class, 'apiShow']);
@@ -2099,6 +2119,35 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+
+});
+
+Route::prefix('claims')->group(function () {
+
+    Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+    Route::get('/deleted/list', [InsuranceClaimController::class, 'apiDeleted']);
+
+    Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
+    Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
+
+    Route::post('/', [InsuranceClaimController::class, 'apiStore']);
+    Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
+    Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
+
+    Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
+    Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
+    Route::get('/patients/list', [InsuranceClaimController::class, 'apiPatients']);
+
+
+});
+
+Route::prefix('accountant/payment')->group(function () {
+    Route::get('/{bill_id}', [AccountantPaymentController::class, 'apiCreate']);
+    Route::post('/store', [AccountantPaymentController::class, 'apiStore']);
+    Route::get('/receipt/{id}', [AccountantPaymentController::class, 'apiReceipt']);
 });
 //Revenue managemnt(Accountant)
 Route::prefix('revenue')->group(function () {

@@ -11,6 +11,7 @@ use App\Models\AuditLog;
 | After pulling project updates involving this helper file,
 | run:
 | composer dump-autoload
+|
 | php artisan optimize:clear
 |
 */

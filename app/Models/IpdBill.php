@@ -69,11 +69,12 @@ class IpdBill extends Model
 
     public function getDueAmountAttribute()
     {
-        return $this->payable_amount - $this->paid_amount;
+        return max((float) $this->payable_amount - (float) $this->paid_amount, 0);
     }
 
     public function getPaymentStatusAttribute()
     {
+        if ($this->due_amount <= 0) return 'paid';
         if ($this->paid_amount == 0) return 'unpaid';
         if ($this->paid_amount < $this->payable_amount) return 'partial';
         return 'paid';
