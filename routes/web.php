@@ -1863,9 +1863,7 @@ Route::prefix('payroll/payroll-result')
     Route::get('/generate',
         [PayrollResultController::class, 'generate']
     )->name('generate');
-
-});
-
+    });
 
 // --- Payroll Rate Employee Mapping --- //
 
@@ -2024,56 +2022,38 @@ Route::put('pre-payroll/{id}',
     [PrePayrollAdjustmentController::class, 'update']
 )->name('pre-payroll.update');
 });
- 
-//---------Payroll - Payroll Result -earnings breakdown-----------//
-Route::prefix('payroll/payroll-result-earnings')
-    ->name('payroll.payroll-result-earnings.')
-    ->group(function () {
-    Route::get('/', [PayrollResultEarningController::class, 'index'])->name('index');
-
-    Route::get('/create', [PayrollResultEarningController::class, 'create'])->name('create');
-    Route::post('/', [PayrollResultEarningController::class, 'store'])->name('store');
-
-    Route::get('/deleted', [PayrollResultEarningController::class, 'deleted'])->name('deleted');
-
-    Route::get('/{id}', [PayrollResultEarningController::class, 'show'])->name('show');
-    Route::get('/{id}/edit', [PayrollResultEarningController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [PayrollResultEarningController::class, 'update'])->name('update');
-
-    Route::delete('/{id}', [PayrollResultEarningController::class, 'destroy'])->name('delete');
-
-    Route::post('/restore/{id}', [PayrollResultEarningController::class, 'restore'])->name('restore');
-    Route::delete('/force-delete/{id}', [PayrollResultEarningController::class, 'forceDelete'])->name('forceDelete');
 });
+//---------Payroll - Payroll Result Earnings-----------//
+Route::get(
+    'hr/payroll/payroll-result-earnings',
+    [PayrollResultEarningController::class, 'index']
+)->name('hr.payroll.payroll-result-earnings.index');
 
-//---------Payroll - Payroll Result -deduction breakdown-----------//
-Route::prefix('payroll/payroll-result-deductions')
-    ->name('payroll.payroll-result-deductions.')
-    ->group(function () {
+Route::post(
+    'hr/payroll/payroll-result-earnings/generate',
+    [PayrollResultEarningController::class, 'generate']
+)->name('hr.payroll.payroll-result-earnings.generate');
+Route::get(
+    'hr/payroll/payroll-result-earnings/{id}/show',
+    [PayrollResultEarningController::class, 'show']
+)->name('hr.payroll.payroll-result-earnings.show');
 
-    Route::get('/', [PayrollResultDeductionController::class, 'index'])
-        ->name('index');
 
-    Route::get('/create', [PayrollResultDeductionController::class, 'create'])
-        ->name('create');
+//---------Payroll - Payroll Result Deductions-----------//
+Route::get(
+    'hr/payroll/payroll-result-deductions',
+    [PayrollResultDeductionController::class, 'index']
+)->name('hr.payroll.payroll-result-deductions.index');
 
-    Route::post('/', [PayrollResultDeductionController::class, 'store'])
-        ->name('store');
+Route::post(
+    'hr/payroll/payroll-result-deductions/generate',
+    [PayrollResultDeductionController::class, 'generate']
+)->name('hr.payroll.payroll-result-deductions.generate');
+Route::get(
+    'hr/payroll/payroll-result-deductions/{id}/show',
+    [PayrollResultDeductionController::class, 'show']
+)->name('hr.payroll.payroll-result-deductions.show');
 
-    Route::get('/{id}', [PayrollResultDeductionController::class, 'show'])
-        ->name('show');
-
-    Route::get('/{id}/edit', [PayrollResultDeductionController::class, 'edit'])
-        ->name('edit');
-
-    Route::put('/{id}', [PayrollResultDeductionController::class, 'update'])
-        ->name('update');
-
-    Route::delete('/{id}', [PayrollResultDeductionController::class, 'destroy'])
-        ->name('delete');
-
-});
-});
 
 
 /*
@@ -2566,4 +2546,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{type}/{id}', [LabReportController::class, 'show'])->name('show');
       //  Route::get('/department-salary', [DepartmentSalaryReportController::class, 'index'])->name('department-salary');
     });
+
 });

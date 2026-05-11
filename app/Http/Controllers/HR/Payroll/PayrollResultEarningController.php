@@ -4,327 +4,179 @@ namespace App\Http\Controllers\HR\Payroll;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\PayrollResultEarning;
 use App\Models\PayrollResult;
+use App\Models\PayrollResultEarning;
+use App\Models\Staff;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class PayrollResultEarningController extends Controller
 {
-    // INDEX
-    public function index()
+    /**
+     * INDEX — show dropdown + generated records
+     */
+    public function index(Request $request)
     {
-        $records = PayrollResultEarning::with('payrollResult')
-            ->latest()
-            ->paginate(10);
+         // Fetch approved pre payroll records with employee name
+    $approvedRecords = \App\Models\PrePayrollAdjustment::with('employee')
+        ->where('status', 'Approved')
+        ->get();
 
-        return view(
-            'hr.payroll.payroll_result_earnings.index',
-            compact('records')
-        );
+    // Unique employees from approved records
+    $employees = $approvedRecords->map(function ($record) {
+        return [
+            'staff_id' => $record->employee_id,
+            'name'     => optional($record->employee)->name ?? $record->employee_id,
+        ];
+    })->unique('staff_id')->values();
+
+    // Months for selected employee
+    $months = collect();
+    $earnings = collect();       // for earning controller
+    // $deductions = collect(); // for deduction controller
+    $selectedPayrollResult = null;
+
+    if ($request->staff_id) {
+        $months = \App\Models\PrePayrollAdjustment::where('status', 'Approved')
+            ->where('employee_id', $request->staff_id)
+            ->pluck('payroll_month', 'payroll_month');
     }
 
-    // CREATE
-    public function create()
-    {
-        $payrollResults = PayrollResult::orderBy('created_on', 'desc')->get();
+    if ($request->staff_id && $request->payroll_month) {
+        $selectedPayrollResult = \App\Models\PayrollResult::where('staff_id', $request->staff_id)
+            ->where('payroll_month', $request->payroll_month)
+            ->first();
 
-        return view(
-            'hr.payroll.payroll_result_earnings.create',
-            compact('payrollResults')
-        );
-    }
-
-    // STORE
-    public function store(Request $request)
-    {
-        $request->validate([
-
-            'payroll_result_id' => [
-                'required',
-                'exists:payroll_results,id'
-            ],
-
-            'earning_code' => [
-                'required',
-
-                Rule::unique('payroll_result_earnings')
-                    ->where(function ($query) use ($request) {
-
-                        return $query->where(
-                            'payroll_result_id',
-                            $request->payroll_result_id
-                        );
-                    })
-            ],
-
-            'earning_name' => 'required',
-
-            'earning_type' => 'required',
-
-            'amount' => 'required|numeric|min:0',
-
-            'calculation_base' =>
-                'required_if:earning_type,Variable,OT|nullable',
-
-            'calculation_value' =>
-                'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
-        ]);
-
-        // BLOCK unnecessary calculation fields for Fixed
-        if (
-            $request->earning_type === 'Fixed' &&
-            (
-                $request->filled('calculation_base') ||
-                $request->filled('calculation_value')
-            )
-        ) {
-
-            return redirect()->back()
-                ->withInput()
-                ->withErrors([
-                    'calculation_base' =>
-                        'Calculation fields are not needed for Fixed earnings.'
-                ]);
+        if ($selectedPayrollResult) {
+            // For earnings controller:
+            $earnings = \App\Models\PayrollResultEarning::where('payroll_result_id', $selectedPayrollResult->id)
+                ->orderBy('display_order')->get();
+            }
         }
 
-        // CREATE
+        return view('hr.payroll.payroll_result_earnings.index', compact(
+            'employees', 'months', 'earnings', 'selectedPayrollResult'
+        ));
+    }
+
+    /**
+     * GENERATE — auto create earnings from payroll result
+     */
+    public function generate(Request $request)
+{
+    $request->validate([
+        'staff_id'      => 'required',
+        'payroll_month' => 'required',
+    ]);
+
+    $payrollResult = PayrollResult::where('staff_id', $request->staff_id)
+        ->where('payroll_month', $request->payroll_month)
+        ->firstOrFail();
+
+    if (PayrollResultEarning::where('payroll_result_id', $payrollResult->id)->exists()) {
+        return redirect()->route('hr.payroll.payroll-result-earnings.index', [
+            'staff_id'      => $request->staff_id,
+            'payroll_month' => $request->payroll_month,
+        ])->with('info', 'Earnings already generated.');
+    }
+
+   $gross = $payrollResult->fixed_earnings_total; // ✅ use fixed only for % split
+
+$basic            = round($gross * 0.50, 2);
+$hra              = round($gross * 0.20, 2);
+$da               = round($gross * 0.10, 2);
+$specialAllowance = round($gross - $basic - $hra - $da, 2); // Remaining of fixed
+    $earnings = [
+        [
+            'earning_code'      => 'BASIC',
+            'earning_name'      => 'Basic Salary',
+            'earning_type'      => 'Fixed',
+            'calculation_base'  => 'Gross',
+            'calculation_value' => '50%',
+            'amount'            => $basic,
+            'taxable'           => 1,
+            'pf_applicable'     => 1,
+            'esi_applicable'    => 1,
+            'display_order'     => 1,
+        ],
+        [
+            'earning_code'      => 'HRA',
+            'earning_name'      => 'House Rent Allowance',
+            'earning_type'      => 'Fixed',
+            'calculation_base'  => 'Gross',
+            'calculation_value' => '20%',
+            'amount'            => $hra,
+            'taxable'           => 1,
+            'pf_applicable'     => 0,
+            'esi_applicable'    => 0,
+            'display_order'     => 2,
+        ],
+        [
+            'earning_code'      => 'DA',
+            'earning_name'      => 'Dearness Allowance',
+            'earning_type'      => 'Fixed',
+            'calculation_base'  => 'Gross',
+            'calculation_value' => '10%',
+            'amount'            => $da,
+            'taxable'           => 1,
+            'pf_applicable'     => 1,
+            'esi_applicable'    => 1,
+            'display_order'     => 3,
+        ],
+        [
+            'earning_code'      => 'SA',
+            'earning_name'      => 'Special Allowance',
+            'earning_type'      => 'Fixed',
+            'calculation_base'  => 'Remaining',
+            'calculation_value' => null,
+            'amount'            => $specialAllowance,
+            'taxable'           => 1,
+            'pf_applicable'     => 0,
+            'esi_applicable'    => 0,
+            'display_order'     => 4,
+        ],
+    ];
+
+    // Add Variable if exists
+    if ($payrollResult->variable_earnings_total > 0) {
+        $earnings[] = [
+            'earning_code'      => 'VAR',
+            'earning_name'      => 'Variable Earnings',
+            'earning_type'      => 'Variable',
+            'calculation_base'  => 'Gross',
+            'calculation_value' => null,
+            'amount'            => $payrollResult->variable_earnings_total,
+            'taxable'           => 1,
+            'pf_applicable'     => 0,
+            'esi_applicable'    => 0,
+            'display_order'     => 5,
+        ];
+    }
+
+    foreach ($earnings as $order => $earning) {
         PayrollResultEarning::create([
-
-            ...$request->all(),
-
-            'created_by' => Auth::id()
+            'id'                => Str::uuid(),
+            'payroll_result_id' => $payrollResult->id,
+            'created_by'        => Auth::id(),
+            ...$earning,
         ]);
-
-        return redirect()
-            ->route('hr.payroll.payroll-result-earnings.index')
-            ->with('success', 'Earning added successfully');
     }
 
-    // SHOW
-    public function show($id)
-    {
-        $record = PayrollResultEarning::with('payrollResult')
-            ->findOrFail($id);
-
-        return view(
-            'hr.payroll.payroll_result_earnings.show',
-            compact('record')
-        );
-    }
-
-    // EDIT
-    public function edit($id)
-    {
-        $record = PayrollResultEarning::with('payrollResult')
-            ->findOrFail($id);
-
-        // BLOCK finalized payroll edits
-        if (
-            $record->payrollResult &&
-            strtolower($record->payrollResult->status) === 'finalized'
-        ) {
-
-            return redirect()->back()
-                ->with('error', 'Cannot edit after payroll finalization.');
-        }
-
-       $payrollResults = PayrollResult::orderBy('created_on', 'desc')->get();
-
-        return view(
-            'hr.payroll.payroll_result_earnings.edit',
-            compact('record', 'payrollResults')
-        );
-    }
-
-    // UPDATE
-    public function update(Request $request, $id)
-    {
-        $record = PayrollResultEarning::findOrFail($id);
-
-        // BLOCK finalized payroll edits
-        if (
-            $record->payrollResult &&
-            strtolower($record->payrollResult->status) === 'finalized'
-        ) {
-
-            return redirect()->back()
-                ->with('error', 'Cannot edit after payroll finalization.');
-        }
-
-        $request->validate([
-
-            'payroll_result_id' => [
-                'required',
-                'exists:payroll_results,id'
-            ],
-
-            'earning_code' => [
-
-                'required',
-
-                Rule::unique('payroll_result_earnings')
-                    ->ignore($record->id)
-                    ->where(function ($query) use ($request) {
-
-                        return $query->where(
-                            'payroll_result_id',
-                            $request->payroll_result_id
-                        );
-                    })
-            ],
-
-            'earning_name' => 'required',
-
-            'earning_type' => 'required',
-
-            'amount' => 'required|numeric|min:0',
-
-            'calculation_base' =>
-                'required_if:earning_type,Variable,OT|nullable',
-
-            'calculation_value' =>
-                'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
-        ]);
-
-        // BLOCK unnecessary calculation fields for Fixed
-        if (
-            $request->earning_type === 'Fixed' &&
-            (
-                $request->filled('calculation_base') ||
-                $request->filled('calculation_value')
-            )
-        ) {
-
-            return redirect()->back()
-                ->withInput()
-                ->withErrors([
-                    'calculation_base' =>
-                        'Calculation fields are not needed for Fixed earnings.'
-                ]);
-        }
-
-        $record->update($request->all());
-
-        return redirect()
-            ->route('hr.payroll.payroll-result-earnings.index')
-            ->with('success', 'Updated successfully');
-    }
-
-    // DELETE
-    public function destroy($id)
-    {
-        $record = PayrollResultEarning::with('payrollResult')
-            ->findOrFail($id);
-
-        // BLOCK finalized payroll deletion
-        if (
-            $record->payrollResult &&
-            strtolower($record->payrollResult->status) === 'finalized'
-        ) {
-
-            return redirect()->back()
-                ->with('error', 'Cannot delete after payroll finalization.');
-        }
-
-        $record->delete();
-
-        return redirect()->back()
-            ->with('success', 'Deleted successfully');
-    }
-
-
-
-
-    //api methods
-    public function apiIndex()
+    return redirect()->route('hr.payroll.payroll-result-earnings.index', [
+        'staff_id'      => $request->staff_id,
+        'payroll_month' => $request->payroll_month,
+    ])->with('success', 'Earnings generated successfully.');
+}
+    public function show($payrollResultId)
 {
-    $records = PayrollResultEarning::latest()->get();
+    $payrollResult = PayrollResult::with('staff')->findOrFail($payrollResultId);
 
-    return response()->json([
-        'status' => true,
-        'data' => $records
-    ]);
-}public function apiShow($id)
-{
-    $record = PayrollResultEarning::find($id);
+    $earnings = PayrollResultEarning::where('payroll_result_id', $payrollResultId)
+        ->orderBy('display_order')
+        ->get();
 
-    if (!$record) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Not found'
-        ], 404);
-    }
-
-    return response()->json([
-        'status' => true,
-        'data' => $record
-    ]);
-}public function apiStore(Request $request)
-{
-    $request->validate([
-        'payroll_result_id' => 'required',
-        'earning_code' => 'required',
-        'earning_name' => 'required',
-        'earning_type' => 'required',
-        'amount' => 'required|numeric|min:0',
-        'calculation_base' => 'required_if:earning_type,Variable,OT',
-        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
-    ]);
-
-    $record = PayrollResultEarning::create([
-        ...$request->all(),
-        'created_by' => Auth::id()
-    ]);
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Created successfully',
-        'data' => $record
-    ], 201);
-}public function apiUpdate(Request $request, $id)
-{
-    $record = PayrollResultEarning::find($id);
-
-    if (!$record) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Not found'
-        ], 404);
-    }
-
-    $request->validate([
-        'earning_code' => 'required',
-        'earning_name' => 'required',
-        'earning_type' => 'required',
-        'amount' => 'required|numeric|min:0',
-        'calculation_base' => 'required_if:earning_type,Variable,OT',
-        'calculation_value' => 'required_if:earning_type,Variable,OT|nullable|numeric|min:0',
-    ]);
-
-    $record->update($request->all());
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Updated successfully',
-        'data' => $record
-    ]);
-}public function apiDelete($id)
-{
-    $record = PayrollResultEarning::find($id);
-
-    if (!$record) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Not found'
-        ], 404);
-    }
-
-    $record->delete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Deleted successfully'
-    ]);
+    return view('hr.payroll.payroll_result_earnings.show', compact(
+        'payrollResult', 'earnings'
+    ));
 }
 }
