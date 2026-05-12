@@ -1616,19 +1616,15 @@ Route::prefix('pre-payroll')->group(function () {
 | 37. Payroll: PayrollResultEarningController
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('payroll-earnings')->group(function () {
 
     Route::get('/', [PayrollResultEarningController::class, 'apiIndex']);
-    Route::get('{id}', [PayrollResultEarningController::class, 'apiShow']);
-    Route::post('/', [PayrollResultEarningController::class, 'apiStore']);
-    Route::put('{id}', [PayrollResultEarningController::class, 'apiUpdate']);
-    Route::delete('{id}', [PayrollResultEarningController::class, 'apiDelete']);
+
+    Route::get('/{id}', [PayrollResultEarningController::class, 'apiShow']);
+
+    Route::post('/generate', [PayrollResultEarningController::class, 'apiGenerate']);
 
 });
-
-
-
 /*
 |--------------------------------------------------------------------------
 | 38. Payroll: PayrollResultDeductionController

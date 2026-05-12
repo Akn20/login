@@ -1954,24 +1954,27 @@ Route::prefix('payroll/employee-salary-assignment')
 
 
 //---------Payroll - Pre-Payroll Adjustment-----------//
-Route::prefix('pre-payroll')->group(function () {
+Route::prefix('payroll/pre-payroll')
+    ->name('payroll.pre-payroll.')
+    ->group(function () {
 
-    Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
-        ->name('pre-payroll.index');
+        Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
+            ->name('index');
 
-    Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
-        ->name('pre-payroll.create');
+        Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
+            ->name('create');
 
-    Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
-        ->name('pre-payroll.store');
+        Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
+            ->name('store');
+
         Route::post('/approve/{id}', [PrePayrollAdjustmentController::class, 'approve'])
-    ->name('pre-payroll.approve');
-    Route::get('pre-payroll/{id}/edit', 
-    [PrePayrollAdjustmentController::class, 'edit']
-)->name('pre-payroll.edit');
-Route::put('pre-payroll/{id}', 
-    [PrePayrollAdjustmentController::class, 'update']
-)->name('pre-payroll.update');
+            ->name('approve');
+
+        Route::get('/{id}/edit', [PrePayrollAdjustmentController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{id}', [PrePayrollAdjustmentController::class, 'update'])
+            ->name('update');
 });
 });
 //---------Payroll - Payroll Result Earnings-----------//
