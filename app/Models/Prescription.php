@@ -9,7 +9,9 @@ class Prescription extends Model
 {
     use HasFactory;
 
-    protected $table = 'prescriptions';
+    //protected $table = 'prescriptions';
+
+    protected $table = 'offline_prescriptions';
 
     protected $fillable = [
         'id',

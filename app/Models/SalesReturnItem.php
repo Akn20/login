@@ -36,16 +36,13 @@ class SalesReturnItem extends Model
     /**
      * Relation with Medicine
      */
-    public function medicine()
-    {
-        return $this->belongsTo(Medicine::class, 'medicine_id');
-    }
+public function medicine()
+{
+    return $this->belongsTo(Medicine::class, 'medicine_id', 'id');
+}
 
-    /**
-     * Relation with Medicine Batch
-     */
-    public function batch()
-    {
-        return $this->belongsTo(MedicineBatch::class, 'batch_id');
-    }
+public function batch()
+{
+    return $this->belongsTo(MedicineBatch::class, 'batch_id', 'id');
+}
 }

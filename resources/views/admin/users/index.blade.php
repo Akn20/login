@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json',
                     },
+                    body: JSON.stringify({ id: userId })
                 })
                 .then(res => res.json())
                 .then(data => {

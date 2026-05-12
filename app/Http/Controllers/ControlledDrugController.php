@@ -105,15 +105,11 @@ class ControlledDrugController extends Controller
 
     public function edit($id)
     {
+        $drug = ControlledDrug::where('controlled_drug_id', $id)->firstOrFail();
 
-        $drug =
-            ControlledDrug::findOrFail($id);
+        $vendors = Vendor::where('status', 'Active')->get();
 
-        return view(
-            'admin.pharmacy.controlledDrug.edit',
-            compact('drug')
-        );
-
+        return view('admin.pharmacy.controlledDrug.edit', compact('drug', 'vendors'));
     }
 
 

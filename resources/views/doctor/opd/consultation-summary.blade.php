@@ -121,6 +121,24 @@
                     </tbody>
 
                 </table>
+                <!-- Lab Requests -->
+                <div class="mt-4">
+                    <h5><strong>Recommended Tests</strong></h5>
+
+                    @if($consultation->labRequests->count() > 0)
+                        <ul>
+                            @foreach($consultation->labRequests as $lab)
+                                <li>
+                                    {{ $lab->test_name }} 
+                                    
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p>No tests recommended</p>
+                    @endif
+                </div>
+
 
             </div>
         </div>

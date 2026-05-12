@@ -67,8 +67,7 @@
 
                                             <th>Drug Name</th>
 
-
-                                            <th>Batch</th>
+                                            <th <th>Batch</th>
 
                                             <th>Expiry</th>
 

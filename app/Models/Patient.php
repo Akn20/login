@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -59,5 +60,19 @@ class Patient extends Model
     public function labRequests()
     {
         return $this->hasMany(LabRequest::class);
+    }
+
+    public function medicalFlags()
+    {
+        return $this->hasMany(PatientMedicalFlag::class);
+    }
+       public function dataUsageConsents()
+    {
+        return $this->hasMany(DataUsageConsent::class);
+    }
+
+    public function insuranceConsents()
+    {
+        return $this->hasMany(InsuranceConsent::class);
     }
 }

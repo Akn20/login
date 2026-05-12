@@ -8,18 +8,21 @@ return new class extends Migration {
 
     public function up()
     {
-
         Schema::table('controlled_drug', function (Blueprint $table) {
 
-            $table->string('drug_name')
-                ->after('drug_id');
+            if (!Schema::hasColumn('controlled_drug', 'drug_name')) {
 
-            $table->string('status')
-                ->default('Active')
-                ->after('supplier_id');
+                if (Schema::hasColumn('controlled_drug', 'drug_id')) {
+                    $table->string('drug_name')->after('drug_id');
+                } else {
+                    $table->string('drug_name');
+                }
+            }
 
+            if (!Schema::hasColumn('controlled_drug', 'status')) {
+                $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            }
         });
-
     }
 
 

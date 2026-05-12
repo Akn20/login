@@ -23,7 +23,7 @@ class CompOff extends Model
 
     protected $keyType = 'string';
 
-    public function employee()
+  public function employee()
     {
         return $this->belongsTo(Staff::class, 'employee_id', 'id');
     }

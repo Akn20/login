@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AttendanceRecord;
 use App\Models\Shift;
+use Carbon\Carbon;
 use App\Helpers\ApiResponse;
 use App\Http\Resources\AttendanceResource;
 
@@ -151,5 +152,217 @@ return new AttendanceResource($attendance);
         ]);
 
     }
+    public function report(Request $request)
+{
+    try {
 
+        /*
+        =====================================================
+        DAILY REPORT
+        =====================================================
+        */
+
+        if ($request->filled('date')) {
+
+            $query = AttendanceRecord::with([
+                'staff.department',
+                'staff.designation',
+                'shift'
+            ]);
+
+            /*
+            DATE FILTER
+            */
+
+            $query->whereDate(
+                'attendance_date',
+                $request->date
+            );
+
+            /*
+            DEPARTMENT FILTER
+            */
+
+            if ($request->filled('department')) {
+
+                $query->whereHas('staff.department', function ($q) use ($request) {
+                    $q->where('id', $request->department);
+                });
+            }
+
+            /*
+            DESIGNATION FILTER
+            */
+
+            if ($request->filled('designation')) {
+
+                $query->whereHas('staff.designation', function ($q) use ($request) {
+                    $q->where('id', $request->designation);
+                });
+            }
+
+            $records = $query->orderBy(
+                'attendance_date',
+                'desc'
+            )->get();
+
+            /*
+            FORMAT DAILY RESPONSE
+            */
+
+            $data = $records->map(function ($record) {
+
+                return [
+
+                    'id' => $record->id,
+
+                    'employeeName' =>
+                        $record->staff->employee_name
+                        ?? $record->staff->name
+                        ?? '',
+
+                    'department' =>
+                        $record->staff->department->department_name
+                        ?? '',
+
+                    'designation' =>
+                        $record->staff->designation->designation_name
+                        ?? '',
+
+                    'shift' =>
+                        $record->shift->shift_name
+                        ?? '',
+
+                    'checkIn' =>
+                        $record->check_in ?? '',
+
+                    'checkOut' =>
+                        $record->check_out ?? '',
+
+                    'status' =>
+                        ucfirst($record->status ?? 'Absent'),
+
+                    'lateEntry' =>
+                        (int) ($record->late_minutes ?? 0),
+
+                    'overtime' =>
+                        (int) ($record->overtime_minutes ?? 0),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'count' => $data->count(),
+                'data' => $data
+            ]);
+        }
+
+        /*
+        =====================================================
+        MONTHLY REPORT
+        =====================================================
+        */
+
+        if ($request->filled('month')) {
+        $date = Carbon::createFromFormat('Y-m', $request->month);
+
+        $month = $date->month;
+        $year  = $date->year;
+            $query = AttendanceRecord::with([
+                'staff.department',
+                'staff.designation'
+            ])
+
+            ->whereMonth('attendance_date', $month)
+            ->whereYear('attendance_date', $year);
+
+            /*
+            DEPARTMENT FILTER
+            */
+
+            if ($request->filled('department')) {
+
+                $query->whereHas('staff.department', function ($q) use ($request) {
+                    $q->where('id', $request->department);
+                });
+            }
+
+            /*
+            DESIGNATION FILTER
+            */
+
+            if ($request->filled('designation')) {
+
+                $query->whereHas('staff.designation', function ($q) use ($request) {
+                    $q->where('id', $request->designation);
+                });
+            }
+
+            $records = $query->get();
+
+            /*
+            GROUP BY EMPLOYEE
+            */
+
+            $grouped = $records->groupBy(function ($record) {
+                return $record->staff->id;
+            });
+
+            /*
+            FORMAT MONTHLY SUMMARY
+            */
+
+            $data = $grouped->map(function ($items) {
+
+                $staff = $items->first()->staff;
+
+                return [
+
+                    'employeeName' =>
+                        $staff->employee_name
+                        ?? $staff->name
+                        ?? '',
+
+                    'present' =>
+                        $items->where('status', 'Present')->count(),
+
+                    'absent' =>
+                        $items->where('status', 'Absent')->count(),
+
+                    'leave' =>
+                        $items->where('status', 'Leave')->count(),
+
+                    'lateEntries' =>
+                        $items->where('late_minutes', '>', 0)->count(),
+
+                    'overtime' =>
+                        $items->sum('overtime_minutes'),
+                ];
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'count' => $data->count(),
+                'data' => $data
+            ]);
+        }
+
+        /*
+        DEFAULT EMPTY
+        */
+
+        return response()->json([
+            'success' => true,
+            'count' => 0,
+            'data' => []
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }

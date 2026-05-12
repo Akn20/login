@@ -109,8 +109,10 @@
                             </td>
 
                             <td>
-                                {{ $prescription->doctor_name ?? 'Offline Doctor' }}
-                            </td>
+    {{ (!empty($prescription->doctor_name) && $prescription->doctor_name != 'N/A') 
+        ? $prescription->doctor_name 
+        : 'IPD Doctor' }}
+</td>
 
                             <td>
                                 {{ $prescription->prescription_date }}

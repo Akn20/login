@@ -85,17 +85,17 @@
                                         <td class="text-end">
                                             <div class="d-flex gap-2 justify-content-end">
                                         {{-- New View Button --}}
-                                        <a href="{{ route('hr.leave-mappings.show', $mapping->id) }}" 
+                                        <a href="{{ route('admin.leave-mappings.show', $mapping->id) }}" 
                                         class="btn btn-outline-secondary btn-icon rounded-circle btn-sm" title="View Details">
                                         <i class="feather-eye"></i>
                                             </a>
                                             <div class="d-flex justify-content-end gap-2">
-                                                <a href="{{ route('hr.leave-mappings.edit', $mapping->id) }}"
+                                                <a href="{{ route('admin.leave-mappings.edit', $mapping->id) }}"
                                                     class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
                                                    <i class="feather-edit-2"></i> {{-- Pencil icon --}}
                                                 </a>
 
-                                                <form action="{{ route('hr.leave-mappings.delete', $mapping->id) }}" method="POST"
+                                                <form action="{{ route('admin.leave-mappings.delete', $mapping->id) }}" method="POST"
                                                     onsubmit="return confirm('Move to trash?')">
                                                     @csrf
                                                     @method('DELETE')

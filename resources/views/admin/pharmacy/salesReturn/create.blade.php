@@ -31,9 +31,10 @@
     {{-- RETURN FORM --}}
     <form method="POST" action="{{ route('admin.salesReturn.store') }}">
         @csrf
-
-        <input type="hidden" name="bill_id" value="{{ $bill->id }}">
-        <input type="hidden" name="patient_id" value="{{ $bill->patient_id }}">
+@if($bill)
+    <input type="hidden" name="bill_id" value="{{ $bill->bill_id }}">
+    <input type="hidden" name="patient_id" value="{{ $bill->patient_id }}">
+@endif
 
         <div class="card">
             <div class="card-header">

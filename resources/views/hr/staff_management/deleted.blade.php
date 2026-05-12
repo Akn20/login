@@ -58,7 +58,7 @@
                                                 <form action="{{ route('hr.staff-management.restore', $staff->id) }}"
                                                     method="POST" class="m-0 p-0">
                                                     @csrf
-                                                    @method('PUT')
+                                                 
                                                     <button type="submit"
                                                         class="avatar-text avatar-md action-icon action-restore"
                                                         title="Restore">

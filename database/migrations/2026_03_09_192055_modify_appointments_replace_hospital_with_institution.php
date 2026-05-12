@@ -10,10 +10,10 @@ return new class extends Migration {
         Schema::table('appointments', function (Blueprint $table) {
 
             // Drop hospital foreign key first
-            $table->dropForeign(['hospital_id']);
+           $table->dropForeign(['hospital_id']);
 
             // Remove hospital_id column
-            $table->dropColumn('hospital_id');
+           $table->dropColumn('hospital_id');
 
             // Add institution_id
             $table->char('institution_id', 36)->after('consultation_fee');
@@ -32,7 +32,7 @@ return new class extends Migration {
 
             // Remove institution_id foreign key
             $table->dropForeign(['institution_id']);
-
+    
             // Drop institution_id
             $table->dropColumn('institution_id');
 

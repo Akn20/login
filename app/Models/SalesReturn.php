@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 class SalesReturn extends Model
 {
     protected $table = 'sales_returns';
+   protected $primaryKey = 'id';
+
 
     protected $fillable = [
         'id',
@@ -33,18 +35,26 @@ class SalesReturn extends Model
         });
     }
 
-    public function items()
-    {
-        return $this->hasMany(SalesReturnItem::class,'sales_return_id');
-    }
+public function items()
+{
+    return $this->hasMany(SalesReturnItem::class, 'sales_return_id', 'id');
+}
 
-    public function bill()
-    {
-        return $this->belongsTo(SalesBill::class,'bill_id');
-    }
+   public function bill()
+{
+    return $this->belongsTo(SalesBill::class, 'bill_id', 'bill_id');
+}
 
     public function creator()
 {
     return $this->belongsTo(User::class,'created_by');
+}
+public function patient()
+{
+    return $this->belongsTo(Patient::class, 'patient_id', 'id');
+}
+public function getRouteKeyName()
+{
+    return 'id';
 }
 }
