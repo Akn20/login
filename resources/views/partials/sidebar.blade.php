@@ -359,40 +359,41 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
 
-                <ul class="nxl-submenu">
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
-                            <span class="nxl-micon">
-                                <i class="feather-calendar"></i>
-                            </span>
-                            <span class="nxl-mtext">Nursing Notes </span>
-                        </a>
-                    </li>
-                </ul>
-
-                <ul class="nxl-submenu">
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-activity"></i></span>
-                            <span class="nxl-mtext">Patient Monitoring</span>
-                        </a>
-                    </li>
-
-                </ul>
-
-                <ul class="nxl-submenu">
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.medication.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-activity"></i></span>
-                            <span class="nxl-mtext">Medication Administration</span>
-                        </a>
-                    </li>
-
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse.dashboard') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-chart-line"></i></span>
+                                <span class="nxl-mtext"> Dashboard </span>
+                            </a>
+                        </li>
                     </ul>
 
-                    
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Nursing Notes </span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Patient Monitoring</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.medication.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Medication Administration</span>
+                            </a>
+                        </li>
+                    </ul>
 
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
@@ -411,6 +412,8 @@
                             </a>
                         </li>
                     </ul>
+
+
 
                 </li>   
                 </ul>

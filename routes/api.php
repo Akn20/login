@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\Admin\LabTestController;
@@ -1691,3 +1693,10 @@ Route::prefix('nurse-discharge')->group(function () {
     Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
 
 });
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::get('/nurse/dashboard', [NurseDashboardController::class, 'apiDashboard']);

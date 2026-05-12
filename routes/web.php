@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
@@ -2393,4 +2394,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/ready/{id}', [DischargePreparationController::class, 'markReady'])->name('ready');
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Nurse:Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.nurse.')->group(function () {
+    Route::get('/nurse/dashboard', [NurseDashboardController::class, 'index'])->name('dashboard');
 });
