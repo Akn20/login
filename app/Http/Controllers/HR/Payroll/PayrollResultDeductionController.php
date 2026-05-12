@@ -200,4 +200,222 @@ class PayrollResultDeductionController extends Controller
             'payrollResult', 'deductions'
         ));
     }
+    // ================= API METHODS ================= //
+
+public function apiIndex(Request $request)
+{
+    $approvedRecords = \App\Models\PrePayrollAdjustment::with('employee')
+        ->where('status', 'Approved')
+        ->get();
+
+    $employees = $approvedRecords->map(function ($record) {
+        return [
+            'staff_id' => $record->employee_id,
+            'name' => optional($record->employee)->name ?? $record->employee_id,
+        ];
+    })->unique('staff_id')->values();
+
+    $months = collect();
+    $deductions = collect();
+    $selectedPayrollResult = null;
+
+    if ($request->staff_id) {
+
+        $months = \App\Models\PrePayrollAdjustment::where(
+            'status',
+            'Approved'
+        )
+        ->where(
+            'employee_id',
+            $request->staff_id
+        )
+        ->pluck('payroll_month');
+    }
+
+    if (
+        $request->staff_id &&
+        $request->payroll_month
+    ) {
+
+        $selectedPayrollResult = PayrollResult::with('staff')
+            ->where('staff_id', $request->staff_id)
+            ->where('payroll_month', $request->payroll_month)
+            ->first();
+
+        if ($selectedPayrollResult) {
+
+            $deductions = PayrollResultDeduction::where(
+                'payroll_result_id',
+                $selectedPayrollResult->id
+            )
+            ->orderBy('display_order')
+            ->get();
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'employees' => $employees,
+        'months' => $months,
+        'selectedPayrollResult' => $selectedPayrollResult,
+        'deductions' => $deductions,
+    ]);
+}
+
+public function apiGenerate(Request $request)
+{
+    $request->validate([
+        'staff_id' => 'required',
+        'payroll_month' => 'required',
+    ]);
+
+    $payrollResult = PayrollResult::where(
+        'staff_id',
+        $request->staff_id
+    )
+    ->where(
+        'payroll_month',
+        $request->payroll_month
+    )
+    ->firstOrFail();
+
+    if (
+        PayrollResultDeduction::where(
+            'payroll_result_id',
+            $payrollResult->id
+        )->exists()
+    ) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Deductions already generated.'
+        ]);
+    }
+
+    $pf  = $payrollResult->pf_employee;
+    $esi = $payrollResult->esi_employee;
+    $pt  = $payrollResult->professional_tax;
+    $tds = $payrollResult->tds_amount;
+
+    $emi = round(
+        $payrollResult->total_deductions -
+        $pf -
+        $esi -
+        $pt -
+        $tds,
+        2
+    );
+
+    $emi = max($emi, 0);
+
+    $deductions = [];
+
+    if ($pf > 0) {
+
+        $deductions[] = [
+            'deduction_code' => 'PF',
+            'deduction_name' => 'Provident Fund (Employee)',
+            'deduction_type' => 'Statutory',
+            'calculation_base' => 'Gross',
+            'calculation_logic' => '%',
+            'calculation_value' => 12.00,
+            'amount' => $pf,
+            'editable_flag' => 0,
+            'display_order' => 1,
+        ];
+    }
+
+    if ($esi > 0) {
+
+        $deductions[] = [
+            'deduction_code' => 'ESI',
+            'deduction_name' => 'ESI (Employee)',
+            'deduction_type' => 'Statutory',
+            'calculation_base' => 'Gross',
+            'calculation_logic' => '%',
+            'calculation_value' => 0.75,
+            'amount' => $esi,
+            'editable_flag' => 0,
+            'display_order' => 2,
+        ];
+    }
+
+    if ($pt > 0) {
+
+        $deductions[] = [
+            'deduction_code' => 'PT',
+            'deduction_name' => 'Professional Tax',
+            'deduction_type' => 'Statutory',
+            'calculation_base' => 'Gross',
+            'calculation_logic' => 'Slab',
+            'calculation_value' => null,
+            'amount' => $pt,
+            'editable_flag' => 0,
+            'display_order' => 3,
+        ];
+    }
+
+    if ($tds > 0) {
+
+        $deductions[] = [
+            'deduction_code' => 'TDS',
+            'deduction_name' => 'TDS',
+            'deduction_type' => 'Statutory',
+            'calculation_base' => 'Gross',
+            'calculation_logic' => '%',
+            'calculation_value' => null,
+            'amount' => $tds,
+            'editable_flag' => 0,
+            'display_order' => 4,
+        ];
+    }
+
+    if ($emi > 0) {
+
+        $deductions[] = [
+            'deduction_code' => 'EMI',
+            'deduction_name' => 'EMI / Loan Deduction',
+            'deduction_type' => 'Fixed',
+            'calculation_base' => null,
+            'calculation_logic' => 'EMI',
+            'calculation_value' => null,
+            'amount' => $emi,
+            'editable_flag' => 1,
+            'display_order' => 5,
+        ];
+    }
+
+    foreach ($deductions as $deduction) {
+
+        PayrollResultDeduction::create([
+            'id' => Str::uuid(),
+            'payroll_result_id' => $payrollResult->id,
+            'created_by' => Auth::id(),
+            ...$deduction,
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deductions generated successfully.'
+    ]);
+}
+
+public function apiShow($id)
+{
+    $payrollResult = PayrollResult::with('staff')
+        ->findOrFail($id);
+
+    $deductions = PayrollResultDeduction::where(
+        'payroll_result_id',
+        $id
+    )
+    ->orderBy('display_order')
+    ->get();
+
+    return response()->json([
+        'success' => true,
+        'payrollResult' => $payrollResult,
+        'deductions' => $deductions,
+    ]);
+}
 }

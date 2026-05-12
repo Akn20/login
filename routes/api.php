@@ -1630,12 +1630,24 @@ Route::prefix('payroll-earnings')->group(function () {
 | 38. Payroll: PayrollResultDeductionController
 |--------------------------------------------------------------------------
 */
-  Route::prefix('payroll-deductions')->group(function () {
+ 
+Route::prefix('payroll-deductions')->group(function () {
 
-    Route::get('/', [PayrollResultDeductionController::class, 'apiIndex']);
-    Route::get('/{id}', [PayrollResultDeductionController::class, 'apiShow']);
-    Route::post('/', [PayrollResultDeductionController::class, 'apiStore']);
-    Route::put('/{id}', [PayrollResultDeductionController::class, 'apiUpdate']);
-    Route::delete('/{id}', [PayrollResultDeductionController::class, 'apiDelete']);
-});  
+    Route::get(
+        '/',
+        [PayrollResultDeductionController::class, 'apiIndex']
+    );
+
+    Route::post(
+        '/generate',
+        [PayrollResultDeductionController::class, 'apiGenerate']
+    );
+
+    Route::get(
+        '/{id}',
+        [PayrollResultDeductionController::class, 'apiShow']
+    );
+
+});
+
 
