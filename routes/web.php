@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\Radiology\RadiologyController;
 use App\Http\Controllers\Admin\Radiology\RadiologyHistoryController;
 use App\Http\Controllers\Admin\Radiology\RadiologyReportController;
@@ -57,6 +58,9 @@ use App\Http\Controllers\Admin\SampleCollectionController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 
 // Attendance
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\SubscriptionInvoiceController;
+use App\Http\Controllers\Admin\UsageMonitoringController;
 use App\Http\Controllers\Admin\UserController;
 // Doctor
 use App\Http\Controllers\AppointmentController;
@@ -3037,4 +3041,110 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/fetch-bill-details', [RefundController::class, 'fetchBillDetails'])
             ->name('fetch-bill-details');
     });
+
+
+    /*
+|--------------------------------------------------------------------------
+| Subscription Plans
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('plans')->name('plans.')->group(function () {
+
+    Route::get('/',
+        [PlanController::class, 'index']
+    )->name('index');
+
+    Route::get('/create',
+        [PlanController::class, 'create']
+    )->name('create');
+
+    Route::post('/store',
+        [PlanController::class, 'store']
+    )->name('store');
+
+    Route::get('/edit/{id}',
+        [PlanController::class, 'edit']
+    )->name('edit');
+
+    Route::put('/update/{id}',
+        [PlanController::class, 'update']
+    )->name('update');
+
+    Route::delete('/delete/{id}',
+        [PlanController::class, 'destroy']
+    )->name('delete');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Organization Subscriptions
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('subscriptions')
+    ->name('subscriptions.')
+    ->group(function () {
+
+        Route::get('/',
+            [SubscriptionController::class, 'index']
+        )->name('index');
+
+        Route::get('/create',
+            [SubscriptionController::class, 'create']
+        )->name('create');
+
+        Route::post('/store',
+            [SubscriptionController::class, 'store']
+        )->name('store');
+
+        Route::get('/edit/{id}',
+            [SubscriptionController::class, 'edit']
+        )->name('edit');
+
+        Route::put('/update/{id}',
+            [SubscriptionController::class, 'update']
+        )->name('update');
+
+        Route::delete('/delete/{id}',
+            [SubscriptionController::class, 'destroy']
+        )->name('delete');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Usage Monitoring
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('subscription-usage')
+    ->name('subscription-usage.')
+    ->group(function () {
+
+        Route::get('/',
+            [UsageMonitoringController::class, 'index']
+        )->name('index');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Subscription Invoices
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('subscription-invoices')
+    ->name('subscription-invoices.')
+    ->group(function () {
+
+        Route::get('/',
+            [SubscriptionInvoiceController::class, 'index']
+        )->name('index');
+
+        Route::post('/generate/{subscriptionId}',
+            [SubscriptionInvoiceController::class, 'generate']
+        )->name('generate');
+
+});
     });

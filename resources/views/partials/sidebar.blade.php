@@ -1282,6 +1282,85 @@
                             up-target="#main-container"><i class="feather-layers me-2"></i>Department</a></li>
                 </ul>
             </li>
+            {{-- SUBSCRIPTION MANAGEMENT --}}
+<li class="nxl-item nxl-hasmenu">
+
+    <a href="javascript:void(0);"
+       class="nxl-link">
+
+        <span class="nxl-micon">
+
+            <i class="feather-credit-card"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Subscription Management
+
+        </span>
+
+        <span class="nxl-arrow">
+
+            <i class="feather-chevron-right"></i>
+
+        </span>
+
+    </a>
+
+    <ul class="nxl-submenu">
+
+        {{-- PLANS --}}
+        <li class="nxl-item">
+
+            <a href="{{ route('admin.plans.index') }}"
+               class="nxl-link">
+
+                Plans
+
+            </a>
+
+        </li>
+
+        {{-- SUBSCRIPTIONS --}}
+        <li class="nxl-item">
+
+            <a href="{{ route('admin.subscriptions.index') }}"
+               class="nxl-link">
+
+                Organization Subscriptions
+
+            </a>
+
+        </li>
+
+        {{-- USAGE --}}
+        <li class="nxl-item">
+
+            <a  href="{{ route('admin.subscription-usage.index') }}"
+               class="nxl-link">
+
+                Usage Monitoring
+
+            </a>
+
+        </li>
+
+        {{-- INVOICES --}}
+        <li class="nxl-item">
+
+            <a href="{{ route('admin.subscription-invoices.index') }}"
+               class="nxl-link">
+
+                Subscription Invoices
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
 
             {{-- --- DYNAMIC MODULES --- --}}
             <li class="nxl-item nxl-caption"><label>External Modules</label></li>
