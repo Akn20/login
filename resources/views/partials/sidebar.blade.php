@@ -53,7 +53,7 @@
                             up-target="#main-container"><i class="feather-activity me-2"></i>Emergency Cases</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.insurance.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-shield me-2"></i>Insurance</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.billing.index') }}" class="nxl-link" up-follow
+                    <li class="nxl-item"><a href="{{ route('admin.receptionist.billing.index') }}" class="nxl-link" up-follow
                      up-target="#main-container"><i class="feather-dollar-sign me-2"></i>Billing</a></li>
                    <li class="nxl-item has-submenu">
     <a href="javascript:void(0);" class="nxl-link">
@@ -223,6 +223,9 @@
                     <span class="nxl-mtext">Accountant</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
+
+                <ul class="nxl-submenu">
+
                     {{-- Billing Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -234,7 +237,7 @@
 
                             {{-- OPD → Receptionist Billing --}}
                             <li class="nxl-item">
-                                <a href="{{ route('admin.billing.index') }}" 
+                                <a href="{{ route('admin.receptionist.billing.index') }}" 
                                 class="nxl-link" up-follow up-target="#main-container">
                                     OPD Billing
                                 </a>
@@ -256,8 +259,7 @@
                                     <i class="feather-briefcase me-2"></i> Insurance Claims
                                 </a>
                             </li>
-                        </li>
-
+                    </li>
 
                     {{-- Financial Reports Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/reports*') ? 'active nxl-trigger' : '' }}">
@@ -394,74 +396,71 @@
 
                     </li>
                     
-{{-- Revenue Management --}}
-<li class="nxl-item">
-    <a href="{{ route('admin.accountant.revenue.index') }}"
-       class="nxl-link {{ request()->routeIs('admin.accountant.revenue.*') ? 'active' : '' }}"
-       up-follow
-       up-target="#main-container">
+                    {{-- Revenue Management --}}
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.accountant.revenue.index') }}"
+                        class="nxl-link {{ request()->routeIs('admin.accountant.revenue.*') ? 'active' : '' }}"
+                        up-follow
+                        up-target="#main-container">
 
-        <span class="nxl-micon">
-            <i class="feather-bar-chart-2"></i>
-        </span>
+                            <span class="nxl-micon">
+                                <i class="feather-bar-chart-2"></i>
+                            </span>
 
-        <span class="nxl-mtext">
-            Revenue Management
-        </span>
-    </a>
-</li>
-                </ul>
+                            <span class="nxl-mtext">
+                                Revenue Management
+                            </span>
+                        </a>
+                    </li>
                 
-
                     {{-- Refund Management --}}
-<li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
 
-    <a href="javascript:void(0);" class="nxl-link">
+                        <a href="javascript:void(0);" class="nxl-link">
 
-        <i class="feather-rotate-ccw me-2"></i>
+                            <i class="feather-rotate-ccw me-2"></i>
 
-        Refund Management
+                            Refund Management
 
-        <span class="nxl-arrow">
-            <i class="feather-chevron-right"></i>
-        </span>
+                            <span class="nxl-arrow">
+                                <i class="feather-chevron-right"></i>
+                            </span>
 
-    </a>
+                        </a>
 
-    <ul class="nxl-submenu">
+                        <ul class="nxl-submenu">
 
-        <li class="nxl-item">
+                            <li class="nxl-item">
 
-            <a href="{{ route('admin.refunds.index') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
+                                <a href="{{ route('admin.refunds.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
 
-                All Refunds
+                                    All Refunds
 
-            </a>
+                                </a>
 
-        </li>
+                            </li>
 
-        <li class="nxl-item">
+                            <li class="nxl-item">
 
-            <a href="{{ route('admin.refunds.create') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
+                                <a href="{{ route('admin.refunds.create') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
 
-                Create Refund
+                                    Create Refund
 
-            </a>
+                                </a>
 
-        </li>
+                            </li>
 
-    </ul>
+                        </ul>
 
-</li>
+                    </li>
 
                 </ul>
-
             </li>
 
             {{-- --- 3. MEDICAL SERVICES --- --}}

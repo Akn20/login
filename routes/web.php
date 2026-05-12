@@ -2682,7 +2682,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
 
     });
-
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
     Route::prefix('billing')->name('billing.')->group(function () {
 
         Route::get('/', [BasicBillingController::class, 'index'])->name('index');
@@ -2691,6 +2691,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
         Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
 
+    });
     });
 });
  
