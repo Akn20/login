@@ -621,27 +621,101 @@
                    
                 </li> 
 
-            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
-                <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-package"></i></span>
-                    <span class="nxl-mtext">Inventory</span>
-                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                </a>
-                <ul class="nxl-submenu">
-                    <li class="nxl-item"><a href="{{ route('admin.inventory.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-grid me-2"></i>All Items</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.inventory.purchase-orders.index') }}" class="nxl-link"
-                            up-follow up-target="#main-container"><i class="feather-shopping-cart me-2"></i>Purchase
-                            Orders</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.inventory-vendors.index') }}" class="nxl-link"
-                            up-follow up-target="#main-container"><i class="feather-users me-2"></i>Inv. Vendors</a>
-                    </li>
-                    <li class="nxl-item"><a href="{{ route('admin.inventory.grns.index') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-file-text me-2"></i>GRN List</a></li>
-                    <li class="nxl-item"><a href="{{ route('admin.inventory.reports') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-pie-chart me-2"></i>Inv. Reports</a></li>
-                </ul>
-            </li>
+           <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
+    <a href="javascript:void(0);" class="nxl-link">
+        <span class="nxl-micon"><i class="feather-package"></i></span>
+        <span class="nxl-mtext">Inventory</span>
+        <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+    </a>
+
+    <ul class="nxl-submenu">
+
+        {{-- Items --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-grid me-2"></i>
+                All Items
+            </a>
+        </li>
+
+        {{-- Purchase Orders --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.purchase-orders.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-shopping-cart me-2"></i>
+                Purchase Orders
+            </a>
+        </li>
+
+        {{-- Vendors --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory-vendors.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-users me-2"></i>
+                Inv. Vendors
+            </a>
+        </li>
+
+        {{-- GRN --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.grns.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-file-text me-2"></i>
+                GRN List
+            </a>
+        </li>
+
+        {{-- Stock Transfers --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.stock-transfers.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-repeat me-2"></i>
+                Stock Transfers
+            </a>
+        </li>
+
+        {{-- Stock Audits --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.stock-audits.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-check-square me-2"></i>
+                Stock Audits
+            </a>
+        </li>
+
+        {{-- Reports --}}
+        <li class="nxl-item">
+            <a href="{{ route('admin.inventory.reports') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                <i class="feather-pie-chart me-2"></i>
+                Inv. Reports
+            </a>
+        </li>
+
+    </ul>
+</li>
 
             {{-- --- HR REPORTS MODULE --- --}}
                 <li class="nxl-item nxl-hasmenu {{ request()->is('admin/reports*') ? 'active nxl-trigger' : '' }}">
