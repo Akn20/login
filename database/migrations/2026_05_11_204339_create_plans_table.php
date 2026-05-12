@@ -8,25 +8,81 @@ return new class extends Migration {
 
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('subscription_invoices', function (Blueprint $table) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | PRIMARY KEY
+            |--------------------------------------------------------------------------
+            */
 
             $table->uuid('id')->primary();
 
-            $table->string('name');
+            /*
+            |--------------------------------------------------------------------------
+            | RELATION
+            |--------------------------------------------------------------------------
+            */
 
-            $table->string('slug')->unique();
+            $table->uuid('subscription_id');
 
-            $table->text('description')->nullable();
+            $table->foreign('subscription_id')
+                ->references('id')
+                ->on('subscriptions')
+                ->cascadeOnDelete();
 
-            $table->decimal('monthly_price', 10, 2)->default(0);
+            /*
+            |--------------------------------------------------------------------------
+            | INVOICE DETAILS
+            |--------------------------------------------------------------------------
+            */
 
-            $table->decimal('yearly_price', 10, 2)->default(0);
+            $table->string('invoice_number')->unique();
 
-            $table->integer('trial_days')->default(0);
+            $table->decimal('amount', 12, 2)->default(0);
 
-            $table->integer('grace_days')->default(0);
+            $table->decimal('tax', 12, 2)->default(0);
 
-            $table->boolean('status')->default(true);
+            $table->decimal('discount', 12, 2)->default(0);
+
+            $table->decimal('total_amount', 12, 2)->default(0);
+
+            /*
+            |--------------------------------------------------------------------------
+            | DATES
+            |--------------------------------------------------------------------------
+            */
+
+            $table->date('invoice_date');
+
+            $table->date('due_date');
+
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS
+            |--------------------------------------------------------------------------
+            */
+
+            $table->enum('status', [
+                'pending',
+                'paid',
+                'overdue',
+                'cancelled'
+            ])->default('pending');
+
+            /*
+            |--------------------------------------------------------------------------
+            | OPTIONAL NOTES
+            |--------------------------------------------------------------------------
+            */
+
+            $table->text('notes')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | TIMESTAMPS
+            |--------------------------------------------------------------------------
+            */
 
             $table->timestamps();
 
@@ -36,6 +92,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('subscription_invoices');
     }
 };

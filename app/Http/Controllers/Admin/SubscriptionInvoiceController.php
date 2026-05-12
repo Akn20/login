@@ -34,8 +34,7 @@ class SubscriptionInvoiceController extends Controller
         $subscription = Subscription::with('plan')
             ->findOrFail($subscriptionId);
 
-        $amount = $subscription->plan->monthly_price;
-
+       $amount = $subscription->plan->monthly_price;
         $tax = ($amount * 18) / 100;
 
         $discount = 0;

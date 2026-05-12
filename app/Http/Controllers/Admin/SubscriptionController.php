@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\SubscriptionInvoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SubscriptionController extends Controller
 {
@@ -88,7 +90,7 @@ class SubscriptionController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        Subscription::create([
+        $subscription = Subscription::create([
 
             'organization_id' => $request->organization_id,
 
@@ -101,6 +103,56 @@ class SubscriptionController extends Controller
             'status' => $request->status,
 
             'auto_renew' => $request->has('auto_renew'),
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD PLAN
+        |--------------------------------------------------------------------------
+        */
+
+        $subscription->load('plan');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CALCULATE INVOICE
+        |--------------------------------------------------------------------------
+        */
+
+        $amount = $subscription->plan->monthly_price;
+
+        $tax = ($amount * 18) / 100;
+
+        $discount = 0;
+
+        $totalAmount = $amount + $tax - $discount;
+
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE INVOICE
+        |--------------------------------------------------------------------------
+        */
+
+        SubscriptionInvoice::create([
+
+            'subscription_id' => $subscription->id,
+
+            'invoice_number' =>
+                'INV-' . strtoupper(Str::random(8)),
+
+            'amount' => $amount,
+
+            'tax' => $tax,
+
+            'discount' => $discount,
+
+            'total_amount' => $totalAmount,
+
+            'invoice_date' => now(),
+
+            'due_date' => now()->addDays(7),
+
+            'status' => 'pending',
         ]);
 
         return redirect()
