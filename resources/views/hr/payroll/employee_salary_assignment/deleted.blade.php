@@ -77,8 +77,12 @@
                             <div class="d-flex gap-2 justify-content-end">
 
                                 <!-- Restore -->
-                                <form action="{{ route('hr.payroll.employee-salary-assignment.restore', $item->id) }}" method="POST">
+                               <form action="{{ route('hr.payroll.employee-salary-assignment.restore', $item->id) }}"
+                                    method="POST">
+
                                     @csrf
+                                    @method('PUT')
+
                                     <button type="submit"
                                             class="btn btn-outline-success btn-icon rounded-circle btn-sm"
                                             title="Restore">
@@ -87,9 +91,10 @@
                                 </form>
 
                                 <!-- Permanent Delete -->
-                                <form action="{{ route('hr.payroll.employee-salary-assignment.forceDelete', $item->id) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Permanent delete?')">
+                                <form action="{{ route('hr.payroll.employee-salary-assignment.force-delete', $item->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Permanent delete?')">
+
                                     @csrf
                                     @method('DELETE')
 

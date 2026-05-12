@@ -47,32 +47,48 @@ $digital = DB::table('consultations')
     ->get();
  
  
-// OFFLINE PRESCRIPTIONS
-$offline = DB::table('offline_prescriptions')
-->select(
+    // OFFLINE PRESCRIPTIONS
+    $offline = DB::table('offline_prescriptions')
+    ->select(
+    
+    'id',
+    
+    'prescription_number',
+    
+    'patient_name',
+    
+    'doctor_name',
+    
+    'prescription_date',
+    
+    DB::raw("'Offline' as prescription_type"),
+    
+    'status'
+    
+    )
+    ->get();
+
+    //IPD 
+ $ipd = DB::table('ipd_prescriptions')
+    ->leftJoin('patients','patients.id','=','ipd_prescriptions.patient_id')
+    ->leftJoin('staff','staff.id','=','ipd_prescriptions.doctor_id')
+    ->select(
+        'ipd_prescriptions.id',
+        DB::raw("CONCAT('IPD-', SUBSTRING(ipd_prescriptions.id,1,4)) as prescription_number"),
+        DB::raw("CONCAT(COALESCE(patients.first_name,''),' ',COALESCE(patients.last_name,'')) as patient_name"),
+        DB::raw("COALESCE(staff.name,'IPD Doctor') as doctor_name"),
+        'ipd_prescriptions.prescription_date',
+        DB::raw("'IPD' as prescription_type"),
+        DB::raw("COALESCE(ipd_prescriptions.status,'Pending') as status")
+    )
+    ->get();
  
-'id',
- 
-'prescription_number',
- 
-'patient_name',
- 
-'doctor_name',
- 
-'prescription_date',
- 
-DB::raw("'Offline' as prescription_type"),
- 
-'status'
- 
-)
-->get();
- 
- 
-// MERGE BOTH
-$prescriptions = $digital->merge($offline)
-->sortByDesc('prescription_date')
-->values();
+    // MERGE BOTH
+   $prescriptions = $digital
+    ->merge($offline)
+    ->merge($ipd)
+    ->sortByDesc('prescription_date')
+    ->values();
  
  
 /* ---------- APPLY FILTERS ---------- */
@@ -112,40 +128,78 @@ public function show($id)
    
 /* ---------- CHECK OFFLINE PRESCRIPTION ---------- */
  
-$offline = OfflinePrescription::where('id',$id)->first();
- 
-if($offline){
- 
-    $items = DB::table('offline_prescription_items')
-        ->where('offline_prescription_id',$id)
+    $offline = OfflinePrescription::where('id',$id)->first();
+    
+    if($offline){
+    
+        $items = DB::table('offline_prescription_items')
+            ->where('offline_prescription_id',$id)
+            ->get();
+    
+        $prescription = (object)[
+    
+            'id'=>$offline->id,
+    
+            'patient_name'=>$offline->patient_name,
+    
+            'patient_phone'=>$offline->patient_phone,
+    
+            'patient_gender'=>null,
+    
+            'doctor_name'=>$offline->doctor_name,
+    
+            'doctor_department'=>null,
+    
+            'prescription_date'=>$offline->prescription_date,
+    
+            'prescription_type'=>'Offline',
+    
+            'status'=>$offline->status,
+    
+            'uploaded_prescription'=>$offline->uploaded_prescription,
+    
+            'items'=>$items
+        ];
+    
+        return view('admin.pharmacy.prescriptions.show',compact('prescription'));
+    }
+
+/* ---------- CHECK IPD PRESCRIPTION ---------- */
+
+$ipd = DB::table('ipd_prescriptions')
+    ->leftJoin('patients','patients.id','=','ipd_prescriptions.patient_id')
+    ->leftJoin('staff','staff.id','=','ipd_prescriptions.doctor_id')
+    ->where('ipd_prescriptions.id',$id)
+    ->select(
+        'ipd_prescriptions.id',
+        'ipd_prescriptions.prescription_date',
+        DB::raw("CONCAT(COALESCE(patients.first_name,''),' ',COALESCE(patients.last_name,'')) as patient_name"),
+        DB::raw("COALESCE(patients.mobile,'-') as patient_phone"),
+        DB::raw("COALESCE(patients.gender,'-') as patient_gender"),
+        DB::raw("COALESCE(staff.name,'IPD Doctor') as doctor_name")
+    )
+    ->first();
+
+if($ipd){
+
+    $items = DB::table('ipd_prescription_items')
+        ->where('prescription_id',$id)
         ->get();
- 
+
     $prescription = (object)[
- 
-        'id'=>$offline->id,
- 
-        'patient_name'=>$offline->patient_name,
- 
-        'patient_phone'=>$offline->patient_phone,
- 
-        'patient_gender'=>null,
- 
-        'doctor_name'=>$offline->doctor_name,
- 
-        'doctor_department'=>null,
- 
-        'prescription_date'=>$offline->prescription_date,
- 
-        'prescription_type'=>'Offline',
- 
-        'status'=>$offline->status,
- 
-        'uploaded_prescription'=>$offline->uploaded_prescription,
- 
-        'items'=>$items
+        'id' => $ipd->id,
+        'patient_name' => $ipd->patient_name,
+        'patient_phone' => $ipd->patient_phone,
+        'patient_gender' => $ipd->patient_gender,
+        'doctor_name' => $ipd->doctor_name,
+        'doctor_department' => 'IPD',
+        'prescription_date' => $ipd->prescription_date,
+        'prescription_type' => 'IPD',
+        'status' => 'Pending',
+        'items' => $items
     ];
- 
-    return view('admin.pharmacy.prescriptions.show',compact('prescription'));
+
+    return view('admin.pharmacy.prescriptions.show', compact('prescription'));
 }
  
  
@@ -452,7 +506,72 @@ $item->quantity = $dosesPerDay * ($item->duration ?? 1);
     return view('admin.pharmacy.prescriptions.dispense',compact('prescription'));
  
 }
- 
+/* ---------- CHECK IPD PRESCRIPTION ---------- */
+
+$ipd = DB::table('ipd_prescriptions')
+    ->leftJoin('patients','patients.id','=','ipd_prescriptions.patient_id')
+    ->leftJoin('staff','staff.id','=','ipd_prescriptions.doctor_id')
+    ->where('ipd_prescriptions.id',$id)
+    ->select(
+        'ipd_prescriptions.id',
+        'ipd_prescriptions.patient_id',
+        DB::raw("CONCAT(COALESCE(patients.first_name,''),' ',COALESCE(patients.last_name,'')) as patient_name"),
+        DB::raw("COALESCE(staff.name,'IPD Doctor') as doctor_name")
+    )
+    ->first();
+
+if($ipd){
+
+    $items = DB::table('ipd_prescription_items')
+        ->where('prescription_id',$id)
+        ->get();
+
+    foreach($items as $item){
+
+        // 🔥 FIX 1: SET REQUIRED QTY (default 1)
+        // 🔥 CALCULATE FROM FREQUENCY
+
+        $freqParts = explode('-', $item->frequency); // [1,1,1]
+
+        $perDay = array_sum(array_map('intval', $freqParts)); // 3
+
+        $days = intval($item->duration ?? 1); // 2
+
+        $item->quantity = $perDay * $days; // 6 ✅
+
+        // 🔥 FIX 2: MAP MEDICINE
+        $medicine = DB::table('medicines')
+            ->where('medicine_name',$item->medicine_name)
+            ->first();
+
+        if($medicine){
+
+            $item->medicine_id = $medicine->id;
+
+            $batches = DB::table('medicine_batches')
+                ->where('medicine_id',$medicine->id)
+                ->where('quantity','>',0)
+                ->orderBy('expiry_date','asc')
+                ->get();
+
+            $item->medicine = (object)[
+                'name'=>$item->medicine_name,
+                'batches'=>$batches
+            ];
+        }
+    }
+
+    $prescription = (object)[
+        'id'=>$ipd->id,
+        'patient_id'=>$ipd->patient_id,
+        'patient_name'=>$ipd->patient_name,   // ✅ FIXED
+        'doctor_name'=>$ipd->doctor_name,     // ✅ FIXED
+        'prescription_number'=>'IPD-' . substr($ipd->id,0,6), // ✅ BETTER
+        'items'=>$items
+    ];
+
+    return view('admin.pharmacy.prescriptions.dispense',compact('prescription'));
+}
     /* ================= GET PRESCRIPTION ================= */
  
    $prescription = DB::table('consultations')
@@ -542,125 +661,149 @@ $prescription->prescription_number = $index !== false
  
  
  
-public function storeDispense(Request $request,$id)
+public function storeDispense(Request $request, $id)
 {
- 
-$bill_id = \Illuminate\Support\Str::uuid();
- 
-    $patientName = null;
+    // 🔍 CHECK IF IPD
+    $ipd = DB::table('ipd_prescriptions')->where('id',$id)->first();
 
-    // ONLINE
-    if ($request->patient_id) {
-        $patient = \App\Models\Patient::find($request->patient_id);
-        $patientName = $patient->name ?? null;
-    }
-    // OFFLINE
-    else {
-        $offline = \App\Models\OfflinePrescription::where('id', $id)->first();
-        $patientName = $offline->patient_name ?? null;
-    }
+    // ============================
+    // 🔥 IPD FLOW (NO SALES BILL)
+    // ============================
+    if($ipd){
 
-    $prescriptionNumber = 'PR-' . str_pad(
-    DB::table('sales_bills')->count() + 1,
-    4,
-    '0',
-    STR_PAD_LEFT
-);
+        foreach ($request->medicine_id as $key => $medicine){
 
-// 🔥 ADD HERE (before insert)
-    $patientName = null;
+            if(!$medicine) continue;
 
-    // ONLINE
-    if ($request->patient_id) {
-        $patient = \App\Models\Patient::find($request->patient_id);
-        $patientName = $patient->name ?? null;
-    }
-    // OFFLINE
-    else {
-        $offline = \App\Models\OfflinePrescription::where('id', $id)->first();
-        $patientName = $offline->patient_name ?? null;
-    }
+            $batch_id = $request->batch_id[$key];
+            $qty = $request->dispense_qty[$key];
 
-DB::table('sales_bills')->insert([
-    'bill_id' => $bill_id,
-    'bill_number' => 'BILL'.time(),
-    'patient_id' => $request->patient_id ?? null,
-    'patient_name' => $patientName, // ✅ ADD THIS
-    'prescription_id' => $id,
-     'prescription_number' => $prescriptionNumber,
-    'total_amount' => 0,
-    'created_at' => now(),
-    'updated_at' => now()
-]);
- 
-if($request->has('medicine_id')){
- 
-    foreach($request->medicine_id as $key => $medicine){
- 
-        $batch_id = $request->batch_id[$key];
-        $qty = $request->dispense_qty[$key];
-          if(!$medicine){
-        continue; // skip invalid medicine
-    }
- 
-        // Save bill item
-        SalesBillItem::create([
-            'sales_bill_id' => $bill_id,
-            'medicine_id' => $medicine,
-            'batch_id' => $batch_id,
-            'quantity' => $qty,
-            'unit_price' => 10,
-            'total_price' => $qty * 10
+            DB::table('pharmacy_ipd_dispense')->insert([
+                'id' => Str::uuid(),
+                'prescription_id' => $id,
+                'patient_id' => $ipd->patient_id,
+                'medicine_id' => $medicine,
+                'medicine_name' => $request->medicine_name[$key] ?? '',
+                'quantity' => $request->required_qty[$key] ?? 0,
+                'dispensed_quantity' => $qty,
+                'batch_id' => $batch_id,
+                'dispensed_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // ✅ STOCK UPDATE
+            DB::table('medicine_batches')
+                ->where('id',$batch_id)
+                ->decrement('quantity',$qty);
+        }
+
+        // ✅ UPDATE IPD STATUS
+         DB::table('ipd_prescriptions')
+        ->where('id', $id)
+        ->update([
+            'status' => 'Dispensed',
+            'updated_at' => now()
         ]);
- 
-        // 🔹 Deduct stock from medicine_batches
-        DB::table('medicine_batches')
-            ->where('id',$batch_id)
-            ->decrement('quantity',$qty);
+
+        return redirect()->route('admin.prescriptions.index')
+            ->with('success','IPD Medicines Dispensed Successfully');
     }
-    // ✅ CALCULATE TOTAL
-$total = DB::table('sales_bill_items')
-    ->where('sales_bill_id', $bill_id)
-    ->sum('total_price');
- 
-// ✅ UPDATE BILL
-DB::table('sales_bills')
-    ->where('bill_id', $bill_id)
-    ->update([
-        'total_amount' => $total,
-        'balance_amount' => $total
+
+    // ============================
+    // 🔥 NORMAL FLOW (OPD/OFFLINE)
+    // ============================
+
+    $bill_id = Str::uuid();
+
+    // GET PATIENT NAME
+    $patientName = null;
+
+    if ($request->patient_id) {
+        $patient = \App\Models\Patient::find($request->patient_id);
+        $patientName = $patient->name ?? null;
+    } else {
+        $offline = \App\Models\OfflinePrescription::where('id', $id)->first();
+        $patientName = $offline->patient_name ?? null;
+    }
+
+    // GENERATE PRESCRIPTION NUMBER
+    $prescriptionNumber = 'PR-' . str_pad(
+        DB::table('sales_bills')->count() + 1,
+        4,
+        '0',
+        STR_PAD_LEFT
+    );
+
+    // CREATE BILL
+    DB::table('sales_bills')->insert([
+        'bill_id' => $bill_id,
+        'bill_number' => 'BILL'.time(),
+        'patient_id' => $request->patient_id ?? null,
+        'patient_name' => $patientName,
+        'prescription_id' => $id,
+        'prescription_number' => $prescriptionNumber,
+        'total_amount' => 0,
+        'created_at' => now(),
+        'updated_at' => now()
     ]);
 
-// ✅ UPDATE BILL
-DB::table('sales_bills')
-    ->where('bill_id', $bill_id)
-    ->update([
-        'total_amount' => $total,
-        'balance_amount' => $total
-    ]);
- 
-}
- 
-DB::table('prescription_status')
-->updateOrInsert(
-    ['consultation_id' => $id],
-    [
-        'id' => Str::uuid(),
-        'status' => 'Dispensed',
-        'updated_at' => now(),
-        'created_at' => now()
-    ]
-);
- 
-$offline = OfflinePrescription::where('id',$id)->first();
- 
-if($offline){
-    $offline->status = 'Dispensed';
-    $offline->save();
-}
- 
-return redirect()->route('admin.prescriptions.bill',$bill_id);
- 
+    // SAVE ITEMS
+    if($request->has('medicine_id')){
+
+        foreach($request->medicine_id as $key => $medicine){
+
+            if(!$medicine) continue;
+
+            $batch_id = $request->batch_id[$key];
+            $qty = $request->dispense_qty[$key];
+
+            SalesBillItem::create([
+                'sales_bill_id' => $bill_id,
+                'medicine_id' => $medicine,
+                'batch_id' => $batch_id,
+                'quantity' => $qty,
+                'unit_price' => 10,
+                'total_price' => $qty * 10
+            ]);
+
+            DB::table('medicine_batches')
+                ->where('id',$batch_id)
+                ->decrement('quantity',$qty);
+        }
+
+        // CALCULATE TOTAL
+        $total = DB::table('sales_bill_items')
+            ->where('sales_bill_id', $bill_id)
+            ->sum('total_price');
+
+        DB::table('sales_bills')
+            ->where('bill_id', $bill_id)
+            ->update([
+                'total_amount' => $total,
+                'balance_amount' => $total
+            ]);
+    }
+
+    // UPDATE STATUS
+    DB::table('prescription_status')
+        ->updateOrInsert(
+            ['consultation_id' => $id],
+            [
+                'id' => Str::uuid(),
+                'status' => 'Dispensed',
+                'updated_at' => now(),
+                'created_at' => now()
+            ]
+        );
+
+    $offline = OfflinePrescription::where('id',$id)->first();
+    if($offline){
+        $offline->status = 'Dispensed';
+        $offline->save();
+    }
+
+    return redirect()->route('admin.prescriptions.bill',$bill_id);
 }
 /* ================= SHOW BILL ================= */
  
@@ -786,6 +929,21 @@ DB::raw("COALESCE(prescription_status.status,'Pending') as status")
 )
 ->get();
  
+$ipd = DB::table('ipd_prescriptions')
+    ->join('patients','patients.id','=','ipd_prescriptions.patient_id')
+    ->join('staff','staff.id','=','ipd_prescriptions.doctor_id')
+    ->select(
+        'ipd_prescriptions.id',
+        DB::raw("'IPD-' as prescription_number"),
+        DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
+        'staff.name as doctor_name',
+        'ipd_prescriptions.prescription_date',
+        DB::raw("'IPD' as prescription_type"),
+        DB::raw("'Pending' as status")
+    )
+    ->get();
+
+$prescriptions = $digital->merge($offline)->merge($ipd)->values();
  
 $offline = DB::table('offline_prescriptions')
 ->select(

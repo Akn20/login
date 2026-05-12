@@ -126,28 +126,32 @@
 
             <!-- Restore -->
             <form action="{{ route('hr.payroll.salary-structure.restore', $row->id) }}"
-                  method="POST">
-                @csrf
-                <button type="submit"
-                        class="btn btn-outline-success btn-icon rounded-circle btn-sm"
-                        title="Restore">
-                    <i class="feather-refresh-ccw"></i>
-                </button>
-            </form>
+      method="POST">
+
+    @csrf
+    @method('PUT')
+
+    <button type="submit"
+            class="btn btn-outline-success btn-icon rounded-circle btn-sm"
+            title="Restore">
+        <i class="feather-refresh-ccw"></i>
+    </button>
+</form>
 
             <!-- Permanent Delete -->
-            <form action="{{ route('hr.payroll.salary-structure.forceDelete', $row->id) }}"
-                  method="POST"
-                  onsubmit="return confirm('Permanently delete this record?')">
-                @csrf
-                @method('DELETE')
+            <form action="{{ route('hr.payroll.salary-structure.force-delete', $row->id) }}"
+      method="POST"
+      onsubmit="return confirm('Permanently delete this record?')">
 
-                <button type="submit"
-                        class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                        title="Delete Permanently">
-                    <i class="feather-trash-2"></i>
-                </button>
-            </form>
+    @csrf
+    @method('DELETE')
+
+    <button type="submit"
+            class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+            title="Delete Permanently">
+        <i class="feather-trash-2"></i>
+    </button>
+</form>
 
         </div>
     </td>

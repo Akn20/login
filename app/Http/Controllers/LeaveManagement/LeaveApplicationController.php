@@ -35,6 +35,15 @@ class LeaveApplicationController extends Controller
                 ->sum('leave_days');
 
             $application->pending_leave = $pendingLeaves;
+            $application->leave_type_name = optional($application->leaveType)->display_name;
+        }
+
+        // ✅ API RESPONSE
+        if (request()->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'data' => $applications
+            ], 200);
         }
 
         return view(
@@ -50,22 +59,22 @@ class LeaveApplicationController extends Controller
 
         $staffList = Staff::whereNull('deleted_at')->get();
 
-       $staffId = request('staff_id');
+        $staffId = request('staff_id');
 
-    if ($staffId) {
-        $staff = Staff::find($staffId);
-    } else {
-        $staff = Staff::first(); // default first load
-    }
+        if ($staffId) {
+            $staff = Staff::find($staffId);
+        } else {
+            $staff = Staff::first();
+        }
 
         $leaveBalances = [];
 
         foreach ($leaveTypes as $type) {
 
-                $mapping = DB::table('leave_mappings')
-                    ->where('leave_type_id', $type->id)
-                    ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
-                    ->first();
+            $mapping = DB::table('leave_mappings')
+                ->where('leave_type_id', $type->id)
+                ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
+                ->first();
 
             if (!$mapping) {
                 $mapping = DB::table('leave_mappings')
@@ -91,16 +100,10 @@ class LeaveApplicationController extends Controller
         }
 
         return view(
-    'admin.Leave_Management.leave_application.create',
-    compact(
-        'leaveTypes',
-        'leaveBalances',
-        'staffList',
-        'staffId'
-    )
-);
+            'admin.Leave_Management.leave_application.create',
+            compact('leaveTypes', 'leaveBalances', 'staffList', 'staffId')
+        );
     }
-
 
 
     public function store(Request $request)
@@ -116,10 +119,17 @@ class LeaveApplicationController extends Controller
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
-
         $staff = Staff::findOrFail($request->staff_id);
 
         if (!$staff) {
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No staff found'
+                ], 404);
+            }
+
             return back()->with('error', 'No staff found');
         }
 
@@ -130,36 +140,43 @@ class LeaveApplicationController extends Controller
 
         if ($from->lt(Carbon::today())) {
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You cannot apply leave for past dates'
+                ], 422);
+            }
+
             return back()->withErrors([
                 'from_date' => 'You cannot apply leave for past dates'
             ])->withInput();
         }
 
-
         $overlap = LeaveApplication::where('staff_id', $staff->id)
             ->where('status', '!=', 'rejected')
             ->where(function ($query) use ($from, $to) {
-
                 $query->whereBetween('from_date', [$from, $to])
                     ->orWhereBetween('to_date', [$from, $to])
                     ->orWhere(function ($q) use ($from, $to) {
-
                         $q->where('from_date', '<=', $from)
                             ->where('to_date', '>=', $to);
-
                     });
-
             })
             ->exists();
 
         if ($overlap) {
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You already have a leave applied for selected dates'
+                ], 422);
+            }
+
             return back()->withErrors([
                 'leave_overlap' => 'You already have a leave applied for selected dates'
             ])->withInput();
         }
-
-
 
         $weekend = weekends::active()->first();
         $weekendDays = $weekend ? $weekend->days : [];
@@ -195,65 +212,64 @@ class LeaveApplicationController extends Controller
             }
 
             if ($isHoliday) {
-
-                if ($leaveType->count_holidays) {
-                    $days++;
-                }
-
+                if ($leaveType->count_holidays) $days++;
             } elseif ($isWeekend) {
-
-                if ($leaveType->count_weekends) {
-                    $days++;
-                }
-
+                if ($leaveType->count_weekends) $days++;
             } else {
-
                 $days++;
-
             }
 
             $current->addDay();
         }
 
-
         if ($request->leave_duration !== 'full_day') {
 
             if (!$leaveType->allow_half_day) {
 
-                return back()->withErrors([
-                    'leave_duration' => 'Half day is not allowed for this leave type'
-                ])->withInput();
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Half day is not allowed'
+                    ], 422);
+                }
 
+                return back()->withErrors([
+                    'leave_duration' => 'Half day is not allowed'
+                ])->withInput();
             }
 
             $days = $leaveType->min_leave_unit ?? 0.5;
         }
 
+        // Check maximum continuous leave (alternate style)
+$maxDaysAllowed = $leaveType->max_continuous_days;
+
+if (!empty($maxDaysAllowed)) {
+
+    if ($days > $maxDaysAllowed) {
+
+        $errorMessage = "You can apply maximum "
+            . $maxDaysAllowed
+            . " continuous leave days only.";
+
+        return back()
+            ->withErrors(['leave_days' => $errorMessage])
+            ->withInput();
+    }
+}
 
 
-        if ($leaveType->max_continuous_days && $days > $leaveType->max_continuous_days) {
+        /* ===== BALANCE ===== */
+        $mapping = DB::table('leave_mappings')
+            ->where('leave_type_id', $request->leave_type_id)
+            ->whereJsonContains('employee_status', $staff->employment_status ?? 'Permanent')
+            ->first();
 
-            return back()->withErrors([
-                'leave_days' => 'Maximum continuous leave allowed is ' . $leaveType->max_continuous_days . ' days'
-            ])->withInput();
-        }
-
-
-
-        /* ---------------- BALANCE CALCULATION ---------------- */
+        if (!$mapping) {
             $mapping = DB::table('leave_mappings')
                 ->where('leave_type_id', $request->leave_type_id)
-                ->whereJsonContains(
-                    'employee_status',
-                    $staff->employment_status ?? 'Permanent'
-                )
                 ->first();
-
-            if (!$mapping) {
-                $mapping = DB::table('leave_mappings')
-                    ->where('leave_type_id', $request->leave_type_id)
-                    ->first();
-            }
+        }
 
         $default = $mapping ? $mapping->accrual_value : 0;
 
@@ -274,46 +290,34 @@ class LeaveApplicationController extends Controller
             ->orderByDesc('id')
             ->first();
 
-        if ($lastApplication) {
-
-    // Use last remaining balance
-    $balanceBefore = $lastApplication->balance_after;
-
-} else {
-
-    // First time calculation
-    $balanceBefore = $actualBalance;
-
-}
-
+        $balanceBefore = $lastApplication ? $lastApplication->balance_after : $actualBalance;
         $balanceAfter = $balanceBefore - $days;
 
         if ($days > $balanceBefore) {
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Insufficient balance. Remaining: ' . $balanceBefore
+                ], 422);
+            }
+
             return back()->withErrors([
-                'leave_days' => 'Leave exceeds available balance. Remaining: ' . $balanceBefore . ' days'
+                'leave_days' => 'Insufficient balance'
             ])->withInput();
         }
 
-        /* ----------------------------------------------------- */
-
-
+        /* ===== FILE ===== */
         $attachment = null;
 
         if ($request->hasFile('attachment')) {
-
             $file = $request->file('attachment');
-
             $filename = time() . '_' . $file->getClientOriginalName();
-
             $file->move(public_path('uploads/leave'), $filename);
-
             $attachment = 'uploads/leave/' . $filename;
         }
 
-
-
-        LeaveApplication::create([
+        $leave = LeaveApplication::create([
             'staff_id' => $staff->id,
             'leave_type_id' => $request->leave_type_id,
             'leave_duration' => $request->leave_duration,
@@ -327,6 +331,14 @@ class LeaveApplicationController extends Controller
             'status' => 'pending'
         ]);
 
+        // ✅ FINAL API RESPONSE
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Leave applied successfully',
+                'data' => $leave
+            ], 201);
+        }
 
         return redirect()
             ->route('hr.leave-application.index')
@@ -334,11 +346,17 @@ class LeaveApplicationController extends Controller
     }
 
 
-
     public function show($id)
     {
         $application = LeaveApplication::with(['staff', 'leaveType'])
             ->findOrFail($id);
+
+        if (request()->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'data' => $application
+            ], 200);
+        }
 
         return view(
             'admin.Leave_Management.leave_application.show',
@@ -355,10 +373,16 @@ class LeaveApplicationController extends Controller
             'status' => 'withdrawn'
         ]);
 
+        if (request()->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Leave withdrawn successfully'
+            ], 200);
+        }
+
         return redirect()
             ->back()
             ->with('success', 'Leave withdrawn successfully');
     }
 
 }
-

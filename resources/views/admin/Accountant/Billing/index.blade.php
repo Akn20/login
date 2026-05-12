@@ -3,67 +3,73 @@
 @section('content')
 <div class="container-fluid">
 
-    {{-- Page Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>IPD Billing Management</h3>
+<form method="GET" class="mb-4">
+    <div class="row align-items-end">
 
-        <a href="{{ route('admin.accountant.billing.create') }}" 
-        class="btn btn-success">
-            + New Billing
-        </a>
-    </div>
+        {{-- SEARCH --}}
+        <div class="col-md-4">
+            <label class="form-label">Search</label>
+            <input type="text" name="search"
+                   value="{{ request('search') }}"
+                   class="form-control"
+                   placeholder="Patient / IPD No">
+        </div>
 
-    {{-- Filters --}}
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="row">
+        {{-- STATUS --}}
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control">
+                <option value="">All</option>
+                <option value="final" {{ request('status')=='final'?'selected':'' }}>Final</option>
+                <option value="interim" {{ request('status')=='interim'?'selected':'' }}>Interim</option>
+                <option value="not_created" {{ request('status')=='not_created'?'selected':'' }}>Not Created</option>
+            </select>
+        </div>
 
-                <div class="col-md-3">
-                    <label>Patient Name</label>
-                    <input type="text" class="form-control" placeholder="Search patient...">
-                </div>
+        {{-- BUTTONS --}}
+        <div class="col-md-5">
+            <div class="d-flex gap-2">
 
-                <div class="col-md-3">
-                    <label>IPD No</label>
-                    <input type="text" class="form-control" placeholder="IPD number">
-                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="feather-search"></i> Search
+                </button>
 
-                <div class="col-md-3">
-                    <label>Status</label>
-                    <select class="form-control">
-                        <option value="">All</option>
-                        <option>Interim</option>
-                        <option>Final</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3 d-flex align-items-end">
-                    <button class="btn btn-primary w-100">Filter</button>
-                </div>
+                <a href="{{ route('admin.accountant.billing.index') }}"
+                   class="btn btn-secondary">
+                    Reset
+                </a>
 
             </div>
         </div>
+
+    </div>
+</form>
+
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>IPD Billing Management</h3>
+
     </div>
 
-    {{-- Billing Table --}}
+    {{-- TABLE --}}
     <div class="card">
         <div class="card-header">
-            Patient Billing List
+            IPD Patient Billing List
         </div>
 
         <div class="card-body table-responsive">
 
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Patient Name</th>
+                        <th>Patient</th>
                         <th>IPD No</th>
                         <th>Admission Date</th>
                         <th>Room</th>
                         <th>Doctor</th>
                         <th>Status</th>
-                        <th width="220">Action</th>
+                        <th width="120">Action</th>
                     </tr>
                 </thead>
 
@@ -71,31 +77,56 @@
                     @forelse($patients as $index => $p)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $p['name'] }}</td>
-                        <td>{{ $p['ipd_no'] }}</td>
-                        <td>{{ $p['admission_date'] }}</td>
-                        <td>{{ $p['room'] }}</td>
-                        <td>{{ $p['doctor'] }}</td>
 
+                        <td>{{ $p->name }}</td>
+
+                        <td>{{ $p->ipd_no }}</td>
+
+                        <td>{{ \Carbon\Carbon::parse($p->admission_date)->format('d-m-Y') }}</td>
+
+                        <td>{{ $p->room ?? '-' }}</td>
+
+                        <td>{{ $p->doctor ?? '-' }}</td>
+
+                        {{-- STATUS --}}
                         <td>
-                            @if($p['status'] == 'Final')
-                                <span class="badge bg-success">Final</span>
+                            @if($p->bill_id)
+                                @if($p->status == 'final')
+                                    <span class="badge bg-success">Final</span>
+                                @else
+                                    <span class="badge bg-warning text-dark">Interim</span>
+                                @endif
                             @else
-                                <span class="badge bg-warning text-dark">Interim</span>
+                                <span class="badge bg-secondary">Not Created</span>
                             @endif
                         </td>
 
+                        {{-- ACTIONS --}}
                         <td class="text-center">
 
-                            <a href="{{ route('admin.accountant.billing.view', $p['id']) }}"
-                            class="text-info me-2" title="View">
-                                <i class="feather-eye"></i>
-                            </a>
+                            @if($p->bill_id)
 
-                            <a href="{{ route('admin.accountant.billing.edit', $p['id']) }}"
-                            class="text-primary" title="Edit">
-                                <i class="feather-edit"></i>
-                            </a>
+                                {{-- VIEW --}}
+                                <a href="{{ route('admin.accountant.billing.view', $p->bill_id) }}"
+                                   class="text-info me-2" title="View">
+                                    <i class="feather-eye"></i>
+                                </a>
+
+                                {{-- EDIT --}}
+                                <a href="{{ route('admin.accountant.billing.edit', $p->bill_id) }}"
+                                   class="text-primary" title="Edit">
+                                    <i class="feather-edit"></i>
+                                </a>
+
+                            @else
+
+                                {{-- CREATE --}}
+                                <a href="{{ route('admin.accountant.billing.create') }}?ipd_id={{ $p->id }}"
+                                   class="text-success" title="Create Bill">
+                                    <i class="feather-plus-circle"></i>
+                                </a>
+
+                            @endif
 
                         </td>
                     </tr>

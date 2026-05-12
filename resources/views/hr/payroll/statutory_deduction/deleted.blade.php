@@ -55,8 +55,11 @@
 
                                     <!-- Restore -->
                                     <form action="{{ route('hr.payroll.statutory-deduction.restore', $row->id) }}"
-                                          method="POST">
+                                        method="POST">
+
                                         @csrf
+                                        @method('PUT')
+
                                         <button type="submit"
                                                 class="btn btn-outline-success btn-icon rounded-circle btn-sm"
                                                 title="Restore">
@@ -65,9 +68,10 @@
                                     </form>
 
                                     <!-- Permanent Delete -->
-                                    <form action="{{ route('hr.payroll.statutory-deduction.forceDelete', $row->id) }}"
-                                          method="POST"
-                                          onsubmit="return confirm('Permanently delete this record?')">
+                                    <form action="{{ route('hr.payroll.statutory-deduction.force-delete', $row->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Permanently delete this record?')">
+
                                         @csrf
                                         @method('DELETE')
 

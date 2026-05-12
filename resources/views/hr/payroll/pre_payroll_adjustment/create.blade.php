@@ -6,7 +6,8 @@
 
 <div class="page-header mb-4 d-flex justify-content-between">
     <h5>Add Pre Payroll Adjustment</h5>
-<a href="{{ route('hr.payroll.pre-payroll.create') }}" class="btn btn-light">
+
+    <a href="{{ route('hr.payroll.pre-payroll.index') }}" class="btn btn-light">
         Back
     </a>
 </div>
@@ -14,7 +15,7 @@
 <div class="card">
     <div class="card-body">
 
-    <form action="{{ route('hr.payroll.pre-payroll.store') }}" method="POST">
+        <form action="{{ route('hr.payroll.pre-payroll.store') }}" method="POST">
             @csrf
 
             @include('hr.payroll.pre_payroll_adjustment.form')

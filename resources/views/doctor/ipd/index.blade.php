@@ -27,6 +27,59 @@
     <div class="card-box">
         <h4 class="mb-3">IPD - Admitted Patients</h4>
 
+        <form method="GET" action="{{ route('doctor.ipd.index') }}" class="mb-3">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <input type="text"
+                        name="patient_name"
+                        class="form-control"
+                        placeholder="Search Patient Name"
+                        value="{{ request('patient_name') }}">
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" class="form-control">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
+                            Active
+                        </option>
+                        <option value="discharged" {{ request('status') == 'discharged' ? 'selected' : '' }}>
+                            Discharged
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="date"
+                        name="admission_date"
+                        class="form-control"
+                        value="{{ request('admission_date') }}">
+                </div>
+
+                <div class="col-md-3">
+                    <select name="ward_id" class="form-control">
+                        <option value="">All Wards</option>
+
+                        @foreach($wards as $ward)
+                            <option value="{{ $ward->id }}"
+                                {{ request('ward_id') == $ward->id ? 'selected' : '' }}>
+                                {{ $ward->ward_name }}
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                </div>
+
+            </div>
+        </form>        
+
         <table class="table table-bordered">
             <thead>
                 <tr>

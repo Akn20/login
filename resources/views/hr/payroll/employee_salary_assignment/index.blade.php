@@ -90,17 +90,18 @@
                                     <i class="feather-edit-2"></i>
                                 </a>
 
-                                <form action="{{ route('hr.payroll.employee-salary-assignment.delete', $item->id) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Move to trash?')">
-                                    @csrf
-                                    @method('DELETE')
+                                <form action="{{ route('hr.payroll.employee-salary-assignment.destroy', $item->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Move to trash?')">
 
-                                    <button type="submit"
-                                            class="btn btn-outline-danger btn-icon rounded-circle btn-sm">
-                                        <i class="feather-trash-2"></i>
-                                    </button>
-                                </form>
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit"
+                                    class="btn btn-outline-danger btn-icon rounded-circle btn-sm">
+                                <i class="feather-trash-2"></i>
+                            </button>
+                        </form>
 
                             </div>
                         </td>

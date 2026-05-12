@@ -8,9 +8,55 @@
     padding: 20px;
     border-radius: 10px;
 }
+
+/* Hide buttons while printing */
+.no-print {
+    display: block;
+}
+
 @media print {
+
+    /* Hide sidebar */
+    .nxl-navigation,
+    .nxl-sidebar,
+    .sidebar,
+    .main-sidebar,
+    aside,
+    nav,
+    header,
+    .top-header,
+    .navbar,
+    .header-wrapper,
+    .page-header,
+    .breadcrumb,
+    .footer,
     .no-print {
-        display: none;
+        display: none !important;
+    }
+
+    /* Remove margins/padding */
+    body,
+    .main-content,
+    .content-area,
+    .container,
+    .container-fluid {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Full width print */
+    .card-box {
+        border: none !important;
+        box-shadow: none !important;
+        width: 100% !important;
+    }
+
+    /* Prevent hidden left spacing */
+    .page-wrapper,
+    .main-content,
+    .content {
+        margin-left: 0 !important;
     }
 }
 </style>
@@ -19,7 +65,34 @@
 
     <div class="card-box">
 
-        <h4>Discharge Summary</c></h4>
+        <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+            <h4>Discharge Summary</h4>
+
+            <a href="{{ route('doctor.ipd.show', $ipd->id) }}" class="btn btn-secondary btn-sm">
+                ← Back
+            </a>
+        </div>
+
+        <div class="card-box mb-3">
+            <h5>Patient Information</h5>
+
+            <p><strong>Patient Name:</strong>
+                {{ $ipd->patient->first_name ?? '' }}
+                {{ $ipd->patient->last_name ?? '' }}
+            </p>
+
+            <p><strong>Admission Date:</strong>
+                {{ $ipd->admission_date ?? 'N/A' }}
+            </p>
+
+            <p><strong>Status:</strong>
+                @if($ipd->status == 'discharged')
+                    <span class="badge bg-danger">Discharged</span>
+                @else
+                    <span class="badge bg-success">Active</span>
+                @endif
+            </p>
+        </div>
 
         {{-- ===============================
              IF ALREADY DISCHARGED → VIEW MODE
@@ -106,7 +179,9 @@
                            value="{{ date('Y-m-d') }}">
                 </div>
 
-                <button type="submit" class="btn btn-success">
+                <button type="submit"
+                        class="btn btn-success"
+                        onclick="return confirm('Are you sure you want to discharge this patient?')">
                     Submit & Discharge
                 </button>
             </form>
