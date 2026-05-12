@@ -63,6 +63,7 @@
 
 <thead>
 <tr>
+<th>Staff Name</th>
 <th>Leave Name</th>
 <th>Number of Days</th>
 <th>Balance Before</th>
@@ -78,6 +79,8 @@
 @forelse($applications as $key => $application)
 
 <tr>
+<td>{{ $application->staff->name ?? '-' }}</td>
+
 <td>{{ $application->leaveType->display_name ?? '-' }}</td>
 
 <td>{{ $application->leave_days }}</td>
@@ -99,19 +102,26 @@
 <span class="badge bg-secondary">Withdrawn</span>
 @endif
 </td>
-
 <td>
 @if($application->status == 'pending')
+
 <form action="{{ route('hr.leave-application.withdraw',$application->id) }}" method="POST">
-@csrf
-@method('DELETE')
-<button class="btn btn-sm btn-danger">Withdraw</button>
+    @csrf
+
+    <button class="btn btn-sm btn-danger">
+        Withdraw
+    </button>
+
 </form>
+
 @else
-<button class="btn btn-sm btn-secondary" disabled>Withdraw</button>
+
+<button class="btn btn-sm btn-secondary" disabled>
+    Withdraw
+</button>
+
 @endif
 </td>
-
 </tr>
 
 @empty

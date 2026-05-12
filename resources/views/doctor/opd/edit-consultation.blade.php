@@ -12,30 +12,30 @@
             addBtn.addEventListener("click", function () {
 
                 let newRow = `
-                                                                                        <tr>
+                        <tr>
 
-                                                                                        <td>
-                                                                                            <select name="medicine[]" class="form-control" required>
-                                                                                                <option value="">Select</option>
-                                                                                                @foreach($medicines as $medicine)
-                                                                                                    <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
-                                                                                                @endforeach
-                                                                                            </select>
-                                                                                        </td>
+                            <td>
+                                <select name="medicine[]" class="form-control" required>
+                                    <option value="">Select</option>
+                                        @foreach($medicines as $medicine)
+                                            <option value="{{ $medicine->id }}">{{ $medicine->medicine_name }}</option>
+                                        @endforeach
+                                </select>
+                            </td>
 
-                                                                                        <td><input type="text" class="form-control" name="dosage[]" required></td>
-                                                                                        <td><input type="text" class="form-control" name="frequency[]" required></td>
-                                                                                        <td><input type="text" class="form-control" name="duration[]" required></td>
-                                                                                        <td><input type="text" class="form-control" name="instructions[]" required></td>
+                            <td><input type="text" class="form-control" name="dosage[]" required></td>
+                            <td><input type="text" class="form-control" name="frequency[]" required></td>
+                            <td><input type="text" class="form-control" name="duration[]" required></td>
+                            <td><input type="text" class="form-control" name="instructions[]" required></td>
 
-                                                                                        <td>
-                                                                                            <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
-                                                                                                <i class="feather-trash-2"></i> Remove
-                                                                                            </button>
-                                                                                        </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeMedicine(this)">
+                                    <i class="feather-trash-2"></i> Remove
+                                </button>
+                            </td>
 
-                                                                                        </tr>
-                                                                                        `;
+                            </tr>
+                            `;
 
                 table.insertAdjacentHTML("beforeend", newRow);
 
@@ -47,7 +47,28 @@
             btn.closest("tr").remove();
         }
 
+        function toggleDropdown() {
+            let dropdown = document.getElementById("testDropdown");
+            dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        }
+
+        // Update input text when selection changes
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const dropdown = document.getElementById("testDropdown");
+            const display = document.getElementById("testDisplay");
+
+            dropdown.addEventListener("change", function () {
+                let selected = Array.from(dropdown.selectedOptions)
+                    .map(option => option.text);
+
+                display.value = selected.join(", ");
+            });
+
+        });
     </script>
+
+
 
 
     <div class="container-fluid">
@@ -80,7 +101,8 @@
 
                             <div class="col-md-3">
                                 <label>Name</label>
-                                <input type="text" class="form-control" value="{{ $patient->first_name }}" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ $patient->first_name }} {{ $patient->last_name }}" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -246,15 +268,32 @@
                         $selectedTests = $consultation->labRequests->pluck('test_name')->toArray();
                     @endphp
 
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Recommended Tests</strong>
+                    <div class="mb-3">
+                        <label><strong>Recommended Tests</strong></label>
+
+                            <!-- Visible Input -->
+                            <input type="text" id="testDisplay" class="form-control"
+                                value="{{ $consultation->labRequests->pluck('test_name')->implode(', ') }}"
+                                readonly onclick="toggleDropdown()">
+
+                            <!-- Hidden Dropdown -->
+                            <select id="testDropdown" name="tests[]" class="form-control mt-2"
+                                multiple size="5" style="display:none;">
+
+                                @foreach($labTests as $test)
+                                    <option value="{{ $test->id }}"
+                                        {{ in_array($test->test_name, $consultation->labRequests->pluck('test_name')->toArray()) ? 'selected' : '' }}>
+                                        {{ $test->test_name }}
+                                    </option>
+                                @endforeach
+
+                            </select>
                         </div>
 
                         <div class="card-body">
                             <div class="row">
 
-                                {{-- 🧪 LAB TESTS --}}
+                                {{--  LAB TESTS --}}
                                 <div class="col-md-6">
                                     <label><strong>Laboratory Tests</strong></label>
 
@@ -267,7 +306,7 @@
                                     </select>
                                 </div>
 
-                                {{-- 🩻 RADIOLOGY --}}
+                                {{--  RADIOLOGY --}}
                                 <div class="col-md-6">
                                     <label><strong>Radiology Tests</strong></label>
 
@@ -288,8 +327,6 @@
                             <option value="stat" {{ $priority == 'stat' ? 'selected' : '' }}>STAT</option>
                         </select>
                     </div>
-
-
 
 
                     <!-- Referral Doctor -->

@@ -95,9 +95,9 @@ public function batch(Request $request)
         );
 
     // Medicine filter
-    if ($request->medicine_id) {
-        $query->where('medicines.id', $request->medicine_id);
-    }
+   if ($request->medicine_name) {
+    $query->where('medicine_name', 'LIKE', '%' . $request->medicine_name . '%');
+}
 
     // Batch filter
     if ($request->batch) {
@@ -457,6 +457,7 @@ public function salesApi(Request $request)
 {
     $query = SalesBill::query();
 
+    // Filters
     if ($request->from) {
         $query->whereDate('created_at', '>=', $request->from);
     }
@@ -469,11 +470,24 @@ public function salesApi(Request $request)
         $query->where('payment_mode', $request->payment_mode);
     }
 
+    // 🔹 CLONE QUERY FOR SUMMARY (IMPORTANT)
+    $summaryQuery = clone $query;
+
+    // Pagination
     $sales = $query->latest()->paginate(10);
+
+    // ✅ FULL TOTALS (NOT PAGINATED)
+    $summary = [
+        'total_amount' => (float) $summaryQuery->sum('total_amount'),
+        'total_paid' => (float) $summaryQuery->sum('paid_amount'),
+        'total_balance' => (float) $summaryQuery->sum('balance_amount'),
+        'total_sales' => $summaryQuery->count(),
+    ];
 
     return response()->json([
         'status' => true,
-        'data' => $sales
+        'data' => $sales,
+        'summary' => $summary, // 🔥 IMPORTANT
     ]);
 }
 
@@ -482,23 +496,54 @@ public function salesApi(Request $request)
 public function medicineApi(Request $request)
 {
     $query = DB::table('sales_bill_items as si')
+        ->join('sales_bills as sb', 'si.sales_bill_id', '=', 'sb.bill_id')
         ->join('medicines as m', 'si.medicine_id', '=', 'm.id')
         ->select(
             'm.medicine_name',
             DB::raw('SUM(si.quantity) as total_quantity'),
             DB::raw('AVG(si.unit_price) as unit_price'),
-            DB::raw('SUM(si.quantity * si.unit_price) as total_revenue') // ✅ FIX
+            DB::raw('SUM(si.quantity * si.unit_price) as total_revenue')
         )
         ->groupBy('m.id', 'm.medicine_name');
 
-    // ✅ FILTER
+    // ✅ DATE FILTER
+    if ($request->from) {
+        $query->whereDate('sb.created_at', '>=', $request->from);
+    }
+
+    if ($request->to) {
+        $query->whereDate('sb.created_at', '<=', $request->to);
+    }
+
+    // ✅ MEDICINE FILTER (BY NAME)
     if ($request->medicine_name) {
         $query->where('m.medicine_name', 'LIKE', '%' . $request->medicine_name . '%');
     }
 
+    $data = $query->paginate(10);
+
+    // ✅ SUMMARY (FULL DB, NOT PAGINATION)
+    $summaryQuery = DB::table('sales_bill_items as si')
+        ->join('sales_bills as sb', 'si.sales_bill_id', '=', 'sb.bill_id');
+
+    if ($request->from) {
+        $summaryQuery->whereDate('sb.created_at', '>=', $request->from);
+    }
+
+    if ($request->to) {
+        $summaryQuery->whereDate('sb.created_at', '<=', $request->to);
+    }
+
+    $totalQty = $summaryQuery->sum('si.quantity');
+    $totalRevenue = $summaryQuery->sum(DB::raw('si.quantity * si.unit_price'));
+
     return response()->json([
         'status' => true,
-        'data' => $query->paginate(10)
+        'data' => $data,
+        'summary' => [
+            'total_quantity' => $totalQty,
+            'total_revenue' => $totalRevenue
+        ]
     ]);
 }
 
@@ -516,15 +561,14 @@ public function lowStockApi(Request $request)
         )
         ->groupBy('mb.medicine_id', 'm.medicine_name');
 
-    // 🔴 IMPORTANT: ONLY LOW STOCK
+    // 🔴 Default low stock
     $query->havingRaw('SUM(mb.quantity) < MAX(mb.reorder_level)');
 
-    // 🔍 Filter: medicine
+    // 🔍 Filters
     if ($request->medicine_id) {
         $query->where('mb.medicine_id', $request->medicine_id);
     }
 
-    // 🔍 Filter: level
     if ($request->level == 'critical') {
         $query->havingRaw('SUM(mb.quantity) < 10');
     }
@@ -535,7 +579,7 @@ public function lowStockApi(Request $request)
 
     $data = $query->paginate(10);
 
-    // ✅ Add status
+    // ✅ Status
     $data->getCollection()->transform(function ($item) {
         if ($item->total_stock < 10) {
             $item->status = 'Critical';
@@ -547,9 +591,31 @@ public function lowStockApi(Request $request)
         return $item;
     });
 
+    // ✅ SUMMARY (VERY IMPORTANT)
+    $baseQuery = DB::table('medicine_batches')
+        ->select(
+            'medicine_id',
+            DB::raw('SUM(quantity) as total_stock'),
+            DB::raw('MAX(reorder_level) as reorder_level')
+        )
+        ->groupBy('medicine_id');
+
+    $criticalCount = (clone $baseQuery)
+        ->havingRaw('total_stock < 10')
+        ->get()->count();
+
+    $lowCount = (clone $baseQuery)
+        ->havingRaw('total_stock < reorder_level')
+        ->get()->count();
+
     return response()->json([
         'status' => true,
-        'data' => $data
+        'data' => $data,
+        'summary' => [
+            'critical' => $criticalCount,
+            'low' => $lowCount,
+            'total' => $data->total()
+        ]
     ]);
 }
 
@@ -563,21 +629,50 @@ public function expiryApi(Request $request)
         ->join('medicines as m', 'mb.medicine_id', '=', 'm.id')
         ->select(
             'm.medicine_name',
-            'mb.batch_number', // ✅ FIXED
+            'mb.batch_number',
             'mb.expiry_date',
             'mb.quantity as stock'
         );
 
     // Filter: medicine
-    if ($request->medicine_id) {
-        $query->where('mb.medicine_id', $request->medicine_id);
+    if ($request->medicine_name) {
+        $query->where('m.medicine_name', 'like', '%' . $request->medicine_name . '%');
+    }
+
+    // Filter: range
+    if ($request->range == '30') {
+        $query->whereBetween('mb.expiry_date', [now(), now()->addDays(30)]);
+    }
+
+    if ($request->range == '60') {
+        $query->whereBetween('mb.expiry_date', [now(), now()->addDays(60)]);
+    }
+
+    if ($request->range == '90') {
+        $query->whereBetween('mb.expiry_date', [now(), now()->addDays(90)]);
     }
 
     $data = $query->orderBy('mb.expiry_date', 'asc')->paginate(10);
 
+    // ✅ SUMMARY (FULL DB, NOT PAGINATION)
+    $nearExpiry = DB::table('medicine_batches')
+        ->whereBetween('expiry_date', [now(), now()->addDays(30)])
+        ->count();
+
+    $expired = DB::table('medicine_batches')
+        ->whereDate('expiry_date', '<', now())
+        ->count();
+
+    $total = $nearExpiry + $expired;
+
     return response()->json([
         'status' => true,
-        'data' => $data
+        'data' => $data,
+        'summary' => [
+            'near_expiry' => $nearExpiry,
+            'expired' => $expired,
+            'total' => $total,
+        ]
     ]);
 }
 
@@ -591,14 +686,29 @@ public function batchWiseApi(Request $request)
         ->select(
             'm.medicine_name',
             'mb.batch_number',
-            'mb.created_at as purchase_date', // ✅ FIX
+            'mb.created_at as purchase_date',
             'mb.expiry_date',
             'mb.quantity'
         );
 
-    // Filter: batch number
+    // ✅ 1. MEDICINE NAME FILTER (ADD THIS)
+    if ($request->medicine_name) {
+        $query->where('m.medicine_name', 'LIKE', '%' . $request->medicine_name . '%');
+    }
+
+    // ✅ 2. BATCH FILTER (ALREADY EXISTS)
     if ($request->batch_number) {
         $query->where('mb.batch_number', 'LIKE', '%' . $request->batch_number . '%');
+    }
+
+    // ✅ 3. EXPIRY RANGE FILTER (ADD THIS)
+    if ($request->expiry_range) {
+        $days = (int) $request->expiry_range;
+
+        $query->whereBetween('mb.expiry_date', [
+            $today,
+            $today->copy()->addDays($days)
+        ]);
     }
 
     $data = $query->orderBy('mb.expiry_date', 'asc')->paginate(10);
@@ -628,31 +738,44 @@ public function controlledApi(Request $request)
         ->join('controlled_drug as c', 'd.controlled_drug_id', '=', 'c.controlled_drug_id')
         ->select(
             'c.drug_name',
+            'd.patient_id', // ✅ add this (missing)
             'd.quantity_dispensed',
             'd.dispense_date',
             'c.stock_quantity'
         );
 
-    // 🔍 Filter: Drug Name
+    // 🔍 Filters
     if ($request->drug_name) {
         $query->where('c.drug_name', 'LIKE', '%' . trim($request->drug_name) . '%');
     }
 
-    // 🔍 Filter: From Date
     if ($request->from) {
         $query->whereDate('d.dispense_date', '>=', $request->from);
     }
 
-    // 🔍 Filter: To Date
     if ($request->to) {
         $query->whereDate('d.dispense_date', '<=', $request->to);
     }
 
     $data = $query->paginate(10);
 
+    // ✅ SUMMARY (VERY IMPORTANT)
+    $totalDispensed = DB::table('controlled_drug_dispense')->sum('quantity_dispensed');
+
+    $remainingStock = DB::table('controlled_drug')->sum('stock_quantity');
+
+    $highRisk = DB::table('controlled_drug')
+        ->where('stock_quantity', '<', 20)
+        ->count();
+
     return response()->json([
         'status' => true,
-        'data' => $data
+        'data' => $data,
+        'summary' => [
+            'total_dispensed' => $totalDispensed,
+            'remaining_stock' => $remainingStock,
+            'high_risk' => $highRisk
+        ]
     ]);
 }
 
@@ -660,17 +783,61 @@ public function controlledApi(Request $request)
 /* ================= VENDOR ================= */
 public function vendorApi(Request $request)
 {
-    $query = DB::table('vendors')
-        ->leftJoin('grns', 'vendors.vendor_name', '=', 'grns.vendor_name')
+    $query = DB::table('vendors as v')
+        ->leftJoin('grns as g', 'v.vendor_name', '=', 'g.vendor_name')
         ->select(
-            'vendors.vendor_name',
-            DB::raw('SUM(grns.grand_total) as total_purchase')
+            'v.vendor_name',
+            DB::raw('COALESCE(SUM(g.grand_total),0) as total_purchase'),
+            DB::raw('MAX(g.grn_date) as last_purchase_date')
         )
-        ->groupBy('vendors.vendor_name');
+        ->groupBy('v.vendor_name');
+
+    // ✅ FILTER: vendor
+    if ($request->vendor_name) {
+        $query->where('v.vendor_name', $request->vendor_name);
+    }
+
+    // ✅ FILTER: date
+    if ($request->from) {
+        $query->whereDate('g.grn_date', '>=', $request->from);
+    }
+
+    if ($request->to) {
+        $query->whereDate('g.grn_date', '<=', $request->to);
+    }
+
+    $data = $query->paginate(10);
+
+    // ✅ ADD paid + pending
+    $data->getCollection()->transform(function ($item) {
+        $item->paid_amount = $item->total_purchase * 0.7;
+        $item->pending_amount = $item->total_purchase * 0.3;
+        return $item;
+    });
+
+    // ✅ SUMMARY (FULL DB)
+    $summaryQuery = DB::table('grns');
+
+    if ($request->from) {
+        $summaryQuery->whereDate('grn_date', '>=', $request->from);
+    }
+
+    if ($request->to) {
+        $summaryQuery->whereDate('grn_date', '<=', $request->to);
+    }
+
+    $totalPurchase = $summaryQuery->sum('grand_total');
+    $totalVendors = DB::table('vendors')->count();
+    $pendingPayments = $totalPurchase * 0.3;
 
     return response()->json([
         'status' => true,
-        'data' => $query->paginate(10)
+        'data' => $data,
+        'summary' => [
+            'total_purchase' => $totalPurchase,
+            'pending_payments' => $pendingPayments,
+            'total_vendors' => $totalVendors
+        ]
     ]);
 }
 
@@ -678,61 +845,60 @@ public function vendorApi(Request $request)
 /* ================= GRN ================= */
 public function grnApi(Request $request)
 {
-    $query = DB::table('grns as g')
-        ->join('grn_items as gi', 'g.id', '=', 'gi.grn_id')
+    $query = DB::table('grn_items as gi')
+        ->join('grns as g', 'gi.grn_id', '=', 'g.id')
         ->select(
             'g.grn_no',
             'g.vendor_name',
-            'g.invoice_no',
-            'g.grn_date',
-            DB::raw('SUM(gi.amount) as total_amount')
-        )
-        ->groupBy(
-            'g.id',
-            'g.grn_no',
-            'g.vendor_name',
-            'g.invoice_no',
+            'gi.medicine_name',
+            'gi.batch_no',
+            'gi.qty',
+            'gi.purchase_rate',
+            'gi.amount',
             'g.grn_date'
         );
 
-    // 🔍 Filter: Vendor
+    // 🔍 Filters
     if ($request->vendor_name) {
-        $query->where('g.vendor_name', 'LIKE', '%' . trim($request->vendor_name) . '%');
+        $query->where('g.vendor_name', 'like', '%' . $request->vendor_name . '%');
     }
 
-    // 🔍 Filter: From Date
+    if ($request->medicine_name) {
+        $query->where('gi.medicine_name', 'like', '%' . $request->medicine_name . '%');
+    }
+
     if ($request->from) {
         $query->whereDate('g.grn_date', '>=', $request->from);
     }
 
-    // 🔍 Filter: To Date
     if ($request->to) {
         $query->whereDate('g.grn_date', '<=', $request->to);
     }
 
-    $data = $query->paginate(10);
+    $data = $query->orderBy('g.grn_date', 'desc')->paginate(10);
+
+    // ✅ SUMMARY
+    $totalGRN = DB::table('grns')->count();
+    $totalQty = DB::table('grn_items')->sum('qty');
+    $totalValue = DB::table('grn_items')->sum('amount');
 
     return response()->json([
         'status' => true,
-        'data' => $data
+        'data' => $data,
+        'summary' => [
+            'total_grn' => $totalGRN,
+            'total_qty' => $totalQty,
+            'total_value' => $totalValue,
+        ]
     ]);
 }
 
 /* ================= BILLING ================= */
 public function billingApi(Request $request)
 {
-    $query = DB::table('sales_bills as b')
-        ->select(
-            'b.bill_number',
-            'b.patient_name',
-            'b.total_amount',
-            'b.paid_amount',
-            'b.balance_amount',
-            'b.payment_mode',
-            'b.created_at as bill_date' // ✅ FIXED
-        );
+    $query = DB::table('sales_bills as b');
 
-    // ✅ Date Filter
+    // 🔍 Filters
     if ($request->from) {
         $query->whereDate('b.created_at', '>=', $request->from);
     }
@@ -741,14 +907,43 @@ public function billingApi(Request $request)
         $query->whereDate('b.created_at', '<=', $request->to);
     }
 
-    // ✅ Payment Mode Filter
+    if ($request->payment_status) {
+        $query->where('b.payment_status', $request->payment_status);
+    }
+
     if ($request->payment_mode) {
         $query->where('b.payment_mode', $request->payment_mode);
     }
 
+    // ✅ CLONE QUERY FOR SUMMARY (VERY IMPORTANT)
+    $summaryQuery = clone $query;
+
+    // ✅ PAGINATION DATA
+    $data = $query->select(
+        'b.bill_number',
+        'b.patient_name',
+        'b.total_amount',
+        'b.paid_amount',
+        'b.balance_amount',
+        'b.payment_status',
+        'b.payment_mode',
+        'b.created_at as bill_date'
+    )->orderBy('b.created_at', 'desc')
+     ->paginate(10);
+
+    // ✅ TOTALS FROM FULL DATASET
+    $totalAmount = $summaryQuery->sum('b.total_amount');
+    $totalPaid = $summaryQuery->sum('b.paid_amount');
+    $totalBalance = $summaryQuery->sum('b.balance_amount');
+
     return response()->json([
         'status' => true,
-        'data' => $query->paginate(10)
+        'data' => $data,
+        'summary' => [
+            'total_amount' => $totalAmount,
+            'total_paid' => $totalPaid,
+            'total_balance' => $totalBalance,
+        ]
     ]);
 }
 

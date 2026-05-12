@@ -51,7 +51,7 @@ class Consultation extends Model
             'consultation_medicines',
             'consultation_id',
             'medicine_id'
-        )->withPivot('dosage', 'frequency', 'duration', 'instructions');
+        )->withPivot('dosage', 'frequency', 'duration', 'instructions')->withTimestamps();
     }
     public function referralDoctor()
     {

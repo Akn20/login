@@ -65,7 +65,7 @@ class EmployeeDocumentController extends Controller
         $request->validate([
             'staff_id' => 'required|exists:staff,id',
             'document_type' => 'required',
-            'file' => 'required|mimes:pdf,jpg,png|max:5120',
+            'file' => 'required|file|max:5120',
         ]);
 
         // Store file securely
@@ -105,6 +105,7 @@ public function update(Request $request, $id)
     $request->validate([
         'staff_id' => 'required',
         'document_type' => 'required',
+         'file' => 'nullable|file|max:10240',
     ]);
 
     if ($request->hasFile('file')) {

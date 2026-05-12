@@ -236,4 +236,49 @@ class NurseShiftsController extends Controller
             'message' => 'Marked as completed'
         ]);
     }
+
+    public function apiUpdateHandover(Request $request, $id)
+    {
+        $entry = NurseShifts::find($id);
+
+        if (!$entry) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Entry not found'
+            ], 404);
+        }
+
+        $request->validate([
+            'description' => 'sometimes|required|string',
+            'entry_type' => 'sometimes|in:note,task',
+            'task_status' => 'sometimes|in:pending,completed'
+        ]);
+
+        $entry->update($request->only(['description', 'entry_type', 'task_status']));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Updated successfully',
+            'data' => $entry
+        ]);
+    }
+
+    public function apiDeleteHandover($id)
+    {
+        $entry = NurseShifts::find($id);
+
+        if (!$entry) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Entry not found'
+            ], 404);
+        }
+
+        $entry->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Deleted successfully'
+        ]);
+    }
 }

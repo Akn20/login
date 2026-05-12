@@ -18,6 +18,11 @@ class PayrollAllowanceController extends Controller
             ->latest()
             ->paginate(10);
 
+        if($request->wantsJson()) {
+            $apires= Allowance::where('type', $type)->latest()->get();
+            return response()->json($apires);
+        }
+
         if ($type === 'fixed') {
             return view('hr.payroll.fixed_allowance.index', compact('allowances', 'type'));
         } else {
@@ -57,6 +62,8 @@ class PayrollAllowanceController extends Controller
             'tds_applicable' => 'nullable|boolean',
 
             'show_in_payslip' => 'nullable|boolean',
+            'display_order' => 'nullable|integer',
+
             'status' => 'nullable|boolean',
         ];
 
@@ -78,7 +85,6 @@ class PayrollAllowanceController extends Controller
                 'lop_impact' => 'nullable|boolean',
                 'prorata' => 'nullable|boolean',
 
-                'display_order' => 'nullable|integer',
             ]);
         }
 
@@ -111,8 +117,11 @@ class PayrollAllowanceController extends Controller
             $validated['effective_from'] = null;
             $validated['effective_to'] = null;
         }
-
+        Log::info($validated);
         Allowance::create($validated);
+        if(request()->wantsJson()) {
+            return response()->json(['status' => true, 'message' => ucfirst($type) . ' allowance created successfully']);
+        }
 
         return redirect()
             ->route('hr.payroll.allowance.index', ['type' => $type])
@@ -141,7 +150,7 @@ class PayrollAllowanceController extends Controller
             'name' => 'required|unique:allowances,name,' . $id,
             'display_name' => 'required|string',
             'description' => 'nullable|string',
-            
+
             'taxable' => 'nullable|boolean',
             'tax_exemption_section' => 'nullable|string',
 
@@ -151,6 +160,7 @@ class PayrollAllowanceController extends Controller
             'tds_applicable' => 'nullable|boolean',
 
             'show_in_payslip' => 'nullable|boolean',
+            'display_order' => 'nullable|integer',
             'status' => 'nullable|boolean',
         ];
 
@@ -162,6 +172,14 @@ class PayrollAllowanceController extends Controller
                 'calculation_type' => 'required',
                 'calculation_base' => 'nullable',
                 'calculation_value' => 'nullable|numeric',
+                'rounding_rule' => 'nullable|in:nearest,up,down,none',
+                'max_limit' => 'nullable|numeric',
+
+                'effective_from' => 'nullable|date',
+                'effective_to' => 'nullable|date',
+
+                'lop_impact' => 'nullable|boolean',
+                'prorata' => 'nullable|boolean',
             ]);
         }
 
@@ -180,14 +198,23 @@ class PayrollAllowanceController extends Controller
         ], $validated);
 
         if ($type === 'variable') {
-            $validated['calculation_type'] = null;
+              $validated['calculation_type'] = null;
             $validated['calculation_base'] = null;
             $validated['calculation_value'] = null;
+            $validated['rounding_rule'] = null;
+            $validated['max_limit'] = null;
+            $validated['lop_impact'] = 0;
+            $validated['prorata'] = 0;
+            $validated['pay_frequency'] = null;
+            $validated['effective_from'] = null;
+            $validated['effective_to'] = null;
 
         }
 
         $allowance->update($validated);
-
+        if(request()->wantsJson()) {
+            return response()->json(['status' => true, 'message' => ucfirst($type) . ' allowance updated successfully']);
+        }
         return redirect()
             ->route('hr.payroll.allowance.index', ['type' => $type])
             ->with('success', ucfirst($type) . ' allowance updated successfully');
@@ -200,7 +227,9 @@ class PayrollAllowanceController extends Controller
         $type = $allowance->type;
 
         $allowance->delete();
-
+        if(request()->wantsJson()) {
+            return response()->json(['status' => true, 'message' => 'Allowance deleted']);
+        }
         return redirect()
             ->route('hr.payroll.allowance.index', ['type' => $type])
             ->with('success', 'Allowance deleted');
@@ -214,6 +243,9 @@ class PayrollAllowanceController extends Controller
         $allowances = Allowance::onlyTrashed()
             ->where('type', $type)
             ->get();
+        if($request->wantsJson()) {
+            return response()->json($allowances);
+        }
         if($type === 'fixed') {
             return view('hr.payroll.fixed_allowance.deleted', compact('allowances', 'type'));
         }
@@ -227,7 +259,9 @@ class PayrollAllowanceController extends Controller
         $type = $allowance->type;
 
         $allowance->restore();
-
+        if(request()->wantsJson()) {
+            return response()->json(['status' => true, 'message' => 'Allowance restored']);
+        }   
         return redirect()
             ->route('hr.payroll.allowance.deleted', ['type' => $type])
             ->with('success', 'Allowance restored');
@@ -240,7 +274,9 @@ class PayrollAllowanceController extends Controller
         $type = $allowance->type;
 
         $allowance->forceDelete();
-
+        if(request()->wantsJson()) {
+            return response()->json(['status' => true, 'message' => 'Allowance permanently deleted']);
+        }
         return redirect()
             ->route('hr.payroll.allowance.deleted', ['type' => $type])
             ->with('success', 'Allowance permanently deleted');

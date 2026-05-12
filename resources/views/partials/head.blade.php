@@ -15,7 +15,6 @@
 
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/theme.min.css') }}" />
 
-
 <style>
     .nxl-container {
         min-height: 100vh;

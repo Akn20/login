@@ -230,9 +230,15 @@ class PayrollDeductionController extends Controller
         ], 200);
     }
 
-    public function apiDeleted(): JsonResponse
+    public function apiDeleted(Request $request): JsonResponse
     {
-        $deductions = PayrollDeduction::onlyTrashed()
+        $query = PayrollDeduction::onlyTrashed();
+
+        if ($request->filled('type')) {
+            $query->where('nature', strtoupper($request->type));
+        }
+
+        $deductions = $query
             ->orderBy('display_name')
             ->get();
 
@@ -252,6 +258,17 @@ class PayrollDeductionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Deduction restored successfully.',
+        ], 200);
+    }
+
+    public function apiForceDelete(string $id): JsonResponse
+    {
+        $deduction = PayrollDeduction::onlyTrashed()->findOrFail($id);
+        $deduction->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deduction permanently deleted successfully.',
         ], 200);
     }
 

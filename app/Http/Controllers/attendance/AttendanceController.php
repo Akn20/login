@@ -190,10 +190,9 @@ AttendanceRecord::create([
 
 ]);
 
-return response()->json([
-        'success' => true,
-        'message' => 'Attendance recorded successfully'
-    ]);
+return redirect()
+    ->route('hr.attendance.index')
+    ->with('success', 'Attendance recorded successfully');
 
 }
         public function getDesignations($department_id)

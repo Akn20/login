@@ -108,7 +108,22 @@
                         </select>
                     </div>
                 </div>
-
+                <hr>
+                <h6>Payslip Settings</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Show in Payslip</label>
+                        <select name="show_in_payslip" class="form-control">
+                            <option value="1" {{ old('show_in_payslip', $allowance->show_in_payslip ?? 0) == 1 ? 'selected' : '' }}>Yes</option>
+                            <option value="0" {{ old('show_in_payslip', $allowance->show_in_payslip ?? 0) == 0 ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Display Order</label>
+                        <input type="number" name="display_order" class="form-control"
+                            value="{{ old('display_order', $allowance->display_order ?? '') }}">
+                    </div>
+                </div>
                 <hr>
 
                 <h6>Status</h6>

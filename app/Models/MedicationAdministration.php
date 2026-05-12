@@ -32,4 +32,19 @@ class MedicationAdministration extends Model
             $model->id = (string) Str::uuid();
         });
     }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id');
+    }
+
+    public function nurse()
+    {
+        return $this->belongsTo(User::class, 'nurse_id');
+    }
+
+    public function prescriptionItem()
+    {
+        return $this->belongsTo(PrescriptionItem::class, 'prescription_item_id');
+    }
 }
