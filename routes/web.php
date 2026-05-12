@@ -932,7 +932,7 @@ Route::middleware(['auth'])
             // Force delete
             Route::delete('salary-structure/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])
                 ->name('salary-structure.force-delete');
-            Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
+           // Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
             Route::resource('allowance', PayrollAllowanceController::class);
             Route::resource('deduction-rule-set', DeductionRuleSetController::class);
             Route::resource('employee-salary-assignment', EmployeeSalaryAssignmentController::class);
