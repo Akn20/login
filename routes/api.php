@@ -166,6 +166,8 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Api\Inventory\ItemApiController;
 use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
 use App\Http\Controllers\Api\Inventory\VendorApiController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
+
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
 
@@ -218,6 +220,11 @@ Route::get('/inventory/purchase-orders', [PurchaseOrderApiController::class, 'in
 
 Route::post('/inventory/purchase-orders', [PurchaseOrderApiController::class, 'store']);
 
+Route::get(
+    '/inventory/purchase-orders/approved',
+    [PurchaseOrderApiController::class, 'approved']
+);
+
 Route::get('/inventory/purchase-orders/{id}', [PurchaseOrderApiController::class, 'show']);
 
 Route::put('/inventory/purchase-orders/{id}', [PurchaseOrderApiController::class, 'update']);
@@ -231,7 +238,41 @@ Route::prefix('inventory')->group(function () {
     Route::get('/vendors', [VendorApiController::class, 'index']);
 
 });
+Route::prefix('inventory')->group(function () {
 
+    Route::get('/grns', [GrnApiController::class, 'index']);
+
+    Route::post('/grns', [GrnApiController::class, 'store']);
+
+     Route::get('/grns/{id}', [GrnApiController::class, 'show']);
+
+});
+Route::get('/inventory/dashboard', function () {
+
+    return response()->json([
+        'totalItems' => \App\Models\Item::count(),
+
+        'lowStockItems' => \App\Models\Item::whereColumn(
+            'stock',
+            '<=',
+            'minimum_stock'
+        )->count(),
+
+        'totalPO' => \App\Models\PurchaseOrder::count(),
+
+        'totalStockValue' => \App\Models\Item::sum('selling_price'),
+
+       'recentPOs' => \App\Models\PurchaseOrder::with('inventoryVendor')
+    ->latest()
+    ->take(5)
+    ->get(),
+
+        'recentGrns' => \App\Models\Grn::latest()
+            ->take(5)
+            ->get(),
+    ]);
+
+});
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 

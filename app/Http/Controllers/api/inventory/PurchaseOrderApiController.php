@@ -15,7 +15,7 @@ class PurchaseOrderApiController extends Controller
 
     public function index()
     {
-        return PurchaseOrder::with('vendor','items.item')
+    return PurchaseOrder::with('inventoryVendor','items.item')
             ->latest()
             ->get();
     }
@@ -23,7 +23,7 @@ class PurchaseOrderApiController extends Controller
 
     public function show($id)
     {
-        return PurchaseOrder::with(['vendor', 'items.item'])
+        return PurchaseOrder::with(['inventoryVendor', 'items.item'])
             ->findOrFail($id);
     }
 
@@ -102,8 +102,8 @@ public function store(Request $request)
         DB::commit();
 
         return response()->json(
-            $po->load('vendor', 'items.item'),
-            201
+           $po->load('inventoryVendor', 'items.item')
+            
         );
 
     } catch (\Exception $e) {
@@ -183,7 +183,7 @@ public function update(Request $request, $id)
         DB::commit();
 
         return response()->json(
-            $po->load('vendor', 'items.item')
+          $po->load('inventoryVendor', 'items.item')
         );
 
     } catch (\Exception $e) {
@@ -209,7 +209,7 @@ public function approve($id)
 }
 public function approved()
 {
-    return PurchaseOrder::with(['vendor', 'items.item'])
+return PurchaseOrder::with(['inventoryVendor', 'items.item'])
         ->where('status', 'approved')
         ->latest()
         ->get();
