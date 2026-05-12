@@ -19,6 +19,22 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
     })
+      ->withMiddleware(function ($middleware) {
+
+    $middleware->alias([
+
+        'subscription' =>
+            \App\Http\Middleware\CheckSubscription::class,
+
+            'module.access' =>
+    \App\Http\Middleware\CheckModuleAccess::class,
+
+    'plan.limit' =>
+    \App\Http\Middleware\CheckPlanLimit::class,
+
+    ]);
+
+})
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function ($request, $exception) {
             if ($request->is('api/*')) {
@@ -28,3 +44,5 @@ return Application::configure(basePath: dirname(__DIR__))
             return $request->expectsJson();
         });
     })->create();
+
+  

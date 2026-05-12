@@ -59,6 +59,11 @@ use App\Http\Controllers\Api\Reports\LeaveReportApiController;
 use App\Http\Controllers\Api\Reports\OvertimeReportApiController;
 use App\Http\Controllers\Api\Reports\PayrollReportApiController;
 use App\Http\Controllers\Api\Reports\StaffStrengthApiController;
+use App\Http\Controllers\Api\Subscription\PlanApiController;
+use App\Http\Controllers\Api\Subscription\PlanModuleApiController;
+use App\Http\Controllers\Api\Subscription\SubscriptionApiController;
+use App\Http\Controllers\Api\Subscription\SubscriptionInvoiceApiController;
+use App\Http\Controllers\Api\Subscription\UsageTrackerApiController;
 use App\Http\Controllers\Api\Surgery\SurgeryConsentApiController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\InsuranceController;
@@ -2476,4 +2481,106 @@ Route::prefix('refunds')->group(function () {
         RefundApiController::class,
         'fetchBillDetails'
     ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| SUBSCRIPTION MANAGEMENT API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('subscription-management')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLANS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('plans')->group(function () {
+
+        Route::get('/', [PlanApiController::class, 'index']);
+
+        Route::post('/', [PlanApiController::class, 'store']);
+
+        Route::get('/{id}', [PlanApiController::class, 'show']);
+
+        Route::put('/{id}', [PlanApiController::class, 'update']);
+
+        Route::delete('/{id}', [PlanApiController::class, 'destroy']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUBSCRIPTIONS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('subscriptions')->group(function () {
+
+        Route::get('/', [SubscriptionApiController::class, 'index']);
+
+        Route::post('/', [SubscriptionApiController::class, 'store']);
+
+        Route::get('/{id}', [SubscriptionApiController::class, 'show']);
+
+        Route::put('/{id}', [SubscriptionApiController::class, 'update']);
+
+        Route::delete('/{id}', [SubscriptionApiController::class, 'destroy']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVOICES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('invoices')->group(function () {
+
+        Route::get('/', [SubscriptionInvoiceApiController::class, 'index']);
+
+        Route::post('/', [SubscriptionInvoiceApiController::class, 'store']);
+
+        Route::get('/{id}', [SubscriptionInvoiceApiController::class, 'show']);
+
+        Route::put('/{id}', [SubscriptionInvoiceApiController::class, 'update']);
+
+        Route::delete('/{id}', [SubscriptionInvoiceApiController::class, 'destroy']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | USAGE TRACKER
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('usage-trackers')->group(function () {
+
+        Route::get('/', [UsageTrackerApiController::class, 'index']);
+
+        Route::post('/', [UsageTrackerApiController::class, 'store']);
+
+        Route::get('/{id}', [UsageTrackerApiController::class, 'show']);
+
+        Route::put('/{id}', [UsageTrackerApiController::class, 'update']);
+
+        Route::delete('/{id}', [UsageTrackerApiController::class, 'destroy']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLAN MODULES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('plan-modules')->group(function () {
+
+        Route::get('/', [PlanModuleApiController::class, 'index']);
+
+        Route::post('/', [PlanModuleApiController::class, 'store']);
+
+        Route::get('/{id}', [PlanModuleApiController::class, 'show']);
+
+        Route::delete('/{id}', [PlanModuleApiController::class, 'destroy']);
+    });
 });

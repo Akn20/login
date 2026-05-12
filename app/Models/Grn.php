@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 class Grn extends Model
 {
     use SoftDeletes;
@@ -12,6 +11,7 @@ class Grn extends Model
     protected $table = 'grns';
 
     protected $fillable = [
+        'purchase_order_id',
         'grn_no',
         'grn_date',
         'vendor_name',
@@ -35,8 +35,30 @@ class Grn extends Model
         return $this->hasMany(GrnItem::class, 'grn_id');
     }
 
-    public function purchaseOrder()
+ public function purchaseOrder()
+{
+    return $this->belongsTo(
+        PurchaseOrder::class,
+        'purchase_order_id'
+    )->withDefault([
+        'po_number' => 'N/A'
+    ]);
+}
+
+    // Accessors for OLD UI
+
+    public function getGrnNumberAttribute()
     {
-        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+        return $this->grn_no;
+    }
+
+    public function getReceivedDateAttribute()
+    {
+        return $this->grn_date;
+    }
+
+    public function getTotalAmountAttribute()
+    {
+        return $this->grand_total;
     }
 }

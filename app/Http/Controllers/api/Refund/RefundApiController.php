@@ -173,25 +173,26 @@ class RefundApiController extends Controller
 
             $refund = Refund::create([
 
-                'patient_id' => $request->patient_id,
+                
+    'patient_id' => $request->patient_id,
 
-                'bill_id' => $request->bill_id,
+    'bill_id' => $request->bill_id,
 
-                'bill_type' => $request->bill_type,
+    'bill_type' => $request->bill_type,
 
-                'refund_date' => $request->refund_date,
+    'refund_date' => $request->refund_date,
 
-                'refund_type' => $request->refund_type,
+    'refund_type' => $request->refund_type,
 
-                'refund_amount' => $request->refund_amount,
+    'refund_amount' => $request->refund_amount,
 
-                'refund_reason' => $request->refund_reason,
+    'refund_reason' => $request->refund_reason,
 
-                'remarks' => $request->remarks,
+    'remarks' => $request->remarks,
 
-                'status' => 'Pending',
+    'status' => 'Pending',
 
-                'created_by' => auth()->id(),
+    'requested_by' => auth()->id(),
             ]);
 
             /*
@@ -224,18 +225,22 @@ class RefundApiController extends Controller
                 'data' => $refund
 
             ]);
-        } catch (\Exception $e) {
+      } catch (\Exception $e) {
 
-            DB::rollBack();
+    DB::rollBack();
 
-            return response()->json([
+    return response()->json([
 
-                'status' => false,
+        'status' => false,
 
-                'message' => $e->getMessage()
+        'message' => $e->getMessage(),
 
-            ], 500);
-        }
+        'line' => $e->getLine(),
+
+        'file' => $e->getFile(),
+
+    ], 500);
+}
     }
 
     /*
@@ -313,14 +318,22 @@ class RefundApiController extends Controller
 
         $refund->update([
 
-            'refund_type' => $request->refund_type,
+    'patient_id' => $request->patient_id,
 
-            'refund_amount' => $request->refund_amount,
+    'bill_id' => $request->bill_id,
 
-            'refund_reason' => $request->refund_reason,
+    'bill_type' => $request->bill_type,
 
-            'remarks' => $request->remarks,
-        ]);
+    'refund_date' => $request->refund_date,
+
+    'refund_type' => $request->refund_type,
+
+    'refund_amount' => $request->refund_amount,
+
+    'refund_reason' => $request->refund_reason,
+
+    'remarks' => $request->remarks,
+]);
 
         /*
         |--------------------------------------------------------------------------
