@@ -3077,108 +3077,134 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 
-    /*
-|--------------------------------------------------------------------------
-| Subscription Plans
-|--------------------------------------------------------------------------
-*/
+        /*
+    |--------------------------------------------------------------------------
+    | Subscription Plans
+    |--------------------------------------------------------------------------
+    */
 
-Route::prefix('plans')->name('plans.')->group(function () {
-
-    Route::get('/',
-        [PlanController::class, 'index']
-    )->name('index');
-
-    Route::get('/create',
-        [PlanController::class, 'create']
-    )->name('create');
-
-    Route::post('/store',
-        [PlanController::class, 'store']
-    )->name('store');
-
-    Route::get('/edit/{id}',
-        [PlanController::class, 'edit']
-    )->name('edit');
-
-    Route::put('/update/{id}',
-        [PlanController::class, 'update']
-    )->name('update');
-
-    Route::delete('/delete/{id}',
-        [PlanController::class, 'destroy']
-    )->name('delete');
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| Organization Subscriptions
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('subscriptions')
-    ->name('subscriptions.')
-    ->group(function () {
+    Route::prefix('plans')->name('plans.')->group(function () {
 
         Route::get('/',
-            [SubscriptionController::class, 'index']
+            [PlanController::class, 'index']
         )->name('index');
 
         Route::get('/create',
-            [SubscriptionController::class, 'create']
+            [PlanController::class, 'create']
         )->name('create');
 
         Route::post('/store',
-            [SubscriptionController::class, 'store']
+            [PlanController::class, 'store']
         )->name('store');
 
         Route::get('/edit/{id}',
-            [SubscriptionController::class, 'edit']
+            [PlanController::class, 'edit']
         )->name('edit');
 
         Route::put('/update/{id}',
-            [SubscriptionController::class, 'update']
+            [PlanController::class, 'update']
         )->name('update');
 
         Route::delete('/delete/{id}',
-            [SubscriptionController::class, 'destroy']
+            [PlanController::class, 'destroy']
         )->name('delete');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Usage Monitoring
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('subscription-usage')
-    ->name('subscription-usage.')
-    ->group(function () {
-
-        Route::get('/',
-            [UsageMonitoringController::class, 'index']
-        )->name('index');
-
-});
-
-/*
-|--------------------------------------------------------------------------
-| Subscription Invoices
-|--------------------------------------------------------------------------
-*/
-
-Route::prefix('subscription-invoices')
-    ->name('subscription-invoices.')
-    ->group(function () {
-
-        Route::get('/',
-            [SubscriptionInvoiceController::class, 'index']
-        )->name('index');
-
-        Route::post('/generate/{subscriptionId}',
-            [SubscriptionInvoiceController::class, 'generate']
-        )->name('generate');
-
-});
     });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Organization Subscriptions
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('subscriptions')
+        ->name('subscriptions.')
+        ->group(function () {
+
+            Route::get('/',
+                [SubscriptionController::class, 'index']
+            )->name('index');
+
+            Route::get('/create',
+                [SubscriptionController::class, 'create']
+            )->name('create');
+
+            Route::post('/store',
+                [SubscriptionController::class, 'store']
+            )->name('store');
+
+            Route::get('/edit/{id}',
+                [SubscriptionController::class, 'edit']
+            )->name('edit');
+
+            Route::put('/update/{id}',
+                [SubscriptionController::class, 'update']
+            )->name('update');
+
+            Route::delete('/delete/{id}',
+                [SubscriptionController::class, 'destroy']
+            )->name('delete');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Usage Monitoring
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('subscription-usage')
+        ->name('subscription-usage.')
+        ->group(function () {
+
+            Route::get('/',
+                [UsageMonitoringController::class, 'index']
+            )->name('index');
+
+    });
+
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUBSCRIPTION INVOICES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/subscription-invoices',
+        [SubscriptionInvoiceController::class, 'index']
+    )->name('subscription.invoices.index');
+
+    Route::post(
+        '/subscriptions/{id}/generate-invoice',
+        [SubscriptionInvoiceController::class, 'generate']
+    )->name('subscription.invoice.generate');
+
+    Route::get(
+        '/subscription-invoices/{id}/edit',
+        [SubscriptionInvoiceController::class, 'edit']
+    )->name('subscription.invoices.edit');
+
+    Route::put(
+        '/subscription-invoices/{id}',
+        [SubscriptionInvoiceController::class, 'update']
+    )->name('subscription.invoices.update');
+
+    Route::delete(
+        '/subscription-invoices/{id}',
+        [SubscriptionInvoiceController::class, 'destroy']
+    )->name('subscription.invoices.delete');
+
+    Route::get(
+    '/subscription-invoices/create',
+    [SubscriptionInvoiceController::class, 'create']
+)->name('subscription.invoices.create');
+
+Route::post(
+    '/subscription-invoices/store',
+    [SubscriptionInvoiceController::class, 'store']
+)->name('subscription.invoices.store');
+
+});
+  

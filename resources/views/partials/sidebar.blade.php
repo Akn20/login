@@ -1423,7 +1423,7 @@
         {{-- INVOICES --}}
         <li class="nxl-item">
 
-            <a href="{{ route('admin.subscription-invoices.index') }}"
+            <a href="{{ route('admin.subscription.invoices.index') }}"
                class="nxl-link">
 
                 Subscription Invoices
