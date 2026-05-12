@@ -1,5 +1,30 @@
 @extends('layouts.admin')
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }
+
+</style>
+
 @section('content')
 
 <div class="container-fluid py-4">
@@ -14,26 +39,17 @@
             </h2>
 
             <p class="text-muted mb-0">
-                View insurance claims, approvals, and settlement details
+                Insurance claim approvals and settlement tracking
             </p>
 
         </div>
 
-        <div>
+        <button onclick="window.print()"
+                class="btn btn-primary">
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            Print Report
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
-                Print Report
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
@@ -41,18 +57,21 @@
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.insurance.settlement') }}">
 
                 <div class="row">
 
-                    <!-- From Date -->
+                    <!-- From -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
@@ -60,11 +79,13 @@
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- To Date -->
+                    <!-- To -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
@@ -72,37 +93,73 @@
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- Insurance Company -->
+                    <!-- Provider -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
-                            Insurance Company
+                            Insurance Provider
                         </label>
 
-                        <select class="form-select">
+                        <select name="provider"
+                                class="form-select">
 
-                            <option>
-                                All Companies
+                            <option value="">
+                                All Providers
                             </option>
 
-                            <option>
-                                Star Health
+                            @foreach($providers as $provider)
+
+                                <option value="{{ $provider->insurance_provider }}"
+                                    {{ request('provider') == $provider->insurance_provider ? 'selected' : '' }}>
+
+                                    {{ $provider->insurance_provider }}
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Claim Status
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                All
                             </option>
 
-                            <option>
-                                ICICI Lombard
+                            <option value="pending"
+                                {{ request('status') == 'pending' ? 'selected' : '' }}>
+                                Pending
                             </option>
 
-                            <option>
-                                HDFC Ergo
+                            <option value="approved"
+                                {{ request('status') == 'approved' ? 'selected' : '' }}>
+                                Approved
                             </option>
 
-                            <option>
-                                Medi Assist
+                            <option value="partial"
+                                {{ request('status') == 'partial' ? 'selected' : '' }}>
+                                Partial
+                            </option>
+
+                            <option value="rejected"
+                                {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                                Rejected
                             </option>
 
                         </select>
@@ -110,10 +167,10 @@
                     </div>
 
                     <!-- Search -->
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <div class="col-md-12">
 
                         <button type="submit"
-                                class="btn btn-primary w-100">
+                                class="btn btn-primary">
 
                             Search Report
 
@@ -129,22 +186,24 @@
 
     </div>
 
-    <!-- Summary Cards -->
+    <!-- Summary -->
     <div class="row">
 
-        <!-- Total Claimed -->
-        <div class="col-md-4 mb-4">
+        <!-- Claims -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Total Claimed Amount
+                        Total Claims
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        ₹ 9,50,000
+
+                        ₹ {{ number_format($totalClaims, 2) }}
+
                     </h3>
 
                 </div>
@@ -153,8 +212,8 @@
 
         </div>
 
-        <!-- Approved Amount -->
-        <div class="col-md-4 mb-4">
+        <!-- Approved -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
@@ -165,7 +224,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-success mt-3">
-                        ₹ 7,80,000
+
+                        ₹ {{ number_format($totalApproved, 2) }}
+
                     </h3>
 
                 </div>
@@ -174,19 +235,44 @@
 
         </div>
 
-        <!-- Pending Claims -->
-        <div class="col-md-4 mb-4">
+        <!-- Paid -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Pending Claims
+                        Settled Amount
                     </h6>
 
-                    <h3 class="fw-bold text-warning mt-3">
-                        24
+                    <h3 class="fw-bold text-info mt-3">
+
+                        ₹ {{ number_format($totalPaid, 2) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Pending -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pending Settlement
+                    </h6>
+
+                    <h3 class="fw-bold text-danger mt-3">
+
+                        ₹ {{ number_format($pendingSettlement, 2) }}
+
                     </h3>
 
                 </div>
@@ -197,18 +283,21 @@
 
     </div>
 
-    <!-- Insurance Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0 fw-bold">
-                Insurance Settlement Details
+                Insurance Claim Details
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Patient">
+            <span class="badge bg-dark">
+
+                Total Records :
+                {{ $claims->count() }}
+
+            </span>
 
         </div>
 
@@ -224,19 +313,25 @@
 
                             <th>#</th>
 
-                            <th>Patient Name</th>
+                            <th>Claim Number</th>
 
-                            <th>Insurance Company</th>
+                            <th>Patient</th>
+
+                            <th>Insurance Provider</th>
+
+                            <th>Claim Date</th>
 
                             <th>Claim Amount</th>
 
-                            <th>Approved Amount</th>
+                            <th>Approved</th>
 
-                            <th>Pending Amount</th>
+                            <th>Paid</th>
 
-                            <th>Settlement Date</th>
+                            <th>Pending</th>
 
                             <th>Status</th>
+
+                            <th>Reconciliation</th>
 
                         </tr>
 
@@ -244,77 +339,118 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($claims as $key => $claim)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Rahul Sharma</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>Star Health</td>
+                                <td>
+                                    {{ $claim->claim_number }}
+                                </td>
 
-                            <td>₹ 1,20,000</td>
+                                <td>
+                                    {{ $claim->patient_name }}
+                                </td>
 
-                            <td>₹ 1,00,000</td>
+                                <td>
+                                    {{ $claim->insurance_provider }}
+                                </td>
 
-                            <td>₹ 20,000</td>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($claim->claim_date)->format('d-m-Y') }}
+                                </td>
 
-                            <td>07-05-2026</td>
+                                <td class="fw-bold text-primary">
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Approved
-                                </span>
-                            </td>
+                                    ₹ {{ number_format($claim->billed_amount, 2) }}
 
-                        </tr>
+                                </td>
 
-                        <tr>
+                                <td class="fw-bold text-success">
 
-                            <td>2</td>
+                                    ₹ {{ number_format($claim->approved_amount, 2) }}
 
-                            <td>Priya Verma</td>
+                                </td>
 
-                            <td>ICICI Lombard</td>
+                                <td class="fw-bold text-info">
 
-                            <td>₹ 80,000</td>
+                                    ₹ {{ number_format($claim->paid_amount, 2) }}
 
-                            <td>₹ 50,000</td>
+                                </td>
 
-                            <td>₹ 30,000</td>
+                                <td class="fw-bold text-danger">
 
-                            <td>08-05-2026</td>
+                                    ₹ {{ number_format($claim->approved_amount - $claim->paid_amount, 2) }}
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Partial
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <td>
 
-                        <tr>
+                                    @if($claim->status == 'approved')
 
-                            <td>3</td>
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
 
-                            <td>Arjun Kumar</td>
+                                    @elseif($claim->status == 'pending')
 
-                            <td>HDFC Ergo</td>
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
 
-                            <td>₹ 60,000</td>
+                                    @elseif($claim->status == 'partial')
 
-                            <td>₹ 0</td>
+                                        <span class="badge bg-info">
+                                            Partial
+                                        </span>
 
-                            <td>₹ 60,000</td>
+                                    @else
 
-                            <td>-</td>
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-danger">
-                                    Pending
-                                </span>
-                            </td>
+                                    @endif
 
-                        </tr>
+                                </td>
+
+                                <td>
+
+                                    @if($claim->reconciled)
+
+                                        <span class="badge bg-success">
+                                            Reconciled
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="11"
+                                    class="text-center text-muted py-4">
+
+                                    No insurance claims found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 

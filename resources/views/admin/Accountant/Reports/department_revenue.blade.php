@@ -2,117 +2,155 @@
 
 @section('content')
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }
+
+</style>
+
 <div class="container-fluid py-4">
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
         <div>
+
             <h2 class="fw-bold mb-1">
                 Department Revenue Report
             </h2>
 
             <p class="text-muted mb-0">
-                View department-wise revenue collections and financial summaries
+                View department-wise billed revenue summary
             </p>
+
         </div>
 
         <div>
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            <button onclick="window.print()"
+                    class="btn btn-primary">
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
+                <i class="feather-printer me-1"></i>
                 Print Report
+
             </button>
 
         </div>
 
     </div>
 
-    <!-- Filter Section -->
+    <!-- Filters -->
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.department.revenue') }}">
 
                 <div class="row">
 
                     <!-- From Date -->
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
 
                         <label class="form-label">
                             From Date
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
 
                     <!-- To Date -->
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
 
                         <label class="form-label">
                             To Date
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- Department -->
-                    <div class="col-md-3 mb-3">
+                    <!-- Department Filter -->
+<div class="col-md-3 mb-3">
 
-                        <label class="form-label">
-                            Department
-                        </label>
+    <label class="form-label">
+        Department
+    </label>
 
-                        <select class="form-select">
+    <select name="department"
+            class="form-select">
 
-                            <option>
-                                All Departments
-                            </option>
+        <option value="">
+            All Departments
+        </option>
 
-                            <option>
-                                Cardiology
-                            </option>
+        <option value="OPD">
+            OPD
+        </option>
 
-                            <option>
-                                Radiology
-                            </option>
+        <option value="Laboratory">
+            Laboratory
+        </option>
 
-                            <option>
-                                Orthopedics
-                            </option>
+        <option value="Radiology">
+            Radiology
+        </option>
 
-                            <option>
-                                Laboratory
-                            </option>
+        <option value="Pharmacy">
+            Pharmacy
+        </option>
 
-                            <option>
-                                Pharmacy
-                            </option>
+        @foreach($departments as $department)
 
-                        </select>
+            <option value="{{ $department->department_name }}"
+                {{ request('department') == $department->department_name ? 'selected' : '' }}>
 
-                    </div>
+                {{ $department->department_name }}
+
+            </option>
+
+        @endforeach
+
+    </select>
+
+</div>
 
                     <!-- Search -->
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <div class="col-md-4 mb-3 d-flex align-items-end">
 
                         <button type="submit"
                                 class="btn btn-primary w-100">
@@ -146,7 +184,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-success mt-3">
-                        ₹ 8,50,000
+
+                        ₹ {{ number_format($totalRevenue, 2) }}
+
                     </h3>
 
                 </div>
@@ -155,7 +195,7 @@
 
         </div>
 
-        <!-- Highest Revenue Department -->
+        <!-- Highest Revenue -->
         <div class="col-md-4 mb-4">
 
             <div class="card border-0 shadow h-100">
@@ -167,7 +207,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        Cardiology
+
+                        {{ $highestDepartment->department_name ?? 'N/A' }}
+
                     </h3>
 
                 </div>
@@ -188,7 +230,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        12
+
+                        {{ $totalDepartments }}
+
                     </h3>
 
                 </div>
@@ -199,7 +243,7 @@
 
     </div>
 
-    <!-- Revenue Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -208,9 +252,12 @@
                 Department Revenue Details
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Department">
+            <span class="badge bg-dark">
+
+                Total Records :
+                {{ $reportData->count() }}
+
+            </span>
 
         </div>
 
@@ -232,10 +279,6 @@
 
                             <th>Total Revenue</th>
 
-                            <th>Collected Amount</th>
-
-                            <th>Pending Amount</th>
-
                             <th>Status</th>
 
                         </tr>
@@ -244,71 +287,76 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($reportData as $key => $report)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Cardiology</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>120</td>
+                                <!-- Department -->
+                                <td class="fw-semibold">
 
-                            <td>₹ 3,50,000</td>
+                                    {{ $report->department_name }}
 
-                            <td>₹ 3,00,000</td>
+                                </td>
 
-                            <td>₹ 50,000</td>
+                                <!-- Bills -->
+                                <td>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            </td>
+                                    {{ $report->total_bills }}
 
-                        </tr>
+                                </td>
 
-                        <tr>
+                                <!-- Revenue -->
+                                <td class="fw-bold text-success">
 
-                            <td>2</td>
+                                    ₹ {{ number_format($report->total_revenue, 2) }}
 
-                            <td>Radiology</td>
+                                </td>
 
-                            <td>90</td>
+                                <!-- Status -->
+                                <td>
 
-                            <td>₹ 2,10,000</td>
+                                    @if($report->total_revenue > 100000)
 
-                            <td>₹ 1,90,000</td>
+                                        <span class="badge bg-success">
+                                            High Revenue
+                                        </span>
 
-                            <td>₹ 20,000</td>
+                                    @elseif($report->total_revenue > 50000)
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Good
-                                </span>
-                            </td>
+                                        <span class="badge bg-warning text-dark">
+                                            Medium Revenue
+                                        </span>
 
-                        </tr>
+                                    @else
 
-                        <tr>
+                                        <span class="badge bg-secondary">
+                                            Low Revenue
+                                        </span>
 
-                            <td>3</td>
+                                    @endif
 
-                            <td>Orthopedics</td>
+                                </td>
 
-                            <td>75</td>
+                            </tr>
 
-                            <td>₹ 1,80,000</td>
+                        @empty
 
-                            <td>₹ 1,50,000</td>
+                            <tr>
 
-                            <td>₹ 30,000</td>
+                                <td colspan="5"
+                                    class="text-center text-muted py-4">
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Pending
-                                </span>
-                            </td>
+                                    No revenue records found
 
-                        </tr>
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
@@ -322,4 +370,4 @@
 
 </div>
 
-@endsection
+@endsection 

@@ -1,5 +1,30 @@
 @extends('layouts.admin')
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }
+
+</style>
+
 @section('content')
 
 <div class="container-fluid py-4">
@@ -14,26 +39,17 @@
             </h2>
 
             <p class="text-muted mb-0">
-                View patient refund transactions and refund summaries
+                Refund transactions and approval tracking
             </p>
 
         </div>
 
-        <div>
+        <button onclick="window.print()"
+                class="btn btn-primary">
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            Print Report
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
-                Print Report
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
@@ -41,63 +57,99 @@
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.refund.report') }}">
 
                 <div class="row">
 
-                    <!-- From Date -->
-                    <div class="col-md-3 mb-3">
+                    <!-- From -->
+                    <div class="col-md-2 mb-3">
 
                         <label class="form-label">
                             From Date
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- To Date -->
-                    <div class="col-md-3 mb-3">
+                    <!-- To -->
+                    <div class="col-md-2 mb-3">
 
                         <label class="form-label">
                             To Date
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- Refund Status -->
-                    <div class="col-md-3 mb-3">
+                    <!-- Refund Type -->
+                    <div class="col-md-2 mb-3">
 
                         <label class="form-label">
-                            Refund Status
+                            Refund Type
                         </label>
 
-                        <select class="form-select">
+                        <select name="refund_type"
+                                class="form-select">
 
-                            <option>
+                            <option value="">
                                 All
                             </option>
 
-                            <option>
-                                Approved
+                            <option value="OPD">OPD</option>
+                            <option value="IPD">IPD</option>
+                            <option value="PHARMACY">PHARMACY</option>
+                            <option value="LAB">LAB</option>
+                            <option value="ADVANCE">ADVANCE</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                All
                             </option>
 
-                            <option>
+                            <option value="Pending">
                                 Pending
                             </option>
 
-                            <option>
+                            <option value="Under Verification">
+                                Under Verification
+                            </option>
+
+                            <option value="Approved">
+                                Approved
+                            </option>
+
+                            <option value="Rejected">
                                 Rejected
                             </option>
 
@@ -105,11 +157,49 @@
 
                     </div>
 
+                    <!-- Refund Mode -->
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Refund Mode
+                        </label>
+
+                        <select name="refund_mode"
+                                class="form-select">
+
+                            <option value="">
+                                All
+                            </option>
+
+                            <option value="Cash">
+                                Cash
+                            </option>
+
+                            <option value="UPI">
+                                UPI
+                            </option>
+
+                            <option value="Card">
+                                Card
+                            </option>
+
+                            <option value="Bank Transfer">
+                                Bank Transfer
+                            </option>
+
+                            <option value="Insurance">
+                                Insurance
+                            </option>
+
+                        </select>
+
+                    </div>
+
                     <!-- Search -->
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <div class="col-md-12">
 
                         <button type="submit"
-                                class="btn btn-primary w-100">
+                                class="btn btn-primary">
 
                             Search Report
 
@@ -125,11 +215,11 @@
 
     </div>
 
-    <!-- Summary Cards -->
+    <!-- Summary -->
     <div class="row">
 
-        <!-- Total Refunds -->
-        <div class="col-md-4 mb-4">
+        <!-- Total -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
@@ -140,7 +230,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-danger mt-3">
-                        ₹ 1,25,000
+
+                        ₹ {{ number_format($totalRefundAmount, 2) }}
+
                     </h3>
 
                 </div>
@@ -149,8 +241,8 @@
 
         </div>
 
-        <!-- Approved Refunds -->
-        <div class="col-md-4 mb-4">
+        <!-- Approved -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
@@ -161,7 +253,9 @@
                     </h6>
 
                     <h3 class="fw-bold text-success mt-3">
-                        ₹ 95,000
+
+                        ₹ {{ number_format($approvedRefundAmount, 2) }}
+
                     </h3>
 
                 </div>
@@ -170,19 +264,44 @@
 
         </div>
 
-        <!-- Pending Refunds -->
-        <div class="col-md-4 mb-4">
+        <!-- Pending -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Pending Refund Requests
+                        Pending Refunds
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        12
+
+                        ₹ {{ number_format($pendingRefundAmount, 2) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Count -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Refund Records
+                    </h6>
+
+                    <h3 class="fw-bold text-primary mt-3">
+
+                        {{ $refundCount }}
+
                     </h3>
 
                 </div>
@@ -193,7 +312,7 @@
 
     </div>
 
-    <!-- Refund Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -202,9 +321,12 @@
                 Refund Details
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Patient">
+            <span class="badge bg-dark">
+
+                Total Records :
+                {{ $refunds->count() }}
+
+            </span>
 
         </div>
 
@@ -220,19 +342,25 @@
 
                             <th>#</th>
 
-                            <th>Patient Name</th>
+                            <th>Refund No</th>
 
-                            <th>Bill Number</th>
+                            <th>Patient</th>
+
+                            <th>Refund Type</th>
+
+                            <th>Bill Type</th>
 
                             <th>Refund Amount</th>
 
-                            <th>Refund Reason</th>
-
                             <th>Refund Date</th>
 
-                            <th>Payment Mode</th>
+                            <th>Refund Mode</th>
 
                             <th>Status</th>
+
+                            <th>Approval Status</th>
+
+                            <th>Reason</th>
 
                         </tr>
 
@@ -240,89 +368,128 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($refunds as $key => $refund)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Rahul Sharma</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>BILL-801</td>
+                                <td>
+                                    {{ $refund->refund_no }}
+                                </td>
 
-                            <td>₹ 5,000</td>
+                                <td>
+                                    {{ $refund->patient_name }}
+                                </td>
 
-                            <td>Duplicate Payment</td>
+                                <td>
 
-                            <td>07-05-2026</td>
+                                    <span class="badge bg-info">
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    UPI
-                                </span>
-                            </td>
+                                        {{ $refund->refund_type }}
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Approved
-                                </span>
-                            </td>
+                                    </span>
 
-                        </tr>
+                                </td>
 
-                        <tr>
+                                <td>
+                                    {{ $refund->bill_type }}
+                                </td>
 
-                            <td>2</td>
+                                <td class="fw-bold text-danger">
 
-                            <td>Priya Verma</td>
+                                    ₹ {{ number_format($refund->refund_amount, 2) }}
 
-                            <td>BILL-802</td>
+                                </td>
 
-                            <td>₹ 8,000</td>
+                                <td>
 
-                            <td>Cancelled Service</td>
+                                    {{ \Carbon\Carbon::parse($refund->refund_date)->format('d-m-Y') }}
 
-                            <td>08-05-2026</td>
+                                </td>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Card
-                                </span>
-                            </td>
+                                <td>
+                                    {{ $refund->refund_mode }}
+                                </td>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Pending
-                                </span>
-                            </td>
+                                <td>
 
-                        </tr>
+                                    @if($refund->status == 'Approved')
 
-                        <tr>
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
 
-                            <td>3</td>
+                                    @elseif($refund->status == 'Pending')
 
-                            <td>Arjun Kumar</td>
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
 
-                            <td>BILL-803</td>
+                                    @elseif($refund->status == 'Rejected')
 
-                            <td>₹ 2,500</td>
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
 
-                            <td>Billing Correction</td>
+                                    @else
 
-                            <td>09-05-2026</td>
+                                        <span class="badge bg-info">
+                                            {{ $refund->status }}
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Cash
-                                </span>
-                            </td>
+                                    @endif
 
-                            <td>
-                                <span class="badge bg-danger">
-                                    Rejected
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <td>
+
+                                    @if($refund->approval_status == 'Approved')
+
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
+
+                                    @elseif($refund->approval_status == 'Rejected')
+
+                                        <span class="badge bg-danger">
+                                            Rejected
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                                <td style="max-width:250px;">
+
+                                    {{ $refund->refund_reason }}
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="11"
+                                    class="text-center text-muted py-4">
+
+                                    No refund records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 

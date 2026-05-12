@@ -1,5 +1,31 @@
 @extends('layouts.admin')
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        .sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }
+
+</style>
+
 @section('content')
 
 <div class="container-fluid py-4">
@@ -10,30 +36,21 @@
         <div>
 
             <h2 class="fw-bold mb-1">
-                OPD/IPD Revenue Report
+                OPD vs IPD Revenue Report
             </h2>
 
             <p class="text-muted mb-0">
-                View OPD and IPD revenue collections and summaries
+                Compare OPD and IPD revenue collections
             </p>
 
         </div>
 
-        <div>
+        <button onclick="window.print()"
+                class="btn btn-primary">
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            Print Report
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
-                Print Report
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
@@ -41,68 +58,50 @@
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.opd.ipd.revenue') }}">
 
                 <div class="row">
 
-                    <!-- From Date -->
-                    <div class="col-md-3 mb-3">
+                    <!-- From -->
+                    <div class="col-md-4 mb-3">
 
                         <label class="form-label">
                             From Date
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- To Date -->
-                    <div class="col-md-3 mb-3">
+                    <!-- To -->
+                    <div class="col-md-4 mb-3">
 
                         <label class="form-label">
                             To Date
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- Revenue Type -->
-                    <div class="col-md-3 mb-3">
-
-                        <label class="form-label">
-                            Revenue Type
-                        </label>
-
-                        <select class="form-select">
-
-                            <option>
-                                All
-                            </option>
-
-                            <option>
-                                OPD
-                            </option>
-
-                            <option>
-                                IPD
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <!-- Search -->
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <!-- Button -->
+                    <div class="col-md-4 mb-3 d-flex align-items-end">
 
                         <button type="submit"
                                 class="btn btn-primary w-100">
@@ -124,8 +123,54 @@
     <!-- Summary Cards -->
     <div class="row">
 
-        <!-- Total Revenue -->
-        <div class="col-md-4 mb-4">
+        <!-- OPD -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total OPD Revenue
+                    </h6>
+
+                    <h3 class="fw-bold text-primary mt-3">
+
+                        ₹ {{ number_format($totalOpdRevenue, 2) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- IPD -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total IPD Revenue
+                    </h6>
+
+                    <h3 class="fw-bold text-success mt-3">
+
+                        ₹ {{ number_format($totalIpdRevenue, 2) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Total -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
@@ -135,8 +180,10 @@
                         Total Revenue
                     </h6>
 
-                    <h3 class="fw-bold text-success mt-3">
-                        ₹ 12,50,000
+                    <h3 class="fw-bold text-dark mt-3">
+
+                        ₹ {{ number_format($totalRevenue, 2) }}
+
                     </h3>
 
                 </div>
@@ -145,40 +192,21 @@
 
         </div>
 
-        <!-- OPD Revenue -->
-        <div class="col-md-4 mb-4">
+        <!-- Highest -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        OPD Revenue
-                    </h6>
-
-                    <h3 class="fw-bold text-primary mt-3">
-                        ₹ 4,50,000
-                    </h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- IPD Revenue -->
-        <div class="col-md-4 mb-4">
-
-            <div class="card border-0 shadow h-100">
-
-                <div class="card-body">
-
-                    <h6 class="text-muted">
-                        IPD Revenue
+                        Highest Revenue
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        ₹ 8,00,000
+
+                        {{ $highestRevenueSource }}
+
                     </h3>
 
                 </div>
@@ -189,18 +217,21 @@
 
     </div>
 
-    <!-- Revenue Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0 fw-bold">
-                OPD/IPD Revenue Details
+                Revenue Comparison
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Revenue">
+            <span class="badge bg-dark">
+
+                Total Records :
+                {{ $reportData->count() }}
+
+            </span>
 
         </div>
 
@@ -216,19 +247,13 @@
 
                             <th>#</th>
 
-                            <th>Revenue Type</th>
+                            <th>Date</th>
 
-                            <th>Total Patients</th>
+                            <th>OPD Revenue</th>
 
-                            <th>Total Bills</th>
+                            <th>IPD Revenue</th>
 
                             <th>Total Revenue</th>
-
-                            <th>Collected Amount</th>
-
-                            <th>Pending Amount</th>
-
-                            <th>Status</th>
 
                         </tr>
 
@@ -236,61 +261,58 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($reportData as $key => $report)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    OPD
-                                </span>
-                            </td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>320</td>
+                                <!-- Date -->
+                                <td>
 
-                            <td>300</td>
+                                    {{ \Carbon\Carbon::parse($report->date)->format('d-m-Y') }}
 
-                            <td>₹ 4,50,000</td>
+                                </td>
 
-                            <td>₹ 4,10,000</td>
+                                <!-- OPD -->
+                                <td class="fw-bold text-primary">
 
-                            <td>₹ 40,000</td>
+                                    ₹ {{ number_format($report->opd_revenue, 2) }}
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <!-- IPD -->
+                                <td class="fw-bold text-success">
 
-                        <tr>
+                                    ₹ {{ number_format($report->ipd_revenue, 2) }}
 
-                            <td>2</td>
+                                </td>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    IPD
-                                </span>
-                            </td>
+                                <!-- Total -->
+                                <td class="fw-bold text-dark">
 
-                            <td>180</td>
+                                    ₹ {{ number_format($report->total, 2) }}
 
-                            <td>170</td>
+                                </td>
 
-                            <td>₹ 8,00,000</td>
+                            </tr>
 
-                            <td>₹ 7,20,000</td>
+                        @empty
 
-                            <td>₹ 80,000</td>
+                            <tr>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Good
-                                </span>
-                            </td>
+                                <td colspan="5"
+                                    class="text-center text-muted py-4">
 
-                        </tr>
+                                    No revenue records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 

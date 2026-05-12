@@ -339,19 +339,25 @@
                                 <!-- OPD / IPD -->
                                 <td>
 
-                                    @if($collection->type == 'OPD')
+                                @if($collection->type == 'OPD')
 
-                                        <span class="badge bg-primary">
-                                            OPD
-                                        </span>
+                                    <span class="badge bg-primary">
+                                        OPD
+                                    </span>
 
-                                    @else
+                                @elseif($collection->type == 'IPD')
 
-                                        <span class="badge bg-success">
-                                            IPD
-                                        </span>
+                                    <span class="badge bg-success">
+                                        IPD
+                                    </span>
 
-                                    @endif
+                                @else
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pharmacy
+                                    </span>
+
+                                @endif
 
                                 </td>
 

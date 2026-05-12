@@ -1,5 +1,31 @@
 @extends('layouts.admin')
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        .sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    }
+
+</style>
+
 @section('content')
 
 <div class="container-fluid py-4">
@@ -14,26 +40,17 @@
             </h2>
 
             <p class="text-muted mb-0">
-                View pending patient payments and due balances
+                View pending IPD and Pharmacy dues
             </p>
 
         </div>
 
-        <div>
+        <button onclick="window.print()"
+                class="btn btn-primary">
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            Print Report
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
-                Print Report
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
@@ -41,18 +58,21 @@
     <div class="card border-0 shadow mb-4">
 
         <div class="card-header bg-white">
+
             <h5 class="mb-0 fw-bold">
                 Filters
             </h5>
+
         </div>
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                  action="{{ route('admin.accountant.reports.outstanding.dues') }}">
 
                 <div class="row">
 
-                    <!-- From Date -->
+                    <!-- From -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
@@ -60,11 +80,13 @@
                         </label>
 
                         <input type="date"
+                               name="from_date"
+                               value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- To Date -->
+                    <!-- To -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
@@ -72,40 +94,45 @@
                         </label>
 
                         <input type="date"
+                               name="to_date"
+                               value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
 
-                    <!-- Due Status -->
+                    <!-- Type -->
                     <div class="col-md-3 mb-3">
 
                         <label class="form-label">
-                            Due Status
+                            Due Type
                         </label>
 
-                        <select class="form-select">
+                        <select name="type"
+                                class="form-select">
 
-                            <option>
+                            <option value="">
                                 All
                             </option>
 
-                            <option>
-                                Pending
+                            <option value="IPD"
+                                {{ request('type') == 'IPD' ? 'selected' : '' }}>
+
+                                IPD
+
                             </option>
 
-                            <option>
-                                Partial
-                            </option>
+                            <option value="Pharmacy"
+                                {{ request('type') == 'Pharmacy' ? 'selected' : '' }}>
 
-                            <option>
-                                Overdue
+                                Pharmacy
+
                             </option>
 
                         </select>
 
                     </div>
 
-                    <!-- Search -->
+                    <!-- Button -->
                     <div class="col-md-3 mb-3 d-flex align-items-end">
 
                         <button type="submit"
@@ -125,22 +152,24 @@
 
     </div>
 
-    <!-- Summary Cards -->
+    <!-- Summary -->
     <div class="row">
 
-        <!-- Total Pending -->
-        <div class="col-md-4 mb-4">
+        <!-- Total -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Total Pending Amount
+                        Total Outstanding
                     </h6>
 
                     <h3 class="fw-bold text-danger mt-3">
-                        ₹ 2,40,000
+
+                        ₹ {{ number_format($totalOutstanding, 2) }}
+
                     </h3>
 
                 </div>
@@ -149,19 +178,21 @@
 
         </div>
 
-        <!-- Total Patients -->
-        <div class="col-md-4 mb-4">
+        <!-- IPD -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Total Due Patients
+                        IPD Outstanding
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        86
+
+                        ₹ {{ number_format($ipdOutstanding, 2) }}
+
                     </h3>
 
                 </div>
@@ -170,19 +201,44 @@
 
         </div>
 
-        <!-- Overdue Cases -->
-        <div class="col-md-4 mb-4">
+        <!-- Pharmacy -->
+        <div class="col-md-3 mb-4">
 
             <div class="card border-0 shadow h-100">
 
                 <div class="card-body">
 
                     <h6 class="text-muted">
-                        Overdue Cases
+                        Pharmacy Outstanding
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        14
+
+                        ₹ {{ number_format($pharmacyOutstanding, 2) }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Count -->
+        <div class="col-md-3 mb-4">
+
+            <div class="card border-0 shadow h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pending Bills
+                    </h6>
+
+                    <h3 class="fw-bold text-dark mt-3">
+
+                        {{ $totalPendingBills }}
+
                     </h3>
 
                 </div>
@@ -193,18 +249,21 @@
 
     </div>
 
-    <!-- Due Table -->
+    <!-- Table -->
     <div class="card border-0 shadow">
 
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
 
             <h5 class="mb-0 fw-bold">
-                Outstanding Due Details
+                Outstanding Bills
             </h5>
 
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Patient">
+            <span class="badge bg-dark">
+
+                Total Records :
+                {{ $reportData->count() }}
+
+            </span>
 
         </div>
 
@@ -220,17 +279,19 @@
 
                             <th>#</th>
 
+                            <th>Type</th>
+
+                            <th>Bill No</th>
+
                             <th>Patient Name</th>
 
-                            <th>Bill Number</th>
-
-                            <th>Total Bill</th>
+                            <th>Total Amount</th>
 
                             <th>Paid Amount</th>
 
                             <th>Pending Amount</th>
 
-                            <th>Due Date</th>
+                            <th>Date</th>
 
                             <th>Status</th>
 
@@ -240,77 +301,100 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($reportData as $key => $report)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Rahul Sharma</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>BILL-501</td>
+                                <!-- Type -->
+                                <td>
 
-                            <td>₹ 25,000</td>
+                                    @if($report->type == 'IPD')
 
-                            <td>₹ 15,000</td>
+                                        <span class="badge bg-primary">
+                                            IPD
+                                        </span>
 
-                            <td>₹ 10,000</td>
+                                    @else
 
-                            <td>12-05-2026</td>
+                                        <span class="badge bg-warning text-dark">
+                                            Pharmacy
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Partial
-                                </span>
-                            </td>
+                                    @endif
 
-                        </tr>
+                                </td>
 
-                        <tr>
+                                <!-- Bill -->
+                                <td>
 
-                            <td>2</td>
+                                    {{ $report->bill_no }}
 
-                            <td>Priya Verma</td>
+                                </td>
 
-                            <td>BILL-502</td>
+                                <!-- Patient -->
+                                <td>
 
-                            <td>₹ 18,000</td>
+                                    {{ $report->patient_name }}
 
-                            <td>₹ 8,000</td>
+                                </td>
 
-                            <td>₹ 10,000</td>
+                                <!-- Total -->
+                                <td class="fw-bold">
 
-                            <td>10-05-2026</td>
+                                    ₹ {{ number_format($report->payable_amount, 2) }}
 
-                            <td>
-                                <span class="badge bg-danger">
-                                    Overdue
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <!-- Paid -->
+                                <td class="text-success fw-bold">
 
-                        <tr>
+                                    ₹ {{ number_format($report->paid_amount, 2) }}
 
-                            <td>3</td>
+                                </td>
 
-                            <td>Arjun Kumar</td>
+                                <!-- Pending -->
+                                <td class="text-danger fw-bold">
 
-                            <td>BILL-503</td>
+                                    ₹ {{ number_format($report->pending_amount, 2) }}
 
-                            <td>₹ 12,000</td>
+                                </td>
 
-                            <td>₹ 7,000</td>
+                                <!-- Date -->
+                                <td>
 
-                            <td>₹ 5,000</td>
+                                    {{ \Carbon\Carbon::parse($report->bill_date)->format('d-m-Y') }}
 
-                            <td>15-05-2026</td>
+                                </td>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Pending
-                                </span>
-                            </td>
+                                <!-- Status -->
+                                <td>
 
-                        </tr>
+                                    <span class="badge bg-danger">
+                                        Pending
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="9"
+                                    class="text-center text-muted py-4">
+
+                                    No outstanding dues found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
