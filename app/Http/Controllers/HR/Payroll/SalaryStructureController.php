@@ -149,14 +149,15 @@ public function edit($id)
     }
 
     //  DELETE
-    public function destroy($id)
+public function destroy($id)
 {
     $record = SalaryStructure::findOrFail($id);
+
     $record->delete();
 
-    return response()->json([
-        'message' => 'Deleted successfully'
-    ]);
+    return redirect()
+        ->route('hr.payroll.salary-structure.index')
+        ->with('success', 'Deleted Successfully');
 }
 public function deleted()
 {

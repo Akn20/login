@@ -911,51 +911,14 @@ Route::middleware(['auth'])
 
         Route::prefix('payroll')->name('payroll.')->group(function () {
 
-            Route::resource('statutory-deduction', StatutoryDeductionController::class);
-            // Deleted records
-            Route::get('statutory-deduction/deleted', [StatutoryDeductionController::class, 'deleted'])
-                ->name('statutory-deduction.deleted');
-
-            // Restore
-            Route::put('statutory-deduction/{id}/restore', [StatutoryDeductionController::class, 'restore'])
-                ->name('statutory-deduction.restore');
-
-            // Force delete
-            Route::delete('statutory-deduction/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])
-                ->name('statutory-deduction.force-delete');
-            Route::resource('salary-structure', SalaryStructureController::class);
-
-                        // Deleted records
-            Route::get('salary-structure/deleted', [SalaryStructureController::class, 'deleted'])
-                ->name('salary-structure.deleted');
-
-            // Restore
-            Route::put('salary-structure/{id}/restore', [SalaryStructureController::class, 'restore'])
-                ->name('salary-structure.restore');
-
-            // Force delete
-            Route::delete('salary-structure/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])
-                ->name('salary-structure.force-delete');
             Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
             Route::resource('allowance', PayrollAllowanceController::class);
-            Route::resource('deduction-rule-set', DeductionRuleSetController::class);
-            Route::resource('employee-salary-assignment', EmployeeSalaryAssignmentController::class);
 
-            // Deleted records
-            Route::get('employee-salary-assignment/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])
-                ->name('employee-salary-assignment.deleted');
+           
 
-            // Restore
-            Route::put('employee-salary-assignment/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])
-                ->name('employee-salary-assignment.restore');
+   
 
-            // Force delete
-            Route::delete('employee-salary-assignment/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])
-                ->name('employee-salary-assignment.force-delete');
-
-            Route::resource('statutory-contribution', StatutoryContributionController::class);
-
-            Route::resource('pre-payroll', PrePayrollAdjustmentController::class);
+        
 
             Route::post(
                     'pre-payroll/{id}/approve',
@@ -963,21 +926,7 @@ Route::middleware(['auth'])
                 )->name('pre-payroll.approve');
                         });
 
-                        Route::get(
-                            'pre-payroll/deleted',
-                            [PrePayrollAdjustmentController::class, 'deleted']
-                        )->name('pre-payroll.deleted');
-
-                        Route::put(
-                            'pre-payroll/{id}/restore',
-                            [PrePayrollAdjustmentController::class, 'restore']
-                        )->name('pre-payroll.restore');
-
-                        Route::delete(
-                            'pre-payroll/{id}/force-delete',
-                            [PrePayrollAdjustmentController::class, 'forceDelete']
-                        )->name('pre-payroll.force-delete');
-
+                   
                         Route::get(
                         'hourly-pay-approval/trash',
                         [HourlyPayApprovalController::class, 'trash']
@@ -1681,7 +1630,8 @@ Route::get('/payroll-dashboard',
 
             Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
-            Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])->name('forceDelete');
+          Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])
+    ->name('force-delete');
 
             Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
             Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
@@ -1759,10 +1709,10 @@ Route::get('/payroll-dashboard',
             Route::get('/{id}/show', [DeductionRuleSetController::class, 'show'])->name('show');
             Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
             Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
-            Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+            Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('destroy');
             Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
             Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('force-delete');
 
         });
 
@@ -1946,10 +1896,11 @@ Route::prefix('payroll/statutory-deduction')
     Route::get('/{id}/show', [StatutoryDeductionController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [StatutoryDeductionController::class, 'edit'])->name('edit');
     Route::put('/{id}', [StatutoryDeductionController::class, 'update'])->name('update');
-    Route::delete('/{id}', [StatutoryDeductionController::class, 'destroy'])->name('delete');
+  Route::delete('/{id}', [StatutoryDeductionController::class, 'destroy'])
+    ->name('destroy');
 
     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
-    Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('force-delete');
     });
 
 //---------Payroll - Salary Structure-----------//
@@ -1970,12 +1921,12 @@ Route::prefix('payroll/salary-structure')
 
     Route::put('/{id}', [SalaryStructureController::class, 'update'])->name('update');
 
-    Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
+    Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('destroy');
     Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
 
     Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
 
-    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('force-delete');
 });
  //---------Payroll - Employee Salary assignment-----------//
 Route::prefix('payroll/employee-salary-assignment')
@@ -1991,13 +1942,13 @@ Route::prefix('payroll/employee-salary-assignment')
 
     // restore + force delete
     Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
-    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('force-delete');
 
     // dynamic
     Route::get('/{id}/show', [EmployeeSalaryAssignmentController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
     Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
-    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
+    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('destroy');
 });
 
 
