@@ -137,6 +137,15 @@
 
                 <ul class="nxl-submenu">
 
+                    {{-- Dashboard Menu --}}
+                    <li class="nxl-item {{ request()->is('admin/accountant/dashboard*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.accountant.dashboard') }}" 
+                        class="nxl-link" up-follow up-target="#main-container">
+
+                            <i class="feather-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+
                     {{-- Billing Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
