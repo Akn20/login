@@ -194,7 +194,16 @@
                                     Vendor Management
                                 </a>
                             </li>
-                            
+                        {{-- Add Expense --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.accountant.expense.add.index') }}"
+                                    class="nxl-link"
+                                    up-follow
+                                    up-target="#main-container">
+
+                                    Add Expense
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

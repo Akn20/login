@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,10 @@ use App\Modles\LabTest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
+
+use App\Http\Controllers\Admin\inventory\InventoryVendorController;
+
+
 
 // Api > Surgery
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
@@ -1629,6 +1634,53 @@ Route::prefix('accountant/billing')->group(function () {
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
 });
+
+
+
+
+
+
+Route::prefix('admin/accountant/expense-management/category')
+    ->group(function () {
+
+        Route::get('/', [ExpenseCategoryController::class, 'index']);
+
+        Route::post('/store', [ExpenseCategoryController::class, 'store']);
+
+        Route::get('/edit/{id}', [ExpenseCategoryController::class, 'edit']);
+
+        Route::put('/update/{id}', [ExpenseCategoryController::class, 'update']);
+
+        Route::delete('/delete/{id}', [ExpenseCategoryController::class, 'destroy']);
+
+        Route::get('/deleted', [ExpenseCategoryController::class, 'deleted']);
+
+        Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+|   Expense Management: Inventory Vendors
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('inventory-vendors')->group(function () {
+
+    Route::get('/', [InventoryVendorController::class, 'index']);
+        Route::get('/trash', [InventoryVendorController::class, 'trash']);
+    Route::post('/store', [InventoryVendorController::class, 'store']);
+    Route::get('/{id}', [InventoryVendorController::class, 'edit']);
+    Route::put('/update/{id}', [InventoryVendorController::class, 'update']);
+    Route::delete('/delete/{id}', [InventoryVendorController::class, 'delete']);
+    Route::put('/restore/{id}', [InventoryVendorController::class, 'restore']);
+    // Force delete vendor permanently
+    Route::delete('/force-delete/{id}', [InventoryVendorController::class, 'forceDelete']);
+    Route::put('/toggle-status/{id}', [InventoryVendorController::class, 'toggleStatus']);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 |   Nurse: Discharge Preparation

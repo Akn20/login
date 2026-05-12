@@ -157,6 +157,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\ExpenseCategoryController;
 //use App\Http\Controllers\VendorManagementController;
+use App\Http\Controllers\AddExpenseController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2299,6 +2300,29 @@ Route::prefix('admin/accountant/expense-management/vendor')
 });
 
 */
+
+// ================= ADD EXPENSE =================
+Route::prefix('admin/accountant/expense-management/add-expense')
+    ->name('admin.accountant.expense.add.')
+    ->group(function () {
+
+        Route::get('/', [AddExpenseController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [AddExpenseController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [AddExpenseController::class, 'store'])
+            ->name('store');
+
+        Route::get('/edit/{id}', [AddExpenseController::class, 'edit'])
+            ->name('edit');
+
+        Route::get('/deleted', [AddExpenseController::class, 'deleted'])
+            ->name('deleted');
+
+});
+
 
 });
 //IPD (Doctor Module)

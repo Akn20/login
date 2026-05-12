@@ -8,10 +8,20 @@ use Illuminate\Http\Request;
 
 class InventoryVendorController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $vendors = InventoryVendor::latest()->get();
 
+        // API response (Postman / Mobile App)
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Inventory vendors fetched successfully.',
+                'data' => $vendors,
+            ]);
+        }
+
+        // Existing web response
         return view('admin.inventory_vendor.index', compact('vendors'));
     }
 
@@ -27,10 +37,7 @@ class InventoryVendorController extends Controller
                 'vendor_name' => 'required|max:150|unique:inventory_vendors,vendor_name',
                 'phone_number' => 'required|digits:10',
                 'email' => 'required|email|max:150',
-
-                // GST NUMBER
                 'gst_number' => 'nullable|max:50',
-
                 'address' => 'required|max:500',
                 'status' => 'required|in:Active,Inactive',
             ],
@@ -45,35 +52,63 @@ class InventoryVendorController extends Controller
             ]
         );
 
-        InventoryVendor::create([
+        $vendor = InventoryVendor::create([
             'vendor_name' => $request->vendor_name,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
-
-            // GST NUMBER
             'gst_number' => $request->gst_number,
-
             'address' => $request->address,
             'status' => $request->status,
             'created_by' => 1,
         ]);
 
-        return redirect()->route('admin.inventory-vendors.index')
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor added successfully.',
+                'data' => $vendor,
+            ], 201);
+        }
+
+        // Existing web response
+        return redirect()
+            ->route('admin.inventory-vendors.index')
             ->with('success', 'Vendor added successfully');
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $vendor = InventoryVendor::findOrFail($id);
         $vendor->load(['purchaseOrders', 'purchases', 'payments']);
 
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor fetched successfully.',
+                'data' => $vendor,
+            ]);
+        }
+
+        // Existing web response
         return view('admin.inventory_vendor.show', compact('vendor'));
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $vendor = InventoryVendor::findOrFail($id);
 
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor fetched successfully.',
+                'data' => $vendor,
+            ]);
+        }
+
+        // Existing web response
         return view('admin.inventory_vendor.edit', compact('vendor'));
     }
 
@@ -84,10 +119,7 @@ class InventoryVendorController extends Controller
                 'vendor_name' => "required|max:150|unique:inventory_vendors,vendor_name,$id",
                 'phone_number' => 'required|digits:10',
                 'email' => 'required|email|max:150',
-
-                // GST NUMBER
                 'gst_number' => 'nullable|max:50',
-
                 'address' => 'required|max:500',
                 'status' => 'required|in:Active,Inactive',
             ],
@@ -108,53 +140,110 @@ class InventoryVendorController extends Controller
             'vendor_name' => $request->vendor_name,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
-
-            // GST NUMBER
             'gst_number' => $request->gst_number,
-
             'address' => $request->address,
             'status' => $request->status,
             'updated_by' => 1,
         ]);
 
-        return redirect()->route('admin.inventory-vendors.index')
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor updated successfully.',
+                'data' => $vendor->fresh(),
+            ]);
+        }
+
+        // Existing web response
+        return redirect()
+            ->route('admin.inventory-vendors.index')
             ->with('success', 'Vendor updated successfully');
     }
 
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
         $vendor = InventoryVendor::findOrFail($id);
         $vendor->delete();
 
-        return redirect()->route('admin.inventory-vendors.index')
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor deleted successfully.',
+            ]);
+        }
+
+        // Existing web response
+        return redirect()
+            ->route('admin.inventory-vendors.index')
             ->with('success', 'Vendor deleted successfully');
     }
 
-    public function trash()
+    public function trash(Request $request)
     {
         $vendors = InventoryVendor::onlyTrashed()->get();
 
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Deleted vendors fetched successfully.',
+                'data' => $vendors,
+            ]);
+        }
+
+        // Existing web response
         return view('admin.inventory_vendor.trash', compact('vendors'));
     }
 
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
-        InventoryVendor::withTrashed()->findOrFail($id)->restore();
+        $vendor = InventoryVendor::withTrashed()->findOrFail($id);
+        $vendor->restore();
 
-        return redirect()->route('admin.inventory-vendors.trash')->with('success', 'Vendor restored');
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor restored successfully.',
+                'data' => $vendor,
+            ]);
+        }
+
+        // Existing web response
+        return redirect()
+            ->route('admin.inventory-vendors.trash')
+            ->with('success', 'Vendor restored successfully');
     }
 
-    public function forceDelete($id)
+    public function forceDelete(Request $request, $id)
     {
-        InventoryVendor::withTrashed()->findOrFail($id)->forceDelete();
+        $vendor = InventoryVendor::withTrashed()->findOrFail($id);
+        $vendor->forceDelete();
 
-        return redirect()->route('admin.inventory-vendors.trash')->with('success', 'Vendor removed permanently');
+        // API response
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Vendor permanently deleted.',
+            ]);
+        }
+
+        // Existing web response
+        return redirect()
+            ->route('admin.inventory-vendors.trash')
+            ->with('success', 'Vendor removed permanently');
     }
 
     public function apiIndex()
     {
         $vendors = InventoryVendor::where('status', 'Active')->get();
 
-        return response()->json($vendors);
+        return response()->json([
+            'status' => true,
+            'message' => 'Active vendors fetched successfully.',
+            'data' => $vendors,
+        ]);
     }
 }
