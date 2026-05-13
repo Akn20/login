@@ -15,7 +15,7 @@ class FinancialDiscrepancyController extends Controller
      */
     public function index()
     {
-        $discrepancies = FinancialDiscrepancy::with('reconciliation')
+        $discrepancies = FinancialDiscrepancy::with('financialReconciliation')
             ->latest()
             ->get();
 
