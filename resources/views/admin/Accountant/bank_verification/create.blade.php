@@ -55,13 +55,20 @@
 
                                 <option value="{{ $item->id }}">
 
-                                    {{ $item->reconciliation_date }}
-                                    -
-                                    ₹ {{ number_format($item->total_cash + $item->total_digital, 2) }}
+                REC-{{ date('dm', strtotime($item->reconciliation_date)) }}
+                -{{ strtoupper(substr($item->id, 0, 4)) }}
 
-                                </option>
+                |
 
-                            @endforeach
+                ₹ {{ number_format($item->total_cash + $item->total_digital, 2) }}
+
+                |
+
+                {{ $item->status }}
+
+            </option>
+
+                                        @endforeach
 
                         </select>
 

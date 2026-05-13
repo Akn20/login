@@ -12,6 +12,18 @@
 
         <div class="card-body">
 
+           <p>
+                <strong>Reconciliation Id:</strong>
+
+                REC-{{ strtoupper(substr($discrepancy->financialReconciliation->id, 0, 6)) }}
+
+                |
+
+                {{ \Carbon\Carbon::parse(
+                    $discrepancy->financialReconciliation->reconciliation_date
+                )->format('d M Y') }}
+            </p>
+
             <p>
                 <strong>Issue Type:</strong>
                 {{ $discrepancy->issue_type }}

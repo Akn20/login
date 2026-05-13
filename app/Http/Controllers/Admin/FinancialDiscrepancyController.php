@@ -140,7 +140,7 @@ $discrepancy = FinancialDiscrepancy::create([
      */
     public function show($id)
     {
-        $discrepancy = FinancialDiscrepancy::with('reconciliation')
+        $discrepancy = FinancialDiscrepancy::with('financialReconciliation')
             ->findOrFail($id);
 
         return view(
@@ -214,11 +214,8 @@ $discrepancy->update([
     'difference_amount' =>
         $difference,
 
-    'status' =>
-        $difference == 0
-        ? 'Resolved'
-        : 'Open',
-
+    'status' => $request->status,
+       
     'remarks' =>
         $request->remarks,
 ]);
@@ -296,7 +293,7 @@ $discrepancy->update([
 
     public function apiIndex()
 {
-    $discrepancies = FinancialDiscrepancy::with('reconciliation')
+    $discrepancies = FinancialDiscrepancy::with('financialReconciliation')
         ->latest()
         ->get();
 
@@ -308,7 +305,7 @@ $discrepancy->update([
 
 public function apiShow($id)
 {
-    $discrepancy = FinancialDiscrepancy::with('reconciliation')
+    $discrepancy = FinancialDiscrepancy::with('financialReconciliation')
         ->findOrFail($id);
 
     return response()->json([
@@ -481,7 +478,7 @@ public function apiForceDelete($id)
 public function apiSearch(Request $request)
 {
     $query = FinancialDiscrepancy::with(
-        'reconciliation'
+        'financialReconciliation'
     );
 
     if ($request->filled('search')) {

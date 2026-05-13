@@ -14,7 +14,7 @@ class BankVerificationController extends Controller
      */
     public function index()
     {
-        $verifications = BankVerification::with('reconciliation')
+        $verifications = BankVerification::with('financialReconciliation')
             ->latest()
             ->get();
 
@@ -26,7 +26,7 @@ class BankVerificationController extends Controller
 
     public function search(Request $request)
     {
-        $query = BankVerification::with('reconciliation');
+        $query = BankVerification::with('financialReconciliation');
 
         if ($request->has('bank_name') && $request->bank_name) {
             $query->where('bank_name', 'like', '%' . $request->bank_name . '%');
@@ -123,6 +123,34 @@ class BankVerificationController extends Controller
             'remarks' => $request->remarks,
         ]);
 
+        // UPDATE TOTAL BANK DEPOSIT
+
+        $totalDeposit = BankVerification::where(
+            'financial_reconciliation_id',
+            $request->financial_reconciliation_id
+        )->sum('deposit_amount');
+
+        $reconciliation->total_bank_deposit = $totalDeposit;
+
+        // RECALCULATE DIFFERENCE
+
+        $expected =
+            $reconciliation->total_cash +
+            $reconciliation->total_digital;
+
+        $difference =
+            $expected -
+            $totalDeposit;
+
+        $reconciliation->difference_amount = abs($difference);
+
+        $reconciliation->status =
+            $difference == 0
+                ? 'Matched'
+                : 'Mismatch';
+
+        $reconciliation->save();
+
         return redirect()
         ->route('admin.bank-verification.index')
         ->with(
@@ -136,7 +164,7 @@ class BankVerificationController extends Controller
      */
     public function show($id)
     {
-        $verification = BankVerification::with('reconciliation')
+        $verification = BankVerification::with('financialReconciliation')
             ->findOrFail($id);
 
         return view(
@@ -235,13 +263,41 @@ public function update(Request $request, $id)
             $request->remarks,
     ]);
 
-    return redirect()
-        ->route('admin.bank-verification.index')
-        ->with(
-            'success',
-            'Verification updated successfully'
-        );
-}
+            // UPDATE TOTAL BANK DEPOSIT
+
+        $totalDeposit = BankVerification::where(
+            'financial_reconciliation_id',
+            $request->financial_reconciliation_id
+        )->sum('deposit_amount');
+
+        $reconciliation->total_bank_deposit = $totalDeposit;
+
+        // RECALCULATE DIFFERENCE
+
+        $expected =
+            $reconciliation->total_cash +
+            $reconciliation->total_digital;
+
+        $difference =
+            $expected -
+            $totalDeposit;
+
+        $reconciliation->difference_amount = abs($difference);
+
+        $reconciliation->status =
+            $difference == 0
+                ? 'Matched'
+                : 'Mismatch';
+
+        $reconciliation->save();
+
+            return redirect()
+                ->route('admin.bank-verification.index')
+                ->with(
+                    'success',
+                    'Verification updated successfully'
+                );
+        }
 
 /**
  * Soft Delete
@@ -307,7 +363,7 @@ public function forceDelete($id)
 
 public function apiIndex()
     {
-        $verifications = BankVerification::with('reconciliation')
+        $verifications = BankVerification::with('financialReconciliation')
             ->latest()
             ->get();
 
@@ -318,7 +374,7 @@ public function apiIndex()
 
     public function apiShow($id)
     {
-        $verification = BankVerification::with('reconciliation')
+        $verification = BankVerification::with('financialReconciliation')
             ->findOrFail($id);
 
         return response()->json(
@@ -514,7 +570,7 @@ public function apiForceDelete($id)
 }
 public function apiSearch(Request $request)
 {
-    $query = BankVerification::with('reconciliation');
+    $query = BankVerification::with('financialReconciliation');
 
     if ($request->bank_name) {
         $query->where(

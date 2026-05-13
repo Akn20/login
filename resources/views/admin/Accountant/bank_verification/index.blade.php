@@ -70,6 +70,8 @@
 
                         <th>#</th>
 
+                        <th>Reconciliation id</th>
+
                         <th>Bank</th>
 
                         <th>Deposit Amount</th>
@@ -95,6 +97,18 @@
                         <tr>
 
                             <td>{{ $key + 1 }}</td>
+
+                            <td>
+
+    REC-{{ strtoupper(substr($item->financialReconciliation->id, 0, 6)) }}
+
+    |
+
+    {{ \Carbon\Carbon::parse(
+        $item->financialReconciliation->reconciliation_date
+    )->format('d M Y') }}
+
+</td>
 
                             <td>{{ $item->bank_name }}</td>
 

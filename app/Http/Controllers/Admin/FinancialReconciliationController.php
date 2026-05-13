@@ -83,22 +83,32 @@ public function update(Request $request, $id)
     $request->validate([
         'reconciliation_date' => 'required|date',
         'total_cash' => 'required|numeric|min:0',
-        'total_digital' => 'required|numeric|min:0',
-        'total_bank_deposit' => 'required|numeric|min:0',
+        'total_digital' => 'nullable|numeric|min:0',
+        'total_bank_deposit' => 'nullable|numeric|min:0',
         'bank_name' => 'nullable|string|max:255',
         'deposit_reference' => 'nullable|string|max:255',
-        'verification_status' => 'required|string',
+        'verification_status' => 'nullable|string',
         'payment_gateway' => 'nullable|string|max:255',
         'gateway_reference' => 'nullable|string|max:255',
-        'digital_payment_status' => 'required|string',
+        'digital_payment_status' => 'nullable|string',
         'remarks' => 'nullable|string'
     ]);
 
     $reconciliation = FinancialReconciliation::findOrFail($id);
 
-    $difference =
-        ($request->total_cash + $request->total_digital)
-        - $request->total_bank_deposit;
+    $totalDigital =
+    $request->filled('total_digital')
+    ? $request->total_digital
+    : 0;
+
+    $totalBankDeposit =
+    $request->filled('total_bank_deposit')
+    ? $request->total_bank_deposit
+    : 0;
+
+$difference =
+    ($request->total_cash + $totalDigital)
+    - $totalBankDeposit;
 
     $status = $difference == 0
         ? 'Matched'
@@ -107,8 +117,8 @@ public function update(Request $request, $id)
     $reconciliation->update([
         'reconciliation_date' => $request->reconciliation_date,
         'total_cash' => $request->total_cash,
-        'total_digital' => $request->total_digital,
-        'total_bank_deposit' => $request->total_bank_deposit,
+        'total_digital' => $totalDigital,
+        'total_bank_deposit' => $totalBankDeposit,
         'difference_amount' => $difference,
         'status' => $status,
         'bank_name' => $request->bank_name,
@@ -139,10 +149,10 @@ if ($difference != 0) {
 
         'expected_amount' =>
             $request->total_cash +
-            $request->total_digital,
+            $totalDigital,
 
         'actual_amount' =>
-            $request->total_bank_deposit,
+            $totalBankDeposit,
 
         'difference_amount' =>
             $difference,
@@ -168,37 +178,47 @@ if ($difference != 0) {
         $request->validate([
             'reconciliation_date' => 'required|date',
             'total_cash' => 'required|numeric|min:0',
-            'total_digital' => 'required|numeric|min:0',
-            'total_bank_deposit' => 'required|numeric|min:0',
+            'total_digital' => 'nullable|numeric|min:0',
+            'total_bank_deposit' => 'nullable|numeric|min:0',
             'bank_name' => 'nullable|string|max:255',
 
             'deposit_reference' => 'nullable|string|max:255',
 
-            'verification_status' => 'required|string',
+            'verification_status' => 'nullable|string',
 
             'payment_gateway' => 'nullable|string|max:255',
 
             'gateway_reference' => 'nullable|string|max:255',
 
-            'digital_payment_status' => 'required|string',
+            'digital_payment_status' => 'nullable|string',
             'remarks' => 'nullable|string'
         ]);
 
+        $totalDigital =
+    $request->filled('total_digital')
+    ? $request->total_digital
+    : 0;
+
+    $totalBankDeposit = $request->filled('total_bank_deposit')
+    ? $request->total_bank_deposit
+    : 0;
+
+
         // Calculate difference
-        $difference =
-            ($request->total_cash + $request->total_digital)
-            - $request->total_bank_deposit;
+       $difference =($request->total_cash + $totalDigital)- $totalBankDeposit;
 
         // Determine status
         $status = $difference == 0
             ? 'Matched'
             : 'Mismatch';
 
+            
+
         $reconciliation = FinancialReconciliation::create([
             'reconciliation_date' => $request->reconciliation_date,
             'total_cash' => $request->total_cash,
-            'total_digital' => $request->total_digital,
-            'total_bank_deposit' => $request->total_bank_deposit,
+            'total_digital' => $totalDigital,
+            'total_bank_deposit' => $totalBankDeposit,
             'difference_amount' => $difference,
             'status' => $status,
             'remarks' => $request->remarks,
@@ -223,10 +243,10 @@ if ($difference != 0) {
 
         'expected_amount' =>
             $request->total_cash +
-            $request->total_digital,
+            $totalDigital,
 
         'actual_amount' =>
-            $request->total_bank_deposit,
+            $totalBankDeposit,
 
         'difference_amount' =>
             $difference,
@@ -330,15 +350,18 @@ public function apiStore(Request $request)
     $request->validate([
         'reconciliation_date' => 'required|date',
         'total_cash' => 'required|numeric|min:0',
-        'total_digital' => 'required|numeric|min:0',
-        'total_bank_deposit' => 'required|numeric|min:0',
-        'verification_status' => 'required|string',
-        'digital_payment_status' => 'required|string',
+        'total_digital' => 'nullable|numeric|min:0',
+        'total_bank_deposit' => 'nullable|numeric|min:0',
+        'verification_status' => 'nullable|string',
+        'digital_payment_status' => 'nullable|string',
     ]);
 
+    $totalDigital = $request->filled('total_digital') ? $request->total_digital : 0;
+    $totalBankDeposit = $request->filled('total_bank_deposit') ? $request->total_bank_deposit : 0;
+
     $difference =
-        ($request->total_cash + $request->total_digital)
-        - $request->total_bank_deposit;
+        ($request->total_cash + $totalDigital)
+        - $totalBankDeposit;
 
     $status =
         $difference == 0
@@ -354,10 +377,10 @@ public function apiStore(Request $request)
             $request->total_cash,
 
         'total_digital' =>
-            $request->total_digital,
+            $totalDigital,
 
         'total_bank_deposit' =>
-            $request->total_bank_deposit,
+            $totalBankDeposit,
 
         'difference_amount' =>
             $difference,
@@ -400,10 +423,10 @@ public function apiStore(Request $request)
 
             'expected_amount' =>
                 $request->total_cash +
-                $request->total_digital,
+                $totalDigital,
 
             'actual_amount' =>
-                $request->total_bank_deposit,
+                $totalBankDeposit,
 
             'difference_amount' =>
                 $difference,
@@ -430,15 +453,18 @@ public function apiUpdate(Request $request, $id)
     $request->validate([
         'reconciliation_date' => 'required|date',
         'total_cash' => 'required|numeric|min:0',
-        'total_digital' => 'required|numeric|min:0',
-        'total_bank_deposit' => 'required|numeric|min:0',
-        'verification_status' => 'required|string',
-        'digital_payment_status' => 'required|string',
+        'total_digital' => 'nullable|numeric|min:0',
+        'total_bank_deposit' => 'nullable|numeric|min:0',
+        'verification_status' => 'nullable|string',
+        'digital_payment_status' => 'nullable|string',
     ]);
 
+    $totalDigital = $request->filled('total_digital') ? $request->total_digital : 0;
+    $totalBankDeposit = $request->filled('total_bank_deposit') ? $request->total_bank_deposit : 0;
+
     $difference =
-        ($request->total_cash + $request->total_digital)
-        - $request->total_bank_deposit;
+        ($request->total_cash + $totalDigital)
+        - $totalBankDeposit;
 
     $status =
         $difference == 0
@@ -454,10 +480,10 @@ public function apiUpdate(Request $request, $id)
             $request->total_cash,
 
         'total_digital' =>
-            $request->total_digital,
+            $totalDigital,
 
         'total_bank_deposit' =>
-            $request->total_bank_deposit,
+            $totalBankDeposit,
 
         'difference_amount' =>
             $difference,
@@ -506,10 +532,10 @@ public function apiUpdate(Request $request, $id)
 
             'expected_amount' =>
                 $request->total_cash +
-                $request->total_digital,
+                $totalDigital,
 
             'actual_amount' =>
-                $request->total_bank_deposit,
+                $totalBankDeposit,
 
             'difference_amount' =>
                 $difference,

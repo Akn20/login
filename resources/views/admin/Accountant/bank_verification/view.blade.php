@@ -33,6 +33,17 @@
 
             <table class="table table-bordered">
 
+            <tr>
+                <th>Reconciliation ID</th>
+                <td>REC-{{ strtoupper(substr($verification->financialReconciliation->id, 0, 6)) }}
+
+    |
+
+    {{ \Carbon\Carbon::parse(
+        $verification->financialReconciliation->reconciliation_date
+    )->format('d M Y') }}</td>
+            </tr>
+
                 <tr>
                     <th>Bank Name</th>
                     <td>{{ $verification->bank_name }}</td>

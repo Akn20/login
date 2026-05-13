@@ -31,11 +31,20 @@
 
                         @foreach($reconciliations as $reconciliation)
 
-                            <option value="{{ $reconciliation->id }}">
+                            <option value="{{ $item->id }}">
 
-                                {{ $reconciliation->date }}
+    REC-{{ date('dm', strtotime($item->reconciliation_date)) }}
+    -{{ strtoupper(substr($item->id, 0, 4)) }}
 
-                            </option>
+    |
+
+    ₹ {{ number_format($item->total_cash + $item->total_digital, 2) }}
+
+    |
+
+    {{ $item->status }}
+
+</option>
 
                         @endforeach
 

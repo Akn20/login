@@ -27,6 +27,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Reconciliation ID</th>
                          <th>Date</th>
                         <th>Total Cash</th>
                         <th>Total Digital</th>
@@ -46,7 +47,11 @@
                         <td>{{ $key + 1 }}</td>
 
                         <td>
-                            {{ $item->reconciliation_date }}
+                            REC-{{ strtoupper(substr($item->id, 0, 6)) }}
+                        </td>
+
+                        <td>
+                            {{ \Carbon\Carbon::parse($item->reconciliation_date)->format('d M Y') }}
                         </td>
 
                         <td>
@@ -65,7 +70,7 @@
                             ₹ {{ number_format($item->difference, 2) }}
                         </td>
 
-                        <td></td>
+                        <td>
                             {{ $item->status }}
                         </td>
 
