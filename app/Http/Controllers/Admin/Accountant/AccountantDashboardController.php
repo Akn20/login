@@ -42,6 +42,22 @@ class AccountantDashboardController extends Controller
         // Outstanding Dues
         $outstandingDues = IpdBill::all()->sum('due_amount');
 
+        // Revenue Chart Data (Last 7 Days)
+        $revenueChartLabels = [];
+        $revenueChartData = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+
+            $date = now()->subDays($i);
+
+            $revenueChartLabels[] = $date->format('d M');
+
+            $amount = AccountantPayment::whereDate('created_at', $date)
+                ->sum('amount');
+
+            $revenueChartData[] = $amount;
+        }
+
         return view('admin.Accountant.dashboard', compact(
             'todayRevenue',
             'cashCollection',
@@ -49,7 +65,11 @@ class AccountantDashboardController extends Controller
             'pendingBills',
             'partialBills',
             'paidBills',
-            'outstandingDues'
+            'outstandingDues',
+            'revenueChartLabels',
+            'revenueChartData'
         ));
+
+        
     }
 }
