@@ -20,7 +20,6 @@ use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
 use App\Http\Controllers\Admin\Inventory\PurchaseOrderController;
 use App\Http\Controllers\Admin\Inventory\ReportController;
-
 // Admin > Inventory
 use App\Http\Controllers\Admin\Inventory\StockAuditController;
 use App\Http\Controllers\Admin\Inventory\StockTransferController;
@@ -31,6 +30,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
 // Admin > Laboratory
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\Radiology\RadiologyController;
 use App\Http\Controllers\Admin\Radiology\RadiologyHistoryController;
 use App\Http\Controllers\Admin\Radiology\RadiologyReportController;
@@ -57,6 +58,9 @@ use App\Http\Controllers\Admin\SampleCollectionController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
 
 // Attendance
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\SubscriptionInvoiceController;
+use App\Http\Controllers\Admin\UsageMonitoringController;
 use App\Http\Controllers\Admin\UserController;
 // Doctor
 use App\Http\Controllers\AppointmentController;
@@ -129,6 +133,7 @@ use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\PatientApiController;
 use App\Http\Controllers\Admin\PatientPortal\DataUsageConsentController;
 use App\Http\Controllers\PharmacyDashboardController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
@@ -175,6 +180,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 //use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -857,6 +863,21 @@ Route::middleware(['auth', 'role:admin'])
             Route::get('/show/{id}', [LeaveAdjustmentController::class, 'show'])
                 ->name('show');
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rooms
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('rooms/deleted', [RoomController::class, 'deleted'])
+            ->name('rooms.deleted');
+        Route::put('rooms/{id}/restore', [RoomController::class, 'restore'])
+            ->name('rooms.restore');
+        Route::delete('rooms/{id}/force-delete', [RoomController::class, 'forceDelete'])
+            ->name('rooms.forceDelete');
+
+        Route::resource('rooms', RoomController::class);
 
         /*
         |--------------------------------------------------------------------------
@@ -2192,6 +2213,25 @@ Route::prefix('stock')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| 6. Room API routes
+|--------------------------------------------------------------------------
+| API endpoints for room management.
+*/
+Route::prefix('rooms')->group(function () {
+    Route::get('/', [RoomController::class, 'apiIndex']);
+    Route::get('/{id}', [RoomController::class, 'apiShow']);
+    Route::post('/', [RoomController::class, 'apiStore']);
+    Route::put('/{id}', [RoomController::class, 'apiUpdate']);
+    Route::delete('/{id}', [RoomController::class, 'apiDelete']);
+    Route::get('/trash/all', [RoomController::class, 'apiTrash']);
+    Route::put('/{id}/restore', [RoomController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [RoomController::class, 'apiForceDelete']);
+    Route::put('/{id}/toggle-status', [RoomController::class, 'apiToggleStatus']);
+    Route::get('/ward/{id}', [RoomController::class, 'getRoomsByWard']);
+});
+
+/*
+|--------------------------------------------------------------------------
 | Nursing Notes
 |--------------------------------------------------------------------------
 */
@@ -3001,15 +3041,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
     });
 });
+/*
+|--------------------------------------------------------------------------
+| Nurse:Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.nurse.')->group(function () {
+    Route::get('/nurse/dashboard', [NurseDashboardController::class, 'index'])->name('dashboard');
+});
 
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        /*
-|--------------------------------------------------------------------------
-| Insurance Consent
+       
+
+
+/*
+|-----------
+| | Insurance Consent
 |--------------------------------------------------------------------------
 */
 
@@ -3094,4 +3145,136 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/fetch-bill-details', [RefundController::class, 'fetchBillDetails'])
             ->name('fetch-bill-details');
     });
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Subscription Plans
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('plans')->name('plans.')->group(function () {
+
+        Route::get('/',
+            [PlanController::class, 'index']
+        )->name('index');
+
+        Route::get('/create',
+            [PlanController::class, 'create']
+        )->name('create');
+
+        Route::post('/store',
+            [PlanController::class, 'store']
+        )->name('store');
+
+        Route::get('/edit/{id}',
+            [PlanController::class, 'edit']
+        )->name('edit');
+
+        Route::put('/update/{id}',
+            [PlanController::class, 'update']
+        )->name('update');
+
+        Route::delete('/delete/{id}',
+            [PlanController::class, 'destroy']
+        )->name('delete');
     });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Organization Subscriptions
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('subscriptions')
+        ->name('subscriptions.')
+        ->group(function () {
+
+            Route::get('/',
+                [SubscriptionController::class, 'index']
+            )->name('index');
+
+            Route::get('/create',
+                [SubscriptionController::class, 'create']
+            )->name('create');
+
+            Route::post('/store',
+                [SubscriptionController::class, 'store']
+            )->name('store');
+
+            Route::get('/edit/{id}',
+                [SubscriptionController::class, 'edit']
+            )->name('edit');
+
+            Route::put('/update/{id}',
+                [SubscriptionController::class, 'update']
+            )->name('update');
+
+            Route::delete('/delete/{id}',
+                [SubscriptionController::class, 'destroy']
+            )->name('delete');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Usage Monitoring
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('subscription-usage')
+        ->name('subscription-usage.')
+        ->group(function () {
+
+            Route::get('/',
+                [UsageMonitoringController::class, 'index']
+            )->name('index');
+
+    });
+
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUBSCRIPTION INVOICES
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/subscription-invoices',
+        [SubscriptionInvoiceController::class, 'index']
+    )->name('subscription.invoices.index');
+
+    Route::post(
+        '/subscriptions/{id}/generate-invoice',
+        [SubscriptionInvoiceController::class, 'generate']
+    )->name('subscription.invoice.generate');
+
+    Route::get(
+        '/subscription-invoices/{id}/edit',
+        [SubscriptionInvoiceController::class, 'edit']
+    )->name('subscription.invoices.edit');
+
+    Route::put(
+        '/subscription-invoices/{id}',
+        [SubscriptionInvoiceController::class, 'update']
+    )->name('subscription.invoices.update');
+
+    Route::delete(
+        '/subscription-invoices/{id}',
+        [SubscriptionInvoiceController::class, 'destroy']
+    )->name('subscription.invoices.delete');
+
+    Route::get(
+    '/subscription-invoices/create',
+    [SubscriptionInvoiceController::class, 'create']
+)->name('subscription.invoices.create');
+
+Route::post(
+    '/subscription-invoices/store',
+    [SubscriptionInvoiceController::class, 'store']
+)->name('subscription.invoices.store');
+
+});
+  
