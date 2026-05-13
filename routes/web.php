@@ -87,6 +87,7 @@ use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\RateEmployeeMappingController;
+use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
 
 
@@ -1635,6 +1636,10 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
     Route::prefix('leave-report')->name('leave-report.')->group(function () {
         Route::get('/', [LeaveReportController::class, 'index'])->name('index');
     });
+    // Payroll Dashboard
+Route::get('/payroll-dashboard',
+    [PayrollDashboardController::class, 'index']
+)->name('payroll.dashboard');
 
     // Payroll - Allowance
 
@@ -1949,10 +1954,6 @@ Route::prefix('payroll/statutory-deduction')
     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
-
-
-
-
 
 //---------Payroll - Salary Structure-----------//
 

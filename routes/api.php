@@ -93,6 +93,7 @@ use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
+use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
@@ -1820,3 +1821,10 @@ Route::prefix('payroll/payroll-result')->group(function () {
       Route::get('/{id}', [PayrollResultController::class, 'show']);
     Route::post('/generate', [PayrollResultController::class, 'generate']);
 });
+
+
+//39.Payroll dashboard
+Route::get(
+    '/payroll-dashboard',
+    [PayrollDashboardController::class, 'apiDashboard']
+);
