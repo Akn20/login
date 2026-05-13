@@ -168,6 +168,12 @@ use App\Http\Controllers\Admin\InventoryExpiryController;
 use App\Http\Controllers\Admin\InventoryAlertController;
 use App\Http\Controllers\Admin\InventoryController;
 
+use App\Http\Controllers\Api\Inventory\ItemApiController;
+use App\Http\Controllers\Api\Inventory\PurchaseOrderApiController;
+use App\Http\Controllers\Api\Inventory\VendorApiController;
+use App\Http\Controllers\Api\Inventory\GrnApiController;
+use App\Http\Controllers\Api\Inventory\StockTransferApiController;
+use App\Http\Controllers\Api\Inventory\StockAuditApiController;
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -207,8 +213,101 @@ Route::get('/test-api', function () {
     return 'API working';
 });
 
+Route::get('/inventory/items', [ItemApiController::class, 'index']);
+
+Route::post('/inventory/items', [ItemApiController::class, 'store']);
+
+Route::get('/inventory/items/{id}', [ItemApiController::class, 'show']);
+
+Route::put('/inventory/items/{id}', [ItemApiController::class, 'update']);
+
+Route::delete('/inventory/items/{id}', [ItemApiController::class, 'destroy']);
+
+Route::get('/inventory/purchase-orders', [PurchaseOrderApiController::class, 'index']);
+
+Route::post('/inventory/purchase-orders', [PurchaseOrderApiController::class, 'store']);
+
+Route::get(
+    '/inventory/purchase-orders/approved',
+    [PurchaseOrderApiController::class, 'approved']
+);
+
+Route::get('/inventory/purchase-orders/{id}', [PurchaseOrderApiController::class, 'show']);
+
+Route::put('/inventory/purchase-orders/{id}', [PurchaseOrderApiController::class, 'update']);
+
+Route::delete('/inventory/purchase-orders/{id}', [PurchaseOrderApiController::class, 'destroy']);
+
+Route::put('/inventory/purchase-orders/{id}/approve', [PurchaseOrderApiController::class, 'approve']);
+
+Route::prefix('inventory')->group(function () {
+
+    Route::get('/vendors', [VendorApiController::class, 'index']);
+
+});
+Route::prefix('inventory')->group(function () {
+
+    Route::get('/grns', [GrnApiController::class, 'index']);
+
+    Route::post('/grns', [GrnApiController::class, 'store']);
+
+     Route::get('/grns/{id}', [GrnApiController::class, 'show']);
+
+});
+Route::get('/inventory/dashboard', function () {
+
+    return response()->json([
+        'totalItems' => \App\Models\Item::count(),
+
+        'lowStockItems' => \App\Models\Item::whereColumn(
+            'stock',
+            '<=',
+            'minimum_stock'
+        )->count(),
+
+        'totalPO' => \App\Models\PurchaseOrder::count(),
+
+        'totalStockValue' => \App\Models\Item::sum('selling_price'),
+
+       'recentPOs' => \App\Models\PurchaseOrder::with('inventoryVendor')
+    ->latest()
+    ->take(5)
+    ->get(),
+
+        'recentGrns' => \App\Models\Grn::latest()
+            ->take(5)
+            ->get(),
+    ]);
+
+});
+Route::prefix('inventory')->group(function () {
+
+    Route::get(
+        '/stock-transfers',
+        [StockTransferApiController::class, 'index']
+    );
+
+    Route::post(
+        '/stock-transfers',
+        [StockTransferApiController::class, 'store']
+    );
+
+});
+Route::prefix('inventory')->group(function () {
+
+    Route::get(
+        '/stock-audits',
+        [StockAuditApiController::class, 'index']
+    );
+        Route::post(
+        '/stock-audits',
+        [StockAuditApiController::class, 'store']
+    );
+
+});
 
 Route::get('/patients', [PatientController::class, 'apiIndex']);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -2132,7 +2231,27 @@ Route::prefix('payroll-earnings')->group(function () {
     Route::delete('{id}', [PayrollResultEarningController::class, 'apiDelete']);
 
 });
+Route::prefix('emr')->group(function () {
 
+    Route::get(
+        '/discharge-summary-list',
+        [PatientEmrApiController::class, 'index']
+    );
+
+    Route::get(
+        '/discharge-summary/{ipd_id}',
+        [PatientEmrApiController::class, 'show']
+    );
+
+    Route::get(
+        '/doctor-notes/{ipd_id}',
+        [PatientEmrApiController::class, 'doctorNotes']
+    );
+ Route::post(
+    '/doctor-notes/{ipd_id}',
+    [PatientEmrApiController::class, 'storeDoctorNotes']
+);
+});
 
 
 /*
