@@ -187,6 +187,12 @@ use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\AccountantRevenueController;
+use App\Http\Controllers\Admin\FinancialReconciliationController;
+use App\Http\Controllers\Admin\BankVerificationController;
+use App\Http\Controllers\Admin\DigitalPaymentController;
+use App\Http\Controllers\Admin\FinancialDiscrepancyController;
+use App\Http\Controllers\Admin\ReconciliationReportController;
+
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
@@ -1371,6 +1377,172 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::delete('/force-delete/{id}', [InsuranceClaimController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/deleted', [InsuranceClaimController::class, 'deleted'])->name('deleted');
         Route::get('/reports', [InsuranceClaimController::class, 'reports'])->name('reports');
+});
+
+
+Route::prefix('financial-reconciliation')->name('financial-reconciliation.')->group(function () {
+
+    Route::get('/', [FinancialReconciliationController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [FinancialReconciliationController::class, 'create'])
+        ->name('create');
+
+    Route::post('/store', [FinancialReconciliationController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}', [FinancialReconciliationController::class, 'show'])
+        ->name('view');
+
+
+    Route::get('/edit/{id}', [FinancialReconciliationController::class, 'edit'])
+    ->name('edit');
+
+        Route::put('/update/{id}', [FinancialReconciliationController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [FinancialReconciliationController::class, 'destroy'])
+            ->name('delete');
+
+        Route::get('/deleted', [FinancialReconciliationController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::put('/restore/{id}', [FinancialReconciliationController::class, 'restore'])
+            ->name('restore');
+
+        Route::delete('/force-delete/{id}', [FinancialReconciliationController::class, 'forceDelete'])
+            ->name('forceDelete');
+});
+
+Route::prefix('bank-verification')->name('bank-verification.')->group(function () {
+
+    Route::get('/', [BankVerificationController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [BankVerificationController::class, 'create'])
+        ->name('create');
+
+     Route::get('/search', [BankVerificationController::class, 'search'])
+    ->name('search');
+
+    Route::post('/store', [BankVerificationController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}', [BankVerificationController::class, 'show'])
+        ->name('view');
+
+        Route::get('/edit/{id}',[BankVerificationController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}',[BankVerificationController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}',[BankVerificationController::class, 'destroy'])->name('delete');
+
+        Route::get('/deleted/list',[BankVerificationController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::put('/restore/{id}',[BankVerificationController::class, 'restore'])
+            ->name('restore');
+
+        Route::delete('/force-delete/{id}',[BankVerificationController::class, 'forceDelete'])
+            ->name('forceDelete');
+});
+
+    Route::prefix('digital-payment')->name('digital-payment.')->group(function () {
+
+    Route::get('/',[DigitalPaymentController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create',[DigitalPaymentController::class, 'create'])
+        ->name('create');
+
+    Route::get('/search',[DigitalPaymentController::class, 'search'])
+        ->name('search');
+
+
+    Route::post('/store',[DigitalPaymentController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}',[DigitalPaymentController::class, 'show'])
+        ->name('view');
+
+    Route::get('/edit/{id}',[DigitalPaymentController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/update/{id}',[DigitalPaymentController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/delete/{id}',[DigitalPaymentController::class, 'destroy'])
+        ->name('delete');
+
+    Route::get('/deleted/list',[DigitalPaymentController::class, 'deleted'])
+        ->name('deleted');
+
+    Route::put('/restore/{id}',[DigitalPaymentController::class, 'restore'])
+        ->name('restore');
+
+    Route::delete('/force-delete/{id}',[DigitalPaymentController::class, 'forceDelete'])
+        ->name('forceDelete');
+});
+
+Route::prefix('financial-discrepancy')->name('financial-discrepancy.')->group(function () {
+    Route::get('/', [FinancialDiscrepancyController::class,'index'
+    ])->name('index');
+
+    Route::get('/create', [FinancialDiscrepancyController::class,'create'
+    ])->name('create');
+
+    Route::get('/search',
+    [FinancialDiscrepancyController::class, 'search']
+)->name('search');
+
+    Route::post('/store', [ FinancialDiscrepancyController::class,'store'
+    ])->name('store');
+
+    Route::get('/view/{id}', [FinancialDiscrepancyController::class,'show'
+    ])->name('view');
+
+    Route::get('/edit/{id}', [FinancialDiscrepancyController::class,'edit'
+    ])->name('edit');
+
+    Route::put('/update/{id}', [FinancialDiscrepancyController::class,'update'
+    ])->name('update');
+
+    Route::delete('/delete/{id}', [FinancialDiscrepancyController::class,'destroy'
+    ])->name('delete');
+
+    Route::get('/deleted/list', [FinancialDiscrepancyController::class,'deleted'
+    ])->name('deleted');
+
+    Route::put('/restore/{id}', [FinancialDiscrepancyController::class,'restore'
+    ])->name('restore');
+
+    Route::delete('/force-delete/{id}', [FinancialDiscrepancyController::class,'forceDelete'
+    ])->name('forceDelete');
+});
+
+Route::prefix('reconciliation-reports')
+    ->name('reconciliation-reports.')
+    ->group(function () {
+
+    Route::get('/',
+        [ReconciliationReportController::class, 'index'])
+        ->name('index');
+
+    Route::get('/daily-report',
+        [ReconciliationReportController::class, 'dailyReport'])
+        ->name('daily-report');
+
+    Route::get('/bank-report',
+        [ReconciliationReportController::class, 'bankReport'])
+        ->name('bank-report');
+
+    Route::get('/digital-payment-report',
+        [ReconciliationReportController::class, 'digitalPaymentReport'])
+        ->name('digital-payment-report');
+
+    Route::get('/discrepancy-report',
+        [ReconciliationReportController::class, 'discrepancyReport'])
+        ->name('discrepancy-report');
 });
 
     // Laboratory Management
@@ -3095,3 +3267,84 @@ Route::middleware(['auth', 'role:admin'])
             ->name('fetch-bill-details');
     });
     });
+
+Route::prefix('digital-payments')->group(function () {
+
+    Route::get('/', [DigitalPaymentController::class, 'apiIndex']);
+
+    Route::get('/deleted', [DigitalPaymentController::class, 'apiDeleted']);
+
+    Route::get('/search', [DigitalPaymentController::class, 'apiSearch']);
+
+    Route::get('/{id}', [DigitalPaymentController::class, 'apiShow']);
+
+    Route::post('/', [DigitalPaymentController::class, 'apiStore']);
+
+    Route::put('/{id}', [DigitalPaymentController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [DigitalPaymentController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [DigitalPaymentController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [DigitalPaymentController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-discrepancy')->group(function () {
+
+    Route::get('/', [FinancialDiscrepancyController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialDiscrepancyController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialDiscrepancyController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialDiscrepancyController::class, 'apiShow']);
+
+    Route::post('/', [FinancialDiscrepancyController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialDiscrepancyController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialDiscrepancyController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialDiscrepancyController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialDiscrepancyController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-reconciliation')->group(function () {
+
+    Route::get('/', [FinancialReconciliationController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialReconciliationController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialReconciliationController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialReconciliationController::class, 'apiShow']);
+
+    Route::post('/', [FinancialReconciliationController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialReconciliationController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialReconciliationController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialReconciliationController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialReconciliationController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('reconciliation-reports')->group(function () {
+
+    Route::get('/', [ReconciliationReportController::class,'apiIndex']);
+
+    Route::get('/daily-report', [ReconciliationReportController::class,'apiDailyReport']);
+
+    Route::get('/bank-report', [ReconciliationReportController::class,'apiBankReport']);
+
+    Route::get('/digital-payment-report', [ReconciliationReportController::class,'apiDigitalPaymentReport']);
+
+    Route::get('/discrepancy-report', [ReconciliationReportController::class,'apiDiscrepancyReport']);
+
+});
+

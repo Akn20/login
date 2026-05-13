@@ -180,7 +180,15 @@ use App\Http\Controllers\HR\Reports\AttendanceReportController;
 
 // Receptionist
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
+// use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistDashboardController;
 
+// Accountant
+use App\Http\Controllers\Admin\FinancialReconciliationController;
+use App\Http\Controllers\Admin\FinancialDiscrepancyController;
+use App\Http\Controllers\Admin\DigitalPaymentController;
+use App\Http\Controllers\Admin\ReconciliationReportController;
+use App\Http\Controllers\Admin\BankVerificationController;
 /*
 |--------------------------------------------------------------------------
 | Test / Misc
@@ -1230,20 +1238,20 @@ Route::prefix('pharmacy')->group(function () {
 // Route::prefix('nurse-shift-handover')->group(function () {
 
     // Get handover notes by assignment
-    Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
+//     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
-    // Create handover note
-    Route::post('/', [NurseShiftsController::class, 'apiStore']);
+//     // Create handover note
+//     Route::post('/', [NurseShiftsController::class, 'apiStore']);
 
-    // Update handover note
-    Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
+//     // Update handover note
+//     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
 
-    // Delete handover note
-    Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
+//     // Delete handover note
+//     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
 
-    // Update handover status
-    Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
-});
+//     // Update handover status
+//     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
+// });
 //     // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
@@ -2201,6 +2209,108 @@ Route::prefix('payroll-earnings')->group(function () {
     Route::post('/', [PayrollResultEarningController::class, 'apiStore']);
     Route::put('{id}', [PayrollResultEarningController::class, 'apiUpdate']);
     Route::delete('{id}', [PayrollResultEarningController::class, 'apiDelete']);
+
+});
+
+Route::prefix('bank-verification')->group(function () {
+
+    Route::get('/', [BankVerificationController::class, 'apiIndex']);
+
+    Route::get('/deleted', [BankVerificationController::class, 'apiDeleted']);
+
+    Route::get('/search', [BankVerificationController::class, 'apiSearch']);
+
+    Route::get('/{id}', [BankVerificationController::class, 'apiShow']);
+
+    Route::post('/', [BankVerificationController::class, 'apiStore']);
+
+    Route::put('/{id}', [BankVerificationController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [BankVerificationController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [BankVerificationController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [BankVerificationController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('digital-payments')->group(function () {
+
+    Route::get('/', [DigitalPaymentController::class, 'apiIndex']);
+
+    Route::get('/deleted', [DigitalPaymentController::class, 'apiDeleted']);
+
+    Route::get('/search', [DigitalPaymentController::class, 'apiSearch']);
+
+    Route::get('/{id}', [DigitalPaymentController::class, 'apiShow']);
+
+    Route::post('/', [DigitalPaymentController::class, 'apiStore']);
+
+    Route::put('/{id}', [DigitalPaymentController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [DigitalPaymentController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [DigitalPaymentController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [DigitalPaymentController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-discrepancy')->group(function () {
+
+    Route::get('/', [FinancialDiscrepancyController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialDiscrepancyController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialDiscrepancyController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialDiscrepancyController::class, 'apiShow']);
+
+    Route::post('/', [FinancialDiscrepancyController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialDiscrepancyController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialDiscrepancyController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialDiscrepancyController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialDiscrepancyController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-reconciliation')->group(function () {
+
+    Route::get('/', [FinancialReconciliationController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialReconciliationController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialReconciliationController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialReconciliationController::class, 'apiShow']);
+
+    Route::post('/', [FinancialReconciliationController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialReconciliationController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialReconciliationController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialReconciliationController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialReconciliationController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('reconciliation-reports')->group(function () {
+
+    Route::get('/', [ReconciliationReportController::class,'apiIndex']);
+
+    Route::get('/daily-report', [ReconciliationReportController::class,'apiDailyReport']);
+
+    Route::get('/bank-report', [ReconciliationReportController::class,'apiBankReport']);
+
+    Route::get('/digital-payment-report', [ReconciliationReportController::class,'apiDigitalPaymentReport']);
+
+    Route::get('/discrepancy-report', [ReconciliationReportController::class,'apiDiscrepancyReport']);
 
 });
 
