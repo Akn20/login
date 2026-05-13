@@ -371,37 +371,29 @@
                 <ul class="nxl-submenu">
                     <li class="nxl-item">
                         <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
-                            <span class="nxl-micon">
-                                <i class="feather-calendar"></i>
-                            </span>
+                            <span class="nxl-micon"><i class="feather-calendar"></i></span>
                             <span class="nxl-mtext">Nursing Notes </span>
                         </a>
                     </li>
                 </ul>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-activity"></i></span>
                             <span class="nxl-mtext">Patient Monitoring</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.medication.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-activity"></i></span>
                             <span class="nxl-mtext">Medication Administration</span>
                         </a>
                     </li>
-
-                    </ul>
-
-                    
+                </ul>
 
                     <ul class="nxl-submenu">
                         <li class="nxl-item">
@@ -421,40 +413,31 @@
                         </li>
                     </ul>
 
-                </li>   
-                </ul>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.infection.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Infection Logs</span>
+                            </a>
+                        </li>
+                    </ul>
 
                 <ul class="nxl-submenu">
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.infection.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-activity"></i></span>
-                            <span class="nxl-mtext">Infection Logs</span>
-                        </a>
-                    </li>
-
-                </ul>
-
-                <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.isolation.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-shield"></i></span>
                             <span class="nxl-mtext">Isolation Tracking</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.ppe.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-user-check"></i></span>
                             <span class="nxl-mtext">PPE Compliance</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -467,6 +450,7 @@
                 </ul>
 
             </li>
+
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-package"></i></span>

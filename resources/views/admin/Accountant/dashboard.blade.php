@@ -13,7 +13,7 @@
 
             <!-- Today's Revenue -->
             <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-warning border-4 shadow-sm">
                     <div class="card-body">
 
                         <div class="d-flex justify-content-between align-items-center">
@@ -28,7 +28,7 @@
 
             <!-- Cash Collection -->
             <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-info border-4 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -42,7 +42,7 @@
 
             <!-- Outstanding Dues -->
             <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-danger border-4 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -56,7 +56,7 @@
 
             <!-- Total Bills -->
             <div class="col-md-3 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-success border-4 shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -74,7 +74,7 @@
 
             <!-- Paid Bills -->
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-success ">
                     <div class="card-body text-center">
                         <h6 class="text-muted mb-3">Paid Bills</h6>
                         <h2 class="fw-bold text-success">{{ $paidBills }}</h2>
@@ -84,7 +84,7 @@
 
             <!-- Partial Bills -->
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-danger border-4 shadow-sm">
                     <div class="card-body text-center">
                         <h6 class="text-muted mb-3">Partial Bills</h6>
                         <h2 class="fw-bold text-warning">{{ $partialBills }}</h2>
@@ -94,7 +94,7 @@
 
             <!-- Pending Bills -->
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card dashboard-card border-start border-info border-4 shadow-sm">
                     <div class="card-body text-center">
                         <h6 class="text-muted mb-3">Pending Bills</h6>
                         <h2 class="fw-bold text-danger">{{ $pendingBills }} </h2>
