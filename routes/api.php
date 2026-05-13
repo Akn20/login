@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
+use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -1632,6 +1633,12 @@ Route::prefix('doctor/ipd')->group(function () {
     Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
 });
 
+//Dashboard(Accountant)
+Route::prefix('accountant/dashboard')->group(function () {
+    Route::get('/', [AccountantDashboardController::class, 'apiDashboard']);
+    Route::get('/summary', [AccountantDashboardController::class, 'apiSummary']);
+    Route::get('/revenue-overview', [AccountantDashboardController::class, 'apiRevenueOverview']);
+});
 //Billing(Accountant)
 
 Route::prefix('accountant/billing')->group(function () {

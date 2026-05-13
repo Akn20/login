@@ -6,70 +6,111 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AccountantPayment;
 use App\Models\IpdBill;
-use Illuminate\Support\Facades\DB;
 
 class AccountantDashboardController extends Controller
 {
     public function index()
     {
-        // Today's Revenue
+        $summary = $this->dashboardSummary();
+        $revenueOverview = $this->revenueOverview();
+
+        return view('admin.Accountant.dashboard', [
+            'todayRevenue' => $summary['today_revenue'],
+            'cashCollection' => $summary['daily_cash_collection'],
+            'totalBills' => $summary['total_bills'],
+            'pendingBills' => $summary['pending_bills'],
+            'partialBills' => $summary['partial_bills'],
+            'paidBills' => $summary['paid_bills'],
+            'outstandingDues' => $summary['outstanding_dues'],
+            'revenueChartLabels' => $revenueOverview['labels'],
+            'revenueChartData' => $revenueOverview['data'],
+        ]);
+    }
+
+    public function apiDashboard(Request $request)
+    {
+        $summary = $this->dashboardSummary();
+        $revenueOverview = $this->revenueOverview();
+
+        return response()->json([
+            'status' => true,
+            'data' => array_merge($summary, [
+                'summary' => $summary,
+                'revenue_overview' => $revenueOverview['items'],
+                'revenue_chart_labels' => $revenueOverview['labels'],
+                'revenue_chart_data' => $revenueOverview['data'],
+            ]),
+        ]);
+    }
+
+    public function apiSummary(Request $request)
+    {
+        return response()->json([
+            'status' => true,
+            'data' => $this->dashboardSummary(),
+        ]);
+    }
+
+    public function apiRevenueOverview(Request $request)
+    {
+        $revenueOverview = $this->revenueOverview();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'labels' => $revenueOverview['labels'],
+                'data' => $revenueOverview['data'],
+                'revenue_overview' => $revenueOverview['items'],
+            ],
+        ]);
+    }
+
+    private function dashboardSummary(): array
+    {
         $todayRevenue = AccountantPayment::whereDate('created_at', today())
             ->sum('amount');
 
-        // Daily Cash Collection
         $cashCollection = AccountantPayment::whereDate('created_at', today())
             ->where('payment_mode', 'Cash')
             ->sum('amount');
 
-        // Total Bills
-        $totalBills = IpdBill::count();
+        $bills = IpdBill::with('payments')->get();
 
-        // Pending Bills
-        $pendingBills = IpdBill::get()
-            ->filter(fn($bill) => $bill->payment_status == 'unpaid')
-            ->count();
+        return [
+            'today_revenue' => (float) $todayRevenue,
+            'daily_cash_collection' => (float) $cashCollection,
+            'cash_collection' => (float) $cashCollection,
+            'outstanding_dues' => (float) $bills->sum(fn ($bill) => $bill->due_amount),
+            'total_bills' => $bills->count(),
+            'paid_bills' => $bills->filter(fn ($bill) => $bill->payment_status === 'paid')->count(),
+            'partial_bills' => $bills->filter(fn ($bill) => $bill->payment_status === 'partial')->count(),
+            'pending_bills' => $bills->filter(fn ($bill) => $bill->payment_status === 'unpaid')->count(),
+        ];
+    }
 
-        // Partial Bills
-        $partialBills = IpdBill::get()
-            ->filter(fn($bill) => $bill->payment_status == 'partial')
-            ->count();
-
-        // Paid Bills
-        $paidBills = IpdBill::get()
-            ->filter(fn($bill) => $bill->payment_status == 'paid')
-            ->count();
-
-        // Outstanding Dues
-        $outstandingDues = IpdBill::all()->sum('due_amount');
-
-        // Revenue Chart Data (Last 7 Days)
-        $revenueChartLabels = [];
-        $revenueChartData = [];
+    private function revenueOverview(): array
+    {
+        $labels = [];
+        $data = [];
+        $items = [];
 
         for ($i = 6; $i >= 0; $i--) {
-
             $date = now()->subDays($i);
+            $amount = AccountantPayment::whereDate('created_at', $date)->sum('amount');
 
-            $revenueChartLabels[] = $date->format('d M');
-
-            $amount = AccountantPayment::whereDate('created_at', $date)
-                ->sum('amount');
-
-            $revenueChartData[] = $amount;
+            $labels[] = $date->format('d M');
+            $data[] = (float) $amount;
+            $items[] = [
+                'date' => $date->toDateString(),
+                'label' => $date->format('d M'),
+                'revenue' => (float) $amount,
+            ];
         }
 
-        return view('admin.Accountant.dashboard', compact(
-            'todayRevenue',
-            'cashCollection',
-            'totalBills',
-            'pendingBills',
-            'partialBills',
-            'paidBills',
-            'outstandingDues',
-            'revenueChartLabels',
-            'revenueChartData'
-        ));
-
-        
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'items' => $items,
+        ];
     }
 }
