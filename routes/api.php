@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\AccountantRevenueController;
@@ -203,12 +204,25 @@ use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatient
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
 use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
+// use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistDashboardController;
+// /*
 
-use App\Http\Controllers\InsuranceController;
-use App\Http\Controllers\BasicBillingController;
-use App\Models\Patient;
-use App\Http\Controllers\ReceptionistReportController;
-use App\Http\Controllers\ReceptionistDashboardController;
+// | Test / Misc
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyReportController;
+// use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
+// use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
+// use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
+// use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
+// use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+// use App\Http\Controllers\Admin\Nurse\NurseReportController;
+
+
+// use App\Http\Controllers\InsuranceController;
+// use App\Http\Controllers\BasicBillingController;
+// use App\Models\Patient;
+// use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistDashboardController;
 /*|--------------------------------------------------------------------------
 | Biometric (protected by Sanctum)
 |--------------------------------------------------------------------------
@@ -1331,7 +1345,7 @@ Route::prefix('pharmacy')->group(function () {
 |   Nurse: Shift Handover Notes
 |--------------------------------------------------------------------------
 */
-// Route::prefix('nurse-shift-handover')->group(function () {
+ Route::prefix('nurse-shift-handover')->group(function () {
 
     // Get handover notes by assignment
     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
@@ -2136,6 +2150,14 @@ Route::prefix('billing')->group(function () {
     Route::post('/', [BillingApiController::class, 'store']);
     Route::get('/{id}', [BillingApiController::class, 'show']);
     Route::delete('/{id}', [BillingApiController::class, 'destroy']);
+});
+
+/*
+|------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
 
 });
 
@@ -2275,6 +2297,143 @@ Route::prefix('nurse-discharge')->group(function () {
     Route::get('/{ipd_id}', [DischargePreparationController::class, 'apiShow']);
     Route::post('/save', [DischargePreparationController::class, 'apiSave']);
     Route::post('/mark-ready/{id}', [DischargePreparationController::class, 'apiMarkReady']);
+
+});
+/*
+|------------------------------------------
+
+| INVENTORY USAGE REPORTS
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-usage')->group(function () {
+
+    Route::get('/', [
+        InventoryUsageController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/search', [
+        InventoryUsageController::class,
+        'apiSearch'
+    ]);
+
+    Route::get('/item/{item_id}', [
+        InventoryUsageController::class,
+        'apiByItem'
+    ]);
+
+    Route::get('/user/{user_id}', [
+        InventoryUsageController::class,
+        'apiByUser'
+    ]);
+
+    Route::get('/summary', [
+        InventoryUsageController::class,
+        'apiSummary'
+    ]);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+|   Nurse: Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::get('/nurse/dashboard', [NurseDashboardController::class, 'apiDashboard']);
+
+Route::prefix('inventory-expiry')->group(function () {
+
+    Route::get('/', [
+        InventoryExpiryController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/expired', [
+        InventoryExpiryController::class,
+        'apiExpired'
+    ]);
+
+    Route::get('/expiring-soon', [
+        InventoryExpiryController::class,
+        'apiExpiringSoon'
+    ]);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY ALERTS
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-alerts')->group(function () {
+
+    Route::get('/', [
+        InventoryAlertController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/status/{status}', [
+        InventoryAlertController::class,
+        'apiByStatus'
+    ]);
+
+    Route::post('/acknowledge/{id}', [
+        InventoryAlertController::class,
+        'apiAcknowledge'
+    ]);
+
+    Route::post('/resolve/{id}', [
+        InventoryAlertController::class,
+        'apiResolve'
+    ]);
+
+});
+
+Route::prefix('receptionist/ipd')->group(function () {
+
+    // =========================
+    // MASTER APIs (TOP)
+    // =========================
+    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
+    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
+    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
+    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
+    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
+    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
+
+    // =========================
+    // MAIN IPD APIs
+    // =========================
+    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
+    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
+
+    // ⚠️ KEEP THESE AT LAST
+    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
+    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
+    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
+});
+
+//ReceptionistReport
+
+Route::prefix('receptionist/reports')->group(function () {
+
+    Route::get('registration', [ReceptionistReportController::class, 'apiRegistration']);
+    Route::get('appointment', [ReceptionistReportController::class, 'apiAppointment']);
+    Route::get('token', [ReceptionistReportController::class, 'apiToken']);
+    Route::get('collection', [ReceptionistReportController::class, 'apiCollection']);
+    Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
+});
+
+Route::prefix('billing')->group(function () {
+
+    Route::get('/', [BillingApiController::class, 'index']);
+    Route::post('/', [BillingApiController::class, 'store']);
+    Route::get('/{id}', [BillingApiController::class, 'show']);
+    Route::delete('/{id}', [BillingApiController::class, 'destroy']);
 
 });
 

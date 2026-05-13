@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
@@ -179,6 +180,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 //use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -3041,13 +3043,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 
+
+        /*
+|--------------------------------------------------------------------------
+| Nurse:Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.nurse.')->group(function () {
+    Route::get('/nurse/dashboard', [NurseDashboardController::class, 'index'])->name('dashboard');
+});
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        /*
-|--------------------------------------------------------------------------
-| Insurance Consent
+/*
+|-----------
+| Nurse: Reports
 |--------------------------------------------------------------------------
 */
 
