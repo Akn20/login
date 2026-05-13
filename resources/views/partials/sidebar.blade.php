@@ -131,8 +131,105 @@
                 </ul>
             </li>
 
+            {{-- ---  ACCOUNTANT --- --}}
+            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
 
-            {{-- --- PATIENT PORTAL --- --}}
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
+                    <span class="nxl-mtext">Accountant</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
+
+                <ul class="nxl-submenu">
+
+                    {{-- Billing Menu --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Billing
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            {{-- OPD → Receptionist Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    OPD Billing
+                                </a>
+                            </li>
+
+                            {{-- IPD → Accountant Billing --}}
+                            <li class="nxl-item">
+                                <a href="{{ route('admin.accountant.billing.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    IPD Billing
+                                </a>
+                            </li>
+                        </ul>
+                        
+
+                            {{-- Insurance Claims Menu --}}
+                            <li class="nxl-item {{ request()->is('admin/accountant/claims*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.accountant.claims.index') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    <i class="feather-briefcase me-2"></i> Insurance Claims
+                                </a>
+                            </li>
+                    </li>      
+                </ul>
+            </li>
+
+                                        {{-- Refund Management --}}
+<li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
+
+    <a href="javascript:void(0);" class="nxl-link">
+
+        <i class="feather-rotate-ccw me-2"></i>
+
+        Refund Management
+
+        <span class="nxl-arrow">
+            <i class="feather-chevron-right"></i>
+        </span>
+
+    </a>
+
+    <ul class="nxl-submenu">
+
+        <li class="nxl-item">
+
+            <a href="{{ route('admin.refunds.index') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                All Refunds
+
+            </a>
+
+        </li>
+
+        <li class="nxl-item">
+
+            <a href="{{ route('admin.refunds.create') }}"
+               class="nxl-link"
+               up-follow
+               up-target="#main-container">
+
+                Create Refund
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</li>
+                </ul>
+
+                {{-- --- PATIENT PORTAL --- --}}
             <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>
 
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patient-portal*') ? 'active nxl-trigger' : '' }}">
@@ -143,7 +240,6 @@
                 </a>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.patient.portal.dashboard') }}" class="nxl-link">
                             <i class="feather-home me-2"></i> Dashboard
@@ -214,93 +310,6 @@
                 </ul>
 
 
- {{-- ---  ACCOUNTANT --- --}}
-            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
-
-            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
-                <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
-                    <span class="nxl-mtext">Accountant</span>
-                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                </a>
-                    {{-- Billing Menu --}}
-                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Billing
-                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-
-                        <ul class="nxl-submenu">
-
-                            {{-- OPD → Receptionist Billing --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.billing.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    OPD Billing
-                                </a>
-                            </li>
-
-                            {{-- IPD → Accountant Billing --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.accountant.billing.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    IPD Billing
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                    {{-- Refund Management --}}
-<li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
-
-    <a href="javascript:void(0);" class="nxl-link">
-
-        <i class="feather-rotate-ccw me-2"></i>
-
-        Refund Management
-
-        <span class="nxl-arrow">
-            <i class="feather-chevron-right"></i>
-        </span>
-
-    </a>
-
-    <ul class="nxl-submenu">
-
-        <li class="nxl-item">
-
-            <a href="{{ route('admin.refunds.index') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
-
-                All Refunds
-
-            </a>
-
-        </li>
-
-        <li class="nxl-item">
-
-            <a href="{{ route('admin.refunds.create') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
-
-                Create Refund
-
-            </a>
-
-        </li>
-
-    </ul>
-
-</li>
-
-                </ul>
-
-            </li>
 
             {{-- --- 3. MEDICAL SERVICES --- --}}
             <li class="nxl-item nxl-caption"><label>Medical Services</label></li>
@@ -497,37 +506,63 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
 
-                <ul class="nxl-submenu">
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
-                            <span class="nxl-micon">
-                                <i class="feather-calendar"></i>
-                            </span>
-                            <span class="nxl-mtext">Nursing Notes </span>
-                        </a>
-                    </li>
-                </ul>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse.dashboard') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-chart-line"></i></span>
+                                <span class="nxl-mtext"> Dashboard </span>
+                            </a>
+                        </li>
+                    </ul>
 
-                <ul class="nxl-submenu">
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nursing-notes.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-calendar"></i></span>
+                                <span class="nxl-mtext">Nursing Notes </span>
+                            </a>
+                        </li>
+                    </ul>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-activity"></i></span>
-                            <span class="nxl-mtext">Patient Monitoring</span>
-                        </a>
-                    </li>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.patientMonitoring.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Patient Monitoring</span>
+                            </a>
+                        </li>
+                    </ul>
 
-                </ul>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.medication.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="feather-activity"></i></span>
+                                <span class="nxl-mtext">Medication Administration</span>
+                            </a>
+                        </li>
+                    </ul>
 
-                <ul class="nxl-submenu">
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-shifts.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="nav-icon fas fa-clock"></i></span>
+                                <span class="nxl-mtext">Shift Management</span>
+                            </a>
+                        </li>
+                    </ul>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.medication.index') }}" class="nxl-link">
-                            <span class="nxl-micon"><i class="feather-activity"></i></span>
-                            <span class="nxl-mtext">Medication Administration</span>
-                        </a>
-                    </li>
+                    <ul class="nxl-submenu">
+                        <li class="nxl-item">
+                            <a href="{{ route('admin.nurse-discharge.index') }}" class="nxl-link">
+                                <span class="nxl-micon"><i class="fas fa-procedures"></i></span>
+                                <span class="nxl-mtext">Discharge Preparation</span>
+                            </a>
+                        </li>
+                    </ul>
 
+
+
+                </li>   
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -967,6 +1002,58 @@
                         </a>
                     </li>
                 </ul>
+
+
+            <ul class="nxl-submenu">
+
+    <!-- MAIN HEADING -->
+    <a href="javascript:void(0);" class="nxl-link">
+        <i class="feather-bar-chart-2 me-2"></i>
+        <span>Reports</span>
+              <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+    </a>
+
+    <!-- SUBMENU -->
+    <ul class="nxl-submenu custom-submenu">
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.daily') }}" class="nxl-link">
+                <i class="feather-calendar me-2"></i> Daily Test Report
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.pending') }}" class="nxl-link">
+                <i class="feather-clock me-2"></i> Pending Reports
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.summary') }}" class="nxl-link">
+                <i class="feather-pie-chart me-2"></i> Test Summary
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.critical') }}" class="nxl-link">
+                <i class="feather-alert-triangle me-2"></i> Critical Results
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.maintenance') }}" class="nxl-link">
+                <i class="feather-tool me-2"></i> Equipment Maintenance
+            </a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('admin.laboratory.reports.reagent') }}" class="nxl-link">
+                <i class="feather-droplet me-2"></i> Reagent Usage
+            </a>
+        </li>
+
+    </ul>
+</ul>
             </li>
             {{-- Radiology Module --}}
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/radiology*') ? 'active nxl-trigger' : '' }}">

@@ -9,7 +9,14 @@ use App\Models\LabReport;
 use App\Models\ReportFile;
 use App\Models\FileAuditLog;
 use App\Models\SampleCollection;
+use App\Models\EquipmentMaintenance;
+use App\Models\InventoryUsageLog;
+use App\Models\CriticalValueAlert;
 use Illuminate\Support\Facades\Storage;
+use App\Models\LabRequest;
+use Carbon\Carbon;
+use Log;
+use function logAudit;
 
 class ReportController extends Controller
 {
@@ -18,7 +25,7 @@ class ReportController extends Controller
     {
         $query = LabReport::with('sample');
 
-        // 🔍 SEARCH
+        // SEARCH
         if ($request->search) {
             $query->whereHas('sample', function ($q) use ($request) {
                 $q->where('sample_id', 'like', '%' . $request->search . '%');
@@ -30,7 +37,7 @@ class ReportController extends Controller
         return view('admin.laboratory.report.index', compact('reports'));
     }
 
-    // ➕ Create Page
+    // Create Page
     public function create()
     {
         $samples = SampleCollection::where('status', 'Completed')->get();
@@ -72,9 +79,22 @@ class ReportController extends Controller
         // 🔥 ADD FILES (NOT NEW REPORT)
         $this->storeFile($request->file('report_file'), $report, true);
 
+        logAudit(
+    'report',
+    'REPORT_UPLOADED',
+    $report->id,
+    'Main report uploaded for sample ID: ' . $request->sample_id
+    );
+
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPLOADED',
+                    $report->id,
+                    'Supporting file uploaded: ' . $file->getClientOriginalName()
+                );
             }
         }
 
@@ -100,6 +120,13 @@ class ReportController extends Controller
         $report = LabReport::findOrFail($id);
         $report->delete();
 
+        logAudit(
+            'report',
+            'REPORT_DELETED',
+            $report->id,
+            'Report deleted'
+        );
+
         return redirect()
             ->route('admin.laboratory.report.index')
             ->with('success', 'Report deleted successfully');
@@ -110,6 +137,12 @@ class ReportController extends Controller
     {
         $report = LabReport::withTrashed()->findOrFail($id);
         $report->restore();
+            logAudit(
+                'report',
+                'REPORT_RESTORED',
+                $report->id,
+                'Report restored'
+            );
 
         return back()->with('success', 'Report restored successfully');
     }
@@ -119,6 +152,13 @@ class ReportController extends Controller
     {
         $report = LabReport::withTrashed()->findOrFail($id);
         $report->forceDelete();
+
+        logAudit(
+            'report',
+            'REPORT_PERMANENTLY_DELETED',
+            $report->id,
+            'Report permanently deleted'
+        );
 
         return back()->with('success', 'Report permanently deleted');
     }
@@ -157,12 +197,24 @@ class ReportController extends Controller
         // Main file (new version)
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+            logAudit(
+                'report',
+                'MAIN_FILE_UPDATED',
+                $report->id,
+                'Main report file updated (new version)'
+            );
         }
 
         // Supporting files
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPDATED',  
+                    $report->id,
+                    'Supporting file updated'     
+                );
             }
         }
 
@@ -223,6 +275,12 @@ class ReportController extends Controller
             'action' => 'UPLOAD',
             'timestamp' => now()
         ]);
+                logAudit(
+            'report_file',
+            'FILE_VERSION_CREATED',
+            $report->id,
+            'Version ' . $newVersion . ' uploaded: ' . $file->getClientOriginalName()
+        );
     }
 
     public function verify($id)
@@ -238,6 +296,12 @@ class ReportController extends Controller
             'verified_by' => auth()->id(),
             'verified_at' => now(),
         ]);
+        logAudit(
+            'report',
+            'REPORT_VERIFIED',
+            $report->id,
+            'Verified by user ID: ' . auth()->id()
+        );
 
         return back()->with('success', 'Report verified');
     }
@@ -253,6 +317,12 @@ class ReportController extends Controller
             'verified_at' => now(),
         ]);
 
+            logAudit(
+            'report',
+            'REPORT_REJECTED',
+            $report->id,
+            'Rejected with notes: ' . $request->notes
+        );
         return back()->with('success', 'Report rejected');
     }
 
@@ -267,7 +337,12 @@ class ReportController extends Controller
         $report->update([
             'digital_signature' => auth()->user()->name
         ]);
-
+            logAudit(
+                'report',
+                'REPORT_SIGNED',
+                $report->id,
+                'Digitally signed by: ' . auth()->user()->name
+            );
         return back()->with('success', 'Signed successfully');
     }
 
@@ -283,11 +358,403 @@ class ReportController extends Controller
             'verification_status' => 'Finalized',
             'finalized_at' => now(),
         ]);
+        logAudit(
+            'report',
+            'REPORT_FINALIZED',
+            $report->id,
+            'Report finalized'
+        );
 
         return back()->with('success', 'Report finalized');
     }
 
+    public function dailyReport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
 
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereDate('created_at', $date)
+    ->where('status', 'Completed')
+    ->get();
+    
+    $total = $reports->count();
+
+    return view('admin.laboratory.report.daily', compact('reports', 'total', 'date'));
+}
+
+
+
+public function pendingReport(Request $request)
+{
+    $query = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->where('verification_status', 'Pending');
+
+    // FILTER (All / Pending / Finalized)
+    if ($request->filter == 'Pending') {
+        $query->where('verification_status', 'Pending');
+    } elseif ($request->filter == 'Finalized') {
+        $query->where('verification_status', 'Finalized');
+    }
+
+    
+    if ($request->search) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+
+            // 🔹 Patient Name
+            $q->whereHas('sample.labRequest.patient', function ($p) use ($search) {
+                $p->where('first_name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%");
+            })
+
+            // 🔹 Test Name (from lab_requests)
+            ->orWhereHas('sample.labRequest', function ($t) use ($search) {
+                $t->where('test_name', 'like', "%$search%");
+            });
+
+        });
+    }
+
+    $reports = $query->latest()->get();
+
+   
+    foreach ($reports as $report) {
+
+        $createdDate = Carbon::parse($report->created_at)->startOfDay();
+        $today = now()->startOfDay();
+
+        $report->daysPending = $createdDate->diffInDays($today);
+        $report->isOverdue = $today->gt($createdDate);
+    }
+
+    return view('admin.laboratory.report.pending', compact('reports'));
+}
+
+
+
+public function completionSummary(Request $request)
+{
+    $period = $request->period ?? 'daily';
+
+    switch ($period) {
+
+   case 'daily':
+    $latestDate = LabReport::max('created_at');
+
+    $startDate = \Carbon\Carbon::parse($latestDate)->subDays(6)->startOfDay();
+    $endDate = \Carbon\Carbon::parse($latestDate)->endOfDay();
+    break;
+
+    case 'weekly':
+        $startDate = now()->subWeeks(3)->startOfWeek(); // last 4 weeks
+        $endDate = now()->endOfWeek();
+        break;
+
+    case 'monthly':
+        $startDate = now()->subMonths(5)->startOfMonth(); // last 6 months
+        $endDate = now()->endOfMonth();
+        break;
+}
+
+    $completed = LabReport::whereBetween('created_at', [$startDate, $endDate])
+        ->where('status', 'completed')
+        ->count();
+
+    $pending = LabReport::where('status', 'pending')->count();
+
+    $total = LabReport::count();
+
+    $completionRate = $total > 0 ? round(($completed / $total) * 100) : 0;
+
+  $categoryCounts = LabReport::with('sample.labRequest')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->where('status', 'Completed')
+    ->get()
+    ->groupBy(function ($r) {
+
+        return optional($r->sample->labRequest)->test_name
+            ?? 'Not Assigned';
+
+    })
+    ->map(fn($group) => $group->count());
+
+    $dailySummary = LabReport::where('status', 'completed')
+    ->whereBetween('created_at', [$startDate, $endDate])
+    ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+    ->groupBy('date')
+    ->orderBy('date')
+    ->get();
+
+    
+
+$weeklySummary = LabReport::where('status', 'Completed')
+    ->where('created_at', '>=', now()->subWeeks(4))
+    ->selectRaw("
+        YEAR(created_at) as year,
+        WEEK(created_at, 1) as week,
+        COUNT(*) as count
+    ")
+    ->groupBy('year', 'week')
+    ->orderBy('year')
+    ->orderBy('week')
+    ->get()
+    ->map(function ($item) {
+
+        $startOfWeek = Carbon::now()
+            ->setISODate($item->year, $item->week)
+            ->startOfWeek();
+
+        $endOfWeek = Carbon::now()
+            ->setISODate($item->year, $item->week)
+            ->endOfWeek();
+
+        $item->label = $startOfWeek->format('d M') . ' - ' . $endOfWeek->format('d M');
+
+        return $item;
+    });
+
+    $monthlySummary = LabReport::where('status', 'Completed')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+    return view('admin.laboratory.report.summary', compact(
+        'total',
+        'completed',
+        'pending',
+        'completionRate',
+        'categoryCounts',
+        'dailySummary',
+        'weeklySummary',
+        'monthlySummary',
+        'period'
+    ));
+}
+
+public function criticalReport(Request $request)
+{
+    $query = \App\Models\CriticalValueAlert::with([
+        'report.sample.labRequest.patient',
+        'report.sample.labRequest.labTest'
+    ]);
+
+    // FILTER STATUS
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+
+    // FILTER DATE
+    if ($request->from_date) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+
+    if ($request->to_date) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+
+    $alerts = $query->latest()->get();
+
+    // FIXED COUNTS (NO FILTER IMPACT)
+    $totalCount = \App\Models\CriticalValueAlert::count();
+
+    $unresolvedCount = \App\Models\CriticalValueAlert::where('status', 'Pending')->count();
+
+    $resolvedCount = \App\Models\CriticalValueAlert::where('status', 'Resolved')->count();
+
+    return view('admin.laboratory.report.critical', compact(
+        'alerts',
+        'totalCount',
+        'unresolvedCount',
+        'resolvedCount'
+    ));
+}
+
+public function maintenanceReport(Request $request)
+{
+    $query = EquipmentMaintenance::with('equipment');
+
+    // FILTER: STATUS
+    if ($request->status) {
+        $query->where('status', $request->status);
+    }
+
+    // FILTER: EQUIPMENT
+    if ($request->equipment_id) {
+        $query->where('equipment_id', $request->equipment_id);
+    }
+
+    $maintenances = $query->latest()->get();
+
+    // ALL EQUIPMENT
+    $equipment = EquipmentMaintenance::where('status', 1)->get();
+
+    // OVERDUE (maintenance_date + 30 < today)
+    $overdueCount = $maintenances->filter(function ($m) {
+        return \Carbon\Carbon::parse($m->maintenance_date)
+            ->addDays(30)
+            ->isPast() && $m->status != 'Completed';
+    })->count();
+
+    // UPCOMING (next 7 days)
+    $upcomingCount = $maintenances->filter(function ($m) {
+        $nextDate = \Carbon\Carbon::parse($m->maintenance_date)->addDays(30);
+        return $nextDate->between(now(), now()->addDays(7));
+    })->count();
+
+    return view('admin.laboratory.report.maintenance', compact(
+        'maintenances',
+        'equipment',
+        'overdueCount',
+        'upcomingCount'
+    ));
+}
+
+
+public function reagentUsageReport(Request $request)
+{
+    $query = InventoryUsageLog::with('item');
+    
+    // Filter by date range
+    if ($request->from_date) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+    if ($request->to_date) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+    
+    // Filter by item (reagent)
+    if ($request->item_id) {
+        $query->where('item_id', $request->item_id);
+    }
+    
+    $logs = $query->latest()->get();
+    
+    // Get all inventory items (reagents) for filter dropdown
+    $reagents = \App\Models\InventoryItem::where('category', 'Reagent')->get();
+    
+    // Calculate total quantity used
+    $totalUsed = $logs->sum('quantity_used');
+    
+    // Group by reagent for usage pattern analysis
+    $usageByReagent = $logs->groupBy('item_id')->map(function ($group) {
+        return [
+            'total_quantity' => $group->sum('quantity_used'),
+            'usage_count' => $group->count(),
+            'first_use' => $group->min('created_at'),
+            'last_use' => $group->max('created_at')
+        ];
+    });
+    
+    // Identify high usage patterns (above average)
+    $avgUsage = $usageByReagent->avg('total_quantity') ?? 0;
+    $highUsageReagents = $usageByReagent->filter(function ($usage) use ($avgUsage) {
+        return $usage['total_quantity'] > $avgUsage;
+    });
+    
+    // Low stock alerts (quantity below threshold)
+    $lowStockItems = \App\Models\InventoryItem::where('category', 'Reagent')
+        ->whereRaw('quantity <= threshold')
+        ->get();
+
+    return view('admin.laboratory.report.reagent', compact(
+        'logs',
+        'reagents',
+        'totalUsed',
+        'usageByReagent',
+        'highUsageReagents',
+        'lowStockItems'
+    ));
+}
+
+// ================= EXPORT: DAILY REPORT =================
+
+public function dailyReportExport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
+
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereBetween('created_at', [
+        Carbon::parse($date)->startOfDay(),
+        Carbon::parse($date)->endOfDay()
+    ])
+    ->where('status', 'Completed')
+    ->get();
+
+    $filename = 'daily_report_' . $date . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function () use ($reports) {
+
+        $handle = fopen('php://output', 'w');
+
+        // ✅ HEADER ROW
+        fputcsv($handle, [
+            '#',
+            'Patient Name',
+            'Test Name',
+            'Sample ID',
+            'Status',
+            'Completion Time'
+        ]);
+
+        // ✅ DATA ROWS
+        foreach ($reports as $index => $report) {
+
+            $labRequest = optional($report->sample)->labRequest;
+            $patient = optional($labRequest)->patient;
+            $labTest = optional($labRequest)->labTest;
+
+            fputcsv($handle, [
+                $index + 1,
+                $patient ? $patient->first_name . ' ' . $patient->last_name : 'N/A',
+                $labTest ? $labTest->test_name : ($labRequest->test_name ?? 'N/A'),
+                optional($report->sample)->barcode ?? $report->sample_id ?? '-',
+                $report->status ?? '-',
+                optional($report->created_at)->format('h:i A') ?? '-'
+            ]);
+        }
+
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
+// ================= RESOLVE CRITICAL ALERT =================
+public function resolveCritical($id)
+{
+    $alert = \App\Models\CriticalValueAlert::findOrFail($id);
+    
+    $alert->update([
+        'status' => 'Resolved',
+        'resolved_by' => auth()->id(),
+        'resolved_at' => now()
+    ]);
+        logAudit(
+    'alert',
+    'ALERT_RESOLVED',
+    $alert->id,
+    'Resolved by user ID: ' . auth()->id()
+);
+
+    return back()->with('success', 'Critical alert resolved successfully');
+}
     // ================= API: LIST REPORTS =================
     public function apiIndex()
     {
@@ -314,6 +781,7 @@ class ReportController extends Controller
             }
         ])->findOrFail($id);
 
+
         return response()->json([
             'status' => true,
             'data' => $report
@@ -336,18 +804,33 @@ class ReportController extends Controller
                 'entered_at' => now()
             ]
         );
+       
 
         // MAIN FILE
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+                        logAudit(
+                'report',
+                'REPORT_UPLOADED',
+                $report->id,
+                'Main report uploaded'
+            );
         }
 
         // SUPPORTING FILES
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPLOADED',
+                    $report->id,
+                    'Supporting file uploaded'
+                );
             }
         }
+
+        
 
         return response()->json([
             'status' => true,
@@ -371,18 +854,39 @@ class ReportController extends Controller
                 'status' => $request->status
             ]);
         }
+        logAudit(
+            'report',
+            'REPORT_UPDATED',
+            $report->id,
+            'Report status updated to: ' . ($request->status ?? 'No change')
+        );
+
 
         // MAIN FILE (NEW VERSION)
         if ($request->hasFile('report_file')) {
             $this->storeFile($request->file('report_file'), $report, true);
+            logAudit(
+                'report',
+                'MAIN_FILE_UPDATED',
+                $report->id,
+                'Main report file updated (new version)'
+            );
         }
 
         // SUPPORTING FILES
         if ($request->hasFile('supporting_files')) {
             foreach ($request->file('supporting_files') as $file) {
                 $this->storeFile($file, $report, false);
+                logAudit(
+                    'report',
+                    'SUPPORTING_FILE_UPDATED',
+                    $report->id,
+                    'Supporting file updated'
+                );
             }
         }
+        
+        
 
         return response()->json([
             'status' => true,
@@ -395,6 +899,12 @@ class ReportController extends Controller
     {
         $report = LabReport::findOrFail($id);
         $report->delete();
+        logAudit(
+            'report',
+            'API_REPORT_DELETED',
+            $report->id,
+            'Report deleted via API'
+        );
 
         return response()->json([
             'status' => true,
@@ -421,6 +931,13 @@ class ReportController extends Controller
         $report = LabReport::onlyTrashed()->findOrFail($id);
         $report->restore();
 
+        logAudit(
+            'report',
+            'API_REPORT_RESTORED',
+            $report->id,
+            'Report restored via API'
+        );
+
         return response()->json([
             'status' => true,
             'message' => 'Report restored successfully'
@@ -438,6 +955,13 @@ class ReportController extends Controller
         }
 
         $report->forceDelete();
+
+        logAudit(
+            'report',
+            'API_REPORT_PERMANENTLY_DELETED',
+            $report->id,
+            'Report permanently deleted via API'
+        );
 
         return response()->json([
             'status' => true,
@@ -462,6 +986,13 @@ public function apiVerify($id)
         'verified_at' => now(),
     ]);
 
+    logAudit(
+        'report',
+        'API_REPORT_VERIFIED',
+        $report->id,
+        'Report verified via API'
+    );
+
     return response()->json([
         'status' => true,
         'message' => 'Report verified successfully'
@@ -479,6 +1010,13 @@ public function apiReject(Request $request, $id)
         'verified_by' => auth()->id(),
         'verified_at' => now(),
     ]);
+
+    logAudit(
+        'report',
+        'API_REPORT_REJECTED',
+        $report->id,
+        'Report rejected via API'
+    );
 
     return response()->json([
         'status' => true,
@@ -501,6 +1039,13 @@ public function apiSign($id)
     $report->update([
         'digital_signature' => auth()->user()->name
     ]);
+
+    logAudit(
+        'report',
+        'API_REPORT_SIGNED',
+        $report->id,
+        'Report signed via API'
+    );
 
     return response()->json([
         'status' => true,
@@ -525,9 +1070,120 @@ public function apiFinalize($id)
         'finalized_at' => now(),
     ]);
 
+    logAudit(
+        'report',
+        'API_REPORT_FINALIZED',
+        $report->id,
+        'Report finalized via API'
+    );
+
     return response()->json([
         'status' => true,
         'message' => 'Report finalized successfully'
+    ]);
+}
+
+public function apiDailyReport(Request $request)
+{
+    $date = $request->date ?? now()->toDateString();
+
+    $reports = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ])
+    ->whereDate('created_at', $date)
+    ->where('status', 'Completed')
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'date' => $date,
+        'total' => $reports->count(),
+        'data' => $reports
+    ]);
+}
+
+public function apiPendingReport(Request $request)
+{
+    $query = LabReport::with([
+        'sample.labRequest.patient',
+        'sample.labRequest.labTest'
+    ]);
+
+    if ($request->filter) {
+        $query->where('verification_status', $request->filter);
+    }
+
+    if ($request->search) {
+        $query->where(function ($q) use ($request) {
+            $q->whereHas('sample.labRequest.patient', function ($sub) use ($request) {
+                $sub->where('first_name', 'like', '%' . $request->search . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->search . '%');
+            });
+        });
+    }
+
+    $reports = $query->latest()->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $reports
+    ]);
+}
+
+public function apiCompletionSummary(Request $request)
+{
+    $completed = LabReport::where('status', 'Completed')->count();
+    $pending = LabReport::where('status', 'Pending')->count();
+    $total = LabReport::count();
+
+    return response()->json([
+        'status' => true,
+        'data' => [
+            'total' => $total,
+            'completed' => $completed,
+            'pending' => $pending,
+            'completion_rate' => $total > 0 ? round(($completed / $total) * 100) : 0
+        ]
+    ]);
+}
+
+public function apiCriticalReport(Request $request)
+{
+    $alerts = CriticalValueAlert::with([
+        'report.sample.labRequest.patient',
+        'report.sample.labRequest.labTest'
+    ])
+    ->latest()
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'total' => $alerts->count(),
+        'data' => $alerts
+    ]);
+}
+
+public function apiMaintenanceReport(Request $request)
+{
+    $maintenances = EquipmentMaintenance::with('equipment')
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'data' => $maintenances
+    ]);
+}
+
+public function apiReagentUsage()
+{
+    $logs = InventoryUsageLog::with('item')->get();
+
+    return response()->json([
+        'status' => true,
+        'total_used' => $logs->sum('quantity_used'),
+        'data' => $logs
     ]);
 }
 

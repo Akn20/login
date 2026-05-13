@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
@@ -179,6 +180,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 //use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -188,6 +190,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 
 
@@ -1366,6 +1369,31 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
 
+    Route::prefix('accountant/claims')->name('accountant.claims.')->group(function () {
+
+    Route::get('/', [InsuranceClaimController::class, 'index'])->name('index');
+    Route::get('/create', [InsuranceClaimController::class, 'create'])->name('create');
+    Route::post('/store', [InsuranceClaimController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [InsuranceClaimController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [InsuranceClaimController::class, 'update'])->name('update');
+
+    Route::get('/view/{id}', [InsuranceClaimController::class, 'view'])->name('view');
+
+    Route::post('/approval', [InsuranceClaimController::class, 'storeApproval'])->name('approval');
+    Route::post('/payment', [InsuranceClaimController::class, 'storePayment'])->name('payment');
+
+    Route::post('/reconcile/{id}', [InsuranceClaimController::class, 'reconcile'])->name('reconcile');
+
+    Route::delete('/delete/{id}', [InsuranceClaimController::class, 'destroy'])->name('delete');
+
+        Route::put('/restore/{id}', [InsuranceClaimController::class, 'restore'])->name('restore');
+
+        Route::delete('/force-delete/{id}', [InsuranceClaimController::class, 'forceDelete'])->name('forceDelete');
+        Route::get('/deleted', [InsuranceClaimController::class, 'deleted'])->name('deleted');
+        Route::get('/reports', [InsuranceClaimController::class, 'reports'])->name('reports');
+});
+
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
@@ -1404,6 +1432,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::resource('equipment', EquipmentController::class);
 
         // 🔧 Equipment Maintenance
+        Route::get('/maintenance', [EquipmentMaintenanceController::class, 'show'])
+            ->name('maintenance.show');
         Route::get('/maintenance/deleted', [EquipmentMaintenanceController::class, 'deleted'])
             ->name('maintenance.deleted');
 
@@ -1513,6 +1543,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
                 ->name('alerts.ack');
 
         }); 
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+    Route::get('/daily', [AdminReportController::class, 'dailyReport'])->name('daily');
+    Route::get('/daily/export', [AdminReportController::class, 'dailyReportExport'])->name('daily.export');
+    Route::get('/pending', [AdminReportController::class, 'pendingReport'])->name('pending');
+    Route::get('/summary', [AdminReportController::class, 'completionSummary'])->name('summary');
+    Route::get('/critical', [AdminReportController::class, 'criticalReport'])->name('critical');
+    Route::get('/critical/{id}/resolve', [AdminReportController::class, 'resolveCritical'])->name('critical.resolve');
+    Route::get('/maintenance', [AdminReportController::class, 'maintenanceReport'])->name('maintenance');
+    Route::get('/reagent', [AdminReportController::class, 'reagentUsageReport'])->name('reagent');
+
+});
 
         Route::prefix('inventory') ->name('inventory.')->group(function () {
 
@@ -2982,15 +3025,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
     });
 });
+/*
+|--------------------------------------------------------------------------
+| Nurse:Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.nurse.')->group(function () {
+    Route::get('/nurse/dashboard', [NurseDashboardController::class, 'index'])->name('dashboard');
+});
 
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        /*
-|--------------------------------------------------------------------------
-| Insurance Consent
+       
+
+
+/*
+|-----------
+| | Insurance Consent
 |--------------------------------------------------------------------------
 */
 

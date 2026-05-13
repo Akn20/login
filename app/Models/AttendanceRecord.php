@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 //use App\Models\AttendanceRecord;
 
 
+
+
+//use App\Models\AttendanceRecord;
 class AttendanceRecord extends Model
 {
 
