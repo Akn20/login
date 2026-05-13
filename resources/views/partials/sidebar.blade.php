@@ -668,6 +668,20 @@
                     <span class="nxl-mtext">Employee Documents</span>
                 </a>
             </li>
+
+            <!-- Training & Certification Tracking -->
+            <li class="nxl-item {{ request()->is('hr/training-certification-tracking*') ? 'active' : '' }}">
+    <a href="{{ route('hr.training-certification-tracking.index') }}"
+        class="nxl-link">
+        <span class="nxl-micon">
+            <i class="feather-award"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Training & Certification
+        </span>
+    </a>
+</li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*', 'hr/leave-report*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
