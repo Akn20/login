@@ -882,7 +882,7 @@ Route::prefix('prescriptions')->group(function () {
 | 15. Surgery Management
 |--------------------------------------------------------------------------
 */
-
+Route::get('/surgeries', [SurgeryApiController::class, 'index']);
 Route::prefix('surgery')->group(function () {
     Route::get('/', [SurgeryApiController::class, 'index']);
     Route::post('/', [SurgeryApiController::class, 'store']);
@@ -2274,12 +2274,17 @@ Route::prefix('payroll-results')->group(function () {
     Route::get('{id}', [PayrollResultController::class, 'apiShow']);
   
 });
-Route::prefix('surgery-consent')->group(function () {
 
-    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
+Route::prefix('consents')->group(function () {
 
+    Route::post('/', [SurgeryConsentApiController::class, 'store']);
+
+    Route::get('/', [SurgeryConsentApiController::class, 'index']);
+
+    Route::get('/{id}', [SurgeryConsentApiController::class, 'show']);
+
+    Route::get('/history/{patientId}', [SurgeryConsentApiController::class, 'history']);
 });
-
 /*
 |--------------------------------------------------------------------------
 | Data Usage Consent API
