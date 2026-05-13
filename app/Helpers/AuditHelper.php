@@ -12,6 +12,7 @@ use App\Models\AuditLog;
 | run:
 | composer dump-autoload
 |
+| php artisan optimize:clear
 |
 */
 
