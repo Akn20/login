@@ -178,6 +178,7 @@ use App\Http\Controllers\ReceptionistDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
+use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2758,7 +2759,8 @@ Route::prefix('admin/accountant')->group(function () {
     Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
 
 });
-    /*
+
+/*
 |--------------------------------------------------------------------------
 | Nurse: Discharge Preparation
 |--------------------------------------------------------------------------
@@ -2775,6 +2777,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| Accountant: Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/accountant')->group(function () {
+Route::get('/dashboard', [AccountantDashboardController::class, 'index'])->name('admin.accountant.dashboard');
+});
+/*
+|------------------------------------
 | Nurse:Dashboard
 |--------------------------------------------------------------------------
 */
