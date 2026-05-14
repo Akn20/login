@@ -3,12 +3,19 @@
 @section('content')
 
     <div class="container-fluid">
-
-        <!-- Page Heading -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Accountant Dashboard</h2>
+        <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Dashboard</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item">Accountant</li>
+                <li class="breadcrumb-item">Dashboard</li>
+            </ul>
         </div>
+    </div>
 
+    <div class="main-content">
         <div class="row">
 
             <!-- Today's Revenue -->
@@ -101,13 +108,11 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-
                     <div class="card-header bg-white">
                         <h5 class="mb-0">Revenue Overview (Last 7 Days)</h5>
                     </div>
@@ -118,8 +123,8 @@
                 </div>
             </div>
         </div>
-
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('revenueChart');
