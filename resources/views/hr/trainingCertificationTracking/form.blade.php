@@ -192,19 +192,25 @@
         >
     </div>
 
-    {{-- Certification Name --}}
-    <div class="col-md-6 mb-4">
-        <label class="form-label">
-            Certification Name<span class="text-danger">*</span>
-        </label>
+{{-- Certification Name --}}
+<div class="col-md-6 mb-4">
+    <label class="form-label">
+        Certification Name <span class="text-danger">*</span>
+    </label>
 
-        <input
-            type="text"
-            name="certification_name"
-            class="form-control"
-            value="{{ old('certification_name', $record->certification_name ?? '') }}"
-        >
-    </div>
+    <input
+        type="text"
+        name="certification_name"
+        class="form-control @error('certification_name') is-invalid @enderror"
+        value="{{ old('certification_name', $record->certification_name ?? '') }}"
+    >
+
+    @error('certification_name')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
 
     {{-- Certification Number --}}
     <div class="col-md-6 mb-4">
@@ -220,33 +226,46 @@
         >
     </div>
 
-    {{-- Issue Date --}}
-    <div class="col-md-6 mb-4">
-        <label class="form-label">
-            Issue Date <span class="text-danger">*</span>
-        </label>
+{{-- Issue Date --}}
+<div class="col-md-6 mb-4">
+    <label class="form-label">
+        Issue Date <span class="text-danger">*</span>
+    </label>
 
-        <input
-            type="date"
-            name="issue_date"
-            class="form-control"
-            value="{{ old('issue_date', $record->issue_date ?? '') }}"
-        >
-    </div>
+    <input
+        type="date"
+        name="issue_date"
+        class="form-control @error('issue_date') is-invalid @enderror"
+        value="{{ old('issue_date', $record->issue_date ?? '') }}"
+    >
 
-    {{-- Expiry Date --}}
-    <div class="col-md-6 mb-4">
-        <label class="form-label">
-            Expiry Date <span class="text-danger">*</span>
-        </label>
+    @error('issue_date')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
 
-        <input
-            type="date"
-            name="expiry_date"
-            class="form-control"
-            value="{{ old('expiry_date', $record->expiry_date ?? '') }}"
-        >
-    </div>
+ {{-- Expiry Date --}}
+<div class="col-md-6 mb-4">
+    <label class="form-label">
+        Expiry Date <span class="text-danger">*</span>
+    </label>
+
+    <input
+        type="date"
+        name="expiry_date"
+        class="form-control @error('expiry_date') is-invalid @enderror"
+        value="{{ old('expiry_date', $record->expiry_date ?? '') }}"
+    >
+
+    @error('expiry_date')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
+
     {{-- Certification Authority --}}
     <div class="col-md-6 mb-4">
         <label class="form-label">
@@ -329,8 +348,7 @@
             rows="3"
         >{{ old('remarks', $record->remarks ?? '') }}</textarea>
     </div>
-
-    {{-- Attachment --}}
+{{-- Attachment --}}
 <div class="col-md-12 mb-4">
     <label class="form-label">
         Attachment
@@ -339,9 +357,15 @@
     <input
         type="file"
         name="attachment"
-        class="form-control"
+        class="form-control @error('attachment') is-invalid @enderror"
         accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
     >
+
+    @error('attachment')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
 
     <small class="text-muted">
         Allowed:
