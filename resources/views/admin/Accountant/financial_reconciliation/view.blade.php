@@ -22,7 +22,12 @@
         <div class="card-body">
 
             <table class="table table-bordered">
-
+                
+                 
+                <tr>
+                    <th>Reconciliation id</th>
+                    <td> REC-{{ strtoupper(substr($reconciliation->id, 0, 6)) }} </td>
+                </tr>
                 <tr>
                     <th>Date</th>
                     <td>

@@ -51,20 +51,20 @@
                         <label>Total Digital Payments</label>
 
                         <input type="number"
-                               step="0.01"
-                               name="total_digital"
-                               class="form-control"
-                               required>
+                    name="total_digital"
+                    class="form-control"
+                    value="{{ old('total_digital') }}"
+                    readonly>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label>Total Bank Deposit</label>
 
-                        <input type="number"
-                               step="0.01"
-                               name="total_bank_deposit"
-                               class="form-control"
-                               required>
+                                        <input type="number"
+                    name="total_bank_deposit"
+                    class="form-control"
+                    value="{{ old('total_bank_deposit') }}"
+                    readonly>
                     </div>
 
                                         <div class="col-md-6 mb-3">

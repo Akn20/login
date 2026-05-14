@@ -14,7 +14,7 @@ class DigitalPaymentController extends Controller
      */
     public function index()
     {
-        $payments = DigitalPayment::with('reconciliation')
+        $payments = DigitalPayment::with('financialReconciliation')
             ->latest()
             ->get();
 
@@ -26,7 +26,7 @@ class DigitalPaymentController extends Controller
 
     public function search(Request $request)
     {
-        $query = DigitalPayment::with('reconciliation');
+        $query = DigitalPayment::with('financialReconciliation');
 
         if ($request->has('payment_method') && $request->payment_method) {
             $query->where(
@@ -181,6 +181,34 @@ $settlementStatus =
                 $request->remarks,
         ]);
 
+        // UPDATE RECONCILIATION TOTAL DIGITAL
+
+            $totalDigital = DigitalPayment::where(
+                'financial_reconciliation_id',
+                $request->financial_reconciliation_id
+            )->sum('payment_amount');
+
+            $reconciliation->total_digital = $totalDigital;
+
+            // CALCULATE DIFFERENCE
+
+            $expected =
+                $reconciliation->total_cash +
+                $totalDigital;
+
+            $difference =
+                $expected -
+                $reconciliation->total_bank_deposit;
+
+            $reconciliation->difference_amount = abs($difference);
+
+            $reconciliation->status =
+                $difference == 0
+                    ? 'Matched'
+                    : 'Mismatch';
+
+            $reconciliation->save();
+
         return redirect()
             ->route('admin.digital-payment.index')
             ->with(
@@ -194,7 +222,7 @@ $settlementStatus =
      */
     public function show($id)
     {
-        $payment = DigitalPayment::with('reconciliation')
+        $payment = DigitalPayment::with('financialReconciliation')
             ->findOrFail($id);
 
         return view(
@@ -312,6 +340,34 @@ $settlementStatus =
                 $request->remarks,
         ]);
 
+        // UPDATE RECONCILIATION TOTAL DIGITAL
+
+$totalDigital = DigitalPayment::where(
+    'financial_reconciliation_id',
+    $request->financial_reconciliation_id
+)->sum('payment_amount');
+
+$reconciliation->total_digital = $totalDigital;
+
+// RECALCULATE DIFFERENCE
+
+$expected =
+    $reconciliation->total_cash +
+    $totalDigital;
+
+$difference =
+    $expected -
+    $reconciliation->total_bank_deposit;
+
+$reconciliation->difference_amount = abs($difference);
+
+$reconciliation->status =
+    $difference == 0
+        ? 'Matched'
+        : 'Mismatch';
+
+$reconciliation->save();
+
         return redirect()
             ->route('admin.digital-payment.index')
             ->with(
@@ -384,7 +440,7 @@ $settlementStatus =
 
     public function apiIndex()
 {
-    $payments = DigitalPayment::with('reconciliation')
+    $payments = DigitalPayment::with('financialReconciliation')
         ->latest()
         ->get();
 
@@ -395,7 +451,7 @@ $settlementStatus =
 }
 public function apiShow($id)
 {
-    $payment = DigitalPayment::with('reconciliation')
+    $payment = DigitalPayment::with('financialReconciliation')
         ->findOrFail($id);
 
     return response()->json([
@@ -615,7 +671,7 @@ public function apiForceDelete($id)
 
 public function apiSearch(Request $request)
 {
-    $query = DigitalPayment::with('reconciliation');
+    $query = DigitalPayment::with('financialReconciliation');
 
     if ($request->payment_method) {
         $query->where(

@@ -45,35 +45,32 @@
                                 class="form-control"
                                 required>
 
-                            <option value="">
-                                Select Reconciliation
-                            </option>
 
                           @foreach($reconciliations as $item)
 
-    <option value="{{ $item->id }}"
+                    <option value="{{ $item->id }}"
 
-        {{ $discrepancy->financial_reconciliation_id == $item->id
-            ? 'selected'
-            : '' }}>
+                        {{ $discrepancy->financial_reconciliation_id == $item->id
+                            ? 'selected'
+                            : '' }}>
 
-        {{ $item->reconciliation_date }}
-        -
-        ₹ {{ number_format(
-            $item->total_cash +
-            $item->total_digital,
-            2
-        ) }}
+                        {{ $item->reconciliation_date }}
+                        -
+                        ₹ {{ number_format(
+                            $item->total_cash +
+                            $item->total_digital,
+                            2
+                        ) }}
 
-    </option>
+                    </option>
 
-@endforeach
+                @endforeach
 
-                        </select>
+                                        </select>
 
-                    </div>
+                                    </div>
 
-                <div class="mb-3">
+                                <div class="mb-3">
 
                     <label>Issue Type</label>
 
@@ -110,6 +107,30 @@
                            required>
 
                 </div>
+
+                <div class="mb-3">
+
+                    <label>Status</label>
+
+                    <select name="status"
+                            class="form-control"
+                            required>
+
+                        <option value="Open"
+                            {{ $discrepancy->status == 'Open' ? 'selected' : '' }}>
+                            Open
+                        </option>
+
+                        <option value="Resolved"
+                            {{ $discrepancy->status == 'Resolved' ? 'selected' : '' }}>
+                            Resolved
+                        </option>
+
+                    </select>
+
+                </div>
+
+
 
                 <div class="mb-3">
 

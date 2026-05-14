@@ -118,12 +118,19 @@ class ReconciliationReportController extends Controller
                 'Failed'
             )->count();
 
+        $pending =
+            DigitalPayment::where(
+                'settlement_status',
+                'Pending'
+            )->count();
+
         return view(
             'admin.accountant.reconciliation_reports.digital_payment_report',
             compact(
                 'payments',
                 'success',
-                'failed'
+                'failed',
+                'pending'
             )
         );
     }
@@ -252,6 +259,12 @@ public function apiDigitalPaymentReport()
             'Failed'
         )->count();
 
+    $pending =
+        DigitalPayment::where(
+            'settlement_status',
+            'Pending'
+        )->count();
+
     return response()->json([
         'status' => true,
 
@@ -262,6 +275,9 @@ public function apiDigitalPaymentReport()
 
             'failed' =>
                 $failed,
+
+            'pending' =>
+                $pending,
         ],
 
         'data' => $payments

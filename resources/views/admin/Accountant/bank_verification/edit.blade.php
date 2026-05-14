@@ -56,20 +56,19 @@
 
             <option value="{{ $item->id }}"
 
-                {{ old(
-                    'financial_reconciliation_id',
-                    $verification->financial_reconciliation_id
-                ) == $item->id ? 'selected' : '' }}>
+                        {{ $verification->financial_reconciliation_id == $item->id
+                            ? 'selected'
+                            : '' }}>
 
-                {{ $item->reconciliation_date }}
-                -
-                ₹ {{ number_format(
-                    $item->total_cash +
-                    $item->total_digital,
-                    2
-                ) }}
+                        {{ $item->reconciliation_date }}
+                        -
+                        ₹ {{ number_format(
+                            $item->total_cash +
+                            $item->total_digital,
+                            2
+                        ) }}
 
-            </option>
+                    </option>
 
         @endforeach
 

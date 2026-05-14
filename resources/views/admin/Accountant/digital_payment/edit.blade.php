@@ -56,7 +56,7 @@
 
                                 <option value="{{ $item->id }}">
 
-                                    {{ $item->reconciliation_date }}
+                                    REC-{{ date('dm', strtotime($item->reconciliation_date)) }}
                                     -
                                     ₹ {{ number_format($item->total_cash + $item->total_digital, 2) }}
 

@@ -51,11 +51,11 @@ class DigitalPayment extends Model
     /**
      * Relationship
      */
-    public function reconciliation()
-    {
-        return $this->belongsTo(
-            FinancialReconciliation::class,
-            'financial_reconciliation_id'
-        );
-    }
+    public function financialReconciliation()
+{
+    return $this->belongsTo(
+        FinancialReconciliation::class,
+        'financial_reconciliation_id'
+    );
+}
 }

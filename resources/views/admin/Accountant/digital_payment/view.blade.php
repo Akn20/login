@@ -32,6 +32,19 @@
             <table class="table table-bordered">
 
                 <tr>
+                    <th>Reconciliation ID</th>
+                    <td>REC-{{ strtoupper(substr($payment->financialReconciliation->id, 0, 6)) }}
+
+    |
+
+    {{ \Carbon\Carbon::parse(
+        $payment->financialReconciliation->reconciliation_date
+    )->format('d M Y') }}
+
+</td>
+                </tr>
+
+                <tr>
                     <th>Payment Method</th>
                     <td>{{ $payment->payment_method }}</td>
                 </tr>

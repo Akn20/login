@@ -54,6 +54,9 @@
                 <thead>
 
                     <tr>
+                        <th>#</th>
+
+                        <th>Reconciliation id</th>
 
                         <th>Date</th>
 
@@ -72,7 +75,17 @@
                     @foreach($verifications as $item)
 
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
 
+                <td>REC-{{ strtoupper(substr($item->financialReconciliation->id, 0, 6)) }}
+
+                    |
+
+                    {{ \Carbon\Carbon::parse(
+                        $item->financialReconciliation->reconciliation_date
+                    )->format('d M Y') }}
+
+                </td>
                             <td>{{ $item->deposit_date }}</td>
 
                             <td>{{ $item->bank_name }}</td>

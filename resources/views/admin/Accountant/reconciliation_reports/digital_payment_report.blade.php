@@ -35,9 +35,9 @@
 
             <div class="card p-4 text-center bg-danger text-white">
 
-                <h6>Failed Transactions</h6>
+                <h6>Pending Transactions</h6>
 
-                <h3>{{ $failed }}</h3>
+                <h3>{{ $pending }}</h3>
 
             </div>
 
@@ -54,6 +54,8 @@
                 <thead>
 
                     <tr>
+                        <th>#</th>
+                        <th>Reconciliation id</th>
 
                         <th>Date</th>
 
@@ -72,6 +74,16 @@
                     @foreach($payments as $payment)
 
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>REC-{{ strtoupper(substr($payment->financialReconciliation->id, 0, 6)) }}
+
+    |
+
+    {{ \Carbon\Carbon::parse(
+        $payment->financialReconciliation->reconciliation_date
+    )->format('d M Y') }}
+
+</td>
 
                             <td>{{ $payment->payment_date }}</td>
 
