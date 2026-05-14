@@ -195,7 +195,7 @@
     {{-- Certification Name --}}
     <div class="col-md-6 mb-4">
         <label class="form-label">
-            Certification Name
+            Certification Name<span class="text-danger">*</span>
         </label>
 
         <input

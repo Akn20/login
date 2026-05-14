@@ -34,6 +34,15 @@
 
         <div class="page-header-right ms-auto d-flex gap-2">
 
+            {{-- Deleted Records --}}
+            <a
+                href="{{ route('hr.training-certification-tracking.deleted') }}"
+                class="btn btn-neutral"
+            >
+                Deleted Records
+            </a>
+
+            {{-- Add Record --}}
             <a
                 href="{{ route('hr.training-certification-tracking.create') }}"
                 class="btn btn-neutral"
@@ -68,11 +77,99 @@
             <div class="col-lg-12">
 
                 <div class="card stretch stretch-full">
+<div class="card-header border-bottom pb-3 mb-3">
 
+    <form method="GET">
+
+        <div class="row align-items-end g-3">
+
+            {{-- Search --}}
+            <div class="col-md-6">
+
+            
+
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    placeholder="Employee ID / Name / Training"
+                    value="{{ request('search') }}"
+                >
+
+            </div>
+
+            {{-- Status Filter --}}
+            <div class="col-md-4">
+
+         
+
+                <select
+                    name="status"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option
+                        value="Active"
+                        {{ request('status') == 'Active' ? 'selected' : '' }}
+                    >
+                        Active
+                    </option>
+
+                    <option
+                        value="Expiring Soon"
+                        {{ request('status') == 'Expiring Soon' ? 'selected' : '' }}
+                    >
+                        Expiring Soon
+                    </option>
+
+                    <option
+                        value="Expired"
+                        {{ request('status') == 'Expired' ? 'selected' : '' }}
+                    >
+                        Expired
+                    </option>
+
+                </select>
+
+            </div>
+
+            {{-- Buttons --}}
+            <div class="col-md-2">
+
+                <div class="d-flex gap-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="feather-search me-1"></i>
+                        Search
+                    </button>
+
+                    <a
+                        href="{{ route('hr.training-certification-tracking.index') }}"
+                        class="btn btn-light"
+                    >
+                        Reset
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
                     <div class="card-body p-0">
 
                         <div class="table-responsive">
-
+                                
                             <table class="table table-hover">
 
                                 <thead>
@@ -139,25 +236,34 @@
 
                                             <td>
 
-                                                @if($row->status == 'Active')
+                                             
 
-                                                    <span class="badge bg-soft-success text-success">
-                                                        Active
-                                                    </span>
+                               @if($row->status == 'Active')
 
-                                                @elseif($row->status == 'Expired')
+    <span class="badge bg-soft-success text-success">
+        Active
+    </span>
 
-                                                    <span class="badge bg-soft-danger text-danger">
-                                                        Expired
-                                                    </span>
+@elseif($row->status == 'Expired')
 
-                                                @else
+    <span class="badge bg-soft-danger text-danger">
+        Expired
+    </span>
 
-                                                    <span class="badge bg-soft-warning text-warning">
-                                                        {{ $row->status }}
-                                                    </span>
+@elseif($row->status == 'Expiring Soon')
 
-                                                @endif
+    <span class="badge bg-soft-warning text-warning">
+        Expiring Soon
+    </span>
+
+@else
+
+    <span class="badge bg-soft-info text-info">
+        {{ $row->status }}
+
+    </span>
+
+@endif
 
                                             </td>
 
@@ -167,7 +273,7 @@
 
                                                     {{-- View --}}
                                                     <a
-                                                        href="#"
+                                                        href="{{ route('hr.training-certification-tracking.show', $row->id) }}"
                                                         class="avatar-text avatar-md action-icon"
                                                         title="View"
                                                     >
@@ -176,7 +282,7 @@
 
                                                     {{-- Edit --}}
                                                     <a
-                                                        href="#"
+                                                        href="{{ route('hr.training-certification-tracking.edit', $row->id) }}"
                                                         class="avatar-text avatar-md action-icon action-edit"
                                                         title="Edit"
                                                     >
@@ -185,9 +291,10 @@
 
                                                     {{-- Delete --}}
                                                     <form
-                                                        action="#"
+                                                        action="{{ route('hr.training-certification-tracking.delete', $row->id) }}"
                                                         method="POST"
                                                         class="d-inline"
+                                                        onsubmit="return confirm('Are you sure you want to delete this record?');"
                                                     >
 
                                                         @csrf
@@ -231,7 +338,7 @@
                         </div>
 
                         {{-- Pagination --}}
-                        <div class="mt-3">
+                        <div class="mt-3 px-3 pb-3">
 
                             {{ $records->links() }}
 
