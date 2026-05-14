@@ -81,6 +81,7 @@ use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
+use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1649,5 +1650,28 @@ Route::prefix('payroll-deductions')->group(function () {
     );
 
 });
+//------------Training and certification----------------------------------------------------------
+Route::prefix('training-certification-tracking')
+    ->group(function () {
 
+    Route::get('/', [TrainingCertificationTrackingController::class, 'apiIndex']);
+
+    Route::get('/deleted', [TrainingCertificationTrackingController::class, 'deleted']);
+
+    Route::get('/form-data', [TrainingCertificationTrackingController::class, 'formData']);
+    Route::get('/training-certification-tracking/employees', [TrainingCertificationTrackingController::class, 'employees']);
+
+    Route::get('/{id}', [TrainingCertificationTrackingController::class, 'apiShow']);
+
+    Route::post('/', [TrainingCertificationTrackingController::class, 'apiStore']);
+
+    Route::post('/{id}', [TrainingCertificationTrackingController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [TrainingCertificationTrackingController::class, 'apiDelete']);
+
+    Route::post('/restore/{id}', [TrainingCertificationTrackingController::class, 'restore']);
+
+    Route::delete('/force-delete/{id}', [TrainingCertificationTrackingController::class, 'forceDelete']);
+
+});
 

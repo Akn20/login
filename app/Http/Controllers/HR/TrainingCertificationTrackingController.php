@@ -476,4 +476,237 @@ public function forceDelete($id)
             'Record permanently deleted.'
         );
 }
+
+// ================= API INDEX =================
+public function formData()
+{
+    $employees = Staff::with([
+        'department',
+        'designation'
+    ])->get();
+
+    return response()->json([
+        'employees' => $employees
+    ]);
+}
+public function employees()
+{
+    $employees = Staff::with([
+        'department:id,department_name',
+        'designation:id,designation_name'
+    ])
+    ->select(
+        'id',
+        'employee_id',
+        'name',
+        'department_id',
+        'designation_id'
+    )
+    ->get();
+
+    return response()->json($employees);
+}
+public function apiIndex()
+{
+    $records = TrainingCertificationTracking::latest()
+        ->get();
+
+    return response()->json($records);
+}
+
+
+// ================= SHOW =================
+public function apiShow($id)
+{
+    $record = TrainingCertificationTracking::findOrFail($id);
+
+    return response()->json($record);
+}
+
+// ================= STORE =================
+public function apiStore(Request $request)
+{
+    $employee = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    $status = 'Active';
+
+    if (now()->gt($request->expiry_date)) {
+        $status = 'Expired';
+    }
+
+    $record = TrainingCertificationTracking::create([
+
+        'id' => Str::uuid(),
+
+        'employee_id' => $request->employee_id,
+
+        'employee_name' => $employee->name ?? null,
+
+        'department' =>
+            optional($employee->department)->department_name,
+
+        'designation' =>
+            optional($employee->designation)->designation_name,
+
+        'training_code' => $request->training_code,
+
+        'training_name' => $request->training_name,
+
+        'training_type' => $request->training_type,
+
+        'training_provider' =>
+            $request->training_provider,
+
+        'training_location' =>
+            $request->training_location,
+
+        'training_start_date' =>
+            $request->training_start_date,
+
+        'training_end_date' =>
+            $request->training_end_date,
+
+        'certification_name' =>
+            $request->certification_name,
+
+        'certification_number' =>
+            $request->certification_number,
+
+        'issue_date' =>
+            $request->issue_date,
+
+        'expiry_date' =>
+            $request->expiry_date,
+
+        'certification_authority' =>
+            $request->certification_authority,
+
+        'renewal_required' =>
+            $request->renewal_required ?? 0,
+
+        'status' => $status,
+
+        'reminder_days' =>
+            $request->reminder_days,
+
+        'reminder_enabled' =>
+            $request->reminder_enabled ?? 0,
+
+        'remarks' =>
+            $request->remarks,
+
+        'created_by' =>
+            Auth::id(),
+    ]);
+
+    return response()->json([
+        'message' => 'Created Successfully',
+        'data' => $record
+    ]);
+}
+
+// ================= UPDATE =================
+public function apiUpdate(Request $request, $id)
+{
+    $record = TrainingCertificationTracking::findOrFail($id);
+
+    $employee = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    $status = 'Active';
+
+    if (now()->gt($request->expiry_date)) {
+        $status = 'Expired';
+    }
+
+    $record->update([
+
+        'employee_id' => $request->employee_id,
+
+        'employee_name' => $employee->name ?? null,
+
+        'department' =>
+            optional($employee->department)->department_name,
+
+        'designation' =>
+            optional($employee->designation)->designation_name,
+
+        'training_code' => $request->training_code,
+
+        'training_name' => $request->training_name,
+
+        'training_type' => $request->training_type,
+
+        'training_provider' =>
+            $request->training_provider,
+
+        'training_location' =>
+            $request->training_location,
+
+        'training_start_date' =>
+            $request->training_start_date,
+
+        'training_end_date' =>
+            $request->training_end_date,
+
+        'certification_name' =>
+            $request->certification_name,
+
+        'certification_number' =>
+            $request->certification_number,
+
+        'issue_date' =>
+            $request->issue_date,
+
+        'expiry_date' =>
+            $request->expiry_date,
+
+        'certification_authority' =>
+            $request->certification_authority,
+
+        'renewal_required' =>
+            $request->renewal_required ?? 0,
+
+        'status' => $status,
+
+        'reminder_days' =>
+            $request->reminder_days,
+
+        'reminder_enabled' =>
+            $request->reminder_enabled ?? 0,
+
+        'remarks' =>
+            $request->remarks,
+
+        'updated_by' =>
+            Auth::id(),
+    ]);
+
+    return response()->json([
+        'message' => 'Updated Successfully',
+        'data' => $record
+    ]);
+}
+
+// ================= DELETE =================
+public function apiDelete($id)
+{
+    TrainingCertificationTracking::findOrFail($id)
+        ->delete();
+
+    return response()->json([
+        'message' => 'Deleted Successfully'
+    ]);
+}
+
+
+
+
+
+
 }
