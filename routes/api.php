@@ -305,7 +305,58 @@ Route::prefix('inventory')->group(function () {
     );
 
 });
+Route::prefix('subscription-plans')->group(function () {
 
+    Route::get('/', [PlanApiController::class, 'index']);
+
+    Route::post('/', [PlanApiController::class, 'store']);
+
+    Route::get('/{id}', [PlanApiController::class, 'show']);
+
+    Route::put('/{id}', [PlanApiController::class, 'update']);
+
+    Route::delete('/{id}', [PlanApiController::class, 'destroy']);
+
+});
+Route::prefix('subscriptions')->group(function () {
+
+    Route::get('/', [SubscriptionApiController::class, 'index']);
+
+    Route::post('/', [SubscriptionApiController::class, 'store']);
+
+    Route::get('/{id}', [SubscriptionApiController::class, 'show']);
+
+    Route::put('/{id}', [SubscriptionApiController::class, 'update']);
+
+    Route::delete('/{id}', [SubscriptionApiController::class, 'destroy']);
+
+});
+Route::prefix('usage-trackers')->group(function () {
+
+    Route::get('/', [UsageTrackerApiController::class, 'index']);
+
+    Route::post('/', [UsageTrackerApiController::class, 'store']);
+
+    Route::get('/{id}', [UsageTrackerApiController::class, 'show']);
+
+    Route::put('/{id}', [UsageTrackerApiController::class, 'update']);
+
+    Route::delete('/{id}', [UsageTrackerApiController::class, 'destroy']);
+
+});
+Route::prefix('subscription-invoices')->group(function () {
+
+    Route::get('/', [SubscriptionInvoiceApiController::class, 'index']);
+
+    Route::post('/', [SubscriptionInvoiceApiController::class, 'store']);
+
+    Route::get('/{id}', [SubscriptionInvoiceApiController::class, 'show']);
+
+    Route::put('/{id}', [SubscriptionInvoiceApiController::class, 'update']);
+
+    Route::delete('/{id}', [SubscriptionInvoiceApiController::class, 'destroy']);
+
+});
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 
