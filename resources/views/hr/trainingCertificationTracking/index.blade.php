@@ -230,8 +230,8 @@
                                                 {{ $row->certification_name }}
                                             </td>
 
-                                            <td>
-                                                {{ $row->expiry_date }}
+                                          <td>
+    {{ \Carbon\Carbon::parse($row->expiry_date)->format('d-m-Y') }}
                                             </td>
 
                                             <td>

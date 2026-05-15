@@ -65,250 +65,387 @@
 
 </div>
 
-<div class="card stretch">
+<div class="card">
 
     <div class="card-body">
 
-        <dl class="row mb-0">
+        {{-- Employee Details --}}
+        <h6 class="mb-3">
+            Employee Details
+        </h6>
 
-            {{-- Employee Details --}}
-            <dt class="col-md-3">
-                Employee ID
-            </dt>
+        <div class="row">
 
-            <dd class="col-md-9">
-                {{ $record->employee_id }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Employee Name
-            </dt>
+                <label class="text-muted">
+                    Employee ID
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->employee_name }}
-            </dd>
+                <div class="fw-bold">
+                    {{ $record->employee_id }}
+                </div>
 
-            <dt class="col-md-3">
-                Department
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->department }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Designation
-            </dt>
+                <label class="text-muted">
+                    Employee Name
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->designation }}
-            </dd>
+                <div class="fw-bold">
+                    {{ $record->employee_name }}
+                </div>
 
-            {{-- Training Details --}}
-            <dt class="col-md-3">
-                Training Code
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->training_code }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Training Name
-            </dt>
+                <label class="text-muted">
+                    Department
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->training_name }}
-            </dd>
+                <div>
+                    {{ $record->department ?? '-' }}
+                </div>
 
-            <dt class="col-md-3">
-                Training Type
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->training_type ?? '-' }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Training Provider
-            </dt>
+                <label class="text-muted">
+                    Designation
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->training_provider ?? '-' }}
-            </dd>
+                <div>
+                    {{ $record->designation ?? '-' }}
+                </div>
 
-            <dt class="col-md-3">
-                Training Location
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->training_location ?? '-' }}
-            </dd>
+        </div>
 
-            <dt class="col-md-3">
-                Training Start Date
-            </dt>
+        <hr>
 
-            <dd class="col-md-9">
-                {{ $record->training_start_date ?? '-' }}
-            </dd>
+        {{-- Training Details --}}
+        <h6 class="mb-3">
+            Training Details
+        </h6>
 
-            <dt class="col-md-3">
-                Training End Date
-            </dt>
+        <div class="row">
 
-            <dd class="col-md-9">
-                {{ $record->training_end_date ?? '-' }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            {{-- Certification Details --}}
-            <dt class="col-md-3">
-                Certification Name
-            </dt>
+                <label class="text-muted">
+                    Training Code
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->certification_name ?? '-' }}
-            </dd>
+                <div>
+                    {{ $record->training_code }}
+                </div>
 
-            <dt class="col-md-3">
-                Certification Number
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->certification_number ?? '-' }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Certification Authority
-            </dt>
+                <label class="text-muted">
+                    Training Name
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->certification_authority ?? '-' }}
-            </dd>
+                <div>
+                    {{ $record->training_name }}
+                </div>
 
-            <dt class="col-md-3">
-                Issue Date
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->issue_date }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Expiry Date
-            </dt>
+                <label class="text-muted">
+                    Training Type
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->expiry_date }}
-            </dd>
+                <div>
+                    {{ $record->training_type ?? '-' }}
+                </div>
 
-            {{-- Status --}}
-            <dt class="col-md-3">
-                Status
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
+            <div class="col-md-6 mb-3">
 
-                @if($record->status == 'Active')
+                <label class="text-muted">
+                    Training Provider
+                </label>
 
-                    <span class="badge bg-success">
-                        Active
-                    </span>
+                <div>
+                    {{ $record->training_provider ?? '-' }}
+                </div>
 
-                @elseif($record->status == 'Expired')
+            </div>
 
-                    <span class="badge bg-danger">
-                        Expired
-                    </span>
+            <div class="col-md-6 mb-3">
 
-                @else
+                <label class="text-muted">
+                    Training Location
+                </label>
 
-                    <span class="badge bg-warning">
-                        {{ $record->status }}
-                    </span>
+                <div>
+                    {{ $record->training_location ?? '-' }}
+                </div>
 
-                @endif
+            </div>
 
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            {{-- Renewal --}}
-            <dt class="col-md-3">
-                Renewal Required
-            </dt>
+                <label class="text-muted">
+                    Training Start Date
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->renewal_required ? 'Yes' : 'No' }}
-            </dd>
+           <div>
+    {{ $record->training_start_date
+        ? \Carbon\Carbon::parse($record->training_start_date)->format('d-m-Y')
+        : '-' }}
+</div>
 
-            <dt class="col-md-3">
-                Reminder Enabled
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                {{ $record->reminder_enabled ? 'Yes' : 'No' }}
-            </dd>
+            <div class="col-md-6 mb-3">
 
-            <dt class="col-md-3">
-                Reminder Days
-            </dt>
+                <label class="text-muted">
+                    Training End Date
+                </label>
 
-            <dd class="col-md-9">
-                {{ $record->reminder_days ?? '-' }}
-            </dd>
+        <div>
+    {{ $record->training_end_date
+        ? \Carbon\Carbon::parse($record->training_end_date)->format('d-m-Y')
+        : '-' }}
+</div>
 
-            {{-- Remarks --}}
-            <dt class="col-md-3">
+            </div>
+
+        </div>
+
+        <hr>
+
+        {{-- Certification Details --}}
+        <h6 class="mb-3">
+            Certification Details
+        </h6>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Certification Name
+                </label>
+
+                <div>
+                    {{ $record->certification_name ?? '-' }}
+                </div>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Certification Number
+                </label>
+
+                <div>
+                    {{ $record->certification_number ?? '-' }}
+                </div>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Certification Authority
+                </label>
+
+                <div>
+                    {{ $record->certification_authority ?? '-' }}
+                </div>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Issue Date
+                </label>
+
+             <dd class="col-md-9">
+    {{ \Carbon\Carbon::parse($record->issue_date)->format('d-m-Y') }}
+</dd>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Expiry Date
+                </label>
+
+           <dd class="col-md-9">
+    {{ \Carbon\Carbon::parse($record->expiry_date)->format('d-m-Y') }}
+</dd>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <label class="text-muted">
+                    Status
+                </label>
+
+                <div>
+
+                    @if($record->status == 'Active')
+
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+
+                    @elseif($record->status == 'Expired')
+
+                        <span class="badge bg-danger">
+                            Expired
+                        </span>
+
+                    @elseif($record->status == 'Expiring Soon')
+
+                        <span class="badge bg-warning text-dark">
+                            Expiring Soon
+                        </span>
+
+                    @else
+
+                        <span class="badge bg-secondary">
+                            {{ $record->status }}
+                        </span>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        {{-- Reminder Details --}}
+        <h6 class="mb-3">
+            Reminder Details
+        </h6>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+
+                <label class="text-muted">
+                    Renewal Required
+                </label>
+
+                <div>
+                    <strong>
+                        {{ $record->renewal_required ? 'Yes' : 'No' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="text-muted">
+                    Reminder Enabled
+                </label>
+
+                <div>
+                    <strong>
+                        {{ $record->reminder_enabled ? 'Yes' : 'No' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <label class="text-muted">
+                    Reminder Days
+                </label>
+
+                <div>
+                    {{ $record->reminder_days ?? '-' }}
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        {{-- Remarks --}}
+        <div class="mb-4">
+
+            <label class="text-muted">
                 Remarks
-            </dt>
+            </label>
 
-            <dd class="col-md-9">
+            <div>
                 {{ $record->remarks ?? '-' }}
-            </dd>
+            </div>
 
-            {{-- Attachment --}}
-            <dt class="col-md-3">
+        </div>
+
+        {{-- Attachment --}}
+        <div>
+
+            <label class="text-muted d-block mb-2">
                 Attachment
-            </dt>
+            </label>
 
-            <dd class="col-md-9">
+            @if($record->attachment)
 
-               @if($record->attachment)
+                <div class="d-flex gap-2">
 
-    <div class="d-flex gap-2">
+                    {{-- View --}}
+                    <a
+                        href="{{ asset('storage/'.$record->attachment) }}"
+                        target="_blank"
+                        class="btn btn-primary btn-sm"
+                    >
 
-        {{-- View --}}
-        <a
-            href="{{ asset('storage/'.$record->attachment) }}"
-            target="_blank"
-            class="btn btn-sm btn-primary"
-        >
-            <i class="feather-eye me-1"></i>
-            View
-        </a>
+                        <i class="feather-eye me-1"></i>
+                        View
 
-        {{-- Download --}}
-        <a
-            href="{{ asset('storage/'.$record->attachment) }}"
-            download
-            class="btn btn-sm btn-success"
-        >
-            <i class="feather-download me-1"></i>
-            Download
-        </a>
+                    </a>
 
-    </div>
+                    {{-- Download --}}
+                    <a
+                        href="{{ asset('storage/'.$record->attachment) }}"
+                        download
+                        class="btn btn-success btn-sm"
+                    >
 
-@else
+                        <i class="feather-download me-1"></i>
+                        Download
 
-    <span class="text-muted">
-        No Attachment
-    </span>
+                    </a>
 
-@endif
+                </div>
 
-            </dd>
+            @else
 
-        </dl>
+                <span class="text-muted">
+                    No Attachment
+                </span>
+
+            @endif
+
+        </div>
 
     </div>
 

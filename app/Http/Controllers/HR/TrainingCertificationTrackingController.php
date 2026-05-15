@@ -119,21 +119,30 @@ $records = $records
      */
     public function store(Request $request)
     {
-        $request->validate([
+       $request->validate([
 
-            'employee_id' => 'required',
+    'employee_id' => 'required',
 
-            'training_name' => 'required',
-            'certification_name' => 'required',
+    'training_code' =>
+        'required|unique:training_certification_trackings,training_code',
 
-            'training_code' => 'required|unique:training_certification_trackings,training_code',
+    'training_name' => 'required',
 
-            'issue_date' => 'required',
+    'certification_name' => 'required',
 
-            'expiry_date' => 'required',
-            'attachment' =>
+    'issue_date' => 'required|date',
+
+'expiry_date' => 'required|date|after:issue_date',
+
+'training_start_date' => 'nullable|date',
+
+'training_end_date' =>
+    'nullable|date|after_or_equal:training_start_date',
+
+'attachment' =>
     'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-        ]);
+
+]);
 
         $employee = Staff::where(
             'employee_id',
@@ -279,23 +288,30 @@ public function update(Request $request, $id)
 {
     $record = TrainingCertificationTracking::findOrFail($id);
 
-    $request->validate([
+   $request->validate([
 
-        'employee_id' => 'required',
+    'employee_id' => 'required',
 
-        'training_name' => 'required',
-         'certification_name' => 'required',
+    'training_code' =>
+        'required|unique:training_certification_trackings,training_code,' . $id,
 
-        'training_code' =>
-            'required|unique:training_certification_trackings,training_code,' . $id,
+    'training_name' => 'required',
 
-        'issue_date' => 'required',
+    'certification_name' => 'required',
 
-        'expiry_date' => 'required',
+   'issue_date' => 'required|date',
 
-        'attachment' =>
-            'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-    ]);
+'expiry_date' => 'required|date|after:issue_date',
+
+'training_start_date' => 'nullable|date',
+
+'training_end_date' =>
+    'nullable|date|after_or_equal:training_start_date',
+
+'attachment' =>
+    'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+
+]);
 
     $employee = Staff::where(
         'employee_id',
