@@ -508,10 +508,12 @@ public function employees()
 }
 public function apiIndex()
 {
-    $records = TrainingCertificationTracking::latest()
-        ->get();
+    $records = TrainingCertificationTracking::latest()->get();
 
-    return response()->json($records);
+    return response()->json([
+        'status' => true,
+        'data' => $records      
+    ]);
 }
 
 
@@ -523,7 +525,6 @@ public function apiShow($id)
     return response()->json($record);
 }
 
-// ================= STORE =================
 public function apiStore(Request $request)
 {
     $employee = Staff::where(
@@ -535,6 +536,16 @@ public function apiStore(Request $request)
 
     if (now()->gt($request->expiry_date)) {
         $status = 'Expired';
+    }
+
+    // ATTACHMENT
+    $attachment = null;
+
+    if ($request->hasFile('attachment')) {
+
+        $attachment = $request
+            ->file('attachment')
+            ->store('attachments', 'public');
     }
 
     $record = TrainingCertificationTracking::create([
@@ -597,6 +608,8 @@ public function apiStore(Request $request)
 
         'remarks' =>
             $request->remarks,
+
+        'attachment' => $attachment,
 
         'created_by' =>
             Auth::id(),
@@ -682,6 +695,7 @@ public function apiUpdate(Request $request, $id)
 
         'remarks' =>
             $request->remarks,
+        'attachment' => $attachment,
 
         'updated_by' =>
             Auth::id(),
@@ -703,10 +717,65 @@ public function apiDelete($id)
         'message' => 'Deleted Successfully'
     ]);
 }
+// In your deleted() or apiDeleted() method:
+public function apiDeleted()
+{
+    $records = TrainingCertificationTracking::onlyTrashed()
+        ->latest()          // ✅ removed ->with(['employee'])
+        ->get();
 
+    return response()->json([
+        'status' => true,
+        'data' => $records->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'employee_id' => $item->employee_id,
+                'employee_name' => $item->employee_name ?? '-',
+                'department' => $item->department ?? '-',
+                'training_name' => $item->training_name ?? '-',
+                'certification_name' => $item->certification_name ?? '-',
+                'status' => $item->status ?? '-',
+                'deleted_at' => $item->deleted_at,
+            ];
+        })
+    ]);
+}
+public function apirestore($id)
+{
+    $record = TrainingCertificationTracking::withTrashed()
+        ->where('id', $id)
+        ->first();
 
+    if (!$record) {
+        return response()->json([
+            'message' => 'Record not found'
+        ], 404);
+    }
 
+    $record->restore();
 
+    return response()->json([
+        'message' => 'Restored Successfully'
+    ]);
+}
 
+public function apiforceDelete($id)
+{
+    $record = TrainingCertificationTracking::withTrashed()
+        ->where('id', $id)
+        ->first();
+
+    if (!$record) {
+        return response()->json([
+            'message' => 'Record not found'
+        ], 404);
+    }
+
+    $record->forceDelete();
+
+    return response()->json([
+        'message' => 'Permanently Deleted Successfully'
+    ]);
+}
 
 }

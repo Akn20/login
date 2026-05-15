@@ -1651,27 +1651,23 @@ Route::prefix('payroll-deductions')->group(function () {
 
 });
 //------------Training and certification----------------------------------------------------------
-Route::prefix('training-certification-tracking')
-    ->group(function () {
-
-    Route::get('/', [TrainingCertificationTrackingController::class, 'apiIndex']);
-
-    Route::get('/deleted', [TrainingCertificationTrackingController::class, 'deleted']);
-
+Route::prefix('training-certification-tracking')->group(function () {
+    // 1. Static paths first
+    Route::get('/deleted', [TrainingCertificationTrackingController::class, 'apiDeleted']);
     Route::get('/form-data', [TrainingCertificationTrackingController::class, 'formData']);
-    Route::get('/training-certification-tracking/employees', [TrainingCertificationTrackingController::class, 'employees']);
+    Route::get('/employees', [TrainingCertificationTrackingController::class, 'employees']);
 
-    Route::get('/{id}', [TrainingCertificationTrackingController::class, 'apiShow']);
+    // 2. Actions on specific IDs
+    Route::post('/{id}/restore', [TrainingCertificationTrackingController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [TrainingCertificationTrackingController::class, 'apiForceDelete']);
 
+    // 3. General CRUD
+    Route::get('/', [TrainingCertificationTrackingController::class, 'apiIndex']);
     Route::post('/', [TrainingCertificationTrackingController::class, 'apiStore']);
 
-    Route::post('/{id}', [TrainingCertificationTrackingController::class, 'apiUpdate']);
-
+    // 4. Wildcards LAST
+    Route::get('/{id}', [TrainingCertificationTrackingController::class, 'apiShow']);
+    Route::put('/{id}', [TrainingCertificationTrackingController::class, 'apiUpdate']);
     Route::delete('/{id}', [TrainingCertificationTrackingController::class, 'apiDelete']);
-
-    Route::post('/restore/{id}', [TrainingCertificationTrackingController::class, 'restore']);
-
-    Route::delete('/force-delete/{id}', [TrainingCertificationTrackingController::class, 'forceDelete']);
-
 });
 
