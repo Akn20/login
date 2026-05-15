@@ -23,6 +23,24 @@
 
     <div class="main-content">
 
+    @if ($errors->any())
+
+    <div class="alert alert-danger">
+
+        <ul class="mb-0">
+
+            @foreach ($errors->all() as $error)
+
+                <li>{{ $error }}</li>
+
+            @endforeach
+
+        </ul>
+
+    </div>
+
+@endif
+
         <div class="row">
 
             <div class="col-lg-12">
@@ -31,67 +49,110 @@
 
                     <div class="card-body">
 
-                        {{-- UI only --}}
-                        <form>
+                    <form action="{{ route('admin.accountant.expense.add.update', $expense->id) }}"
+    method="POST">
+
+    @csrf
+    @method('PUT')
 
                             <div class="row">
 
+                                {{-- Entry Date --}}
                                 <div class="col-lg-4 mb-4">
-                                    <label class="form-label">Entry Date</label>
+                                    <label class="form-label">
+                                        Entry Date
+                                    </label>
 
                                     <input type="date"
+                                        name="entry_date"
                                         class="form-control"
-                                        value="2026-05-09">
+                                        value="{{ $expense->entry_date }}">
                                 </div>
 
+                                {{-- Category --}}
                                 <div class="col-lg-4 mb-4">
                                     <label class="form-label">
                                         Select Category
                                     </label>
 
-                                    <select class="form-select">
-                                        <option selected>Fuel</option>
+                                    <select name="category_id"
+                                        class="form-select">
+
+                                        @foreach($categories as $category)
+
+                                            <option value="{{ $category->id }}"
+                                                {{ $expense->category_id == $category->id ? 'selected' : '' }}>
+
+                                                {{ $category->category_name }}
+
+                                            </option>
+
+                                        @endforeach
+
                                     </select>
                                 </div>
 
+                                {{-- Vendor --}}
                                 <div class="col-lg-4 mb-4">
                                     <label class="form-label">
                                         Select Vendor
                                     </label>
 
-                                    <select class="form-select">
-                                        <option selected>ABC Vendor</option>
+                                    <select name="vendor_id"
+                                        class="form-select">
+
+                                        <option value="">
+                                            Select Vendor
+                                        </option>
+
+                                        @foreach($vendors as $vendor)
+
+                                            <option value="{{ $vendor->id }}"
+                                                {{ $expense->vendor_id == $vendor->id ? 'selected' : '' }}>
+
+                                                {{ $vendor->vendor_name }}
+
+                                            </option>
+
+                                        @endforeach
+
                                     </select>
                                 </div>
 
+                                {{-- Expense Type --}}
                                 <div class="col-lg-4 mb-4">
                                     <label class="form-label">
                                         Expense Type
                                     </label>
 
                                     <input type="text"
+                                        name="expense_type"
                                         class="form-control"
-                                        value="Office Expense">
+                                        value="{{ $expense->expense_type }}">
                                 </div>
 
+                                {{-- Invoice Date --}}
                                 <div class="col-lg-4 mb-4">
                                     <label class="form-label">
                                         Invoice Date
                                     </label>
 
                                     <input type="date"
+                                        name="invoice_date"
                                         class="form-control"
-                                        value="2026-05-09">
+                                        value="{{ $expense->invoice_date }}">
                                 </div>
 
+                                {{-- Invoice Number --}}
                                 <div class="col-lg-4 mb-4">
                                     <label class="form-label">
                                         Invoice Number
                                     </label>
 
                                     <input type="text"
+                                        name="invoice_number"
                                         class="form-control"
-                                        value="INV001">
+                                        value="{{ $expense->invoice_number }}">
                                 </div>
 
                             </div>
@@ -121,59 +182,71 @@
 
                                     <tbody>
 
-                                        <tr>
+                                        @foreach($expense->items as $item)
 
-                                            <td>
-                                                <input type="text"
-                                                    class="form-control"
-                                                    value="Petrol">
-                                            </td>
+                                            <tr>
 
-                                            <td>
-                                                <input type="number"
-                                                    class="form-control"
-                                                    value="2">
-                                            </td>
+                                                <td>
+                                                    <input type="text"
+                                                        name="expense_heading[]"
+                                                        class="form-control"
+                                                        value="{{ $item->expense_heading }}">
+                                                </td>
 
-                                            <td>
-                                                <input type="number"
-                                                    class="form-control"
-                                                    value="1000">
-                                            </td>
+                                                <td>
+                                                    <input type="number"
+                                                        name="unit[]"
+                                                        class="form-control"
+                                                        value="{{ $item->unit }}">
+                                                </td>
 
-                                            <td>
-                                                <input type="text"
-                                                    class="form-control"
-                                                    value="2000"
-                                                    readonly>
-                                            </td>
+                                                <td>
+                                                    <input type="number"
+                                                        name="unit_price[]"
+                                                        class="form-control"
+                                                        value="{{ $item->unit_price }}">
+                                                </td>
 
-                                            <td>
-                                                <input type="number"
-                                                    class="form-control"
-                                                    value="9">
-                                            </td>
+                                                <td>
+                                                    <input type="text"
+                                                        name="sub_total[]"
+                                                        class="form-control"
+                                                        value="{{ $item->sub_total }}"
+                                                        readonly>
+                                                </td>
 
-                                            <td>
-                                                <input type="number"
-                                                    class="form-control"
-                                                    value="9">
-                                            </td>
+                                                <td>
+                                                    <input type="number"
+                                                        name="cgst[]"
+                                                        class="form-control"
+                                                        value="{{ $item->cgst }}">
+                                                </td>
 
-                                            <td>
-                                                <input type="number"
-                                                    class="form-control"
-                                                    value="0">
-                                            </td>
+                                                <td>
+                                                    <input type="number"
+                                                        name="sgst[]"
+                                                        class="form-control"
+                                                        value="{{ $item->sgst }}">
+                                                </td>
 
-                                            <td>
-                                                <input type="text"
-                                                    class="form-control"
-                                                    value="2360"
-                                                    readonly>
-                                            </td>
+                                                <td>
+                                                    <input type="number"
+                                                        name="igst[]"
+                                                        class="form-control"
+                                                        value="{{ $item->igst }}">
+                                                </td>
 
-                                        </tr>
+                                                <td>
+                                                    <input type="text"
+                                                        name="total[]"
+                                                        class="form-control"
+                                                        value="{{ $item->total }}"
+                                                        readonly>
+                                                </td>
+
+                                            </tr>
+
+                                        @endforeach
 
                                     </tbody>
 
@@ -181,17 +254,20 @@
 
                             </div>
 
+                            {{-- Grand Total --}}
                             <div class="row mt-4">
 
                                 <div class="col-lg-3">
+
                                     <label class="form-label">
                                         Grand Total
                                     </label>
 
                                     <input type="text"
                                         class="form-control"
-                                        value="2360"
+                                        value="{{ $expense->grand_total }}"
                                         readonly>
+
                                 </div>
 
                             </div>
@@ -204,36 +280,114 @@
 
                             <div class="row">
 
+                                {{-- Payment Status --}}
                                 <div class="col-lg-4 mb-4">
+
                                     <label class="form-label">
                                         Payment Status
                                     </label>
 
-                                    <select class="form-select">
-                                        <option>Unpaid</option>
-                                        <option selected>Partial</option>
-                                        <option>Paid</option>
+                                    <select name="payment_status"
+                                        class="form-select">
+
+                                        <option value="Unpaid"
+                                            {{ $expense->payment_status == 'Unpaid' ? 'selected' : '' }}>
+                                            Unpaid
+                                        </option>
+
+                                        <option value="Partial"
+                                            {{ $expense->payment_status == 'Partial' ? 'selected' : '' }}>
+                                            Partial
+                                        </option>
+
+                                        <option value="Fully Paid"
+                                            {{ $expense->payment_status == 'Fully Paid' ? 'selected' : '' }}>
+                                            Fully Paid
+                                        </option>
+
                                     </select>
+
                                 </div>
 
+                                {{-- Payment Mode --}}
                                 <div class="col-lg-4 mb-4">
+
                                     <label class="form-label">
                                         Payment Mode
                                     </label>
 
-                                    <select class="form-select">
-                                        <option selected>UPI</option>
+                                    <select name="payment_mode"
+                                        class="form-select">
+
+                                        <option value="Cash"
+                                            {{ $expense->payment_mode == 'Cash' ? 'selected' : '' }}>
+                                            Cash
+                                        </option>
+
+                                        <option value="Online"
+                                            {{ $expense->payment_mode == 'Online' ? 'selected' : '' }}>
+                                            Online
+                                        </option>
+
+                                        <option value="UPI"
+                                            {{ $expense->payment_mode == 'UPI' ? 'selected' : '' }}>
+                                            UPI
+                                        </option>
+
+                                        <option value="Cheque"
+                                            {{ $expense->payment_mode == 'Cheque' ? 'selected' : '' }}>
+                                            Cheque
+                                        </option>
+
+                                        <option value="DD"
+                                            {{ $expense->payment_mode == 'DD' ? 'selected' : '' }}>
+                                            DD
+                                        </option>
+
                                     </select>
+
                                 </div>
 
+                                {{-- Payment Date --}}
                                 <div class="col-lg-4 mb-4">
+
                                     <label class="form-label">
                                         Payment Date
                                     </label>
 
                                     <input type="date"
+                                        name="payment_date"
                                         class="form-control"
-                                        value="2026-05-09">
+                                        value="{{ $expense->payment_date }}">
+
+                                </div>
+
+                                {{-- Paid Amount --}}
+                                <div class="col-lg-4 mb-4">
+
+                                    <label class="form-label">
+                                        Paid Amount
+                                    </label>
+
+                                    <input type="number"
+                                        name="paid_amount"
+                                        class="form-control"
+                                        value="{{ $expense->paid_amount }}">
+
+                                </div>
+
+                                {{-- Transaction ID --}}
+                                <div class="col-lg-4 mb-4">
+
+                                    <label class="form-label">
+                                        Transaction ID
+                                    </label>
+
+                                    <input type="text"
+                                        name="transaction_id"
+                                        class="form-control"
+                                        value="{{ $expense->transaction_id }}">
+
                                 </div>
 
                             </div>
@@ -245,9 +399,11 @@
                                     Update
                                 </button>
 
-                                <a href="#"
+                                <a href="{{ route('admin.accountant.expense.add.index') }}"
                                     class="btn btn-light">
-                                    Cancel
+
+                                    Back
+
                                 </a>
 
                             </div>

@@ -2299,9 +2299,7 @@ Route::prefix('admin/accountant/expense-management/vendor')
 
 });
 
-*/
-
-// ================= ADD EXPENSE =================
+*/// ================= ADD EXPENSE =================
 Route::prefix('admin/accountant/expense-management/add-expense')
     ->name('admin.accountant.expense.add.')
     ->group(function () {
@@ -2315,14 +2313,31 @@ Route::prefix('admin/accountant/expense-management/add-expense')
         Route::post('/store', [AddExpenseController::class, 'store'])
             ->name('store');
 
+        Route::get('/show/{id}', [AddExpenseController::class, 'show'])
+            ->name('show');
+
+        Route::get('/voucher/{id}', [AddExpenseController::class, 'voucher'])
+            ->name('voucher');
+
         Route::get('/edit/{id}', [AddExpenseController::class, 'edit'])
             ->name('edit');
 
+        Route::put('/update/{id}', [AddExpenseController::class, 'update'])
+            ->name('update');
+
+        // DELETE
+        Route::delete('/delete/{id}', [AddExpenseController::class, 'delete'])
+            ->name('delete');
+
+        // DELETED LIST
         Route::get('/deleted', [AddExpenseController::class, 'deleted'])
             ->name('deleted');
 
-});
+        // RESTORE
+        Route::post('/restore/{id}', [AddExpenseController::class, 'restore'])
+            ->name('restore');
 
+});
 
 });
 //IPD (Doctor Module)

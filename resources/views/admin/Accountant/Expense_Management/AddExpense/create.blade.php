@@ -21,7 +21,46 @@
         </div>
     </div>
 
-    <div class="main-content">
+   <div class="main-content"> 
+
+{{-- SUCCESS MESSAGE --}}
+@if(session('success'))
+
+<div class="alert alert-success alert-dismissible fade show">
+    {{ session('success') }}
+
+    <button type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+</div>
+
+@endif
+
+{{-- VALIDATION ERRORS --}}
+@if ($errors->any())
+
+<div class="alert alert-danger alert-dismissible fade show">
+
+    <ul class="mb-0">
+
+        @foreach ($errors->all() as $error)
+
+            <li>{{ $error }}</li>
+
+        @endforeach
+
+    </ul>
+
+    <button type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+
+</div>
+
+@endif
+
 
         <div class="row">
 
@@ -44,10 +83,16 @@
                                     <label class="form-label">
                                         Entry Date
                                     </label>
+<input type="date"
+    name="entry_date"
+    value="{{ old('entry_date') }}"
+    class="form-control @error('entry_date') is-invalid @enderror">
 
-                                    <input type="date"
-                                        name="entry_date"
-                                        class="form-control">
+@error('entry_date')
+<div class="invalid-feedback">
+    {{ $message }}
+</div>
+@enderror
                                 </div>
 
                                 {{-- Category --}}
@@ -283,11 +328,22 @@
                                         Payment Status
                                     </label>
 
-                                    <select name="payment_status" class="form-select">
-                                        <option>Unpaid</option>
-                                        <option>Partial</option>
-                                        <option>Paid</option>
-                                    </select>
+                                    <select name="payment_status"
+class="form-select @error('payment_status') is-invalid @enderror">
+
+    <option value="Unpaid">
+        Unpaid
+    </option>
+
+    <option value="Partial">
+        Partial
+    </option>
+
+    <option value="Fully Paid">
+        Fully Paid
+    </option>
+
+</select>
                                 </div>
 
                                 {{-- Payment Mode --}}
@@ -334,9 +390,16 @@
                                     </label>
 
                                     <input type="text"
-                                        name="transaction_id"
-                                        class="form-control"
-                                        placeholder="Enter transaction ID">
+    name="transaction_id"
+    value="{{ old('transaction_id') }}"
+    class="form-control @error('transaction_id') is-invalid @enderror"
+    placeholder="Enter transaction ID">
+
+@error('transaction_id')
+<div class="invalid-feedback">
+    {{ $message }}
+</div>
+@enderror
                                 </div>
 
                             </div>
