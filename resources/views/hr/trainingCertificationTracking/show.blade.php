@@ -201,9 +201,11 @@
                     Training Start Date
                 </label>
 
-                <div>
-                    {{ $record->training_start_date ?? '-' }}
-                </div>
+           <div>
+    {{ $record->training_start_date
+        ? \Carbon\Carbon::parse($record->training_start_date)->format('d-m-Y')
+        : '-' }}
+</div>
 
             </div>
 
@@ -213,9 +215,11 @@
                     Training End Date
                 </label>
 
-                <div>
-                    {{ $record->training_end_date ?? '-' }}
-                </div>
+        <div>
+    {{ $record->training_end_date
+        ? \Carbon\Carbon::parse($record->training_end_date)->format('d-m-Y')
+        : '-' }}
+</div>
 
             </div>
 
@@ -272,9 +276,9 @@
                     Issue Date
                 </label>
 
-                <div>
-                    {{ $record->issue_date }}
-                </div>
+             <dd class="col-md-9">
+    {{ \Carbon\Carbon::parse($record->issue_date)->format('d-m-Y') }}
+</dd>
 
             </div>
 
@@ -284,9 +288,9 @@
                     Expiry Date
                 </label>
 
-                <div>
-                    {{ $record->expiry_date }}
-                </div>
+           <dd class="col-md-9">
+    {{ \Carbon\Carbon::parse($record->expiry_date)->format('d-m-Y') }}
+</dd>
 
             </div>
 

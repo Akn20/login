@@ -132,10 +132,15 @@ $records = $records
 
     'issue_date' => 'required|date',
 
-    'expiry_date' => 'required|date|after:issue_date',
+'expiry_date' => 'required|date|after:issue_date',
 
-    'attachment' =>
-        'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+'training_start_date' => 'nullable|date',
+
+'training_end_date' =>
+    'nullable|date|after_or_equal:training_start_date',
+
+'attachment' =>
+    'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
 
 ]);
 
@@ -294,12 +299,17 @@ public function update(Request $request, $id)
 
     'certification_name' => 'required',
 
-    'issue_date' => 'required|date',
+   'issue_date' => 'required|date',
 
-    'expiry_date' => 'required|date|after:issue_date',
+'expiry_date' => 'required|date|after:issue_date',
 
-    'attachment' =>
-        'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+'training_start_date' => 'nullable|date',
+
+'training_end_date' =>
+    'nullable|date|after_or_equal:training_start_date',
+
+'attachment' =>
+    'nullable|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
 
 ]);
 

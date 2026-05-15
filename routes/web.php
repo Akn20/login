@@ -1594,13 +1594,13 @@ Route::prefix('training-certification-tracking')
     ->name('training-certification-tracking.')
     ->group(function () {
     Route::get('/', [TrainingCertificationTrackingController::class, 'index'])->name('index');
+        Route::get('/deleted',[TrainingCertificationTrackingController::class, 'deleted'])->name('deleted');
     Route::get( '/create',[TrainingCertificationTrackingController::class, 'create'])->name('create');
     Route::post('/store',[TrainingCertificationTrackingController::class, 'store'])->name('store');
     Route::get( '/{id}/show',[TrainingCertificationTrackingController::class, 'show'])->name('show');
     Route::get( '/{id}/edit',[TrainingCertificationTrackingController::class, 'edit'])->name('edit');
     Route::put('/{id}',[TrainingCertificationTrackingController::class, 'update'])->name('update');
     Route::delete('/{id}',[TrainingCertificationTrackingController::class, 'destroy'])->name('delete');
-    Route::get('/deleted',[TrainingCertificationTrackingController::class, 'deleted'])->name('deleted');
     Route::post('/{id}/restore',[TrainingCertificationTrackingController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete',[TrainingCertificationTrackingController::class, 'forceDelete'])->name('forceDelete');
 

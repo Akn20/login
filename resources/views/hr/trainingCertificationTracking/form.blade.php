@@ -88,13 +88,13 @@
             Training Code <span class="text-danger">*</span>
         </label>
 
-        <input
-            type="text"
-            name="training_code"
-            class="form-control @error('training_code') is-invalid @enderror"
-            value="{{ old('training_code', $record->training_code ?? '') }}"
-        >
-
+    <input
+    type="text"
+    name="training_code"
+    class="form-control @error('training_code') is-invalid @enderror"
+    placeholder="Example: TRN-001"
+    value="{{ old('training_code', $record->training_code ?? '') }}"
+>
         @error('training_code')
             <div class="invalid-feedback">
                 {{ $message }}
@@ -109,11 +109,12 @@
         </label>
 
         <input
-            type="text"
-            name="training_name"
-            class="form-control @error('training_name') is-invalid @enderror"
-            value="{{ old('training_name', $record->training_name ?? '') }}"
-        >
+    type="text"
+    name="training_name"
+    class="form-control @error('training_name') is-invalid @enderror"
+    placeholder="Example: First Aid Training"
+    value="{{ old('training_name', $record->training_name ?? '') }}"
+>
 
         @error('training_name')
             <div class="invalid-feedback">
@@ -129,11 +130,12 @@
         </label>
 
         <input
-            type="text"
-            name="training_type"
-            class="form-control"
-            value="{{ old('training_type', $record->training_type ?? '') }}"
-        >
+    type="text"
+    name="training_type"
+    class="form-control"
+    placeholder="Example: Technical / Medical / Safety"
+    value="{{ old('training_type', $record->training_type ?? '') }}"
+>
     </div>
 
     {{-- Training Provider --}}
@@ -142,12 +144,13 @@
             Training Provider
         </label>
 
-        <input
-            type="text"
-            name="training_provider"
-            class="form-control"
-            value="{{ old('training_provider', $record->training_provider ?? '') }}"
-        >
+     <input
+    type="text"
+    name="training_provider"
+    class="form-control"
+    placeholder="Example: Red Cross"
+    value="{{ old('training_provider', $record->training_provider ?? '') }}"
+>
     </div>
 
     {{-- Training Location --}}
@@ -169,13 +172,18 @@
         <label class="form-label">
             Training Start Date
         </label>
+<input
+    type="date"
+    name="training_start_date"
+    class="form-control @error('training_start_date') is-invalid @enderror"
+    value="{{ old('training_start_date', $record->training_start_date ?? '') }}"
+>
 
-        <input
-            type="date"
-            name="training_start_date"
-            class="form-control"
-            value="{{ old('training_start_date', $record->training_start_date ?? '') }}"
-        >
+@error('training_start_date')
+    <div class="invalid-feedback">
+        {{ $message }}
+    </div>
+@enderror
     </div>
 
     {{-- End Date --}}
@@ -184,12 +192,18 @@
             Training End Date
         </label>
 
-        <input
-            type="date"
-            name="training_end_date"
-            class="form-control"
-            value="{{ old('training_end_date', $record->training_end_date ?? '') }}"
-        >
+       <input
+    type="date"
+    name="training_end_date"
+    class="form-control @error('training_end_date') is-invalid @enderror"
+    value="{{ old('training_end_date', $record->training_end_date ?? '') }}"
+>
+
+@error('training_end_date')
+    <div class="invalid-feedback">
+        {{ $message }}
+    </div>
+@enderror
     </div>
 
 {{-- Certification Name --}}
@@ -198,12 +212,13 @@
         Certification Name <span class="text-danger">*</span>
     </label>
 
-    <input
-        type="text"
-        name="certification_name"
-        class="form-control @error('certification_name') is-invalid @enderror"
-        value="{{ old('certification_name', $record->certification_name ?? '') }}"
-    >
+  <input
+    type="text"
+    name="certification_name"
+    class="form-control @error('certification_name') is-invalid @enderror"
+    placeholder="Example: First Aid Certificate"
+    value="{{ old('certification_name', $record->certification_name ?? '') }}"
+>
 
     @error('certification_name')
         <div class="invalid-feedback">
@@ -217,13 +232,13 @@
         <label class="form-label">
             Certification Number
         </label>
-
-        <input
-            type="text"
-            name="certification_number"
-            class="form-control"
-            value="{{ old('certification_number', $record->certification_number ?? '') }}"
-        >
+<input
+    type="text"
+    name="certification_number"
+    class="form-control"
+    placeholder="Example: FAC-001"
+    value="{{ old('certification_number', $record->certification_number ?? '') }}"
+>
     </div>
 
 {{-- Issue Date --}}
@@ -272,12 +287,13 @@
             Certification Authority
         </label>
 
-        <input
-            type="text"
-            name="certification_authority"
-            class="form-control"
-            value="{{ old('certification_authority', $record->certification_authority ?? '') }}"
-        >
+     <input
+    type="text"
+    name="certification_authority"
+    class="form-control"
+    placeholder="Example: Indian Red Cross"
+    value="{{ old('certification_authority', $record->certification_authority ?? '') }}"
+>
     </div>
 
     {{-- Reminder Days --}}
