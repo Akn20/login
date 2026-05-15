@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\AccountantReportController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
@@ -2105,6 +2106,24 @@ Route::prefix('accountant/billing')->group(function () {
 
     // 🔹 UPDATE BILL
     Route::post('/update/{id}', [AccountantBillingController::class, 'apiUpdate']);
+
+});
+
+//Accountant Reports
+
+Route::prefix('accountant/reports')->group(function () {
+
+    Route::get('/daily-collection',[AccountantReportController::class, 'apiDailyCollection']);
+
+    Route::get('/department-revenue',[AccountantReportController::class, 'apiDepartmentRevenue']);
+
+    Route::get('/opd-ipd-revenue',[AccountantReportController::class, 'apiOpdIpdRevenue']);
+
+    Route::get('/outstanding-dues',[AccountantReportController::class, 'apiOutstandingDues']);
+
+    Route::get('/insurance-settlement',[AccountantReportController::class, 'apiInsuranceSettlement']);
+
+    Route::get('/refund-report',[AccountantReportController::class, 'apiRefundReport']);
 
 });
 

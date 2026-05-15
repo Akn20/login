@@ -141,8 +141,8 @@
                                 Pending
                             </option>
 
-                            <option value="Under Verification">
-                                Under Verification
+                            <option value="Processed">
+                                Processed
                             </option>
 
                             <option value="Approved">
