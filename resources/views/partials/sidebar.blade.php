@@ -460,6 +460,10 @@
                     <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
+
+                    <li class="nxl-item"><a href="{{ route('doctor.radiology.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-camera me-2"></i>Radiology</a>
+                    </li>
                 </ul>
             </li>
             <li

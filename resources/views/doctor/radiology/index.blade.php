@@ -2,23 +2,29 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="nxl-content">
 
-    <div class="row mb-4">
-
-        <div class="col-md-6">
-            <h3>Radiology Reports</h3>
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            
+            <div class="page-header-title">
+                <h5 class="m-b-10">Radiology</h5>
+            </div>
+            
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item">Doctor</li>
+                <li class="breadcrumb-item">Radiology</li>
+            </ul>
         </div>
 
-        <div class="col-md-6 text-end">
+        <div class="page-header-right ms-auto d-flex gap-2">
             <a href="{{ route('doctor.radiology.create') }}"
                class="btn btn-primary">
-
                 Request Imaging
             </a>
         </div>
-
     </div>
+    
 
 
     @if(session('success'))
@@ -29,6 +35,7 @@
         </div>
     @endif
 
+<div class="main-content">
 
     <div class="card">
 
@@ -126,7 +133,7 @@
         </div>
 
     </div>
-
+</div>
 </div>
 
 @endsection

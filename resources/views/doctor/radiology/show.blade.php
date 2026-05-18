@@ -1,165 +1,123 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 
 <div class="container-fluid">
 
-<div class="card mb-4">
+    <div class="row justify-content-center">
 
-<div class="card-header">
+        <div class="col-lg-9">
 
-<h4>Radiology Report</h4>
+            <!-- Report Details Card -->
 
-</div>
+            <div class="card mb-3">
 
+                <div class="card-header">
+                    <h5 class="mb-0">Radiology Report</h5>
+                </div>
 
-<div class="card-body">
+                <div class="card-body">
 
-<div class="row">
+                    <div class="row">
 
-<div class="col-md-6">
+                        <div class="col-md-6">
 
-<p>
+                            <p><strong>Patient :</strong> {{ $report->request->patient->first_name }} {{ $report->request->patient->last_name }}</p>
 
-<strong>Patient :</strong>
+                            <p><strong>Scan Type :</strong>{{ $report->request->scanType->name }} </p>
 
-{{ $report->request->patient->first_name }}
+                            <p><strong>Status :</strong> {{ $report->status }} </p>
 
-{{ $report->request->patient->last_name }}
+                        </div>
 
-</p>
 
+                        <div class="col-md-6">
 
-<p>
+                            <p> <strong>Radiologist Findings :</strong>{{ $report->findings }}</p>
 
-<strong>Scan Type :</strong>
+                            <p><strong>Diagnosis :</strong>{{ $report->diagnosis }}</p>
+                        </div>
 
-{{ $report->request->scanType->name }}
+                    </div>
 
-</p>
+                </div>
 
+            </div>
 
-<p>
 
-<strong>Status :</strong>
+            <!-- Upload Card -->
 
-{{ $report->status }}
+            <div class="card mb-3">
 
-</p>
+                <div class="card-header">
+                    <h5 class="mb-0">Uploaded Scans</h5>
+                </div>
 
-</div>
+                <div class="card-body">
 
+                    @foreach($report->request->uploads as $upload)
 
-<div class="col-md-6">
+                        <div class="d-flex align-items-center gap-2">
 
-<p>
+                            <a href="{{ asset('storage/'.$upload->file_path) }}" target="_blank"
+                               class="btn btn-primary btn-sm"> View Scan
+                            </a>
 
-<strong>Radiologist Findings :</strong>
+                            <a href="{{ route('doctor.radiology.download', $report->id) }}" class="btn btn-primary btn-sm">
+                                 Download Report
+                            </a>
+                        </div>
 
-{{ $report->findings }}
+                    @endforeach
 
-</p>
+                </div>
+            </div>
 
-<p>
+            <!-- Notes Card -->
 
-<strong>Diagnosis :</strong>
+            <div class="card">
 
-{{ $report->diagnosis }}
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        Clinical Interpretation Notes
+                    </h5>
+                </div>
 
-</p>
+                <div class="card-body">
 
-</div>
+                    <form action="{{ route('doctor.radiology.note') }}"
+                          method="POST">
 
-</div>
+                        @csrf
 
-</div>
+                        <input type="hidden" name="report_id" value="{{ $report->id }}">
 
-</div>
+                        <div class="mb-3">
 
+                            <textarea
+                                name="notes"
+                                rows="4"
+                                class="form-control"
+                                placeholder="Add interpretation notes">
+                            </textarea>
 
+                        </div>
 
-<div class="card mb-4">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success btn-sm"> Save Note</button>
 
-<div class="card-header">
+                            <a href="{{ route('doctor.radiology.index') }}"class="btn btn-secondary btn-sm">Back</a>
+                        </div>
 
-Uploaded Scans
+                    </form>
 
-</div>
+                </div>
 
-<div class="card-body">
+            </div>
 
-@foreach($report->request->uploads as $upload)
+        </div>
 
-<div class="mb-3">
-
-<a
-href="{{ asset('storage/'.$upload->file_path) }}"
-target="_blank"
-class="btn btn-primary">
-
-View Scan
-
-</a>
-
-</div>
-
-@endforeach
-
-</div>
-
-</div>
-
-
-
-<div class="card">
-
-<div class="card-header">
-
-Clinical Interpretation Notes
-
-</div>
-
-
-<div class="card-body">
-
-<form
-action="{{ route('doctor.radiology.note') }}"
-method="POST">
-
-@csrf
-
-<input
-type="hidden"
-name="report_id"
-value="{{ $report->id }}">
-
-
-<div class="mb-3">
-
-<textarea
-name="notes"
-rows="4"
-class="form-control"
-placeholder="Add interpretation notes">
-
-</textarea>
-
-</div>
-
-
-<button
-class="btn btn-success">
-
-Save Note
-
-</button>
-
-</form>
-
-</div>
-
-</div>
-
+    </div>
 
 </div>
 
