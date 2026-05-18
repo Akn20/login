@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
+use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
@@ -2187,14 +2188,22 @@ Route::prefix('consents')->group(function () {
 
         // 🔥 ADD THIS HERE (correct place)
         Route::get('/medicines', [IpdController::class, 'apiMedicines']);
-
-        // Scan Types
+       // Scan Types
         Route::get('/scan-types', [IpdController::class, 'apiScanTypes']);
 
         // Lab Test
         Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
     });
 
+
+//Dashboard(Accountant)
+Route::prefix('accountant/dashboard')->group(function () {
+    Route::get('/', [AccountantDashboardController::class, 'apiDashboard']);
+    Route::get('/summary', [AccountantDashboardController::class, 'apiSummary']);
+    Route::get('/revenue-overview', [AccountantDashboardController::class, 'apiRevenueOverview']);
+});
+
+       
     //Billing(Accountant)
 
     Route::prefix('accountant/billing')->group(function () {

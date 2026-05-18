@@ -143,6 +143,15 @@
 
                 <ul class="nxl-submenu">
 
+                    {{-- Dashboard Menu --}}
+                    <li class="nxl-item {{ request()->is('admin/accountant/dashboard*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.accountant.dashboard') }}" 
+                        class="nxl-link" up-follow up-target="#main-container">
+
+                            <i class="feather-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+
                     {{-- Billing Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -695,25 +704,21 @@
                 </ul>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.isolation.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-shield"></i></span>
                             <span class="nxl-mtext">Isolation Tracking</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
-
                     <li class="nxl-item">
                         <a href="{{ route('admin.ppe.index') }}" class="nxl-link">
                             <span class="nxl-micon"><i class="feather-user-check"></i></span>
                             <span class="nxl-mtext">PPE Compliance</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
