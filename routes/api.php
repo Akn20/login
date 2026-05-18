@@ -325,7 +325,58 @@ Route::prefix('inventory')->group(function () {
     );
 
 });
+Route::prefix('subscription-plans')->group(function () {
 
+    Route::get('/', [PlanApiController::class, 'index']);
+
+    Route::post('/', [PlanApiController::class, 'store']);
+
+    Route::get('/{id}', [PlanApiController::class, 'show']);
+
+    Route::put('/{id}', [PlanApiController::class, 'update']);
+
+    Route::delete('/{id}', [PlanApiController::class, 'destroy']);
+
+});
+Route::prefix('subscriptions')->group(function () {
+
+    Route::get('/', [SubscriptionApiController::class, 'index']);
+
+    Route::post('/', [SubscriptionApiController::class, 'store']);
+
+    Route::get('/{id}', [SubscriptionApiController::class, 'show']);
+
+    Route::put('/{id}', [SubscriptionApiController::class, 'update']);
+
+    Route::delete('/{id}', [SubscriptionApiController::class, 'destroy']);
+
+});
+Route::prefix('usage-trackers')->group(function () {
+
+    Route::get('/', [UsageTrackerApiController::class, 'index']);
+
+    Route::post('/', [UsageTrackerApiController::class, 'store']);
+
+    Route::get('/{id}', [UsageTrackerApiController::class, 'show']);
+
+    Route::put('/{id}', [UsageTrackerApiController::class, 'update']);
+
+    Route::delete('/{id}', [UsageTrackerApiController::class, 'destroy']);
+
+});
+Route::prefix('subscription-invoices')->group(function () {
+
+    Route::get('/', [SubscriptionInvoiceApiController::class, 'index']);
+
+    Route::post('/', [SubscriptionInvoiceApiController::class, 'store']);
+
+    Route::get('/{id}', [SubscriptionInvoiceApiController::class, 'show']);
+
+    Route::put('/{id}', [SubscriptionInvoiceApiController::class, 'update']);
+
+    Route::delete('/{id}', [SubscriptionInvoiceApiController::class, 'destroy']);
+
+});
 Route::get('/patients', [PatientController::class, 'apiIndex']);
 
 
@@ -555,12 +606,14 @@ Route::put('/organizations/{id}', [OrganizationController::class, 'apiUpdate']);
 Route::put('/organizations/{id}/toggle-status', [OrganizationController::class, 'apiToggleStatus']);
 Route::delete('/organizations/{id}', [OrganizationController::class, 'apiDelete']);
 Route::delete('/organizations/{id}/force-delete', [OrganizationController::class, 'apiForceDelete']);
+Route::put('/organizations/{id}/restore',[OrganizationController::class, 'apiRestore']);
 
 Route::get('/institutions', [InstitutionController::class, 'apiIndex']);
 Route::post('/institutions', [InstitutionController::class, 'apiStore']);
 Route::get('/institutions/{id}', [InstitutionController::class, 'apiShow']);
 Route::put('/institutions/{id}', [InstitutionController::class, 'apiUpdate']);
 Route::delete('/institutions/{id}', [InstitutionController::class, 'apiDelete']);
+Route::put('/institutions/{id}/restore', [InstitutionController::class, 'apiRestore']);
 Route::put('/institutions/{id}/toggle-status', [InstitutionController::class, 'apiToggleStatus']);
 Route::delete('/institutions/{id}/force-delete', [InstitutionController::class, 'apiForceDelete']);
 
@@ -570,7 +623,7 @@ Route::get('/modules/{id}', [ModuleController::class, 'apiShow']);
 Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
 Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
 Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceDelete']);
-
+Route::put('/modules/{id}/restore', [ModuleController::class, 'apiRestore']);
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
 // Prefixed /org
@@ -902,7 +955,7 @@ Route::prefix('prescriptions')->group(function () {
 | 15. Surgery Management
 |--------------------------------------------------------------------------
 */
-
+Route::get('/surgeries', [SurgeryApiController::class, 'index']);
 Route::prefix('surgery')->group(function () {
     Route::get('/', [SurgeryApiController::class, 'index']);
     Route::post('/', [SurgeryApiController::class, 'store']);
@@ -1949,12 +2002,17 @@ Route::prefix('payroll-results')->group(function () {
     Route::get('{id}', [PayrollResultController::class, 'apiShow']);
   
 });
-Route::prefix('surgery-consent')->group(function () {
 
-    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
+Route::prefix('consents')->group(function () {
 
+    Route::post('/', [SurgeryConsentApiController::class, 'store']);
+
+    Route::get('/', [SurgeryConsentApiController::class, 'index']);
+
+    Route::get('/{id}', [SurgeryConsentApiController::class, 'show']);
+
+    Route::get('/history/{patientId}', [SurgeryConsentApiController::class, 'history']);
 });
-
 
     Route::prefix('employee-salary-assignment')->group(function () {
 
