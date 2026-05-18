@@ -65,6 +65,7 @@ use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\Doctor\NotificationController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
+use App\Http\Controllers\doctor\MedicalCertificationController;
 // Leave Management
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
@@ -241,6 +242,51 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
     Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
     Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
     Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
+
+    Route::prefix('doctor/medical-certification')
+    ->name('doctor.medical-certification.')
+    ->group(function () {
+
+   Route::get(
+    '/',
+    [MedicalCertificationController::class, 'index']
+)->name('index');
+
+Route::get(
+    '/create',
+    [MedicalCertificationController::class, 'create']
+)->name('create');
+
+Route::post(
+    '/store',
+    [MedicalCertificationController::class, 'store']
+)->name('store');
+
+Route::get(
+    '/{id}/show',
+    [MedicalCertificationController::class, 'show']
+)->name('show');
+
+Route::get(
+    '/{id}/edit',
+    [MedicalCertificationController::class, 'edit']
+)->name('edit');
+
+Route::put(
+    '/{id}/update',
+    [MedicalCertificationController::class, 'update']
+)->name('update');
+
+Route::delete(
+    '/{id}/delete',
+    [MedicalCertificationController::class, 'destroy']
+)->name('delete');
+
+Route::post(
+    '/{id}/sign',
+    [MedicalCertificationController::class, 'sign']
+)->name('sign');
+});
 });
 
 /*

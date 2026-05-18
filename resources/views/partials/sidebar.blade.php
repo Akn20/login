@@ -117,6 +117,22 @@
                             up-target="#main-container"><i class="feather-plus-square me-2"></i>Post-Op Notes</a></li>
                 </ul>
             </li>
+            <li class="nxl-item">
+
+    <a href="{{ route('doctor.medical-certification.index') }}"
+       class="nxl-link">
+
+        <span class="nxl-micon">
+            <i class="feather-file-text"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Medical Certificates
+        </span>
+
+    </a>
+
+</li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/beds*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
                     <span class="nxl-micon"><i class="feather-layers"></i></span>
