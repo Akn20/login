@@ -158,6 +158,7 @@ use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\ExpenseCategoryController;
 //use App\Http\Controllers\VendorManagementController;
 use App\Http\Controllers\AddExpenseController;
+use App\Http\Controllers\ExpenseReportController;
 
 
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
@@ -2338,6 +2339,27 @@ Route::prefix('admin/accountant/expense-management/add-expense')
             ->name('restore');
 
 });
+// ================= EXPENSE REPORT =================
+Route::prefix('admin/accountant/expense-management/expense-report')
+    ->name('admin.accountant.expense.report.')
+    ->group(function () {
+
+        // Main Report Page
+        Route::get('/', [ExpenseReportController::class, 'index'])
+            ->name('index');
+
+        // Category Wise Report
+        Route::get('/category-wise', [ExpenseReportController::class, 'categoryWiseReport'])
+            ->name('category');
+
+        // Income & Expense Report
+        Route::get('/income-expense', [ExpenseReportController::class, 'incomeExpenseReport'])
+            ->name('income.expense');
+
+});
+
+
+
 
 });
 //IPD (Doctor Module)

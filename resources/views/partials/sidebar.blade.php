@@ -168,50 +168,87 @@
 
 
 
-            {{-- Expense Management --}}
-                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/expense-management*') ? 'active nxl-trigger' : '' }}">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <i class="feather-credit-card me-2"></i> Expense Management
-                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
+        {{-- Expense Management --}}
+        <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/expense-management*') ? 'active nxl-trigger' : '' }}">
 
-                        <ul class="nxl-submenu">
+            <a href="javascript:void(0);" class="nxl-link">
 
-                            <li class="nxl-item">
-                                <a href="{{route('admin.accountant.expense.category.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    Expense Categories
-                                </a>
-                            </li>
+                <i class="feather-credit-card me-2"></i>
 
-            {{-- Vendor Management --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.inventory-vendors.index') }}"
-                                class="nxl-link"
-                                up-follow
-                                up-target="#main-container">
+                Expense Management
 
-                                    Vendor Management
-                                </a>
-                            </li>
-                        {{-- Add Expense --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.accountant.expense.add.index') }}"
-                                    class="nxl-link"
-                                    up-follow
-                                    up-target="#main-container">
+                <span class="nxl-arrow">
+                    <i class="feather-chevron-right"></i>
+                </span>
 
-                                    Add Expense
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+            </a>
 
+            <ul class="nxl-submenu">
 
+                {{-- Expense Categories --}}
+                <li class="nxl-item">
 
-                    
-                </ul>
-            </li>
+                    <a href="{{ route('admin.accountant.expense.category.index') }}"
+                       class="nxl-link"
+                       up-follow
+                       up-target="#main-container">
+
+                        Expense Categories
+
+                    </a>
+
+                </li>
+
+                {{-- Vendor Management --}}
+                <li class="nxl-item">
+
+                    <a href="{{ route('admin.inventory-vendors.index') }}"
+                       class="nxl-link"
+                       up-follow
+                       up-target="#main-container">
+
+                        Vendor Management
+
+                    </a>
+
+                </li>
+
+                {{-- Add Expense --}}
+                <li class="nxl-item">
+
+                    <a href="{{ route('admin.accountant.expense.add.index') }}"
+                       class="nxl-link"
+                       up-follow
+                       up-target="#main-container">
+
+                        Add Expense
+
+                    </a>
+
+                </li>
+
+                {{-- Expense Report --}}
+                <li class="nxl-item">
+
+                    <a href="{{ route('admin.accountant.expense.report.index') }}"
+                       class="nxl-link"
+                       up-follow
+                       up-target="#main-container">
+
+                        Expense Report
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </li>
+
+    </ul>
+
+</li>
+
 
             {{-- --- 3. MEDICAL SERVICES --- --}}
             <li class="nxl-item nxl-caption"><label>Medical Services</label></li>
