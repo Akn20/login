@@ -103,8 +103,6 @@ use App\Http\Controllers\HR\Payroll\RateEmployeeMappingController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
 
-
-
 use App\Http\Controllers\HR\Reports\AttendanceReportController;
 use App\Http\Controllers\HR\Reports\DepartmentSalaryReportController;
 use App\Http\Controllers\HR\Reports\OvertimeReportController;
@@ -192,6 +190,8 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\AccountantReportController;
+
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
@@ -2682,7 +2682,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
 
     });
-
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
     Route::prefix('billing')->name('billing.')->group(function () {
 
         Route::get('/', [BasicBillingController::class, 'index'])->name('index');
@@ -2691,6 +2691,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
         Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
 
+    });
     });
 });
  
@@ -2900,6 +2901,65 @@ Route::prefix('doctor/ipd')->group(function () {
     ->name('doctor.ipd.storeLabRadiology');
 });
 
+
+
+// =============================
+// Accountant Financial Reports
+// =============================
+
+Route::prefix('admin/accountant/reports')
+    ->name('admin.accountant.reports.')
+    ->group(function () {
+
+        // Daily Collection Report
+        Route::get(
+            '/daily-collection',
+            [AccountantReportController::class, 'dailyCollection']
+        )->name('daily.collection');
+
+        // Department Revenue Report
+        Route::get(
+            '/department-revenue',
+            [AccountantReportController::class, 'departmentRevenue']
+        )->name('department.revenue');
+
+        // OPD IPD Revenue Report
+        Route::get(
+            '/opd-ipd-revenue',
+            [AccountantReportController::class, 'opdIpdRevenue']
+        )->name('opd.ipd.revenue');
+
+        // Outstanding Dues Report
+        Route::get(
+            '/outstanding-dues',
+            [AccountantReportController::class, 'outstandingDues']
+        )->name('outstanding.dues');
+
+        // Insurance Settlement Report
+        Route::get(
+            '/insurance-settlement',
+            [AccountantReportController::class, 'insuranceSettlement']
+        )->name('insurance.settlement');
+
+        // Refund Report
+        Route::get(
+            '/refund-report',
+            [AccountantReportController::class, 'refundReport']
+        )->name('refund.report');
+
+        // Expense Report
+        Route::get(
+            '/expense-report',
+            [AccountantReportController::class, 'expenseReport']
+        )->name('expense.report');
+
+        // Profit Loss Report
+        Route::get(
+            '/profit-loss',
+            [AccountantReportController::class, 'profitLoss']
+        )->name('profit.loss');
+
+});
 
 
 
@@ -3246,3 +3306,4 @@ Route::post(
 
 });
   
+

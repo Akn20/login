@@ -249,14 +249,27 @@ class AccountantBillingController extends Controller
     /**
      * 🔹 VIEW BILL
      */
-    public function show($id)
-    {
-        $bill = IpdBill::with(['items', 'patient'])
-            ->where('id', $id)
-            ->firstOrFail();
+public function show($id)
+{
+    $bill = DB::table('ipd_bills as b')
+        ->leftJoin('ipd_admissions as ipd', 'ipd.id', '=', 'b.ipd_id')
+        ->leftJoin('patients as p', 'p.id', '=', 'b.patient_id')
 
-        return view('admin.Accountant.Billing.view', compact('bill'));
-    }
+        ->select(
+            'b.*',
+            'ipd.admission_id as ipd_no',
+            DB::raw("CONCAT(p.first_name, ' ', p.last_name) as patient_name"),
+            'ipd.advance_amount'
+        )
+        ->where('b.id', $id)
+        ->first();
+
+    $items = DB::table('ipd_bill_items')
+        ->where('bill_id', $id)
+        ->get();
+
+    return view('admin.Accountant.Billing.view', compact('bill', 'items'));
+}
 
 
     /**
@@ -449,7 +462,13 @@ class AccountantBillingController extends Controller
                 DB::raw("IFNULL(r.room_number, '-') as room"),
                 DB::raw("IFNULL(s.name, '-') as doctor"),
                 'b.id as bill_id',
-                DB::raw("IFNULL(b.status, 'interim') as status")
+                DB::raw("
+                    CASE 
+                        WHEN ipd.status = 'discharged' THEN 'final'
+                        WHEN b.status IS NULL THEN 'not_created'
+                        ELSE b.status
+                    END as status
+                ")
             )
 
             ->when($request->search, function ($q) use ($request) {
