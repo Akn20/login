@@ -163,7 +163,7 @@
 
                             {{-- OPD → Receptionist Billing --}}
                             <li class="nxl-item">
-                                <a href="{{ route('admin.billing.index') }}" 
+                                <a href="{{ route('admin.receptionist.billing.index') }}" 
                                 class="nxl-link" up-follow up-target="#main-container">
                                     OPD Billing
                                 </a>
@@ -238,6 +238,100 @@
 </li>
                 </ul>
 
+
+
+                            {{-- Financial Reconciliation Menu --}}
+
+                            <li class="nxl-item nxl-hasmenu">
+
+                                <a href="javascript:void(0);"
+                                class="nxl-link">
+
+                                    <i class="feather-briefcase me-2"></i>
+
+                                    <span>
+                                        Financial Reconciliation
+                                    </span>
+
+                                    <span class="nxl-arrow">
+                                        <i class="feather-chevron-right"></i>
+                                    </span>
+
+                                </a>
+
+                                <ul class="nxl-submenu">
+
+                                    {{-- Financial Reconciliation --}}
+                                    <li class="nxl-item {{ request()->is('admin/financial-reconciliation*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.financial-reconciliation.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                             Reconciliations
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Bank Verification --}}
+                                    <li class="nxl-item {{ request()->is('admin/bank-verification*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.bank-verification.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Bank Verification
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Digital Payments --}}
+                                    <li class="nxl-item {{ request()->is('admin/digital-payment*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.digital-payment.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Digital Payments
+
+                                        </a>
+
+                                    </li>
+
+                                    {{-- Discrepancy Management --}} 
+                                    <li class="nxl-item {{ request()->is('admin/financial-discrepancy*') ? 'active' : '' }}">
+
+                                        <a href="{{ route('admin.financial-discrepancy.index') }}"
+                                        class="nxl-link"
+                                        up-follow
+                                        up-target="#main-container">
+
+                                            Discrepancy Management
+
+                                        </a>
+
+                                    </li>
+                                    <li class="nxl-item">
+
+                <a href="{{ route('admin.reconciliation-reports.index') }}"
+                class="nxl-link">
+
+                    Reconciliation Reports
+
+                </a>
+
+</li>
+
+                                </ul>
+
+                            </li>
+
+                            
                 {{-- --- PATIENT PORTAL --- --}}
             <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>
 
@@ -284,8 +378,7 @@
                                 Data Usage Consent
 
                             </a>
-
-                        </li>
+                            </li>
                         <li class="nxl-item">
 
                         <a href="{{ route('admin.insurance-consent.index') }}"
@@ -320,54 +413,7 @@
             </li>
 
 
- {{-- ---  ACCOUNTANT --- --}}
-            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
-
-            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
-                <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
-                    <span class="nxl-mtext">Accountant</span>
-                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                </a>
-
-                <ul class="nxl-submenu">
-
-                    {{-- Billing Menu --}}
-                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
-                        <a href="javascript:void(0);" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Billing
-                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                        </a>
-
-                        <ul class="nxl-submenu">
-
-                            {{-- OPD → Receptionist Billing --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.receptionist.billing.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    OPD Billing
-                                </a>
-                            </li>
-
-                            {{-- IPD → Accountant Billing --}}
-                            <li class="nxl-item">
-                                <a href="{{ route('admin.accountant.billing.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    IPD Billing
-                                </a>
-                            </li>
-                        </ul>
-
-                            {{-- Insurance Claims Menu --}}
-                            <li class="nxl-item {{ request()->is('admin/accountant/claims*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.accountant.claims.index') }}" 
-                                class="nxl-link" up-follow up-target="#main-container">
-                                    <i class="feather-briefcase me-2"></i> Insurance Claims
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
+                
                     {{-- Financial Reports Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/reports*') ? 'active nxl-trigger' : '' }}">
 
@@ -520,50 +566,9 @@
                         </a>
                     </li>
                 
-                    {{-- Refund Management --}}
-                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
+                   
 
-                        <a href="javascript:void(0);" class="nxl-link">
-
-                            <i class="feather-rotate-ccw me-2"></i>
-
-                            Refund Management
-
-                            <span class="nxl-arrow">
-                                <i class="feather-chevron-right"></i>
-                            </span>
-
-                        </a>
-
-                        <ul class="nxl-submenu">
-
-                            <li class="nxl-item">
-
-                                <a href="{{ route('admin.refunds.index') }}"
-                                class="nxl-link"
-                                up-follow
-                                up-target="#main-container">
-
-                                    All Refunds
-
-                                </a>
-
-                            </li>
-
-                            <li class="nxl-item">
-
-                                <a href="{{ route('admin.refunds.create') }}"
-                                class="nxl-link"
-                                up-follow
-                                up-target="#main-container">
-
-                                    Create Refund
-
-                                </a>
-
-                            </li>
-
-                        </ul>
+                        
 
                     </li>
 

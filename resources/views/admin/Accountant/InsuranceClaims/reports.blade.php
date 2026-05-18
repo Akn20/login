@@ -4,7 +4,15 @@
 <div class="container-fluid">
 
     <div class="page-header mb-4">
-        <h5>Insurance Reports</h5>
+        <div class="page-header-left">
+            <h5 class="m-b-0">Reports</h5>
+        </div>
+
+        <div class="page-header-right ms-auto">
+            <a href="{{ route('admin.accountant.claims.index') }}" class="btn btn-light">
+                Back
+            </a>
+        </div>
     </div>
 
     <div class="row">
