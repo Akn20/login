@@ -1330,6 +1330,12 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item">
+    <a href="{{ route('hr.payroll.dashboard') }}" class="nxl-link">
+        <i class="feather-grid me-2"></i>
+        Payroll Dashboard
+    </a>
+</li>
 
 
   </li>
@@ -1447,6 +1453,19 @@
     </a>
 </li>
 
+
+
+{{-- PAYROLL RESULT / SALARY SHEET --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.payroll-result.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Payroll Result / Salary Sheet
+
+    </a>
+</li>
 {{-- PAYROLL RESULT EARNINGS --}}
 <li class="nxl-item">
     <a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
@@ -1462,18 +1481,6 @@
 
         <i class="feather-minus-circle me-2"></i>
         Payroll Deductions Breakdown
-    </a>
-</li>
-
-{{-- PAYROLL RESULT / SALARY SHEET --}}
-<li class="nxl-item">
-    <a href="{{ route('hr.payroll.payroll-result.index') }}"
-       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result.*') ? 'active' : '' }}"
-       up-follow up-target="#main-container">
-
-        <i class="feather-file-text me-2"></i>
-        Payroll Result / Salary Sheet
-
     </a>
 </li>
 

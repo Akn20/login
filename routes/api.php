@@ -117,6 +117,7 @@ use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
+use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
@@ -1900,11 +1901,59 @@ Route::prefix('nurse-shift-handover')->group(function () {
 
 
     });
-    /*
-    |--------------------------------------------------------------------------
-    | 35. Payroll: Salary Structure
-    |--------------------------------------------------------------------------
-    */
+   
+/*
+|--------------------------------------------------------------------------
+| 37. Payroll: PayrollResultEarningController
+|--------------------------------------------------------------------------
+*/
+Route::prefix('payroll-earnings')->group(function () {
+
+    Route::get('/', [PayrollResultEarningController::class, 'apiIndex']);
+
+    Route::get('/{id}', [PayrollResultEarningController::class, 'apiShow']);
+
+    Route::post('/generate', [PayrollResultEarningController::class, 'apiGenerate']);
+
+});
+/*
+|--------------------------------------------------------------------------
+| 38. Payroll: PayrollResultDeductionController
+|--------------------------------------------------------------------------
+*/
+ 
+Route::prefix('payroll-deductions')->group(function () {
+
+    Route::get(
+        '/',
+        [PayrollResultDeductionController::class, 'apiIndex']
+    );
+
+    Route::post(
+        '/generate',
+        [PayrollResultDeductionController::class, 'apiGenerate']
+    );
+
+    Route::get(
+        '/{id}',
+        [PayrollResultDeductionController::class, 'apiShow']
+    );
+
+});
+
+    
+//Payroll Results
+Route::prefix('payroll-results')->group(function () {
+
+    Route::get('/', [PayrollResultController::class, 'apiIndex']);
+    Route::get('{id}', [PayrollResultController::class, 'apiShow']);
+  
+});
+Route::prefix('surgery-consent')->group(function () {
+
+    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
+
+});
 
 
     Route::prefix('employee-salary-assignment')->group(function () {
@@ -2872,3 +2921,15 @@ Route::prefix('nurse-shift-handover')->group(function () {
         });
     });
 });
+Route::prefix('payroll/payroll-result')->group(function () {
+    Route::get('/', [PayrollResultController::class, 'index']);
+      Route::get('/{id}', [PayrollResultController::class, 'show']);
+    Route::post('/generate', [PayrollResultController::class, 'generate']);
+});
+
+
+//39.Payroll dashboard
+Route::get(
+    '/payroll-dashboard',
+    [PayrollDashboardController::class, 'apiDashboard']
+);
