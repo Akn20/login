@@ -586,12 +586,14 @@ Route::put('/organizations/{id}', [OrganizationController::class, 'apiUpdate']);
 Route::put('/organizations/{id}/toggle-status', [OrganizationController::class, 'apiToggleStatus']);
 Route::delete('/organizations/{id}', [OrganizationController::class, 'apiDelete']);
 Route::delete('/organizations/{id}/force-delete', [OrganizationController::class, 'apiForceDelete']);
+Route::put('/organizations/{id}/restore',[OrganizationController::class, 'apiRestore']);
 
 Route::get('/institutions', [InstitutionController::class, 'apiIndex']);
 Route::post('/institutions', [InstitutionController::class, 'apiStore']);
 Route::get('/institutions/{id}', [InstitutionController::class, 'apiShow']);
 Route::put('/institutions/{id}', [InstitutionController::class, 'apiUpdate']);
 Route::delete('/institutions/{id}', [InstitutionController::class, 'apiDelete']);
+Route::put('/institutions/{id}/restore', [InstitutionController::class, 'apiRestore']);
 Route::put('/institutions/{id}/toggle-status', [InstitutionController::class, 'apiToggleStatus']);
 Route::delete('/institutions/{id}/force-delete', [InstitutionController::class, 'apiForceDelete']);
 
@@ -601,7 +603,7 @@ Route::get('/modules/{id}', [ModuleController::class, 'apiShow']);
 Route::put('/modules/{id}', [ModuleController::class, 'apiUpdate']);
 Route::delete('/modules/{id}', [ModuleController::class, 'apiDelete']);
 Route::delete('/modules/{id}/force-delete', [ModuleController::class, 'apiForceDelete']);
-
+Route::put('/modules/{id}/restore', [ModuleController::class, 'apiRestore']);
 Route::get('/module-types', [ModuleController::class, 'getModuleTypes']);
 
 // Prefixed /org
