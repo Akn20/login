@@ -26,27 +26,72 @@ class GrnApiController extends Controller
         DB::beginTransaction();
 
         try {
-            $grn = Grn::create([
-                'grn_number' => 'GRN-' . now()->format('YmdHis'),
-                'purchase_order_id' => $request->purchase_order_id,
-                'received_date' => $request->received_date,
-                'total_amount' => 0,
-            ]);
 
+        $purchaseOrder = DB::table('purchase_orders')
+    ->where('id', $request->purchase_order_id)
+    ->first();
+
+$vendor = DB::table('inventory_vendors')
+    ->where('id', $purchaseOrder->inventory_vendor_id)
+    ->first();
+    
+          $grn = Grn::create([
+
+    'grn_no' => 'GRN-' . now()->format('YmdHis'),
+
+    'purchase_order_id' => $request->purchase_order_id,
+
+    'po_no' => $purchaseOrder->po_number,
+
+    'vendor_name' => $vendor->vendor_name,
+
+    //'vendor_id' => $vendor->id,
+
+    'grn_date' => now()->toDateString(),
+
+    'invoice_date' => now()->toDateString(),
+
+    'invoice_no' => 'N/A',
+
+    'sub_total' => 0,
+
+    'grand_total' => 0,
+
+    'status' => 'Draft',
+]);
             $total = 0;
 
             foreach ($request->items as $item) {
 
                 $lineTotal = $item['received_quantity'] * $item['unit_price'];
 
-                $grn->items()->create([
-                    'item_id' => $item['item_id'],
-                    'ordered_quantity' => $item['ordered_quantity'],
-                    'received_quantity' => $item['received_quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'total' => $lineTotal,
-                ]);
+DB::table('grn_items')->insert([
 
+    'grn_id' => $grn->id,
+
+    'item_id' => $item['item_id'],
+
+    'medicine_name' => $item['item_name'],
+
+    'ordered_quantity' => $item['ordered_quantity'],
+
+    'received_quantity' => $item['received_quantity'],
+
+    'unit_price' => $item['unit_price'],
+
+    'qty' => $item['received_quantity'],
+
+    'purchase_rate' => $item['unit_price'],
+
+    'amount' => $lineTotal,
+
+    'total' => $lineTotal,
+
+    'created_at' => now(),
+
+    'updated_at' => now(),
+
+]);
                 // Update stock
                 Item::where('id', $item['item_id'])
                     ->increment('stock', $item['received_quantity']);
@@ -54,8 +99,10 @@ class GrnApiController extends Controller
                 $total += $lineTotal;
             }
 
-            $grn->update(['total_amount' => $total]);
-
+             $grn->update([
+            'sub_total' => $total,
+            'grand_total' => $total,
+        ]);
             DB::commit();
 
             return response()->json($grn, 201);

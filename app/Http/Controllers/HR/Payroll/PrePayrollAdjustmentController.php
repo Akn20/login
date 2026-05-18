@@ -71,11 +71,19 @@ class PrePayrollAdjustmentController extends Controller
 
     $gross = ($request->fixed_earnings_total ?? 0)
            + ($request->adhoc_earnings ?? 0);
+           $perDaySalary = ($request->working_days ?? 0) > 0
+    ? $gross / $request->working_days
+    : 0;
 
-    $deductions = ($request->fixed_deductions_total ?? 0)
-                + ($request->adhoc_deductions ?? 0);
+$absenceAmount = ($request->lop_days ?? 0) * $perDaySalary;
+$deductions = ($request->fixed_deductions_total ?? 0)
+            + ($request->adhoc_deductions ?? 0)
+            + ($request->pf_employee ?? 0)
+            + ($request->esi_employee ?? 0)
+            + ($request->professional_tax ?? 0)
+            + ($request->tds_amount ?? 0);
 
-    $net = $gross - $deductions;
+    $net = $gross - $deductions - $absenceAmount;
 
     $data = $request->all();
 
@@ -83,6 +91,8 @@ class PrePayrollAdjustmentController extends Controller
     $data['fixed_deductions_total'] = $request->fixed_deductions_total ?? 0;
     $data['adhoc_earnings'] = $request->adhoc_earnings ?? 0;
     $data['adhoc_deductions'] = $request->adhoc_deductions ?? 0;
+    $data['per_day_salary'] = $perDaySalary;
+    $data['absence_amount'] = $absenceAmount;
 
     //  STATUS LOGIC
     if ($request->action == 'submit') {
@@ -103,7 +113,7 @@ class PrePayrollAdjustmentController extends Controller
     //  SAVE
     PrePayrollAdjustment::create($data);
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Created Successfully');
 }
 
@@ -142,11 +152,20 @@ public function update(Request $request, $id)
     // CALCULATIONS
     $gross = ($request->fixed_earnings_total ?? 0)
            + ($request->adhoc_earnings ?? 0);
+           $perDaySalary = ($request->working_days ?? 0) > 0
+    ? $gross / $request->working_days
+    : 0;
 
-    $deductions = ($request->fixed_deductions_total ?? 0)
-                + ($request->adhoc_deductions ?? 0);
+$absenceAmount = ($request->lop_days ?? 0) * $perDaySalary;
 
-    $net = $gross - $deductions;
+   $deductions = ($request->fixed_deductions_total ?? 0)
+            + ($request->adhoc_deductions ?? 0)
+            + ($request->pf_employee ?? 0)
+            + ($request->esi_employee ?? 0)
+            + ($request->professional_tax ?? 0)
+            + ($request->tds_amount ?? 0);
+
+    $net = $gross - $deductions - $absenceAmount;
 
     $data = $request->all();
 
@@ -155,6 +174,8 @@ public function update(Request $request, $id)
     $data['fixed_deductions_total'] = $request->fixed_deductions_total ?? 0;
     $data['adhoc_earnings'] = $request->adhoc_earnings ?? 0;
     $data['adhoc_deductions'] = $request->adhoc_deductions ?? 0;
+    $data['per_day_salary'] = $perDaySalary;
+    $data['absence_amount'] = $absenceAmount;
 
     //  STATUS LOGIC (THIS WAS MISSING)
     if ($request->action == 'submit') {
@@ -171,7 +192,7 @@ public function update(Request $request, $id)
 
     $record->update($data);
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Updated Successfully');
 }
 public function approve($id)
@@ -192,7 +213,7 @@ public function approve($id)
         ]);
     }
 
-    return redirect()->route('hr.pre-payroll.index')
+    return redirect()->route('hr.payroll.pre-payroll.index')
         ->with('success', 'Approved Successfully');
 }
 
@@ -265,25 +286,37 @@ public function apiStore(Request $request)
         'earnings_remarks' => $request->earnings_remarks,
         'adhoc_deductions' => $request->adhoc_deductions,
         'deduction_remarks' => $request->deduction_remarks,
+        
 
         // CALCULATED
+        
+        
         'gross_earnings' =>
             ($request->fixed_earnings_total ?? 0) +
             ($request->adhoc_earnings ?? 0),
 
-        'total_deductions' =>
-            ($request->fixed_deductions_total ?? 0) +
-            ($request->adhoc_deductions ?? 0),
 
-        'net_payable' =>
-            (
-                ($request->fixed_earnings_total ?? 0) +
-                ($request->adhoc_earnings ?? 0)
-            ) -
-            (
-                ($request->fixed_deductions_total ?? 0) +
-                ($request->adhoc_deductions ?? 0)
-            ),
+ 'total_deductions' =>
+    ($request->fixed_deductions_total ?? 0) +
+    ($request->adhoc_deductions ?? 0) +
+    ($request->pf_employee ?? 0) +
+    ($request->esi_employee ?? 0) +
+    ($request->professional_tax ?? 0) +
+    ($request->tds_amount ?? 0),
+
+      'net_payable' =>
+    (
+        ($request->fixed_earnings_total ?? 0) +
+        ($request->adhoc_earnings ?? 0)
+    ) -
+    (
+        ($request->fixed_deductions_total ?? 0) +
+        ($request->adhoc_deductions ?? 0) +
+        ($request->pf_employee ?? 0) +
+        ($request->esi_employee ?? 0) +
+        ($request->professional_tax ?? 0) +
+        ($request->tds_amount ?? 0)
+    ),
 
         // STATUS
         'status' => $request->status ?? 'Draft',
