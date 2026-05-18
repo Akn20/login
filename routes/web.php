@@ -117,6 +117,7 @@ use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -1699,10 +1700,32 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::get('/edit/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
     });
-    // Leave report
+
+
+    // --Leave report
     Route::prefix('leave-report')->name('leave-report.')->group(function () {
         Route::get('/', [LeaveReportController::class, 'index'])->name('index');
     });
+
+    
+//-------- Training & Certification Tracking--------------
+Route::prefix('training-certification-tracking')
+    ->name('training-certification-tracking.')
+    ->group(function () {
+    Route::get('/', [TrainingCertificationTrackingController::class, 'index'])->name('index');
+        Route::get('/deleted',[TrainingCertificationTrackingController::class, 'deleted'])->name('deleted');
+    Route::get( '/create',[TrainingCertificationTrackingController::class, 'create'])->name('create');
+    Route::post('/store',[TrainingCertificationTrackingController::class, 'store'])->name('store');
+    Route::get( '/{id}/show',[TrainingCertificationTrackingController::class, 'show'])->name('show');
+    Route::get( '/{id}/edit',[TrainingCertificationTrackingController::class, 'edit'])->name('edit');
+    Route::put('/{id}',[TrainingCertificationTrackingController::class, 'update'])->name('update');
+    Route::delete('/{id}',[TrainingCertificationTrackingController::class, 'destroy'])->name('delete');
+    Route::post('/{id}/restore',[TrainingCertificationTrackingController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',[TrainingCertificationTrackingController::class, 'forceDelete'])->name('forceDelete');
+
+});
+
+
     // Payroll Dashboard
 Route::get('/payroll-dashboard',
     [PayrollDashboardController::class, 'index']
