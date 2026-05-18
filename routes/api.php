@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
+use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
@@ -116,13 +117,10 @@ use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
-<<<<<<< HEAD
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
-=======
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
->>>>>>> ecdfa298f899ace2acf3254199e86b4468f289b3
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -2212,14 +2210,22 @@ Route::prefix('consents')->group(function () {
 
         // 🔥 ADD THIS HERE (correct place)
         Route::get('/medicines', [IpdController::class, 'apiMedicines']);
-
-        // Scan Types
+       // Scan Types
         Route::get('/scan-types', [IpdController::class, 'apiScanTypes']);
 
         // Lab Test
         Route::get('/lab-tests', [IpdController::class, 'apiLabTests']);
     });
 
+
+//Dashboard(Accountant)
+Route::prefix('accountant/dashboard')->group(function () {
+    Route::get('/', [AccountantDashboardController::class, 'apiDashboard']);
+    Route::get('/summary', [AccountantDashboardController::class, 'apiSummary']);
+    Route::get('/revenue-overview', [AccountantDashboardController::class, 'apiRevenueOverview']);
+});
+
+       
     //Billing(Accountant)
 
     Route::prefix('accountant/billing')->group(function () {
