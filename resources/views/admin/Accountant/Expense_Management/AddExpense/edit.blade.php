@@ -273,124 +273,180 @@
                             </div>
 
                             <hr>
+<hr>
 
-                            <h5 class="mb-4">
-                                Payment Details
-                            </h5>
+<h5 class="mb-4">
+    Payment Details
+</h5>
 
-                            <div class="row">
+<div class="row">
 
-                                {{-- Payment Status --}}
-                                <div class="col-lg-4 mb-4">
+    {{-- Payment Status --}}
+    <div class="col-lg-4 mb-4">
 
-                                    <label class="form-label">
-                                        Payment Status
-                                    </label>
+        <label class="form-label">
+            Payment Status
+        </label>
 
-                                    <select name="payment_status"
-                                        class="form-select">
+        <select name="payment_status"
+            class="form-select">
 
-                                        <option value="Unpaid"
-                                            {{ $expense->payment_status == 'Unpaid' ? 'selected' : '' }}>
-                                            Unpaid
-                                        </option>
+            <option value="Unpaid"
+                {{ $expense->payment_status == 'Unpaid' ? 'selected' : '' }}>
+                Unpaid
+            </option>
 
-                                        <option value="Partial"
-                                            {{ $expense->payment_status == 'Partial' ? 'selected' : '' }}>
-                                            Partial
-                                        </option>
+            <option value="Partial"
+                {{ $expense->payment_status == 'Partial' ? 'selected' : '' }}>
+                Partial
+            </option>
 
-                                        <option value="Fully Paid"
-                                            {{ $expense->payment_status == 'Fully Paid' ? 'selected' : '' }}>
-                                            Fully Paid
-                                        </option>
+            <option value="Fully Paid"
+                {{ $expense->payment_status == 'Fully Paid' ? 'selected' : '' }}>
+                Fully Paid
+            </option>
 
-                                    </select>
+        </select>
 
-                                </div>
+    </div>
 
-                                {{-- Payment Mode --}}
-                                <div class="col-lg-4 mb-4">
 
-                                    <label class="form-label">
-                                        Payment Mode
-                                    </label>
+    {{-- Payment Mode --}}
+    <div class="col-lg-4 mb-4">
 
-                                    <select name="payment_mode"
-                                        class="form-select">
+        <label class="form-label">
+            Payment Mode
+        </label>
 
-                                        <option value="Cash"
-                                            {{ $expense->payment_mode == 'Cash' ? 'selected' : '' }}>
-                                            Cash
-                                        </option>
+        <select name="payment_mode"
+            class="form-select">
 
-                                        <option value="Online"
-                                            {{ $expense->payment_mode == 'Online' ? 'selected' : '' }}>
-                                            Online
-                                        </option>
+            <option value="Cash"
+                {{ $expense->payment_mode == 'Cash' ? 'selected' : '' }}>
+                Cash
+            </option>
 
-                                        <option value="UPI"
-                                            {{ $expense->payment_mode == 'UPI' ? 'selected' : '' }}>
-                                            UPI
-                                        </option>
+            <option value="Online"
+                {{ $expense->payment_mode == 'Online' ? 'selected' : '' }}>
+                Online
+            </option>
 
-                                        <option value="Cheque"
-                                            {{ $expense->payment_mode == 'Cheque' ? 'selected' : '' }}>
-                                            Cheque
-                                        </option>
+            <option value="UPI"
+                {{ $expense->payment_mode == 'UPI' ? 'selected' : '' }}>
+                UPI
+            </option>
 
-                                        <option value="DD"
-                                            {{ $expense->payment_mode == 'DD' ? 'selected' : '' }}>
-                                            DD
-                                        </option>
+            <option value="Cheque"
+                {{ $expense->payment_mode == 'Cheque' ? 'selected' : '' }}>
+                Cheque
+            </option>
 
-                                    </select>
+            <option value="DD"
+                {{ $expense->payment_mode == 'DD' ? 'selected' : '' }}>
+                DD
+            </option>
 
-                                </div>
+        </select>
 
-                                {{-- Payment Date --}}
-                                <div class="col-lg-4 mb-4">
+    </div>
 
-                                    <label class="form-label">
-                                        Payment Date
-                                    </label>
 
-                                    <input type="date"
-                                        name="payment_date"
-                                        class="form-control"
-                                        value="{{ $expense->payment_date }}">
+    {{-- Payment Date --}}
+    <div class="col-lg-4 mb-4">
 
-                                </div>
+        <label class="form-label">
+            Payment Date
+        </label>
 
-                                {{-- Paid Amount --}}
-                                <div class="col-lg-4 mb-4">
+        <input type="date"
+            name="payment_date"
+            class="form-control"
+            value="{{ $expense->payment_date }}">
 
-                                    <label class="form-label">
-                                        Paid Amount
-                                    </label>
+    </div>
 
-                                    <input type="number"
-                                        name="paid_amount"
-                                        class="form-control"
-                                        value="{{ $expense->paid_amount }}">
 
-                                </div>
+    {{-- Grand Total --}}
+    <div class="col-lg-4 mb-4">
 
-                                {{-- Transaction ID --}}
-                                <div class="col-lg-4 mb-4">
+        <label class="form-label text-primary">
+            Grand Total
+        </label>
 
-                                    <label class="form-label">
-                                        Transaction ID
-                                    </label>
+        <input type="text"
+            class="form-control bg-light"
+            value="₹ {{ number_format($expense->grand_total, 2) }}"
+            readonly>
 
-                                    <input type="text"
-                                        name="transaction_id"
-                                        class="form-control"
-                                        value="{{ $expense->transaction_id }}">
+    </div>
 
-                                </div>
 
-                            </div>
+    {{-- Already Paid --}}
+    <div class="col-lg-4 mb-4">
+
+        <label class="form-label text-success">
+            Already Paid
+        </label>
+
+        <input type="text"
+            class="form-control bg-light"
+            value="₹ {{ number_format($expense->paid_amount, 2) }}"
+            readonly>
+
+    </div>
+
+
+    {{-- Remaining Balance --}}
+    <div class="col-lg-4 mb-4">
+
+        <label class="form-label text-danger">
+            Remaining Balance
+        </label>
+
+        <input type="text"
+            class="form-control bg-light"
+            value="₹ {{ number_format($expense->grand_total - $expense->paid_amount, 2) }}"
+            readonly>
+
+    </div>
+
+{{-- Pay Balance Amount --}}
+<div class="col-lg-4 mb-4">
+
+    <label class="form-label">
+        Pay Balance Amount
+    </label>
+
+    <input type="number"
+        step="0.01"
+        name="paid_amount"
+        class="form-control"
+        value="0">
+
+    <small class="text-muted">
+
+        Enter payment against pending balance.
+
+    </small>
+
+</div>
+
+
+    {{-- Transaction ID --}}
+    <div class="col-lg-4 mb-4">
+
+        <label class="form-label">
+            Transaction ID
+        </label>
+
+        <input type="text"
+            name="transaction_id"
+            class="form-control"
+            value="{{ $expense->transaction_id }}">
+
+    </div>
+
+</div>
 
                             <div class="d-flex gap-2 mt-4">
 
