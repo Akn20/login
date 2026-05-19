@@ -565,13 +565,15 @@ Route::prefix('hr')->group(function () {
     Route::get('conflicts', [ShiftSchedulingAPIController::class, 'conflictIndex']);
 });
 
-    // Financial Years
+  /*
+   // Financial Years
     Route::get('/financial-years', [FinancialYearApiController::class, 'index']);
     Route::post('/financial-years', [FinancialYearApiController::class, 'store']);
     Route::put('/financial-years/{financial_year}', [FinancialYearApiController::class, 'update']);
     Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::class, 'destroy']);
     Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
 
+*/
 
 /*
 |--------------------------------------------------------------------------
