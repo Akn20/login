@@ -291,6 +291,45 @@
                     <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
+
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/doctor*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Laboratory
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.laboratory.requests') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    Lab Requests
+                                </a>
+                            </li>
+
+                            
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.laboratory.reports') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    Lab Reports
+                                </a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.laboratory.historical') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    Historical Reports
+                                </a>
+                            </li>
+
+
+                        </ul>
+
+                
+                                
+
+                        </li>
                 </ul>
             </li>
             <li

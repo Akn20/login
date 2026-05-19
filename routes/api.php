@@ -61,7 +61,9 @@ use App\Http\Controllers\Api\Surgery\SurgeryApiController;
 use App\Http\Controllers\AppointmentController;
 // Doctor
 use App\Http\Controllers\attendance\AttendanceController;
+use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\IpdController;
+use App\Http\Controllers\Doctor\LabRequestController;
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -1747,6 +1749,46 @@ Route::prefix('reconciliation-reports')->group(function () {
 
     Route::get('/discrepancy-report', [ReconciliationReportController::class,'apiDiscrepancyReport']);
 
+});
+
+Route::prefix('clinical-notes')->group(function () {
+
+    // Report list
+    Route::get('/', [ClinicalNoteController::class,'apiIndex']);
+
+    // Historical reports
+    Route::get('/historical', [ClinicalNoteController::class,'apiHistorical']);
+
+    // Search reports
+    Route::get('/search', [ClinicalNoteController::class,'apiSearch']);
+
+    // Show report details
+    Route::get('/report/{id}', [ClinicalNoteController::class,'apiShow']);
+
+    // Add clinical note
+    Route::post('/store', [ClinicalNoteController::class,'apiStore']);
+
+});
+
+Route::prefix('doctor-lab')->group(function () {
+
+    // Lab requests
+    Route::get('/requests', [LabRequestController::class,'apiIndex']);
+
+    // Completed reports
+    Route::get('/completed-reports', [LabRequestController::class,'apiCompletedReports']);
+
+    // Historical reports
+    Route::get('/historical-reports', [LabRequestController::class,'apiHistoricalReports']);
+
+    // Compare reports
+    Route::get('/compare-reports/{patientId}/{testName}', [LabRequestController::class,'apiCompareReports']);
+
+    // Report details
+    Route::get('/report-details/{id}', [LabRequestController::class,'apiReportDetails']);
+
+    // Clinical note
+    Route::post('/clinical-note/store', [LabRequestController::class,'apiStoreClinicalNote']);
 });
 
 
