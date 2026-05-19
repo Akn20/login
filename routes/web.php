@@ -938,7 +938,7 @@ Route::middleware(['auth'])
             Route::delete('salary-structure/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])
                 ->name('salary-structure.force-delete');
            // Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
-            Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
+            Route::resource('hourly-pay-approval', HourlyPayApprovalController::class)->except(['show']);
             Route::resource('allowance', PayrollAllowanceController::class);
 
            
@@ -1660,7 +1660,7 @@ Route::get('/payroll-dashboard',
             Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
           Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])
-    ->name('force-delete');
+            ->name('force-delete');
 
             Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
             Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
@@ -1670,6 +1670,8 @@ Route::get('/payroll-dashboard',
         
 
         
+
+
     // ----------------------------------------
 // Payroll - Hourly Pay Approval
 // ----------------------------------------
