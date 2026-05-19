@@ -48,6 +48,7 @@ use App\Http\Controllers\Api\InsuranceConsentApiController;
 use App\Http\Controllers\Api\PatientPortal\DataUsageConsentApiController;
 use App\Http\Controllers\Api\PatientPortal\PatientEmrApiController;
 use App\Http\Controllers\Api\PatientPortal\PatientPortalApiController;
+use App\Http\Controllers\Api\FinancialYearApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
@@ -792,6 +793,7 @@ Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::
 Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
 
 
+
 /*
 |--------------------------------------------------------------------------
 | 8. Attendance
@@ -1318,11 +1320,11 @@ Route::prefix('vitals')->group(function () {
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| 23. Nurse: PPE Compliance
-|--------------------------------------------------------------------------
-*/
+// /*
+// |--------------------------------------------------------------------------
+// | 23. Nurse: PPE Compliance
+// |--------------------------------------------------------------------------
+// */
 
 // Route::prefix('ppe-compliance')->group(function () {
 //     Route::get('/', [NursePatientMonitoringController::class, 'apiIndex']);
@@ -1349,6 +1351,8 @@ Route::prefix('vitals')->group(function () {
 //     Route::put('/{id}/restore', [NursePatientMonitoringController::class, 'apiRestore']);
 //     Route::delete('/{id}/force-delete', [NursePatientMonitoringController::class, 'apiForceDelete']);
 // });
+
+
 /*
 |--------------------------------------------------------------------------
 
@@ -2023,7 +2027,7 @@ Route::prefix('inventory')->group(function () {
         Route::get('/payroll', [PayrollReportApiController::class, 'index']);
         Route::get('/overtime', [OvertimeReportApiController::class, 'index']);
         Route::get('/department-salary', [DepartmentSalaryApiController::class, 'index']);
-        Route::get('/payroll-summary', [PayrollSummaryApiController::class, 'index']);
+        //Route::get('/payroll-summary', [PayrollSummaryApiController::class, 'index']);
    
 
     });
