@@ -127,84 +127,153 @@
                         </td>
 
 
-                        {{-- STATUS --}}
-                        <td>
+                      <td>
+                        {{--STATUS--}}
 
-                            @if($item->signature_status)
+    @if($item->status == 'Signed')
 
-                                <span class="badge bg-soft-success text-success">
+        <span class="badge bg-soft-success text-success">
 
-                                    Signed
+            Signed
 
-                                </span>
+        </span>
 
-                            @else
+    @elseif($item->status == 'Cancelled')
 
-                                <span class="badge bg-soft-warning text-warning">
+        <span class="badge bg-soft-danger text-danger">
 
-                                    Pending
+            Cancelled
 
-                                </span>
+        </span>
 
-                            @endif
+    @elseif($item->status == 'Expired')
 
-                        </td>
+        <span class="badge bg-soft-dark text-dark">
+
+            Expired
+
+        </span>
+
+    @else
+
+        <span class="badge bg-soft-warning text-warning">
+
+            Draft
+
+        </span>
+
+    @endif
+
+</td>
 
 
                         {{-- ACTIONS --}}
-                        <td class="text-end">
 
-                            <div class="d-flex gap-2 justify-content-end">
+               <td class="text-end">
 
-                                {{-- VIEW --}}
-                                <a href="{{ route(
-                                        'doctor.medical-certification.show',
-                                        $item->id
-                                    ) }}"
-                                   class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
+    <div class="d-flex gap-2 justify-content-end">
 
-                                    <i class="feather-eye"></i>
+        {{-- VIEW --}}
+        <a href="{{ route(
+                'doctor.medical-certification.show',
+                $item->id
+            ) }}"
+           class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+           title="View">
 
-                                </a>
+            <i class="feather-eye"></i>
 
-
-                                @if(!$item->signature_status)
-
-                                {{-- EDIT --}}
-                                <a href="{{ route(
-                                        'doctor.medical-certification.edit',
-                                        $item->id
-                                    ) }}"
-                                   class="btn btn-outline-primary btn-icon rounded-circle btn-sm">
-
-                                    <i class="feather-edit"></i>
-
-                                </a>
+        </a>
 
 
-                                {{-- SIGN --}}
-                                <form action="{{ route(
-                                                'doctor.medical-certification.sign',
-                                                $item->id
-                                            ) }}"
-                                      method="POST">
+        @if(!$item->signature_status)
 
-                                    @csrf
+        {{-- EDIT --}}
+        <a href="{{ route(
+                'doctor.medical-certification.edit',
+                $item->id
+            ) }}"
+           class="btn btn-outline-primary btn-icon rounded-circle btn-sm"
+           title="Edit">
 
-                                    <button type="submit"
-                                            class="btn btn-outline-success btn-icon rounded-circle btn-sm">
+            <i class="feather-edit"></i>
 
-                                        <i class="feather-check"></i>
+        </a>
+@if(
+    $item->status != 'Cancelled'
+)
 
-                                    </button>
+<form action="{{ route(
+                'doctor.medical-certification.cancel',
+                $item->id
+            ) }}"
+      method="POST">
 
-                                </form>
+    @csrf
 
-                                @endif
+    <button type="submit"
+            class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+            title="Cancel">
 
-                            </div>
+        <i class="feather-x"></i>
 
-                        </td>
+    </button>
+
+</form>
+
+@endif
+
+        {{-- SIGN --}}
+        <form action="{{ route(
+                        'doctor.medical-certification.sign',
+                        $item->id
+                    ) }}"
+              method="POST">
+
+            @csrf
+
+            <button type="submit"
+                    class="btn btn-outline-success btn-icon rounded-circle btn-sm"
+                    title="Sign">
+
+                <i class="feather-check"></i>
+
+            </button>
+
+        </form>
+
+        @endif
+
+
+        {{-- DOWNLOAD --}}
+        <a href="{{ route(
+                'doctor.medical-certification.pdf',
+                $item->id
+            ) }}"
+           class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+           title="Download">
+
+            <i class="feather-download"></i>
+
+        </a>
+
+
+        {{-- PRINT --}}
+        <a href="{{ route(
+        'doctor.medical-certification.print',
+        $item->id
+    ) }}"
+   target="_blank"
+   class="btn btn-outline-dark btn-icon rounded-circle btn-sm"
+   title="Print">
+
+    <i class="feather-printer"></i>
+
+</a>
+
+    </div>
+
+</td>
 
                     </tr>
 

@@ -281,11 +281,22 @@ Route::delete(
     '/{id}/delete',
     [MedicalCertificationController::class, 'destroy']
 )->name('delete');
-
+Route::get(
+    '/{id}/pdf',
+    [MedicalCertificationController::class, 'downloadPdf']
+)->name('pdf');
 Route::post(
     '/{id}/sign',
     [MedicalCertificationController::class, 'sign']
 )->name('sign');
+Route::get(
+    '/{id}/print',
+    [MedicalCertificationController::class, 'printPdf']
+)->name('print');
+Route::post(
+    '/{id}/cancel',
+    [MedicalCertificationController::class, 'cancel']
+)->name('cancel');
 });
 });
 
