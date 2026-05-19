@@ -7,11 +7,21 @@ use Illuminate\Http\Request;
 use App\Models\MedicalCertification;
 use Illuminate\Support\Str;
 use App\Models\Staff;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalCertificationController extends Controller
 {
     public function index()
     {
+        MedicalCertification::where(
+    'valid_until',
+    '<',
+    now()->toDateString()
+)
+->where('status', 'Signed')
+->update([
+    'status' => 'Expired'
+]);
         $records = MedicalCertification::latest()
             ->paginate(10);
             return view(
@@ -78,6 +88,18 @@ class MedicalCertificationController extends Controller
         'registration_number' => $request->registration_number,
 
         'hospital_name' => $request->hospital_name,
+
+        'status' => 'Draft',
+
+'action_history' =>
+
+    'Certificate created by '
+
+    . auth()->user()->name
+
+    . ' on '
+
+    . now(),
 
         'certificate_number' =>
             'MC-' . rand(1000, 9999),
@@ -184,22 +206,91 @@ $employees = Staff::with(
         ->with('success', 'Updated Successfully');
 }
     public function sign($id)
-    {
-        $record = MedicalCertification::findOrFail($id);
+{
+    $record = MedicalCertification::findOrFail($id);
 
-        $record->update([
-            'signature_status' => 1,
-            'signed_by' => auth()->user()->name ?? 'Doctor',
-            'signed_at' => now(),
-            'status' => 'Signed'
-        ]);
+    $record->update([
 
-        return back()->with(
-            'success',
-            'Certificate Signed'
-        );
-    }
+        'signature_status' => 1,
 
+        'status' => 'Signed',
+
+        'signed_by' => auth()->user()->name,
+
+        'signed_at' => now(),
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate signed by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    return back()->with(
+        'success',
+        'Certificate Signed Successfully'
+    );
+}
+public function downloadPdf($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->download(
+        $record->certificate_number . '.pdf'
+    );
+}
+public function cancel($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    $record->update([
+
+        'status' => 'Cancelled',
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate cancelled by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    return back()->with(
+        'success',
+        'Certificate Cancelled Successfully'
+    );
+}
+public function printPdf($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->stream(
+        $record->certificate_number . '.pdf'
+    );
+}
     public function destroy($id)
     {
         $record = MedicalCertification::findOrFail($id);

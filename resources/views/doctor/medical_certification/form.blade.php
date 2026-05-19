@@ -13,12 +13,35 @@
 </div>
 
 @endif
+{{-- PAGE HEADER --}}
+<div class="page-header mb-4 d-flex justify-content-between align-items-center">
 
+    <h5>
 
+        {{ isset($record)
+            ? 'Edit Medical Certificate'
+            : 'Create Medical Certificate'
+        }}
+
+    </h5>
+
+    <a href="{{ route('doctor.medical-certification.index') }}"
+       class="btn btn-secondary btn-sm">
+
+        <i class="feather-arrow-left me-1"></i>
+
+        Back
+
+    </a>
+
+</div>
+    
 <div class="card">
 <div class="card-body">
 
+
 <div class="row">
+    
 
    {{-- STAFF --}}
 <div class="col-md-6 mb-3">
@@ -228,6 +251,7 @@
     </button>
 
 </div>
+
 
 </div>
 </div>
