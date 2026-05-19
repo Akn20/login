@@ -39,6 +39,7 @@ class MedicalCertification extends Model
         'signature_status',
         'signed_by',
         'signed_at',
+        'action_history',
          'status',
         'remarks'
     ];

@@ -100,6 +100,7 @@ class MedicalCertificationController extends Controller
     . ' on '
 
     . now(),
+    
 
         'certificate_number' =>
             'MC-' . rand(1000, 9999),
@@ -241,6 +242,21 @@ $employees = Staff::with(
 public function downloadPdf($id)
 {
     $record = MedicalCertification::findOrFail($id);
+    $record->update([
+
+    'action_history' =>
+
+        ($record->action_history ?? '')
+
+        . "\nCertificate downloaded by "
+
+        . auth()->user()->name
+
+        . " on "
+
+        . now(),
+
+]);
 
     $pdf = Pdf::loadView(
         'doctor.medical_certification.pdf',
@@ -281,6 +297,21 @@ public function cancel($id)
 public function printPdf($id)
 {
     $record = MedicalCertification::findOrFail($id);
+    $record->update([
+
+    'action_history' =>
+
+        ($record->action_history ?? '')
+
+        . "\nCertificate printed by "
+
+        . auth()->user()->name
+
+        . " on "
+
+        . now(),
+
+]);
 
     $pdf = Pdf::loadView(
         'doctor.medical_certification.pdf',

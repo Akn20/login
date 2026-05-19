@@ -361,7 +361,19 @@
 
         <div class="border rounded p-3 bg-light">
 
-            {!! nl2br($record->action_history ?? '-') !!}
+            @if($record->action_history)
+
+    {!! nl2br($record->action_history) !!}
+
+@else
+
+    <span class="text-muted">
+
+        No audit activity available
+
+    </span>
+
+@endif
 
         </div>
 
