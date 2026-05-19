@@ -1644,7 +1644,9 @@ Route::get('/payroll-dashboard',
         Route::post('/{id}/restore', [PayrollDeductionController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [PayrollDeductionController::class, 'forceDelete'])->name('forceDelete');
     });
-    // Payroll - Hourly Pay
+   /* 
+   
+   // Payroll - Hourly Pay
 
     Route::prefix('payroll/hourly-pay')
         ->name('payroll.hourly-pay.')
@@ -1664,6 +1666,10 @@ Route::get('/payroll-dashboard',
             Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
             Route::delete('/{id}', [HourlyPayController::class, 'destroy'])->name('destroy');
         });
+
+        */
+
+        
     // ----------------------------------------
 // Payroll - Hourly Pay Approval
 // ----------------------------------------
