@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
+use App\Http\Controllers\Api\FinancialYearApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyDashboardApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReportApiController;
 use App\Http\Controllers\Api\Radiology\RadiologyReviewApiController;
