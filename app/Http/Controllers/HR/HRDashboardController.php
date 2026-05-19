@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HR;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
 use App\Models\LeaveApplication;
+use App\Models\PrePayrollAdjustment;
 use App\Models\Staff;
 use Carbon\Carbon;
 
@@ -17,6 +18,7 @@ class HRDashboardController extends Controller
             'total_staff' => Staff::count(),
             'active_staff' => Staff::where('status', 'active')->count(),
             'pending_leaves' => LeaveApplication::where('status', 'pending')->count(),
+            $stats['pending_payroll'] = PrePayrollAdjustment::where('status', 'pending')->count(),
         ];
 
         // 1) Headcount by Department (for bar chart)

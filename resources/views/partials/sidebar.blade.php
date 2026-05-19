@@ -116,6 +116,17 @@
                     <li class="nxl-item"><a href="{{ route('post.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-plus-square me-2"></i>Post-Op Notes</a></li>
                 </ul>
+                <li class="nxl-item">
+                        <a href="{{ route('consent.index') }}"
+                        class="nxl-link"
+                        up-follow
+                        up-target="#main-container">
+
+                            <i class="feather-shield me-2"></i>
+
+                            Surgery Consent
+                        </a>
+                    </li>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/beds*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
@@ -751,6 +762,12 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item">
+    <a href="{{ route('hr.payroll.dashboard') }}" class="nxl-link">
+        <i class="feather-grid me-2"></i>
+        Payroll Dashboard
+    </a>
+</li>
 
 
   </li>
@@ -867,6 +884,38 @@
         <i class="feather-file-text me-2"></i>Pre Payroll Adjustment
     </a>
 </li>
+
+
+
+{{-- PAYROLL RESULT / SALARY SHEET --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.payroll-result.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-file-text me-2"></i>
+        Payroll Result / Salary Sheet
+
+    </a>
+</li>
+{{-- PAYROLL RESULT EARNINGS --}}
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result-earnings.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+        <i class="feather-dollar-sign me-2"></i>Payroll Earnings Breakdown
+    </a>
+</li>
+<li class="nxl-item">
+    <a href="{{ route('hr.payroll.payroll-result-deductions.index') }}"
+       class="nxl-link {{ request()->routeIs('hr.payroll.payroll-result-deductions.*') ? 'active' : '' }}"
+       up-follow up-target="#main-container">
+
+        <i class="feather-minus-circle me-2"></i>
+        Payroll Deductions Breakdown
+    </a>
+</li>
+
         {{-----Hourly Pay Approval------}}
             
         <li class="nxl-item">
