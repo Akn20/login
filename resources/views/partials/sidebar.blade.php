@@ -598,7 +598,28 @@
                             up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
                 </ul>
+
             </li>
+            <li class="nxl-item nxl-hasmenu">
+
+             <a href="{{ route('admin.casesheets.index') }}"
+                class="nxl-link">
+
+                <span class="nxl-micon">
+                    <i class="feather-clipboard"></i>
+                </span>
+
+                <span class="nxl-mtext">
+                     Case Sheet
+                </span>
+
+                <span class="nxl-arrow">
+                     <i class="feather-chevron-right"></i>
+                </span>
+
+            </a>
+
+        </li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('surgery*', 'ot*', 'postoperative*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">

@@ -204,6 +204,7 @@ use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
 use App\Http\Controllers\AccountantRevenueController;
 
+use App\Http\Controllers\CaseSheetController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -3559,3 +3560,12 @@ Route::prefix('reconciliation-reports')->group(function () {
 
 });
 
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource('casesheets', CaseSheetController::class);
+
+});
