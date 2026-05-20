@@ -166,10 +166,7 @@
 
 </td>
 
-
-                        {{-- ACTIONS --}}
-
-               <td class="text-end">
+<td class="text-end">
 
     <div class="d-flex gap-2 justify-content-end">
 
@@ -186,9 +183,15 @@
         </a>
 
 
-        @if(!$item->signature_status)
-
         {{-- EDIT --}}
+        @if(
+            !$item->signature_status
+            &&
+            $item->status != 'Cancelled'
+            &&
+            $item->status != 'Expired'
+        )
+
         <a href="{{ route(
                 'doctor.medical-certification.edit',
                 $item->id
@@ -199,31 +202,20 @@
             <i class="feather-edit"></i>
 
         </a>
-@if(
-    $item->status != 'Cancelled'
-)
 
-<form action="{{ route(
-                'doctor.medical-certification.cancel',
-                $item->id
-            ) }}"
-      method="POST">
+        @endif
 
-    @csrf
 
-    <button type="submit"
-            class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-            title="Cancel">
-
-        <i class="feather-x"></i>
-
-    </button>
-
-</form>
-
-@endif
 
         {{-- SIGN --}}
+        @if(
+            !$item->signature_status
+            &&
+            $item->status != 'Cancelled'
+            &&
+            $item->status != 'Expired'
+        )
+
         <form action="{{ route(
                         'doctor.medical-certification.sign',
                         $item->id
@@ -245,31 +237,33 @@
         @endif
 
 
-        {{-- DOWNLOAD --}}
-        <a href="{{ route(
-                'doctor.medical-certification.pdf',
-                $item->id
-            ) }}"
-           class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-           title="Download">
 
-            <i class="feather-download"></i>
+        {{-- CANCEL --}}
+        @if(
+            $item->status != 'Cancelled'
+            &&
+            $item->status != 'Expired'
+        )
 
-        </a>
+        <form action="{{ route(
+                        'doctor.medical-certification.cancel',
+                        $item->id
+                    ) }}"
+              method="POST">
 
+            @csrf
 
-        {{-- PRINT --}}
-        <a href="{{ route(
-        'doctor.medical-certification.print',
-        $item->id
-    ) }}"
-   target="_blank"
-   class="btn btn-outline-dark btn-icon rounded-circle btn-sm"
-   title="Print">
+            <button type="submit"
+                    class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+                    title="Cancel">
 
-    <i class="feather-printer"></i>
+                <i class="feather-x"></i>
 
-</a>
+            </button>
+
+        </form>
+
+        @endif
 
     </div>
 
