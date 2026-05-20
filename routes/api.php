@@ -198,7 +198,7 @@ use App\Http\Controllers\HR\Reports\AttendanceReportController;
 // Receptionist
 
 // Receptionist
-// use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
+use App\Http\Controllers\Admin\Nurse\PatientMonitoringController as NursePatientMonitoringController;
 // use App\Http\Controllers\ReceptionistReportController;
 // use App\Http\Controllers\ReceptionistDashboardController;
 
@@ -1439,16 +1439,16 @@ Route::prefix('nurse-shift-handover')->group(function () {
     // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
-    //     // Create handover note
+//     // Create handover note
 //     Route::post('/', [NurseShiftsController::class, 'apiStore']);
 
-    //     // Update handover note
+//     // Update handover note
 //     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
 
-    //     // Delete handover note
+//     // Delete handover note
 //     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
 
-    //     // Update handover status
+//     // Update handover status
 //     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
 // });
 //     // Get handover notes by assignment
@@ -3630,3 +3630,274 @@ Route::prefix('reconciliation-reports')->group(function () {
 
 
 
+/*
+|--------------------------------------------------------------------------
+| 38. Payroll: PayrollResultDeductionController
+|--------------------------------------------------------------------------
+*/
+  Route::prefix('payroll-deductions')->group(function () {
+
+    Route::get('/', [PayrollResultDeductionController::class, 'apiIndex']);
+    Route::get('/{id}', [PayrollResultDeductionController::class, 'apiShow']);
+    Route::post('/', [PayrollResultDeductionController::class, 'apiStore']);
+    Route::put('/{id}', [PayrollResultDeductionController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PayrollResultDeductionController::class, 'apiDelete']);
+});  
+//Payroll Results
+Route::prefix('payroll-results')->group(function () {
+
+    Route::get('/', [PayrollResultController::class, 'apiIndex']);
+    Route::get('{id}', [PayrollResultController::class, 'apiShow']);
+  
+});
+Route::prefix('surgery-consent')->group(function () {
+
+    Route::post('/store', [SurgeryConsentApiController::class, 'store']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Data Usage Consent API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('data-consent')->group(function () {
+
+    Route::get('/',
+        [DataUsageConsentApiController::class, 'index']);
+
+    Route::post('/',
+        [DataUsageConsentApiController::class, 'store']);
+
+    Route::get('/{id}',
+        [DataUsageConsentApiController::class, 'show']);
+
+    Route::put('/{id}',
+        [DataUsageConsentApiController::class, 'update']);
+
+    Route::delete('/{id}',
+        [DataUsageConsentApiController::class, 'destroy']);
+
+    Route::get('/history/{patient_id}',
+        [DataUsageConsentApiController::class, 'history']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Insurance Consent API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('insurance-consent')->group(function () {
+
+    Route::get('/',
+        [InsuranceConsentApiController::class, 'index']);
+
+    Route::post('/',
+        [InsuranceConsentApiController::class, 'store']);
+
+    Route::get('/{id}',
+        [InsuranceConsentApiController::class, 'show']);
+
+    Route::post('/update/{id}',
+        [InsuranceConsentApiController::class, 'update']);
+
+    Route::delete('/delete/{id}',
+        [InsuranceConsentApiController::class, 'destroy']);
+});
+
+// ==========================
+// 40. Leave Type API
+// ==========================
+
+Route::prefix('leave-types')->group(function () {
+
+    // Special routes FIRST (important)
+    Route::get('/deleted/list', [LeaveTypeController::class, 'deleted']);
+    Route::post('/restore/{id}', [LeaveTypeController::class, 'restore']);
+    Route::delete('/force-delete/{id}', [LeaveTypeController::class, 'forceDelete']);
+
+    // Normal CRUD
+    Route::get('/', [LeaveTypeController::class, 'index']);
+    Route::post('/', [LeaveTypeController::class, 'store']);
+    Route::get('/{id}', [LeaveTypeController::class, 'show']);
+    Route::put('/{id}', [LeaveTypeController::class, 'update']);
+    Route::delete('/{id}', [LeaveTypeController::class, 'destroy']);
+
+});
+
+
+// ==========================
+// 41. HourlyPay Approval API
+// ====
+
+Route::prefix('payroll/hourly-pay-approval')->group(function () {
+
+ Route::get('/trash', [HourlyPayApprovalController::class, 'trash']);
+    // Get all records
+    Route::get('/', [HourlyPayApprovalController::class, 'index']);
+
+    // Store new record
+    Route::post('/', [HourlyPayApprovalController::class, 'store']);
+
+    // Get single record
+    Route::get('/{id}', [HourlyPayApprovalController::class, 'show']);
+
+    // Update record
+    Route::put('/{id}', [HourlyPayApprovalController::class, 'update']);
+
+    // Delete (soft delete)
+    Route::delete('/{id}', [HourlyPayApprovalController::class, 'destroy']);
+
+    // Trash (soft deleted list)
+   // Route::get('/trash', [HourlyPayApprovalController::class, 'trash']);
+
+    // Restore
+    Route::post('/restore/{id}', [HourlyPayApprovalController::class, 'restore']);
+
+    // Permanent delete
+    Route::delete('/force-delete/{id}', [HourlyPayApprovalController::class, 'forceDelete']);
+
+});
+
+Route::get('/payroll/work-types', function () {
+    return response()->json(
+        DB::table('hourly_pays')->select('code', 'name')->get()
+    );
+});
+
+
+
+/*
+|--------------------------------------------------------------------------
+| 42 Payroll: Statutory Contributions
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/payroll/statutory-contribution/rules', function () {
+    return response()->json([
+        'success' => true,
+        'ruleSets' => \App\Models\DeductionRuleSet::pluck('rule_set_code')
+    ]);
+});
+
+
+Route::prefix('payroll/statutory-contribution')->group(function () {
+
+    Route::get('/deleted', [StatutoryContributionController::class, 'deleted']);
+
+    Route::get('/', [StatutoryContributionController::class, 'index']);
+    Route::post('/', [StatutoryContributionController::class, 'store']);
+
+    Route::get('/{id}', [StatutoryContributionController::class, 'show']);
+    Route::put('/{id}', [StatutoryContributionController::class, 'update']);
+    Route::delete('/{id}', [StatutoryContributionController::class, 'destroy']);
+
+    Route::post('/{id}/restore', [StatutoryContributionController::class, 'restore']);
+    Route::delete('/{id}/force-delete', [StatutoryContributionController::class, 'forceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 43. Payroll: Rate Employee Mapping
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/payroll/rate-employee-mapping/create',
+    [RateEmployeeMappingController::class, 'create']
+);
+
+Route::prefix('payroll/rate-employee-mapping')->group(function () {
+
+    Route::get('/', [RateEmployeeMappingController::class, 'index']);
+    Route::post('/', [RateEmployeeMappingController::class, 'store']);
+
+    Route::get('/deleted', [RateEmployeeMappingController::class, 'deleted']);
+
+    Route::get('/{id}', [RateEmployeeMappingController::class, 'show']);
+    Route::put('/{id}', [RateEmployeeMappingController::class, 'update']);
+    Route::delete('/{id}', [RateEmployeeMappingController::class, 'destroy']);
+
+    Route::post('/{id}/restore', [RateEmployeeMappingController::class, 'restore']);
+    Route::delete('/{id}/force-delete', [RateEmployeeMappingController::class, 'forceDelete']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 43. Payroll - Payroll Result (API)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('payroll/payroll-result')->group(function () {
+    Route::get('/', [PayrollResultController::class, 'index']);
+      Route::get('/{id}', [PayrollResultController::class, 'show']);
+    Route::post('/generate', [PayrollResultController::class, 'generate']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Refund Management APIs
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('refunds')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/', [RefundApiController::class, 'index']);
+
+    Route::post('/', [RefundApiController::class, 'store']);
+
+    Route::get('/{id}', [RefundApiController::class, 'show']);
+
+    Route::put('/{id}', [RefundApiController::class, 'update']);
+
+    Route::delete('/{id}', [RefundApiController::class, 'destroy']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Approval
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/{id}/approve', [
+        RefundApiController::class,
+        'approve'
+    ]);
+
+    Route::post('/{id}/reject', [
+        RefundApiController::class,
+        'reject'
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/{id}/process-payment', [
+        RefundApiController::class,
+        'processPayment'
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bill Fetch
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/fetch/bill-details', [
+        RefundApiController::class,
+        'fetchBillDetails'
+    ]);
+});
