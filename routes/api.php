@@ -68,6 +68,7 @@ use App\Http\Controllers\DepartmentController;
 // Leave Management
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\doctor\MedicalCertificationController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
@@ -1669,5 +1670,21 @@ Route::prefix('training-certification-tracking')->group(function () {
     Route::get('/{id}', [TrainingCertificationTrackingController::class, 'apiShow']);
     Route::put('/{id}', [TrainingCertificationTrackingController::class, 'apiUpdate']);
     Route::delete('/{id}', [TrainingCertificationTrackingController::class, 'apiDelete']);
+});
+
+//----------------Medical Certification------------------------------
+Route::prefix('medical-certification')->group(function () {
+
+    Route::get('/', [MedicalCertificationController::class, 'apiIndex']);
+
+    Route::post( '/',[MedicalCertificationController::class, 'apiStore']);
+
+    Route::get('/{id}', [MedicalCertificationController::class, 'apiShow']);
+
+    Route::put('/{id}',[MedicalCertificationController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [MedicalCertificationController::class, 'apiDelete']);
+
+    Route::post(   '/sign/{id}',   [MedicalCertificationController::class, 'apiSign']);
 });
 
