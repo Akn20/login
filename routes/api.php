@@ -1676,15 +1676,17 @@ Route::prefix('training-certification-tracking')->group(function () {
 Route::prefix('medical-certification')->group(function () {
 
     Route::get('/', [MedicalCertificationController::class, 'apiIndex']);
-
     Route::post( '/',[MedicalCertificationController::class, 'apiStore']);
-
     Route::get('/{id}', [MedicalCertificationController::class, 'apiShow']);
-
     Route::put('/{id}',[MedicalCertificationController::class, 'apiUpdate']);
-
     Route::delete('/{id}', [MedicalCertificationController::class, 'apiDelete']);
+    Route::post('/sign/{id}',   [MedicalCertificationController::class, 'apiSign']);
+    Route::get(
+    '/pdf/{id}',
+    [MedicalCertificationController::class, 'apiPdf']
+);
+    Route::post('/cancel/{id}', [MedicalCertificationController::class, 'apiCancel']);  
 
-    Route::post(   '/sign/{id}',   [MedicalCertificationController::class, 'apiSign']);
+    Route::get('/print/{id}',[MedicalCertificationController::class, 'apiPrint']);
 });
 

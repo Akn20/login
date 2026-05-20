@@ -346,6 +346,15 @@ public function printPdf($id)
 
 public function apiIndex()
 {
+    MedicalCertification::where(
+    'valid_until',
+    '<',
+    now()->toDateString()
+)
+->where('status', 'Signed')
+->update([
+    'status' => 'Expired'
+]);
     $records = MedicalCertification::latest()
         ->get();
 
@@ -357,7 +366,18 @@ public function apiIndex()
 
 public function apiShow($id)
 {
-    $record = MedicalCertification::findOrFail($id);
+  $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
 
     return response()->json([
         'success' => true,
@@ -367,10 +387,35 @@ public function apiShow($id)
 
 public function apiStore(Request $request)
 {
+    $request->validate([
+
+    'employee_id'      => 'required',
+
+    'certificate_type' => 'required',
+
+    'issue_date'       => 'required',
+
+    'valid_from'       => 'required',
+
+    'valid_until'      => 'required',
+
+    'doctor_name'      => 'required',
+    'registration_number' => 'required',
+]);
     $staff = Staff::where(
         'employee_id',
         $request->employee_id
     )->first();
+    if (!$staff) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Employee not found'
+
+    ], 404);
+}
 
     $record = MedicalCertification::create([
 
@@ -399,11 +444,18 @@ public function apiStore(Request $request)
         'doctor_name' => $request->doctor_name,
 
         'registration_number' => $request->registration_number,
+'hospital_name' => $request->hospital_name,
 
-        'hospital_name' => $request->hospital_name,
+'status' => 'Draft',
 
-        'certificate_number' =>
-            'MC-' . rand(1000, 9999),
+'action_history' =>
+
+    'Certificate created via app on '
+
+    . now(),
+
+'certificate_number' =>
+    'MC-' . rand(1000, 9999),
     ]);
 
     return response()->json([
@@ -415,12 +467,63 @@ public function apiStore(Request $request)
 
 public function apiUpdate(Request $request, $id)
 {
-    $record = MedicalCertification::findOrFail($id);
+    $record = MedicalCertification::find($id);
 
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+ if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Signed certificate cannot be edited'
+
+    ], 400);
+}
+$request->validate([
+
+    'employee_id'      => 'required',
+
+    'certificate_type' => 'required',
+
+    'issue_date'       => 'required',
+
+    'valid_from'       => 'required',
+
+    'valid_until'      => 'required',
+
+    'doctor_name'      => 'required',
+    'registration_number' => 'required',
+]);
     $staff = Staff::where(
         'employee_id',
         $request->employee_id
     )->first();
+    if (!$staff) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Employee not found'
+
+    ], 404);
+}
 
     $record->update([
 
@@ -449,6 +552,14 @@ public function apiUpdate(Request $request, $id)
         'registration_number' => $request->registration_number,
 
         'hospital_name' => $request->hospital_name,
+
+'action_history' =>
+
+    ($record->action_history ?? '')
+
+    . "\nCertificate updated via app on "
+
+    . now(),
     ]);
 
     return response()->json([
@@ -460,8 +571,37 @@ public function apiUpdate(Request $request, $id)
 
 public function apiDelete($id)
 {
-    MedicalCertification::findOrFail($id)
-        ->delete();
+  $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+
+if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Signed certificate cannot be deleted'
+
+    ], 400);
+}
+
+$record->delete();
 
     return response()->json([
         'success' => true,
@@ -471,22 +611,164 @@ public function apiDelete($id)
 
 public function apiSign($id)
 {
-    $record = MedicalCertification::findOrFail($id);
+    $record = MedicalCertification::find($id);
 
-    $record->update([
+    if (!$record) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Certificate not found'
+        ], 404);
+    }
 
-        'signature_status' => 1,
+  if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+    return response()->json([
 
-        'signed_by' => auth()->user()->name ?? 'Doctor',
+        'success' => false,
 
-        'signed_at' => now(),
+        'message' => 'Certificate cannot be signed'
 
-        'status' => 'Signed'
-    ]);
+    ], 400);
+}
+  $record->update([
+
+    'signature_status' => 1,
+
+    'signed_by' => auth()->user()->name ?? 'Doctor',
+
+    'signed_at' => now(),
+
+    'status' => 'Signed',
+
+    'action_history' =>
+
+        ($record->action_history ?? '')
+
+        . "\nCertificate signed via app on "
+
+        . now(),
+]);
 
     return response()->json([
         'success' => true,
         'message' => 'Certificate Signed Successfully'
     ]);
+}
+
+public function apiCancel($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+   if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate cannot be cancelled'
+
+    ], 400);
+}
+    $record->update([
+
+        'status' => 'Cancelled',
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate cancelled via app on "
+
+            . now(),
+
+    ]);
+
+    return response()->json([
+
+        'success' => true,
+
+        'message' => 'Certificate Cancelled Successfully'
+    ]);
+}
+public function apiPdf($id)
+{
+    $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+    $record->update([
+
+    'action_history' =>
+
+        ($record->action_history ?? '')
+
+        . "\nCertificate downloaded via app on "
+
+        . now(),
+
+]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->download(
+        $record->certificate_number . '.pdf'
+    );
+}
+public function apiPrint($id)
+{
+   $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+
+    $record->update([
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate printed via app on "
+
+            . now(),
+
+    ]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->stream(
+        $record->certificate_number . '.pdf'
+    );
 }
 }
