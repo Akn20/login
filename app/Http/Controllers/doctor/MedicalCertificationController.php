@@ -11,24 +11,61 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalCertificationController extends Controller
 {
-    public function index()
-    {
-        MedicalCertification::where(
-    'valid_until',
-    '<',
-    now()->toDateString()
-)
-->where('status', 'Signed')
-->update([
-    'status' => 'Expired'
-]);
-        $records = MedicalCertification::latest()
-            ->paginate(10);
-            return view(
-            'doctor.medical_certification.index',
-            compact('records')
+  public function index(Request $request)
+{
+    MedicalCertification::where(
+        'valid_until',
+        '<',
+        now()->toDateString()
+    )
+    ->where('status', 'Signed')
+    ->update([
+        'status' => 'Expired'
+    ]);
+
+    $query = MedicalCertification::query();
+
+    // SEARCH BY EMPLOYEE NAME
+    if ($request->employee_name) {
+
+        $query->where(
+            'employee_name',
+            'like',
+            '%' . $request->employee_name . '%'
         );
     }
+
+  
+
+    // FILTER BY CERTIFICATE TYPE
+    if ($request->certificate_type) {
+
+        $query->where(
+            'certificate_type',
+            $request->certificate_type
+        );
+    }
+
+    // FILTER BY STATUS
+    if ($request->status) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+   
+
+    $records = $query
+        ->latest()
+        ->paginate(10);
+
+    return view(
+        'doctor.medical_certification.index',
+        compact('records')
+    );
+}
 
    public function create()
 {
@@ -54,8 +91,8 @@ class MedicalCertificationController extends Controller
         'employee_id'      => 'required',
         'certificate_type' => 'required',
         'issue_date'       => 'required',
-        'valid_from'       => 'required',
-        'valid_until'      => 'required',
+        'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
         'doctor_name'      => 'required',
     ]);
 
@@ -168,8 +205,8 @@ $employees = Staff::with(
         'employee_id'      => 'required',
         'certificate_type' => 'required',
         'issue_date'       => 'required',
-        'valid_from'       => 'required',
-        'valid_until'      => 'required',
+         'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
         'doctor_name'      => 'required',
     ]);
 

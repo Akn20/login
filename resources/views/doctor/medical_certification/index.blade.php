@@ -39,7 +39,131 @@
 </div>
 
 @endif
+<form method="GET"
+      action="{{ route('doctor.medical-certification.index') }}">
 
+<div class="card mb-4">
+
+<div class="card-body">
+
+<div class="row">
+
+    {{-- EMPLOYEE NAME --}}
+    <div class="col-md-4 mb-3">
+
+        <label>Employee Name</label>
+
+        <input type="text"
+               name="employee_name"
+               class="form-control"
+               value="{{ request('employee_name') }}">
+
+    </div>
+
+    {{-- CERTIFICATE TYPE --}}
+    <div class="col-md-3 mb-3">
+
+        <label>Certificate Type</label>
+
+        <select name="certificate_type"
+                class="form-control">
+
+            <option value="">All</option>
+
+            <option value="Sick Leave"
+                {{ request('certificate_type') == 'Sick Leave' ? 'selected' : '' }}>
+
+                Sick Leave
+
+            </option>
+
+            <option value="Fitness"
+                {{ request('certificate_type') == 'Fitness' ? 'selected' : '' }}>
+
+                Fitness
+
+            </option>
+
+            <option value="Insurance"
+                {{ request('certificate_type') == 'Insurance' ? 'selected' : '' }}>
+
+                Insurance
+
+            </option>
+
+        </select>
+
+    </div>
+
+    {{-- STATUS --}}
+    <div class="col-md-3 mb-3">
+
+        <label>Status</label>
+
+        <select name="status"
+                class="form-control">
+
+            <option value="">All</option>
+
+            <option value="Draft"
+                {{ request('status') == 'Draft' ? 'selected' : '' }}>
+
+                Draft
+
+            </option>
+
+            <option value="Signed"
+                {{ request('status') == 'Signed' ? 'selected' : '' }}>
+
+                Signed
+
+            </option>
+
+            <option value="Cancelled"
+                {{ request('status') == 'Cancelled' ? 'selected' : '' }}>
+
+                Cancelled
+
+            </option>
+
+            <option value="Expired"
+                {{ request('status') == 'Expired' ? 'selected' : '' }}>
+
+                Expired
+
+            </option>
+
+        </select>
+
+    </div>
+
+    {{-- BUTTONS --}}
+    <div class="col-md-2 d-flex align-items-end gap-2 mb-3">
+
+        {{-- SEARCH --}}
+        <button class="btn btn-primary w-100">
+
+            Search
+
+        </button>
+
+        {{-- RESET --}}
+        <a href="{{ route('doctor.medical-certification.index') }}"
+           class="btn btn-secondary w-100">
+
+            Reset
+
+        </a>
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+</form>
 
 <div class="card">
 
