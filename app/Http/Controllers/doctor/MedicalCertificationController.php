@@ -94,6 +94,8 @@ class MedicalCertificationController extends Controller
         'valid_from'       => 'required|after_or_equal:issue_date',
         'valid_until'      => 'required|after_or_equal:issue_date',
         'doctor_name'      => 'required',
+        'registration_number' => 'required',
+        'hospital_name'=> 'required',
     ]);
 
     MedicalCertification::create([
@@ -208,6 +210,8 @@ $employees = Staff::with(
          'valid_from'       => 'required|after_or_equal:issue_date',
         'valid_until'      => 'required|after_or_equal:issue_date',
         'doctor_name'      => 'required',
+        'registration_number' => 'required',
+          'hospital_name'=> 'required',
     ]);
 
     $record->update([

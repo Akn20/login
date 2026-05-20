@@ -218,7 +218,7 @@
     {{-- REGISTRATION NUMBER --}}
     <div class="col-md-4 mb-3">
 
-        <label>Registration Number</label>
+        <label>Registration Number*</label>
 
         <input type="text"
                name="registration_number"
@@ -231,7 +231,7 @@
     {{-- HOSPITAL NAME --}}
     <div class="col-md-4 mb-3">
 
-        <label>Hospital / Clinic Name</label>
+        <label>Hospital / Clinic Name*</label>
 
         <input type="text"
                name="hospital_name"
