@@ -10,7 +10,7 @@ use App\Models\Staff;
 use App\Models\HourlyPay;
 use App\Models\Shift; // ✅ ADDED
 
-class HourlyPayApprovalController extends Controller
+class HourlyPayController extends Controller
 {
 
 /* ================= INDEX ================= */

@@ -608,11 +608,11 @@ Route::prefix('hr')->group(function () {
 });
 
     // Financial Years
-    Route::get('/financial-years', [FinancialYearApiController::class, 'index']);
-    Route::post('/financial-years', [FinancialYearApiController::class, 'store']);
-    Route::put('/financial-years/{financial_year}', [FinancialYearApiController::class, 'update']);
-    Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::class, 'destroy']);
-    Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
+    // Route::get('/financial-years', [FinancialYearApiController::class, 'index']);
+    // Route::post('/financial-years', [FinancialYearApiController::class, 'store']);
+    // Route::put('/financial-years/{financial_year}', [FinancialYearApiController::class, 'update']);
+    // Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::class, 'destroy']);
+    // Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
 
 
 /*
