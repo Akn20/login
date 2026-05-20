@@ -1704,6 +1704,7 @@ Route::prefix('nurse-shift-handover')->group(function () {
         Route::delete('/critical-alerts/{id}/force', [AlertController::class, 'apiForceDelete']);
     });
 
+    // Doctor Radiology Module
     Route::prefix('doctor')->group(function () {
 
         Route::get('/radiology', [DoctorRadiologyController::class, 'apiIndex']);
