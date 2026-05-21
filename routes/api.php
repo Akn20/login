@@ -75,6 +75,7 @@ use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
+use App\Http\Controllers\doctor\MedicalCertificationController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\ExpiryController;
 use App\Http\Controllers\HR\EmployeeController;
@@ -93,6 +94,7 @@ use App\Http\Controllers\HR\Payroll\EmployeeSalaryAssignmentController;
 use App\Http\Controllers\HR\Payroll\PrePayrollAdjustmentController;
 use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
+use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
@@ -1689,7 +1691,44 @@ Route::prefix('payroll-deductions')->group(function () {
     );
 
 });
+//------------Training and certification----------------------------------------------------------
+Route::prefix('training-certification-tracking')->group(function () {
+    // 1. Static paths first
+    Route::get('/deleted', [TrainingCertificationTrackingController::class, 'apiDeleted']);
+    Route::get('/form-data', [TrainingCertificationTrackingController::class, 'formData']);
+    Route::get('/employees', [TrainingCertificationTrackingController::class, 'employees']);
 
+    // 2. Actions on specific IDs
+    Route::post('/{id}/restore', [TrainingCertificationTrackingController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [TrainingCertificationTrackingController::class, 'apiForceDelete']);
+
+    // 3. General CRUD
+    Route::get('/', [TrainingCertificationTrackingController::class, 'apiIndex']);
+    Route::post('/', [TrainingCertificationTrackingController::class, 'apiStore']);
+
+    // 4. Wildcards LAST
+    Route::get('/{id}', [TrainingCertificationTrackingController::class, 'apiShow']);
+    Route::put('/{id}', [TrainingCertificationTrackingController::class, 'apiUpdate']);
+    Route::delete('/{id}', [TrainingCertificationTrackingController::class, 'apiDelete']);
+});
+
+//----------------Medical Certification------------------------------
+Route::prefix('medical-certification')->group(function () {
+
+    Route::get('/', [MedicalCertificationController::class, 'apiIndex']);
+    Route::post( '/',[MedicalCertificationController::class, 'apiStore']);
+    Route::get('/{id}', [MedicalCertificationController::class, 'apiShow']);
+    Route::put('/{id}',[MedicalCertificationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [MedicalCertificationController::class, 'apiDelete']);
+    Route::post('/sign/{id}',   [MedicalCertificationController::class, 'apiSign']);
+    Route::get(
+    '/pdf/{id}',
+    [MedicalCertificationController::class, 'apiPdf']
+);
+    Route::post('/cancel/{id}', [MedicalCertificationController::class, 'apiCancel']);  
+
+    Route::get('/print/{id}',[MedicalCertificationController::class, 'apiPrint']);
+});
     
 //Payroll Results
 Route::prefix('payroll-results')->group(function () {
