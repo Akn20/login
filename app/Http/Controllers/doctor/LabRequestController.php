@@ -165,14 +165,47 @@ public function reportDetails($id)
     );
 }
 
-public function historicalReports()
+public function historicalReports(Request $request)
 {
-    $reports = LabReport::with([
+    $query = LabReport::with([
         'sample.labRequest.patient'
     ])
-    ->where('status', 'Completed')
-    ->latest()
-    ->get();
+    ->where('status', 'Completed');
+
+    // SEARCH
+    if ($request->search) {
+
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+
+            // Search patient name
+            $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
+
+                $patient->where('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%");
+
+            })
+
+            // Search test name
+            ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
+
+                $lab->where('test_name', 'like', "%$search%");
+
+            });
+
+        });
+
+    }
+
+    // DATE FILTER
+    if ($request->date) {
+
+        $query->whereDate('created_at', $request->date);
+
+    }
+
+    $reports = $query->latest()->get();
 
     return view(
         'doctor.laboratory.historical-reports',
