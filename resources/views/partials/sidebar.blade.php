@@ -116,6 +116,17 @@
                     <li class="nxl-item"><a href="{{ route('post.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-plus-square me-2"></i>Post-Op Notes</a></li>
                 </ul>
+                <li class="nxl-item">
+                        <a href="{{ route('consent.index') }}"
+                        class="nxl-link"
+                        up-follow
+                        up-target="#main-container">
+
+                            <i class="feather-shield me-2"></i>
+
+                            Surgery Consent
+                        </a>
+                    </li>
             </li>
             <li class="nxl-item">
 
@@ -935,18 +946,7 @@
     </a>
 </li>
 
-        {{-----Hourly Pay Approval------}}
-            
-        <li class="nxl-item">
-            <a href="{{ route('hr.payroll.hourly-pay-approval.index') }}"
-            class="nxl-link {{ request()->routeIs('hr.payroll.hourly-pay-approval.*') ? 'active' : '' }}"
-            up-follow up-target="#main-container">
-
-                <i class="feather-clock me-2"></i>
-                Hourly Pay Approval
-
-            </a>
-        </li>
+        
 
         </ul>
 </li>   

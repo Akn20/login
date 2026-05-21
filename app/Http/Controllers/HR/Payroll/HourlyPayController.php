@@ -191,7 +191,7 @@ public function apiStore(Request $request)
     ]);
 
     $data = HourlyPay::create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'id' => (string) Str::uuid(),
 
         'code' => $request->code,
         'name' => $request->name,
