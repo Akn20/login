@@ -403,22 +403,56 @@ public function printPdf($id)
 
     // ================= API METHODS ================= //
 
-public function apiIndex()
+public function apiIndex(Request $request)
 {
     MedicalCertification::where(
-    'valid_until',
-    '<',
-    now()->toDateString()
-)
-->where('status', 'Signed')
-->update([
-    'status' => 'Expired'
-]);
-    $records = MedicalCertification::latest()
+        'valid_until',
+        '<',
+        now()->toDateString()
+    )
+    ->where('status', 'Signed')
+    ->update([
+        'status' => 'Expired'
+    ]);
+
+    $query = MedicalCertification::query();
+
+    // EMPLOYEE NAME
+    if ($request->employee_name) {
+
+        $query->where(
+            'employee_name',
+            'like',
+            '%' . $request->employee_name . '%'
+        );
+    }
+
+    // CERTIFICATE TYPE
+    if ($request->certificate_type) {
+
+        $query->where(
+            'certificate_type',
+            $request->certificate_type
+        );
+    }
+
+    // STATUS
+    if ($request->status) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+    $records = $query
+        ->latest()
         ->get();
 
     return response()->json([
+
         'success' => true,
+
         'data' => $records
     ]);
 }
@@ -454,12 +488,12 @@ public function apiStore(Request $request)
 
     'issue_date'       => 'required',
 
-    'valid_from'       => 'required',
-
-    'valid_until'      => 'required',
+    'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
 
     'doctor_name'      => 'required',
     'registration_number' => 'required',
+    'hospital_name' => 'required',
 ]);
     $staff = Staff::where(
         'employee_id',
@@ -562,12 +596,12 @@ $request->validate([
 
     'issue_date'       => 'required',
 
-    'valid_from'       => 'required',
-
-    'valid_until'      => 'required',
+  'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
 
     'doctor_name'      => 'required',
     'registration_number' => 'required',
+    'hospital_name' => 'required',
 ]);
     $staff = Staff::where(
         'employee_id',
@@ -763,27 +797,40 @@ public function apiPdf($id)
 {
     $record = MedicalCertification::find($id);
 
-if (!$record) {
+    if (!$record) {
 
-    return response()->json([
+        return response()->json([
 
-        'success' => false,
+            'success' => false,
 
-        'message' => 'Certificate not found'
+            'message' => 'Certificate not found'
 
-    ], 404);
-}
+        ], 404);
+    }
+
+    // ALLOW ONLY SIGNED
+    if ($record->status != 'Signed') {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Only signed certificates can be downloaded'
+
+        ], 400);
+    }
+
     $record->update([
 
-    'action_history' =>
+        'action_history' =>
 
-        ($record->action_history ?? '')
+            ($record->action_history ?? '')
 
-        . "\nCertificate downloaded via app on "
+            . "\nCertificate downloaded via app on "
 
-        . now(),
+            . now(),
 
-]);
+    ]);
 
     $pdf = Pdf::loadView(
         'doctor.medical_certification.pdf',
@@ -796,18 +843,30 @@ if (!$record) {
 }
 public function apiPrint($id)
 {
-   $record = MedicalCertification::find($id);
+    $record = MedicalCertification::find($id);
 
-if (!$record) {
+    if (!$record) {
 
-    return response()->json([
+        return response()->json([
 
-        'success' => false,
+            'success' => false,
 
-        'message' => 'Certificate not found'
+            'message' => 'Certificate not found'
 
-    ], 404);
-}
+        ], 404);
+    }
+
+    // ALLOW ONLY SIGNED
+    if ($record->status != 'Signed') {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Only signed certificates can be printed'
+
+        ], 400);
+    }
 
     $record->update([
 
