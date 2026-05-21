@@ -8,12 +8,64 @@ use Illuminate\Http\Request;
 
 class UsageTrackerApiController extends Controller
 {
-    public function index()
-    {
-        return response()->json(
-            UsageTracker::latest()->get()
-        );
-    }
+   public function index()
+{
+    return response()->json(
+
+        \App\Models\Subscription::with([
+            'organization',
+            'plan'
+        ])->latest()->get()->map(function ($item) {
+
+            return [
+
+                'id' => $item->id,
+
+                'organization' =>
+                    $item->organization?->name,
+
+                'plan' =>
+                    $item->plan?->name,
+
+                'users' =>
+                    '0 / ' .
+                    (
+                        $item->plan?->max_users == -1
+                        ? 'Unlimited'
+                        : $item->plan?->max_users
+                    ),
+
+                'patients' =>
+                    '0 / ' .
+                    (
+                        $item->plan?->max_patients == -1
+                        ? 'Unlimited'
+                        : $item->plan?->max_patients
+                    ),
+
+                'hospitals' =>
+                    '0 / ' .
+                    (
+                        $item->plan?->max_staff == -1
+                        ? 'Unlimited'
+                        : $item->plan?->max_staff
+                    ),
+
+                'status' =>
+                    ucfirst($item->status),
+
+                'start_date' =>
+                    $item->start_date,
+
+                'expiry_date' =>
+                    $item->expiry_date,
+
+                'auto_renew' =>
+                    $item->auto_renew,
+            ];
+        })
+    );
+}
 
     public function store(Request $request)
     {

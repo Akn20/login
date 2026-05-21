@@ -71,8 +71,7 @@
                                         method="POST">
 
                                         @csrf
-                                        @method('PUT')
-
+                                    
                                         <button class="btn btn-outline-success btn-icon rounded-circle btn-sm">
                                             <i class="feather-rotate-ccw"></i>
                                         </button>
