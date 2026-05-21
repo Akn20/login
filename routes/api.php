@@ -42,6 +42,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\Billing\BillingApiController;
+use App\Http\Controllers\Api\CaseSheetApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
 use App\Http\Controllers\Api\InsuranceConsentApiController;
@@ -3985,4 +3986,23 @@ Route::prefix('refunds')->group(function () {
         RefundApiController::class,
         'fetchBillDetails'
     ]);
+});
+
+
+Route::prefix('case-sheets')->group(function () {
+
+    Route::get('/', [CaseSheetApiController::class, 'index']);
+
+    Route::post('/', [CaseSheetApiController::class, 'store']);
+
+    Route::get('/patients', [CaseSheetApiController::class, 'patients']);
+
+    Route::get('/doctors', [CaseSheetApiController::class, 'doctors']);
+
+    Route::get('/{id}', [CaseSheetApiController::class, 'show']);
+
+    Route::put('/{id}', [CaseSheetApiController::class, 'update']);
+
+    Route::delete('/{id}', [CaseSheetApiController::class, 'destroy']);
+
 });
