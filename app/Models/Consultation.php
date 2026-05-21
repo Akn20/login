@@ -62,4 +62,9 @@ class Consultation extends Model
     {
         return $this->hasMany(LabRequest::class);
     }
+
+    public function scanRequests()
+    {
+        return $this->hasMany(ScanRequest::class);
+    }
 }
