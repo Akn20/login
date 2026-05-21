@@ -2,57 +2,146 @@
 
 @section('content')
 
-    <div class="container">
+<div class="container-fluid">
 
-        <h4>Test Parameters</h4>
+    {{-- PAGE HEADER --}}
+    <div class="page-header mb-4">
 
-        <a href="{{ route('admin.laboratory.parameters.create') }}" class="btn btn-primary mb-3">
-            Add Parameter
-        </a>
+        <div class="page-header-left">
 
-        <table class="table table-bordered">
-            <thead align="center">
-                <tr>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th>Range</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
+            <h5 class="m-b-0">
+                Laboratory Test Parameters
+            </h5>
 
-            <tbody align="center">
-                @foreach($parameters as $param)
-                    <tr>
-                        <td>{{ $param->name }}</td>
-                        <td>{{ $param->unit }}</td>
-                        <td>{{ $param->min_value }} - {{ $param->max_value }}</td>
+        </div>
 
+        <div class="page-header-right ms-auto">
 
+            <a href="{{ route('admin.laboratory.parameters.create') }}"
+               class="btn btn-primary">
 
-                        <td>
-                            <div class="hstack gap-2 justify-content-center">
-                                <a href="{{ route('admin.laboratory.parameters.edit', $param->id) }}"
-                                    class="avatar-text avatar-md" data-bs-toggle="tooltip" title="Edit">
-                                    <i class="feather feather-edit"></i>
-                                </a>
+                <i class="feather-plus me-2"></i>
 
-                                <form action="{{ route('admin.laboratory.parameters.destroy', $param->id) }}" method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="avatar-text avatar-md d-flex align-items-center justify-content-center"
-                                        data-bs-toggle="tooltip" title="Delete">
-                                        <i class="feather feather-trash-2"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                Add Parameter
+
+            </a>
+
+        </div>
 
     </div>
+
+    {{-- CARD --}}
+    <div class="card">
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered align-middle">
+
+                <thead class="text-center">
+
+                    <tr>
+
+                        <th width="80">#</th>
+
+                        <th>Parameter Name</th>
+
+                        <th>Unit</th>
+
+                        <th>Reference Range</th>
+
+                        <th width="180">Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="text-center">
+
+                    @forelse($parameters as $key => $param)
+
+                        <tr>
+
+                            <td>
+                                {{ $key + 1 }}
+                            </td>
+
+                            <td>
+                                {{ $param->name }}
+                            </td>
+
+                            <td>
+                                {{ $param->unit ?? '-' }}
+                            </td>
+
+                            <td>
+
+                                {{ $param->min_value ?? '0' }}
+
+                                -
+
+                                {{ $param->max_value ?? '0' }}
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    {{-- EDIT --}}
+                                    <a href="{{ route('admin.laboratory.parameters.edit', $param->id) }}"
+                                       class="btn btn-outline-primary btn-icon rounded-circle"
+                                       title="Edit">
+
+                                        <i class="feather-edit"></i>
+
+                                    </a>
+
+                                    {{-- DELETE --}}
+                                    <form action="{{ route('admin.laboratory.parameters.destroy', $param->id) }}"
+                                          method="POST"
+                                          onsubmit="return confirm('Delete this parameter?')">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-icon rounded-circle"
+                                                title="Delete">
+
+                                            <i class="feather-trash-2"></i>
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td colspan="5" class="text-center">
+
+                                No parameters found
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 @endsection

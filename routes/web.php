@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\DischargePreparationController;
+use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
@@ -99,8 +100,7 @@ use App\Http\Controllers\HR\PayrollDeductionController;
 use App\Http\Controllers\HR\Payroll\StatutoryContributionController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\RateEmployeeMappingController;
-
-
+use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
 
 use App\Http\Controllers\HR\Reports\AttendanceReportController;
@@ -115,6 +115,7 @@ use App\Http\Controllers\HR\Reports\StaffStrengthReportController;
 use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
+use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -179,6 +180,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 // use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 
 //use App\Http\Controllers\ReceptionistReportController;
+// use App\Http\Controllers\ReceptionistReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -188,9 +190,21 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\AccountantReportController;
+use App\Http\Controllers\Admin\InsuranceClaimController;
+use App\Http\Controllers\Admin\FinancialReconciliationController;
+use App\Http\Controllers\Admin\BankVerificationController;
+use App\Http\Controllers\Admin\DigitalPaymentController;
+use App\Http\Controllers\Admin\FinancialDiscrepancyController;
+use App\Http\Controllers\Admin\ReconciliationReportController;
+
+
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
+use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
+use App\Http\Controllers\AccountantRevenueController;
 
+use App\Http\Controllers\CaseSheetController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -954,51 +968,14 @@ Route::middleware(['auth'])
 
         Route::prefix('payroll')->name('payroll.')->group(function () {
 
-            Route::resource('statutory-deduction', StatutoryDeductionController::class);
-            // Deleted records
-            Route::get('statutory-deduction/deleted', [StatutoryDeductionController::class, 'deleted'])
-                ->name('statutory-deduction.deleted');
-
-            // Restore
-            Route::put('statutory-deduction/{id}/restore', [StatutoryDeductionController::class, 'restore'])
-                ->name('statutory-deduction.restore');
-
-            // Force delete
-            Route::delete('statutory-deduction/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])
-                ->name('statutory-deduction.force-delete');
-            Route::resource('salary-structure', SalaryStructureController::class);
-
-                        // Deleted records
-            Route::get('salary-structure/deleted', [SalaryStructureController::class, 'deleted'])
-                ->name('salary-structure.deleted');
-
-            // Restore
-            Route::put('salary-structure/{id}/restore', [SalaryStructureController::class, 'restore'])
-                ->name('salary-structure.restore');
-
-            // Force delete
-            Route::delete('salary-structure/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])
-                ->name('salary-structure.force-delete');
             Route::resource('hourly-pay-approval', HourlyPayApprovalController::class);
             Route::resource('allowance', PayrollAllowanceController::class);
-            Route::resource('deduction-rule-set', DeductionRuleSetController::class);
-            Route::resource('employee-salary-assignment', EmployeeSalaryAssignmentController::class);
 
-            // Deleted records
-            Route::get('employee-salary-assignment/deleted', [EmployeeSalaryAssignmentController::class, 'deleted'])
-                ->name('employee-salary-assignment.deleted');
+           
 
-            // Restore
-            Route::put('employee-salary-assignment/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])
-                ->name('employee-salary-assignment.restore');
+   
 
-            // Force delete
-            Route::delete('employee-salary-assignment/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])
-                ->name('employee-salary-assignment.force-delete');
-
-            Route::resource('statutory-contribution', StatutoryContributionController::class);
-
-            Route::resource('pre-payroll', PrePayrollAdjustmentController::class);
+        
 
             Route::post(
                     'pre-payroll/{id}/approve',
@@ -1006,21 +983,7 @@ Route::middleware(['auth'])
                 )->name('pre-payroll.approve');
                         });
 
-                        Route::get(
-                            'pre-payroll/deleted',
-                            [PrePayrollAdjustmentController::class, 'deleted']
-                        )->name('pre-payroll.deleted');
-
-                        Route::put(
-                            'pre-payroll/{id}/restore',
-                            [PrePayrollAdjustmentController::class, 'restore']
-                        )->name('pre-payroll.restore');
-
-                        Route::delete(
-                            'pre-payroll/{id}/force-delete',
-                            [PrePayrollAdjustmentController::class, 'forceDelete']
-                        )->name('pre-payroll.force-delete');
-
+                   
                         Route::get(
                         'hourly-pay-approval/trash',
                         [HourlyPayApprovalController::class, 'trash']
@@ -1366,6 +1329,197 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{id}', [PrescriptionController::class, 'show'])->name('show');
     });
 
+    Route::prefix('accountant/claims')->name('accountant.claims.')->group(function () {
+
+    Route::get('/', [InsuranceClaimController::class, 'index'])->name('index');
+    Route::get('/create', [InsuranceClaimController::class, 'create'])->name('create');
+    Route::post('/store', [InsuranceClaimController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [InsuranceClaimController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [InsuranceClaimController::class, 'update'])->name('update');
+
+    Route::get('/view/{id}', [InsuranceClaimController::class, 'view'])->name('view');
+
+    Route::post('/approval', [InsuranceClaimController::class, 'storeApproval'])->name('approval');
+    Route::post('/payment', [InsuranceClaimController::class, 'storePayment'])->name('payment');
+
+    Route::post('/reconcile/{id}', [InsuranceClaimController::class, 'reconcile'])->name('reconcile');
+
+    Route::delete('/delete/{id}', [InsuranceClaimController::class, 'destroy'])->name('delete');
+
+        Route::put('/restore/{id}', [InsuranceClaimController::class, 'restore'])->name('restore');
+
+        Route::delete('/force-delete/{id}', [InsuranceClaimController::class, 'forceDelete'])->name('forceDelete');
+        Route::get('/deleted', [InsuranceClaimController::class, 'deleted'])->name('deleted');
+        Route::get('/reports', [InsuranceClaimController::class, 'reports'])->name('reports');
+});
+
+
+Route::prefix('financial-reconciliation')->name('financial-reconciliation.')->group(function () {
+
+    Route::get('/', [FinancialReconciliationController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [FinancialReconciliationController::class, 'create'])
+        ->name('create');
+
+    Route::post('/store', [FinancialReconciliationController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}', [FinancialReconciliationController::class, 'show'])
+        ->name('view');
+
+
+    Route::get('/edit/{id}', [FinancialReconciliationController::class, 'edit'])
+    ->name('edit');
+
+        Route::put('/update/{id}', [FinancialReconciliationController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [FinancialReconciliationController::class, 'destroy'])
+            ->name('delete');
+
+        Route::get('/deleted', [FinancialReconciliationController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::put('/restore/{id}', [FinancialReconciliationController::class, 'restore'])
+            ->name('restore');
+
+        Route::delete('/force-delete/{id}', [FinancialReconciliationController::class, 'forceDelete'])
+            ->name('forceDelete');
+});
+
+Route::prefix('bank-verification')->name('bank-verification.')->group(function () {
+
+    Route::get('/', [BankVerificationController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [BankVerificationController::class, 'create'])
+        ->name('create');
+
+     Route::get('/search', [BankVerificationController::class, 'search'])
+    ->name('search');
+
+    Route::post('/store', [BankVerificationController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}', [BankVerificationController::class, 'show'])
+        ->name('view');
+
+        Route::get('/edit/{id}',[BankVerificationController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}',[BankVerificationController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}',[BankVerificationController::class, 'destroy'])->name('delete');
+
+        Route::get('/deleted/list',[BankVerificationController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::put('/restore/{id}',[BankVerificationController::class, 'restore'])
+            ->name('restore');
+
+        Route::delete('/force-delete/{id}',[BankVerificationController::class, 'forceDelete'])
+            ->name('forceDelete');
+});
+
+    Route::prefix('digital-payment')->name('digital-payment.')->group(function () {
+
+    Route::get('/',[DigitalPaymentController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create',[DigitalPaymentController::class, 'create'])
+        ->name('create');
+
+    Route::get('/search',[DigitalPaymentController::class, 'search'])
+        ->name('search');
+
+
+    Route::post('/store',[DigitalPaymentController::class, 'store'])
+        ->name('store');
+
+    Route::get('/view/{id}',[DigitalPaymentController::class, 'show'])
+        ->name('view');
+
+    Route::get('/edit/{id}',[DigitalPaymentController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/update/{id}',[DigitalPaymentController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/delete/{id}',[DigitalPaymentController::class, 'destroy'])
+        ->name('delete');
+
+    Route::get('/deleted/list',[DigitalPaymentController::class, 'deleted'])
+        ->name('deleted');
+
+    Route::put('/restore/{id}',[DigitalPaymentController::class, 'restore'])
+        ->name('restore');
+
+    Route::delete('/force-delete/{id}',[DigitalPaymentController::class, 'forceDelete'])
+        ->name('forceDelete');
+});
+
+Route::prefix('financial-discrepancy')->name('financial-discrepancy.')->group(function () {
+    Route::get('/', [FinancialDiscrepancyController::class,'index'
+    ])->name('index');
+
+    Route::get('/create', [FinancialDiscrepancyController::class,'create'
+    ])->name('create');
+
+    Route::get('/search',
+    [FinancialDiscrepancyController::class, 'search']
+)->name('search');
+
+    Route::post('/store', [ FinancialDiscrepancyController::class,'store'
+    ])->name('store');
+
+    Route::get('/view/{id}', [FinancialDiscrepancyController::class,'show'
+    ])->name('view');
+
+    Route::get('/edit/{id}', [FinancialDiscrepancyController::class,'edit'
+    ])->name('edit');
+
+    Route::put('/update/{id}', [FinancialDiscrepancyController::class,'update'
+    ])->name('update');
+
+    Route::delete('/delete/{id}', [FinancialDiscrepancyController::class,'destroy'
+    ])->name('delete');
+
+    Route::get('/deleted/list', [FinancialDiscrepancyController::class,'deleted'
+    ])->name('deleted');
+
+    Route::put('/restore/{id}', [FinancialDiscrepancyController::class,'restore'
+    ])->name('restore');
+
+    Route::delete('/force-delete/{id}', [FinancialDiscrepancyController::class,'forceDelete'
+    ])->name('forceDelete');
+});
+
+Route::prefix('reconciliation-reports')
+    ->name('reconciliation-reports.')
+    ->group(function () {
+
+    Route::get('/',
+        [ReconciliationReportController::class, 'index'])
+        ->name('index');
+
+    Route::get('/daily-report',
+        [ReconciliationReportController::class, 'dailyReport'])
+        ->name('daily-report');
+
+    Route::get('/bank-report',
+        [ReconciliationReportController::class, 'bankReport'])
+        ->name('bank-report');
+
+    Route::get('/digital-payment-report',
+        [ReconciliationReportController::class, 'digitalPaymentReport'])
+        ->name('digital-payment-report');
+
+    Route::get('/discrepancy-report',
+        [ReconciliationReportController::class, 'discrepancyReport'])
+        ->name('discrepancy-report');
+});
+
     // Laboratory Management
     Route::prefix('laboratory')->name('laboratory.')->group(function () {
 
@@ -1404,6 +1558,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::resource('equipment', EquipmentController::class);
 
         // 🔧 Equipment Maintenance
+        Route::get('/maintenance', [EquipmentMaintenanceController::class, 'show'])
+            ->name('maintenance.show');
         Route::get('/maintenance/deleted', [EquipmentMaintenanceController::class, 'deleted'])
             ->name('maintenance.deleted');
 
@@ -1513,6 +1669,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
                 ->name('alerts.ack');
 
         }); 
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+
+    Route::get('/daily', [AdminReportController::class, 'dailyReport'])->name('daily');
+    Route::get('/daily/export', [AdminReportController::class, 'dailyReportExport'])->name('daily.export');
+    Route::get('/pending', [AdminReportController::class, 'pendingReport'])->name('pending');
+    Route::get('/summary', [AdminReportController::class, 'completionSummary'])->name('summary');
+    Route::get('/critical', [AdminReportController::class, 'criticalReport'])->name('critical');
+    Route::get('/critical/{id}/resolve', [AdminReportController::class, 'resolveCritical'])->name('critical.resolve');
+    Route::get('/maintenance', [AdminReportController::class, 'maintenanceReport'])->name('maintenance');
+    Route::get('/reagent', [AdminReportController::class, 'reagentUsageReport'])->name('reagent');
+
+});
 
         Route::prefix('inventory') ->name('inventory.')->group(function () {
 
@@ -1706,10 +1875,36 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
         Route::get('/edit/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [\App\Http\Controllers\HR\EDM\EmployeeDocumentController::class, 'update'])->name('update');
     });
-    // Leave report
+
+
+    // --Leave report
     Route::prefix('leave-report')->name('leave-report.')->group(function () {
         Route::get('/', [LeaveReportController::class, 'index'])->name('index');
     });
+
+    
+//-------- Training & Certification Tracking--------------
+Route::prefix('training-certification-tracking')
+    ->name('training-certification-tracking.')
+    ->group(function () {
+    Route::get('/', [TrainingCertificationTrackingController::class, 'index'])->name('index');
+        Route::get('/deleted',[TrainingCertificationTrackingController::class, 'deleted'])->name('deleted');
+    Route::get( '/create',[TrainingCertificationTrackingController::class, 'create'])->name('create');
+    Route::post('/store',[TrainingCertificationTrackingController::class, 'store'])->name('store');
+    Route::get( '/{id}/show',[TrainingCertificationTrackingController::class, 'show'])->name('show');
+    Route::get( '/{id}/edit',[TrainingCertificationTrackingController::class, 'edit'])->name('edit');
+    Route::put('/{id}',[TrainingCertificationTrackingController::class, 'update'])->name('update');
+    Route::delete('/{id}',[TrainingCertificationTrackingController::class, 'destroy'])->name('delete');
+    Route::post('/{id}/restore',[TrainingCertificationTrackingController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',[TrainingCertificationTrackingController::class, 'forceDelete'])->name('forceDelete');
+
+});
+
+
+    // Payroll Dashboard
+Route::get('/payroll-dashboard',
+    [PayrollDashboardController::class, 'index']
+)->name('payroll.dashboard');
 
     // Payroll - Allowance
 
@@ -1752,7 +1947,8 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
 
             Route::get('/deleted/list', [HourlyPayController::class, 'deleted'])->name('deleted');
             Route::post('/restore/{id}', [HourlyPayController::class, 'restore'])->name('restore');
-            Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])->name('forceDelete');
+          Route::delete('/force-delete/{id}', [HourlyPayController::class, 'forceDelete'])
+    ->name('force-delete');
 
             Route::get('/{id}/edit', [HourlyPayController::class, 'edit'])->name('edit');
             Route::put('/{id}', [HourlyPayController::class, 'update'])->name('update');
@@ -1830,10 +2026,10 @@ Route::middleware(['auth', 'role:hr,admin,manager,hod'])->prefix('hr')->name('hr
             Route::get('/{id}/show', [DeductionRuleSetController::class, 'show'])->name('show');
             Route::get('/{id}/edit', [DeductionRuleSetController::class, 'edit'])->name('edit');
             Route::put('/{id}', [DeductionRuleSetController::class, 'update'])->name('update');
-            Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('delete');
+            Route::delete('/{id}', [DeductionRuleSetController::class, 'destroy'])->name('destroy');
             Route::get('/deleted', [DeductionRuleSetController::class, 'deleted'])->name('deleted');
             Route::post('/{id}/restore', [DeductionRuleSetController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/{id}/force-delete', [DeductionRuleSetController::class, 'forceDelete'])->name('force-delete');
 
         });
 
@@ -1934,9 +2130,7 @@ Route::prefix('payroll/payroll-result')
     Route::get('/generate',
         [PayrollResultController::class, 'generate']
     )->name('generate');
-
-});
-
+    });
 
 // --- Payroll Rate Employee Mapping --- //
 
@@ -2019,15 +2213,12 @@ Route::prefix('payroll/statutory-deduction')
     Route::get('/{id}/show', [StatutoryDeductionController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [StatutoryDeductionController::class, 'edit'])->name('edit');
     Route::put('/{id}', [StatutoryDeductionController::class, 'update'])->name('update');
-    Route::delete('/{id}', [StatutoryDeductionController::class, 'destroy'])->name('delete');
+  Route::delete('/{id}', [StatutoryDeductionController::class, 'destroy'])
+    ->name('destroy');
 
     Route::post('/{id}/restore', [StatutoryDeductionController::class, 'restore'])->name('restore');
-    Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [StatutoryDeductionController::class, 'forceDelete'])->name('force-delete');
     });
-
-
-
-
 
 //---------Payroll - Salary Structure-----------//
 
@@ -2047,12 +2238,12 @@ Route::prefix('payroll/salary-structure')
 
     Route::put('/{id}', [SalaryStructureController::class, 'update'])->name('update');
 
-    Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('delete');
+    Route::delete('/{id}', [SalaryStructureController::class, 'destroy'])->name('destroy');
     Route::get('/deleted', [SalaryStructureController::class, 'deleted'])->name('deleted');
 
     Route::post('/{id}/restore', [SalaryStructureController::class, 'restore'])->name('restore');
 
-    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [SalaryStructureController::class, 'forceDelete'])->name('force-delete');
 });
  //---------Payroll - Employee Salary assignment-----------//
 Route::prefix('payroll/employee-salary-assignment')
@@ -2068,87 +2259,72 @@ Route::prefix('payroll/employee-salary-assignment')
 
     // restore + force delete
     Route::post('/{id}/restore', [EmployeeSalaryAssignmentController::class, 'restore'])->name('restore');
-    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}/force-delete', [EmployeeSalaryAssignmentController::class, 'forceDelete'])->name('force-delete');
 
     // dynamic
     Route::get('/{id}/show', [EmployeeSalaryAssignmentController::class, 'show'])->name('show');
     Route::get('/{id}/edit', [EmployeeSalaryAssignmentController::class, 'edit'])->name('edit');
     Route::put('/{id}', [EmployeeSalaryAssignmentController::class, 'update'])->name('update');
-    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('delete');
+    Route::delete('/{id}', [EmployeeSalaryAssignmentController::class, 'destroy'])->name('destroy');
 });
 
 
 
 //---------Payroll - Pre-Payroll Adjustment-----------//
-Route::prefix('pre-payroll')->group(function () {
+Route::prefix('payroll/pre-payroll')
+    ->name('payroll.pre-payroll.')
+    ->group(function () {
 
-    Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
-        ->name('pre-payroll.index');
+        Route::get('/', [PrePayrollAdjustmentController::class, 'index'])
+            ->name('index');
 
-    Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
-        ->name('pre-payroll.create');
+        Route::get('/create', [PrePayrollAdjustmentController::class, 'create'])
+            ->name('create');
 
-    Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
-        ->name('pre-payroll.store');
+        Route::post('/', [PrePayrollAdjustmentController::class, 'store'])
+            ->name('store');
+
         Route::post('/approve/{id}', [PrePayrollAdjustmentController::class, 'approve'])
-    ->name('pre-payroll.approve');
-    Route::get('pre-payroll/{id}/edit', 
-    [PrePayrollAdjustmentController::class, 'edit']
-)->name('pre-payroll.edit');
-Route::put('pre-payroll/{id}', 
-    [PrePayrollAdjustmentController::class, 'update']
-)->name('pre-payroll.update');
-});
- 
-//---------Payroll - Payroll Result -earnings breakdown-----------//
-Route::prefix('payroll/payroll-result-earnings')
-    ->name('payroll.payroll-result-earnings.')
-    ->group(function () {
-    Route::get('/', [PayrollResultEarningController::class, 'index'])->name('index');
+            ->name('approve');
 
-    Route::get('/create', [PayrollResultEarningController::class, 'create'])->name('create');
-    Route::post('/', [PayrollResultEarningController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [PrePayrollAdjustmentController::class, 'edit'])
+            ->name('edit');
 
-    Route::get('/deleted', [PayrollResultEarningController::class, 'deleted'])->name('deleted');
-
-    Route::get('/{id}', [PayrollResultEarningController::class, 'show'])->name('show');
-    Route::get('/{id}/edit', [PayrollResultEarningController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [PayrollResultEarningController::class, 'update'])->name('update');
-
-    Route::delete('/{id}', [PayrollResultEarningController::class, 'destroy'])->name('delete');
-
-    Route::post('/restore/{id}', [PayrollResultEarningController::class, 'restore'])->name('restore');
-    Route::delete('/force-delete/{id}', [PayrollResultEarningController::class, 'forceDelete'])->name('forceDelete');
-});
-
-//---------Payroll - Payroll Result -deduction breakdown-----------//
-Route::prefix('payroll/payroll-result-deductions')
-    ->name('payroll.payroll-result-deductions.')
-    ->group(function () {
-
-    Route::get('/', [PayrollResultDeductionController::class, 'index'])
-        ->name('index');
-
-    Route::get('/create', [PayrollResultDeductionController::class, 'create'])
-        ->name('create');
-
-    Route::post('/', [PayrollResultDeductionController::class, 'store'])
-        ->name('store');
-
-    Route::get('/{id}', [PayrollResultDeductionController::class, 'show'])
-        ->name('show');
-
-    Route::get('/{id}/edit', [PayrollResultDeductionController::class, 'edit'])
-        ->name('edit');
-
-    Route::put('/{id}', [PayrollResultDeductionController::class, 'update'])
-        ->name('update');
-
-    Route::delete('/{id}', [PayrollResultDeductionController::class, 'destroy'])
-        ->name('delete');
-
+        Route::put('/{id}', [PrePayrollAdjustmentController::class, 'update'])
+            ->name('update');
 });
 });
+//---------Payroll - Payroll Result Earnings-----------//
+Route::get(
+    'hr/payroll/payroll-result-earnings',
+    [PayrollResultEarningController::class, 'index']
+)->name('hr.payroll.payroll-result-earnings.index');
+
+Route::post(
+    'hr/payroll/payroll-result-earnings/generate',
+    [PayrollResultEarningController::class, 'generate']
+)->name('hr.payroll.payroll-result-earnings.generate');
+Route::get(
+    'hr/payroll/payroll-result-earnings/{id}/show',
+    [PayrollResultEarningController::class, 'show']
+)->name('hr.payroll.payroll-result-earnings.show');
+
+
+//---------Payroll - Payroll Result Deductions-----------//
+Route::get(
+    'hr/payroll/payroll-result-deductions',
+    [PayrollResultDeductionController::class, 'index']
+)->name('hr.payroll.payroll-result-deductions.index');
+
+Route::post(
+    'hr/payroll/payroll-result-deductions/generate',
+    [PayrollResultDeductionController::class, 'generate']
+)->name('hr.payroll.payroll-result-deductions.generate');
+Route::get(
+    'hr/payroll/payroll-result-deductions/{id}/show',
+    [PayrollResultDeductionController::class, 'show']
+)->name('hr.payroll.payroll-result-deductions.show');
+
 
 
 /*
@@ -2679,7 +2855,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [InsuranceController::class, 'show'])->name('show');
 
     });
-
+    Route::prefix('receptionist')->name('receptionist.')->group(function () {
     Route::prefix('billing')->name('billing.')->group(function () {
 
         Route::get('/', [BasicBillingController::class, 'index'])->name('index');
@@ -2688,6 +2864,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/show/{id}', [BasicBillingController::class, 'show'])->name('show');
         Route::get('/receipt/{id}', [BasicBillingController::class, 'receipt'])->name('receipt');
 
+    });
     });
 });
  
@@ -2899,6 +3076,65 @@ Route::prefix('doctor/ipd')->group(function () {
 
 
 
+// =============================
+// Accountant Financial Reports
+// =============================
+
+Route::prefix('admin/accountant/reports')
+    ->name('admin.accountant.reports.')
+    ->group(function () {
+
+        // Daily Collection Report
+        Route::get(
+            '/daily-collection',
+            [AccountantReportController::class, 'dailyCollection']
+        )->name('daily.collection');
+
+        // Department Revenue Report
+        Route::get(
+            '/department-revenue',
+            [AccountantReportController::class, 'departmentRevenue']
+        )->name('department.revenue');
+
+        // OPD IPD Revenue Report
+        Route::get(
+            '/opd-ipd-revenue',
+            [AccountantReportController::class, 'opdIpdRevenue']
+        )->name('opd.ipd.revenue');
+
+        // Outstanding Dues Report
+        Route::get(
+            '/outstanding-dues',
+            [AccountantReportController::class, 'outstandingDues']
+        )->name('outstanding.dues');
+
+        // Insurance Settlement Report
+        Route::get(
+            '/insurance-settlement',
+            [AccountantReportController::class, 'insuranceSettlement']
+        )->name('insurance.settlement');
+
+        // Refund Report
+        Route::get(
+            '/refund-report',
+            [AccountantReportController::class, 'refundReport']
+        )->name('refund.report');
+
+        // Expense Report
+        Route::get(
+            '/expense-report',
+            [AccountantReportController::class, 'expenseReport']
+        )->name('expense.report');
+
+        // Profit Loss Report
+        Route::get(
+            '/profit-loss',
+            [AccountantReportController::class, 'profitLoss']
+        )->name('profit.loss');
+
+});
+
+
 
 // Patient EMR - Discharge Summary
 
@@ -2968,6 +3204,22 @@ Route::prefix('admin/accountant')->group(function () {
     Route::get('payment/receipt/{id}',[AccountantPaymentController::class, 'receipt'])->name('admin.accountant.payment.receipt');
 
 });
+/*
+|--------------------------------------------------------------------------
+| Accountant: Revenue Management
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin/accountant')->group(function () {
+
+    Route::get('/revenue-management', [AccountantRevenueController::class, 'index'])
+        ->name('admin.accountant.revenue.index');
+        Route::get(
+    '/admin/accountant/revenue-management/export',
+    [AccountantRevenueController::class, 'export']
+)->name('admin.accountant.revenue.export');
+
+});
     /*
 |--------------------------------------------------------------------------
 | Nurse: Discharge Preparation
@@ -2982,15 +3234,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/view/{ipd_id}', [DischargePreparationController::class, 'view'])->name('view');
     });
 });
+/*
+|--------------------------------------------------------------------------
+| Accountant: Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/accountant')->group(function () {
+Route::get('/dashboard', [AccountantDashboardController::class, 'index'])->name('admin.accountant.dashboard');
+});
+/*
+|------------------------------------
+| Nurse:Dashboard
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.nurse.')->group(function () {
+    Route::get('/nurse/dashboard', [NurseDashboardController::class, 'index'])->name('dashboard');
+});
 
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        /*
-|--------------------------------------------------------------------------
-| Insurance Consent
+       
+
+
+/*
+|-----------
+| | Insurance Consent
 |--------------------------------------------------------------------------
 */
 
@@ -3208,3 +3479,93 @@ Route::post(
 
 });
   
+
+Route::prefix('digital-payments')->group(function () {
+
+    Route::get('/', [DigitalPaymentController::class, 'apiIndex']);
+
+    Route::get('/deleted', [DigitalPaymentController::class, 'apiDeleted']);
+
+    Route::get('/search', [DigitalPaymentController::class, 'apiSearch']);
+
+    Route::get('/{id}', [DigitalPaymentController::class, 'apiShow']);
+
+    Route::post('/', [DigitalPaymentController::class, 'apiStore']);
+
+    Route::put('/{id}', [DigitalPaymentController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [DigitalPaymentController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [DigitalPaymentController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [DigitalPaymentController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-discrepancy')->group(function () {
+
+    Route::get('/', [FinancialDiscrepancyController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialDiscrepancyController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialDiscrepancyController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialDiscrepancyController::class, 'apiShow']);
+
+    Route::post('/', [FinancialDiscrepancyController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialDiscrepancyController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialDiscrepancyController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialDiscrepancyController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialDiscrepancyController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('financial-reconciliation')->group(function () {
+
+    Route::get('/', [FinancialReconciliationController::class, 'apiIndex']);
+
+    Route::get('/deleted', [FinancialReconciliationController::class, 'apiDeleted']);
+
+    Route::get('/search', [FinancialReconciliationController::class, 'apiSearch']);
+
+    Route::get('/{id}', [FinancialReconciliationController::class, 'apiShow']);
+
+    Route::post('/', [FinancialReconciliationController::class, 'apiStore']);
+
+    Route::put('/{id}', [FinancialReconciliationController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [FinancialReconciliationController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [FinancialReconciliationController::class, 'apiRestore']);
+
+    Route::delete('/{id}/force-delete', [FinancialReconciliationController::class, 'apiForceDelete']);
+
+});
+
+Route::prefix('reconciliation-reports')->group(function () {
+
+    Route::get('/', [ReconciliationReportController::class,'apiIndex']);
+
+    Route::get('/daily-report', [ReconciliationReportController::class,'apiDailyReport']);
+
+    Route::get('/bank-report', [ReconciliationReportController::class,'apiBankReport']);
+
+    Route::get('/digital-payment-report', [ReconciliationReportController::class,'apiDigitalPaymentReport']);
+
+    Route::get('/discrepancy-report', [ReconciliationReportController::class,'apiDiscrepancyReport']);
+
+});
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource('casesheets', CaseSheetController::class);
+
+});
