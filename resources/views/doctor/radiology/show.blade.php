@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Radiology Report Details | ' . config('app.name'))
+
 @section('content')
 
 <div class="nxl-content">
@@ -49,7 +51,6 @@
                                 <p><strong>Status :</strong> {{ $report->status }} </p>
                             </div>
 
-
                             <div class="col-md-6">
                                 <p> <strong>Radiologist Findings :</strong>{{ $report->findings }}</p>
                                 <p><strong>Diagnosis :</strong>{{ $report->diagnosis }}</p>
@@ -61,15 +62,12 @@
 
 
                 <!-- Upload Card -->
-
                 <div class="card mb-3">
-
                     <div class="card-header">
                         <h5 class="mb-0">Uploaded Scans</h5>
                     </div>
 
                     <div class="card-body">
-
                         @foreach($report->request->uploads as $upload)
 
                             <div class="d-flex align-items-center gap-2">
@@ -82,16 +80,12 @@
                                     Download Report
                                 </a>
                             </div>
-
                         @endforeach
-
                     </div>
                 </div>
 
                 <!-- Notes Card -->
-
                 <div class="card">
-
                     <div class="card-header">
                         <h5 class="mb-0">Clinical Interpretation Notes</h5>
                     </div>
@@ -118,7 +112,6 @@
                             </div>
 
                         </form>
-
                     </div>
                 </div>
                 
@@ -128,30 +121,20 @@
                     </div>
 
                     <div class="card-body">
-
                         @forelse($notes as $note)
-
                             <div class="border rounded p-3 mb-3">
-
                                 <p class="mb-1">{{ $note->interpretation_notes }}</p>
-
                                 <small class="text-muted">Added: {{ $note->created_at->format('d-m-Y h:i A') }}</small>
                             </div>
 
                         @empty
-
                             <p class="text-muted">No clinical notes added.</p>
-
                         @endforelse
-
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
-
 </div>
 
 @endsection

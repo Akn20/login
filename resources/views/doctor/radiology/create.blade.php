@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Request Imaging Test | ' . config('app.name'))
+
 @section('content')
 
 <div class="container-fluid">
@@ -38,16 +40,13 @@
                                           @endforeach
                                           </select>
                                     </div>
-
                               </div>
-
 
                               <div class="row">
                                     <div class="col-md-6 mb-3">
                                           <label class="form-label">Body Part </label>
                                           <input type="text" name="body_part" class="form-control" placeholder="Enter body part">
                                     </div>
-
 
                                     <div class="col-md-6 mb-3">
                                           <label class="form-label">Priority</label>
@@ -56,16 +55,12 @@
                                                 <option value="Urgent"> Urgent</option>
 
                                           </select>
-
                                     </div>
-
                               </div>
 
 
                               <div class="row">
-
                                     <div class="col-md-12 mb-3">
-
                                           <label class="form-label"> Clinical Notes</label>
                                           <textarea name="reason" rows="4" class="form-control" placeholder="Enter clinical notes"></textarea>
                                     </div>
@@ -76,19 +71,13 @@
                                     <div class="d-flex gap-2">
                                           <button type="submit" class="btn btn-success"> Submit Request</button>
 
-                                          <a href="{{ route('doctor.radiology.index') }}" class="btn btn-secondary">
-                                                Cancel
-                                          </a>
+                                          <a href="{{ route('doctor.radiology.index') }}" class="btn btn-secondary"> Cancel</a>
                                     </div>
                               </div>
                         </form>
-
                   </div>
-
             </div>
-
       </div>
-
 </div>
 
 @endsection
