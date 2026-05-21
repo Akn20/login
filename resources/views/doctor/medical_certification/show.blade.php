@@ -26,35 +26,41 @@
 
     </a>
 
-        {{-- DOWNLOAD --}}
-        <a href="{{ route(
-                'doctor.medical-certification.pdf',
-                $record->id
-            ) }}"
-           class="btn btn-danger btn-sm">
 
-            <i class="feather-download me-1"></i>
+    @if($record->status == 'Signed')
 
-            Download PDF
+    {{-- DOWNLOAD --}}
+    <a href="{{ route(
+            'doctor.medical-certification.pdf',
+            $record->id
+        ) }}"
+       class="btn btn-danger btn-sm">
 
-        </a>
+        <i class="feather-download me-1"></i>
+
+        Download PDF
+
+    </a>
 
 
-        {{-- PRINT --}}
-        <a href="{{ route(
-                'doctor.medical-certification.print',
-                $record->id
-            ) }}"
-           target="_blank"
-           class="btn btn-dark btn-sm">
+    {{-- PRINT --}}
+    <a href="{{ route(
+            'doctor.medical-certification.print',
+            $record->id
+        ) }}"
+       target="_blank"
+       class="btn btn-dark btn-sm">
 
-            <i class="feather-printer me-1"></i>
+        <i class="feather-printer me-1"></i>
 
-            Print
+        Print
 
-        </a>
+    </a>
 
-    </div>
+    @endif
+
+</div>
+    
 
 </div>
 

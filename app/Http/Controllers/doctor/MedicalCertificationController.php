@@ -283,21 +283,30 @@ $employees = Staff::with(
 public function downloadPdf($id)
 {
     $record = MedicalCertification::findOrFail($id);
+
+    if ($record->status != 'Signed') {
+
+        return back()->with(
+            'error',
+            'Only signed certificates can be downloaded'
+        );
+    }
+
     $record->update([
 
-    'action_history' =>
+        'action_history' =>
 
-        ($record->action_history ?? '')
+            ($record->action_history ?? '')
 
-        . "\nCertificate downloaded by "
+            . "\nCertificate downloaded by "
 
-        . auth()->user()->name
+            . auth()->user()->name
 
-        . " on "
+            . " on "
 
-        . now(),
+            . now(),
 
-]);
+    ]);
 
     $pdf = Pdf::loadView(
         'doctor.medical_certification.pdf',
@@ -338,21 +347,30 @@ public function cancel($id)
 public function printPdf($id)
 {
     $record = MedicalCertification::findOrFail($id);
+
+    if ($record->status != 'Signed') {
+
+        return back()->with(
+            'error',
+            'Only signed certificates can be printed'
+        );
+    }
+
     $record->update([
 
-    'action_history' =>
+        'action_history' =>
 
-        ($record->action_history ?? '')
+            ($record->action_history ?? '')
 
-        . "\nCertificate printed by "
+            . "\nCertificate printed by "
 
-        . auth()->user()->name
+            . auth()->user()->name
 
-        . " on "
+            . " on "
 
-        . now(),
+            . now(),
 
-]);
+    ]);
 
     $pdf = Pdf::loadView(
         'doctor.medical_certification.pdf',
