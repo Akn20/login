@@ -85,6 +85,7 @@ use App\Http\Controllers\AppointmentController;
 // Doctor
 use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Doctor\IpdController;
+use App\Http\Controllers\Doctor\DoctorRadiologyController;
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -778,6 +779,15 @@ Route::post('/financial-years', [FinancialYearApiController::class, 'store']);
 Route::put('/financial-years/{financial_year}', [FinancialYearApiController::class, 'update']);
 Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::class, 'destroy']);
 Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
+
+Route::prefix('doctor')->group(function () {
+    Route::get('/radiology', [DoctorRadiologyController::class, 'apiIndex']);
+    Route::get('/radiology/create-data', [DoctorRadiologyController::class, 'apiCreateData']);
+    Route::post('/radiology/store', [DoctorRadiologyController::class, 'apiStore']);
+    Route::post('/radiology/note', [DoctorRadiologyController::class, 'apiAddNote']);
+    Route::get('/radiology/download/{id}', [DoctorRadiologyController::class, 'apiDownload']);
+    Route::get('/radiology/{id}', [DoctorRadiologyController::class, 'apiShow']);
+});
 
 
 /*
@@ -1694,7 +1704,15 @@ Route::prefix('nurse-shift-handover')->group(function () {
         Route::delete('/critical-alerts/{id}/force', [AlertController::class, 'apiForceDelete']);
     });
 
+    // Doctor Radiology Module
     Route::prefix('doctor')->group(function () {
+
+        Route::get('/radiology', [DoctorRadiologyController::class, 'apiIndex']);
+        Route::get('/radiology/create-data', [DoctorRadiologyController::class, 'apiCreateData']);
+        Route::post('/radiology/store', [DoctorRadiologyController::class, 'apiStore']);
+        Route::post('/radiology/note', [DoctorRadiologyController::class, 'apiAddNote']);
+        Route::get('/radiology/download/{id}', [DoctorRadiologyController::class, 'apiDownload']);
+        Route::get('/radiology/{id}', [DoctorRadiologyController::class, 'apiShow']);
 
         Route::get('/notifications', [NotificationController::class, 'apiIndex']);
 
