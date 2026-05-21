@@ -106,6 +106,7 @@ use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
+use App\Http\Controllers\hr\PerformanceManagementController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -1664,6 +1665,27 @@ Route::prefix('training-certification-tracking')
 });
 
 
+//-------- Performance Management --------------
+Route::prefix('performance-management')
+    ->name('performance-management.')
+    ->group(function () {
+
+    Route::get(
+        '/',
+        [PerformanceManagementController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/create',
+        [PerformanceManagementController::class, 'create']
+    )->name('create');
+
+    Route::post(
+        '/store',
+        [PerformanceManagementController::class, 'store']
+    )->name('store');
+
+});
     // Payroll Dashboard
 Route::get('/payroll-dashboard',
     [PayrollDashboardController::class, 'index']
