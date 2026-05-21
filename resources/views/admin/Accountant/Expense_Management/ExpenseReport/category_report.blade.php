@@ -59,6 +59,68 @@
 
     }
 
+    .report-table thead th {
+
+        background: #f8f9fc;
+        color: #344767;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.4px;
+
+    }
+
+    .report-table tbody tr:hover {
+
+        background-color: #f9fbff;
+
+    }
+
+    .report-table td {
+
+        color: #4a4a4a;
+
+    }
+
+    .summary-card {
+
+        border-radius: 10px;
+        padding: 18px;
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #eef1f5;
+
+    }
+
+    .summary-title {
+
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 8px;
+        font-weight: 600;
+
+    }
+
+    .summary-amount {
+
+        font-size: 22px;
+        font-weight: 700;
+
+    }
+
+    .final-total-row {
+
+        background-color: #f8f9fc;
+
+    }
+
+    .badge {
+
+        font-size: 11px;
+        padding: 6px 10px;
+
+    }
+
 </style>
 
 {{-- ================= CARD ================= --}}
@@ -110,7 +172,7 @@
 
                         <th>Total Amount</th>
 
-                        <th>Paid Amount</th>
+                        
 
                     </tr>
 
@@ -229,9 +291,7 @@
                                 ₹{{ number_format($item->total, 2) }}
                             </td>
 
-                            <td class="fw-semibold text-success">
-                                ₹{{ number_format($expense->paid_amount, 2) }}
-                            </td>
+               
 
                         </tr>
 
@@ -241,7 +301,7 @@
 
                     <tr>
 
-                        <td colspan="19"
+                        <td colspan="18"
                             class="text-center py-4 text-muted">
 
                             No Expense Records Found
@@ -253,9 +313,9 @@
                 @endforelse
 
                 {{-- FINAL TOTAL --}}
-                <tr class="table-light">
+                <tr class="final-total-row">
 
-                    <td colspan="17"
+                    <td colspan="16"
                         class="text-end fw-bold">
 
                         Final Total
@@ -273,11 +333,85 @@
 
                 </tbody>
 
-            </table>
+            </table> 
+
+           {{-- PAYMENT SUMMARY --}}
+<div class="p-4 border-top bg-white">
+
+    @php
+
+        $totalPaid =
+            $expenses->sum('paid_amount');
+
+        $balanceAmount =
+            $finalTotal - $totalPaid;
+
+    @endphp
+
+    <div class="row g-3">
+
+        {{-- Grand Total --}}
+        <div class="col-md-4">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Grand Total
+                </div>
+
+                <div class="summary-amount text-primary">
+
+                    ₹{{ number_format($finalTotal, 2) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Total Paid --}}
+        <div class="col-md-4">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Total Paid
+                </div>
+
+                <div class="summary-amount text-success">
+
+                    ₹{{ number_format($totalPaid, 2) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- Balance --}}
+        <div class="col-md-4">
+
+            <div class="summary-card">
+
+                <div class="summary-title">
+                    Balance Amount
+                </div>
+
+                <div class="summary-amount text-danger">
+
+                    ₹{{ number_format($balanceAmount, 2) }}
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
+
+</div>
 
 </div>
 
