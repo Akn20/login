@@ -70,6 +70,7 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Doctor\IpdController;
+use App\Http\Controllers\Doctor\DoctorRadiologyController;
 
 // HR
 use App\Http\Controllers\DepartmentController;
@@ -254,6 +255,14 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/print-prescription/{id}', [ConsultationController::class, 'printPrescription'])->name('print-prescription');
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+        // Radiology (for doctor) Routes
+        Route::get('/radiology',[DoctorRadiologyController::class,'index'])->name('radiology.index');
+        Route::get('/radiology/create',[DoctorRadiologyController::class,'create'])->name('radiology.create');
+        Route::post('/radiology/store',[DoctorRadiologyController::class,'store'])->name('radiology.store');
+        Route::get('/radiology/{id}',[DoctorRadiologyController::class,'show'])->name('radiology.show');
+        Route::post('/radiology/note',[DoctorRadiologyController::class,'addNote'])->name('radiology.note');
+        Route::get('/radiology/download/{id}',[DoctorRadiologyController::class,'download'])->name('radiology.download');
     });
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
@@ -274,6 +283,8 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
     Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
     Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
     Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
+
+    
 });
 
 /*
