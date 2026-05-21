@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\InventoryVendor;
-use App\Models\IPDPayment;
+use App\Models\ReceptionistBilling;
+use App\Models\AccountantPayment;
 use App\Models\SalesBill;
 
 class ExpenseReportController extends Controller
@@ -36,14 +37,12 @@ class ExpenseReportController extends Controller
     public function categoryWiseReport(Request $request)
     {
         $query = Expense::with([
-                    'category',
-                    'vendor',
-                    'items'
-                ]);
+            'category',
+            'vendor',
+            'items'
+        ]);
 
-        // From Date Filter
         if ($request->from_date) {
-
             $query->whereDate(
                 'entry_date',
                 '>=',
@@ -51,9 +50,7 @@ class ExpenseReportController extends Controller
             );
         }
 
-        // To Date Filter
         if ($request->to_date) {
-
             $query->whereDate(
                 'entry_date',
                 '<=',
@@ -61,30 +58,24 @@ class ExpenseReportController extends Controller
             );
         }
 
-        // Category Filter
         if ($request->category_id) {
-
             $query->where(
                 'category_id',
                 $request->category_id
             );
         }
 
-        // Vendor Filter
         if ($request->vendor_id) {
-
             $query->where(
                 'vendor_id',
                 $request->vendor_id
             );
         }
 
-        // Payment Status Filter
         if (
             $request->payment_status &&
             $request->payment_status != 'All'
         ) {
-
             $query->where(
                 'payment_status',
                 $request->payment_status
@@ -93,7 +84,6 @@ class ExpenseReportController extends Controller
 
         $expenses = $query->latest()->get();
 
-        // Final Total
         $finalTotal = $expenses->sum('grand_total');
 
         return view(
@@ -108,154 +98,174 @@ class ExpenseReportController extends Controller
     /**
      * Income & Expense Report
      */
-  public function incomeExpenseReport(Request $request)
+    public function incomeExpenseReport(Request $request)
+    {
+        $receptionistIncomeQuery = ReceptionistBilling::query();
+
+        if ($request->from_date) {
+            $receptionistIncomeQuery->whereDate(
+                'created_at',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+            $receptionistIncomeQuery->whereDate(
+                'created_at',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $receptionistBillings = $receptionistIncomeQuery
+                                    ->latest()
+                                    ->get();
+
+        $receptionistIncome = $receptionistBillings->sum('amount');
+
+
+        $accountantIncomeQuery = AccountantPayment::query();
+
+        if ($request->from_date) {
+            $accountantIncomeQuery->whereDate(
+                'created_at',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+            $accountantIncomeQuery->whereDate(
+                'created_at',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $accountantPayments = $accountantIncomeQuery
+                                    ->latest()
+                                    ->get();
+
+        $accountantIncome = $accountantPayments->sum('amount');
+
+
+        $salesIncomeQuery = SalesBill::query();
+
+        if ($request->from_date) {
+            $salesIncomeQuery->whereDate(
+                'created_at',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+            $salesIncomeQuery->whereDate(
+                'created_at',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $salesBills = $salesIncomeQuery
+                            ->latest()
+                            ->get();
+
+        $salesIncome = $salesBills->sum('paid_amount');
+
+
+        $totalIncome =
+            $receptionistIncome +
+            $accountantIncome +
+            $salesIncome;
+
+
+        $expenseQuery = Expense::with([
+            'category',
+            'vendor',
+            'items'
+        ]);
+
+        if ($request->from_date) {
+            $expenseQuery->whereDate(
+                'entry_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+            $expenseQuery->whereDate(
+                'entry_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $expenses = $expenseQuery
+                        ->latest()
+                        ->get();
+
+        $totalExpense = $expenses->sum('grand_total');
+
+        $balance = $totalIncome - $totalExpense;
+
+        return view(
+            'admin.Accountant.Expense_Management.ExpenseReport.income_expense_report',
+            compact(
+                'receptionistBillings',
+                'accountantPayments',
+                'salesBills',
+                'expenses',
+
+                'receptionistIncome',
+                'accountantIncome',
+                'salesIncome',
+
+                'totalIncome',
+                'totalExpense',
+                'balance'
+            )
+        );
+    }
+
+    /**
+     * Printable Report
+     */
+    public function printIncomeExpenseReport(Request $request)
 {
-    /*
-    |--------------------------------------------------------------------------
-    | IPD PAYMENT INCOME
-    |--------------------------------------------------------------------------
-    */
+    $receptionistBillings = ReceptionistBilling::latest()->get();
+    $accountantPayments = AccountantPayment::latest()->get();
+    $salesBills = SalesBill::latest()->get();
 
-    $ipdIncomeQuery = IPDPayment::query();
+    $expenses = Expense::with([
+        'category',
+        'items'
+    ])->latest()->get();
 
-    if ($request->from_date) {
-
-        $ipdIncomeQuery->whereDate(
-            'created_at',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $ipdIncomeQuery->whereDate(
-            'created_at',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $ipdPayments = $ipdIncomeQuery
-                        ->latest()
-                        ->get();
-
-    $ipdIncome = $ipdPayments->sum('amount');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SALES BILL INCOME
-    |--------------------------------------------------------------------------
-    */
-
-    $salesIncomeQuery = SalesBill::query();
-
-    if ($request->from_date) {
-
-        $salesIncomeQuery->whereDate(
-            'created_at',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $salesIncomeQuery->whereDate(
-            'created_at',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $salesBills = $salesIncomeQuery
-                        ->latest()
-                        ->get();
-
-    $salesIncome = $salesBills->sum('paid_amount');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL INCOME
-    |--------------------------------------------------------------------------
-    */
+    $receptionistIncome = $receptionistBillings->sum('amount');
+    $accountantIncome   = $accountantPayments->sum('amount');
+    $salesIncome        = $salesBills->sum('paid_amount');
 
     $totalIncome =
-        $ipdIncome +
+        $receptionistIncome +
+        $accountantIncome +
         $salesIncome;
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | EXPENSE DATA
-    |--------------------------------------------------------------------------
-    */
-
-    $expenseQuery = Expense::with([
-        'category',
-        'vendor',
-        'items'
-    ]);
-
-    if ($request->from_date) {
-
-        $expenseQuery->whereDate(
-            'entry_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $expenseQuery->whereDate(
-            'entry_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $expenses = $expenseQuery
-                    ->latest()
-                    ->get();
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL EXPENSE
-    |--------------------------------------------------------------------------
-    */
-
     $totalExpense = $expenses->sum('grand_total');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | BALANCE
-    |--------------------------------------------------------------------------
-    */
 
     $balance =
         $totalIncome -
         $totalExpense;
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | RETURN VIEW
-    |--------------------------------------------------------------------------
-    */
-
     return view(
-        'admin.Accountant.Expense_Management.ExpenseReport.income_expense_report',
+        'admin.Accountant.Expense_Management.ExpenseReport.income_expense_print',
         compact(
-            'ipdPayments',
+            'receptionistBillings',
+            'accountantPayments',
             'salesBills',
             'expenses',
-            'ipdIncome',
-            'salesIncome',
             'totalIncome',
             'totalExpense',
             'balance'

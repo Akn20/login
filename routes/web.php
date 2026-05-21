@@ -2355,6 +2355,11 @@ Route::prefix('admin/accountant/expense-management/expense-report')
         // Income & Expense Report
         Route::get('/income-expense', [ExpenseReportController::class, 'incomeExpenseReport'])
             ->name('income.expense');
+            
+        // Print Income & Expense Report
+        Route::get('/income-expense/print', [ExpenseReportController::class, 'printIncomeExpenseReport'])
+            ->name('print');
+
 
 });
 

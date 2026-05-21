@@ -9,39 +9,40 @@
     <div>
 
         <h5 class="m-0 mb-1">
-
             <i class="feather-pie-chart me-2"></i>
-
             Income & Expense Report
-
         </h5>
 
         <ul class="breadcrumb mb-0">
 
-            <li class="breadcrumb-item">
-                Accounts
-            </li>
-
-            <li class="breadcrumb-item">
-                Expense Management
-            </li>
-
-            <li class="breadcrumb-item active">
-                Income & Expense Report
-            </li>
+            <li class="breadcrumb-item">Accounts</li>
+            <li class="breadcrumb-item">Expense Management</li>
+            <li class="breadcrumb-item active">Income & Expense Report</li>
 
         </ul>
 
     </div>
 
+    <div class="d-flex gap-2">
+
+    <a href="{{ route('admin.accountant.expense.report.print', request()->all()) }}"
+       target="_blank"
+       class="btn btn-primary">
+
+        <i class="feather-printer me-1"></i>
+        Print Report
+
+    </a>
+
     <a href="{{ route('admin.accountant.expense.report.index') }}"
        class="btn btn-light">
 
         <i class="feather-arrow-left me-1"></i>
-
         Back
 
     </a>
+
+</div>
 
 </div>
 
@@ -55,13 +56,31 @@
             <div class="card-body">
 
                 <h6 class="text-muted mb-2">
-                    IPD Income
+                    Receptionist Income
                 </h6>
 
                 <h4 class="text-success mb-0">
+                    ₹{{ number_format($receptionistIncome, 2) }}
+                </h4>
 
-                    ₹{{ number_format($ipdIncome, 2) }}
+            </div>
 
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted mb-2">
+                    Accountant Income
+                </h6>
+
+                <h4 class="text-primary mb-0">
+                    ₹{{ number_format($accountantIncome, 2) }}
                 </h4>
 
             </div>
@@ -80,10 +99,8 @@
                     Sales Income
                 </h6>
 
-                <h4 class="text-primary mb-0">
-
+                <h4 class="text-info mb-0">
                     ₹{{ number_format($salesIncome, 2) }}
-
                 </h4>
 
             </div>
@@ -103,31 +120,7 @@
                 </h6>
 
                 <h4 class="text-success mb-0">
-
                     ₹{{ number_format($totalIncome, 2) }}
-
-                </h4>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="col-md-3">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body">
-
-                <h6 class="text-muted mb-2">
-                    Total Expense
-                </h6>
-
-                <h4 class="text-danger mb-0">
-
-                    ₹{{ number_format($totalExpense, 2) }}
-
                 </h4>
 
             </div>
@@ -138,20 +131,45 @@
 
 </div>
 
-{{-- ================= BALANCE ================= --}}
-<div class="card border-0 shadow-sm mb-4">
+<div class="row mb-4">
 
-    <div class="card-body text-center">
+    <div class="col-md-6">
 
-        <h5 class="mb-2">
-            Balance Amount
-        </h5>
+        <div class="card border-0 shadow-sm h-100">
 
-        <h2 class="{{ $balance >= 0 ? 'text-success' : 'text-danger' }}">
+            <div class="card-body">
 
-            ₹{{ number_format($balance, 2) }}
+                <h6 class="text-muted mb-2">
+                    Total Expense
+                </h6>
 
-        </h2>
+                <h4 class="text-danger mb-0">
+                    ₹{{ number_format($totalExpense, 2) }}
+                </h4>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h6 class="text-muted mb-2">
+                    Balance Amount
+                </h6>
+
+                <h4 class="{{ $balance >= 0 ? 'text-success' : 'text-danger' }} mb-0">
+                    ₹{{ number_format($balance, 2) }}
+                </h4>
+
+            </div>
+
+        </div>
 
     </div>
 
@@ -181,7 +199,7 @@
                         <th>#</th>
                         <th>Income Type</th>
                         <th>Payment Mode</th>
-                        <th>Transaction Type</th>
+                        <th>Reference</th>
                         <th class="text-end">Amount</th>
 
                     </tr>
@@ -190,73 +208,82 @@
 
                 <tbody>
 
-                    {{-- IPD PAYMENTS --}}
-                    @foreach($ipdPayments as $index => $payment)
+                    {{-- Receptionist Billing --}}
+                    @foreach($receptionistBillings as $index => $payment)
 
                     <tr>
 
                         <td>{{ $index + 1 }}</td>
 
-                        <td>
-                            IPD Payment
-                        </td>
+                        <td>Receptionist Billing</td>
 
-                        <td>
-                            {{ $payment->payment_mode }}
-                        </td>
+                        <td>{{ $payment->payment_mode }}</td>
 
-                        <td>
-                            {{ $payment->transaction_type }}
-                        </td>
+                        <td>{{ $payment->receipt_no }}</td>
 
                         <td class="text-end text-success fw-bold">
-
                             ₹{{ number_format($payment->amount, 2) }}
-
                         </td>
 
                     </tr>
 
                     @endforeach
 
-                    {{-- SALES BILL --}}
+
+                    {{-- Accountant Payments --}}
+                    @foreach($accountantPayments as $index => $payment)
+
+                    <tr>
+
+                        <td>{{ $index + 1 }}</td>
+
+                        <td>Accountant Payment</td>
+
+                        <td>{{ $payment->payment_mode }}</td>
+
+                        <td>{{ $payment->transaction_id ?? '-' }}</td>
+
+                        <td class="text-end text-success fw-bold">
+                            ₹{{ number_format($payment->amount, 2) }}
+                        </td>
+
+                    </tr>
+
+                    @endforeach
+
+
+                    {{-- Pharmacy Sales --}}
                     @foreach($salesBills as $index => $sale)
 
                     <tr>
 
                         <td>{{ $index + 1 }}</td>
 
-                        <td>
-                            Pharmacy Sales
-                        </td>
+                        <td>Pharmacy Sales</td>
 
-                        <td>
-                            {{ $sale->payment_mode }}
-                        </td>
+                        <td>{{ $sale->payment_mode }}</td>
 
-                        <td>
-                            {{ $sale->payment_status }}
-                        </td>
+                        <td>{{ $sale->payment_status }}</td>
 
                         <td class="text-end text-primary fw-bold">
-
                             ₹{{ number_format($sale->paid_amount, 2) }}
-
                         </td>
 
                     </tr>
 
                     @endforeach
 
-                    @if($ipdPayments->count() == 0 && $salesBills->count() == 0)
+
+                    @if(
+                        $receptionistBillings->count() == 0 &&
+                        $accountantPayments->count() == 0 &&
+                        $salesBills->count() == 0
+                    )
 
                     <tr>
 
-                        <td colspan="5"
-                            class="text-center">
-
+                        <td colspan="5" class="text-center">
                             No Income Records Found
-
                         </td>
 
                     </tr>
@@ -269,17 +296,12 @@
 
                     <tr>
 
-                        <th colspan="4"
-                            class="text-end">
-
+                        <th colspan="4" class="text-end">
                             Total Income
-
                         </th>
 
                         <th class="text-end text-success">
-
                             ₹{{ number_format($totalIncome, 2) }}
-
                         </th>
 
                     </tr>
@@ -327,38 +349,28 @@
 
                 <tbody>
 
-                    @forelse($expenses as $index => $expense)
+                    @forelse($expenses as $expense)
 
                         @foreach($expense->items as $item)
 
                         <tr>
 
-                            <td>
-                                {{ $loop->iteration }}
-                            </td>
+                            <td>{{ $loop->iteration }}</td>
 
                             <td>
-
                                 {{ $expense->category->category_name ?? '-' }}
-
                             </td>
 
                             <td>
-
                                 {{ $item->expense_heading }}
-
                             </td>
 
                             <td>
-
                                 {{ $expense->vendor->vendor_name ?? '-' }}
-
                             </td>
 
                             <td class="text-end text-danger fw-bold">
-
                                 ₹{{ number_format($item->total, 2) }}
-
                             </td>
 
                         </tr>
@@ -369,11 +381,8 @@
 
                     <tr>
 
-                        <td colspan="5"
-                            class="text-center">
-
+                        <td colspan="5" class="text-center">
                             No Expense Records Found
-
                         </td>
 
                     </tr>
@@ -386,17 +395,12 @@
 
                     <tr>
 
-                        <th colspan="4"
-                            class="text-end">
-
+                        <th colspan="4" class="text-end">
                             Total Expense
-
                         </th>
 
                         <th class="text-end text-danger">
-
                             ₹{{ number_format($totalExpense, 2) }}
-
                         </th>
 
                     </tr>
