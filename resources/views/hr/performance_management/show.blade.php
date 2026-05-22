@@ -86,7 +86,7 @@
                     </label>
 
                     <div class="fw-bold">
-                        {{ $record->department }}
+                        {{ $record->department ?? '-' }}
                     </div>
 
                 </div>
@@ -233,6 +233,153 @@
 
                     <div>
                         {{ $record->target_value ?? '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Achieved Value --}}
+                <div class="col-md-4 mb-3">
+
+                    <label class="text-muted">
+                        Achieved Value
+                    </label>
+
+                    <div>
+                        {{ $record->achieved_value ?? '-' }}
+                    </div>
+
+                </div>
+
+                {{-- KPI Remarks --}}
+                <div class="col-md-12 mb-3">
+
+                    <label class="text-muted">
+                        KPI Remarks
+                    </label>
+
+                    <div>
+                        {{ $record->kpi_remarks ?? '-' }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- Appraisal Cycle --}}
+            <h5 class="mb-3 text-primary mt-4">
+                Appraisal Cycle
+            </h5>
+
+            <hr>
+
+            <div class="row">
+
+                {{-- Cycle Name --}}
+                <div class="col-md-4 mb-3">
+
+                    <label class="text-muted">
+                        Cycle Name
+                    </label>
+
+                    <div>
+                        {{ $record->cycle_name ?? '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Cycle Start Date --}}
+                <div class="col-md-4 mb-3">
+
+                    <label class="text-muted">
+                        Start Date
+                    </label>
+
+                    <div>
+                        {{ $record->cycle_start_date
+                            ? \Carbon\Carbon::parse($record->cycle_start_date)->format('d-m-Y')
+                            : '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Cycle End Date --}}
+                <div class="col-md-4 mb-3">
+
+                    <label class="text-muted">
+                        End Date
+                    </label>
+
+                    <div>
+                        {{ $record->cycle_end_date
+                            ? \Carbon\Carbon::parse($record->cycle_end_date)->format('d-m-Y')
+                            : '-' }}
+                    </div>
+
+                </div>
+
+            </div>
+
+         
+
+            {{-- Warning Details --}}
+            <h5 class="mb-3 text-primary mt-4">
+                Warning Details
+            </h5>
+
+            <hr>
+
+            <div class="row">
+
+                {{-- Warning Type --}}
+                <div class="col-md-6 mb-3">
+
+                    <label class="text-muted">
+                        Warning Type
+                    </label>
+
+                    <div>
+                        {{ $record->warning_type ?? '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Warning Date --}}
+                <div class="col-md-6 mb-3">
+
+                    <label class="text-muted">
+                        Warning Date
+                    </label>
+
+                    <div>
+                        {{ $record->warning_date
+                            ? \Carbon\Carbon::parse($record->warning_date)->format('d-m-Y')
+                            : '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Warning Remarks --}}
+                <div class="col-md-6 mb-3">
+
+                    <label class="text-muted">
+                        Warning Remarks
+                    </label>
+
+                    <div>
+                        {{ $record->warning_remarks ?? '-' }}
+                    </div>
+
+                </div>
+
+                {{-- Issued By --}}
+                <div class="col-md-6 mb-3">
+
+                    <label class="text-muted">
+                        Issued By
+                    </label>
+
+                    <div>
+                        {{ $record->issued_by ?? '-' }}
                     </div>
 
                 </div>
