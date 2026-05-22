@@ -46,13 +46,22 @@
 
         </select>
 
+        {{-- Employee ID Error --}}
+@error('employee_id')
+
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
+
     </div>
 
 {{-- Employee Name --}}
 <div class="col-md-6 mb-4">
 
-    <label class="form-label">
-        Employee Name
+    <label class="form-label">   
+        Employee Name  <span class="text-danger">*</span>
     </label>
 
     <input
@@ -63,6 +72,14 @@
         readonly
         value="{{ old('employee_name', $record->employee_name ?? '') }}"
     >
+    {{-- Employee Name Error --}}
+@error('employee_name')
+
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 
 </div>
 
@@ -71,6 +88,7 @@
 
     <label class="form-label">
         Department
+        <span class="text-danger">*</span>
     </label>
 
     <input
@@ -81,6 +99,15 @@
         readonly
         value="{{ old('department', $record->department ?? '') }}"
     >
+
+    {{-- Department Error --}}
+    @error('department')
+
+        <small class="text-danger">
+            {{ $message }}
+        </small>
+
+    @enderror
 
 </div>
 
@@ -98,8 +125,8 @@
     {{-- Reviewer Name --}}
     <div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Reviewer Name
+        <label class="form-label">  
+            Reviewer Name       <span class="text-danger">*</span>
         </label>
 
         <input
@@ -108,14 +135,21 @@
             class="form-control"
             value="{{ old('reviewer_name', $record->reviewer_name ?? '') }}"
         >
+{{-- Reviewer Name Error --}}
+@error('reviewer_name')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- Review Date --}}
     <div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Review Date
+        <label class="form-label">   
+            Review Date  <span class="text-danger">*</span>
         </label>
 
         <input
@@ -124,14 +158,21 @@
             class="form-control"
             value="{{ old('review_date', $record->review_date ?? '') }}"
         >
+{{-- Review Date Error --}}
+@error('review_date')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- Rating --}}
     <div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Rating
+        <label class="form-label">    
+            Rating<span class="text-danger">*</span>
         </label>
 
         <select
@@ -155,7 +196,14 @@
             @endfor
 
         </select>
+{{-- Rating Error --}}
+@error('rating')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
    {{-- Review Status --}}
@@ -189,6 +237,14 @@
         </option>
 
     </select>
+    {{-- Review Status Error --}}
+@error('review_status')
+
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 
 </div>
 
@@ -247,7 +303,14 @@
             class="form-control"
             value="{{ old('kpi_score', $record->kpi_score ?? '') }}"
         >
+{{-- KPI Score Error --}}
+@error('kpi_score')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- Target Value --}}
@@ -263,7 +326,14 @@
             class="form-control"
             value="{{ old('target_value', $record->target_value ?? '') }}"
         >
+{{-- Target Value Error --}}
+@error('target_value')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- Achieved Value --}}
@@ -279,7 +349,14 @@
             class="form-control"
             value="{{ old('achieved_value', $record->achieved_value ?? '') }}"
         >
+{{-- Achieved Value Error --}}
+@error('achieved_value')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- KPI Remarks --}}
