@@ -330,6 +330,77 @@
                                 
 
                         </li>
+
+                     <li class="nxl-item nxl-hasmenu {{ request()->is('doctor*') ? 'active nxl-trigger' : '' }}">
+                        <a href="javascript:void(0);" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Reports
+                            <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.reports.consultations') }}" 
+                                class="nxl-link">
+                                    Consultation Reports
+                                </a>
+                            </li>
+
+                            
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.reports.opd-summary') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    OPD Reports
+                                </a>
+                            </li>
+
+                            <li class="nxl-item">
+                                <a href="{{ route('doctor.reports.ipd-summary') }}" 
+                                class="nxl-link" up-follow up-target="#main-container">
+                                    IPD Reports
+                                </a>
+                            </li>
+
+                            <li class="nxl-item">
+
+                <a href="{{ route('doctor.reports.prescription-summary') }}"
+                class="nxl-link">
+
+                    Prescription Summary
+
+                </a>
+
+            </li>
+
+            <li class="nxl-item">
+
+    <a href="{{ route('doctor.reports.surgery-summary') }}"
+       class="nxl-link">
+
+        Surgery Count Report
+
+    </a>
+
+</li>
+<li class="nxl-item">
+
+    <a href="{{ route('doctor.reports.followup-compliance') }}"
+       class="nxl-link">
+
+        Follow-up Compliance
+
+    </a>
+
+</li>
+
+
+                        </ul>
+
+                
+                                
+
+                    </li>
                 </ul>
             </li>
             <li

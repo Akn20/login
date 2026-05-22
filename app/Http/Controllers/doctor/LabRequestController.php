@@ -16,6 +16,9 @@ use App\Models\ClinicalNote;
 use App\Models\LabReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+
 
 
 
@@ -472,6 +475,20 @@ public function apiStoreClinicalNote(Request $request)
         'message' => 'Clinical note added successfully',
         'data' => $note
     ]);
+}
+public function reportPdf($id)
+{
+    $report = LabReport::with([
+        'sample.labRequest.patient',
+        'clinicalNotes'
+    ])->findOrFail($id);
+
+    $pdf = Pdf::loadView(
+        'doctor.laboratory.reports-pdf',
+        compact('report')
+    );
+
+    return $pdf->download('lab-report-'.$report->id.'.pdf');
 }
 
 

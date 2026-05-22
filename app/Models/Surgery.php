@@ -43,4 +43,9 @@ class Surgery extends Model
     {
         return $this->belongsTo(Staff::class, 'anesthetist_id');
     }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Staff::class, 'surgeon_id');
+    }
 }
