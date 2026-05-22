@@ -29,57 +29,60 @@
                 Select Employee
             </option>
 
-            @foreach($employees as $employee)
+          @foreach($employees as $employee)
 
-                <option
-                    value="{{ $employee->employee_id }}"
-                    data-name="{{ $employee->name }}"
-                    data-department="{{ optional($employee->department)->department_name }}"
-                >
+    <option
+        value="{{ $employee->employee_id }}"
+        data-name="{{ $employee->name }}"
+        data-department="{{ optional($employee->department)->department_name }}"
+        {{ old('employee_id', $record->employee_id ?? '') == $employee->employee_id ? 'selected' : '' }}
+    >
 
-                    {{ $employee->employee_id }}
+        {{ $employee->employee_id }}
 
-                </option>
+    </option>
 
-            @endforeach
+@endforeach
 
         </select>
 
     </div>
 
-    {{-- Employee Name --}}
-    <div class="col-md-6 mb-4">
+{{-- Employee Name --}}
+<div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Employee Name
-        </label>
+    <label class="form-label">
+        Employee Name
+    </label>
 
-        <input
-            type="text"
-            name="employee_name"
-            id="employee_name"
-            class="form-control"
-            readonly
-        >
+    <input
+        type="text"
+        name="employee_name"
+        id="employee_name"
+        class="form-control"
+        readonly
+        value="{{ old('employee_name', $record->employee_name ?? '') }}"
+    >
 
-    </div>
+</div>
 
-    {{-- Department --}}
-    <div class="col-md-6 mb-4">
+  {{-- Department --}}
+<div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Department
-        </label>
+    <label class="form-label">
+        Department
+    </label>
 
-        <input
-            type="text"
-            name="department"
-            id="department"
-            class="form-control"
-            readonly
-        >
+    <input
+        type="text"
+        name="department"
+        id="department"
+        class="form-control"
+        readonly
+        value="{{ old('department', $record->department ?? '') }}"
+    >
 
-    </div>
+</div>
 
     {{-- ================= Performance Review ================= --}}
     <div class="col-12 mt-4">
@@ -155,33 +158,39 @@
 
     </div>
 
-    {{-- Review Status --}}
-    <div class="col-md-6 mb-4">
+   {{-- Review Status --}}
+<div class="col-md-6 mb-4">
 
-        <label class="form-label">
-            Review Status
-        </label>
+    <label class="form-label">
+        Review Status
+    </label>
 
-        <select
-            name="review_status"
-            class="form-select"
+    <select
+        name="review_status"
+        class="form-select"
+    >
+
+        <option value="Pending">
+            Pending
+        </option>
+
+        <option
+            value="Reviewed"
+            {{ old('review_status', $record->review_status ?? '') == 'Reviewed' ? 'selected' : '' }}
         >
+            Reviewed
+        </option>
 
-            <option value="Pending">
-                Pending
-            </option>
+        <option
+            value="Approved"
+            {{ old('review_status', $record->review_status ?? '') == 'Approved' ? 'selected' : '' }}
+        >
+            Approved
+        </option>
 
-            <option value="Reviewed">
-                Reviewed
-            </option>
+    </select>
 
-            <option value="Approved">
-                Approved
-            </option>
-
-        </select>
-
-    </div>
+</div>
 
     {{-- Review Comments --}}
     <div class="col-md-12 mb-4">

@@ -1664,28 +1664,25 @@ Route::prefix('training-certification-tracking')
 
 });
 
+//---------Performance Management----------------
 
-//-------- Performance Management --------------
 Route::prefix('performance-management')
     ->name('performance-management.')
     ->group(function () {
 
-    Route::get(
-        '/',
-        [PerformanceManagementController::class, 'index']
-    )->name('index');
-
-    Route::get(
-        '/create',
-        [PerformanceManagementController::class, 'create']
-    )->name('create');
-
-    Route::post(
-        '/store',
-        [PerformanceManagementController::class, 'store']
-    )->name('store');
+    Route::get( '/', [PerformanceManagementController::class, 'index'] )->name('index');
+    Route::get('/deleted',[PerformanceManagementController::class, 'deleted']  )->name('deleted');
+    Route::get('/create',[PerformanceManagementController::class, 'create'] )->name('create');
+    Route::post('/store', [PerformanceManagementController::class, 'store'])->name('store');
+    Route::get('/{id}/show',[PerformanceManagementController::class, 'show'] )->name('show');
+    Route::get('/{id}/edit',[PerformanceManagementController::class, 'edit'])->name('edit');
+    Route::put('/{id}',[PerformanceManagementController::class, 'update'])->name('update');
+    Route::post('/{id}/restore',[PerformanceManagementController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',[PerformanceManagementController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}',[PerformanceManagementController::class, 'destroy'])->name('delete');
 
 });
+
     // Payroll Dashboard
 Route::get('/payroll-dashboard',
     [PayrollDashboardController::class, 'index']
