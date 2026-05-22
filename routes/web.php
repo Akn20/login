@@ -73,6 +73,7 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\Doctor\NotificationController;
 use App\Http\Controllers\Doctor\ClinicalNoteController;
+use App\Http\Controllers\Doctor\DoctorReportController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
 // Leave Management
@@ -267,6 +268,40 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/clinical-notes',[ClinicalNoteController::class, 'index'])->name('clinical-notes');
         Route::post('/clinical-notes/store',[ClinicalNoteController::class, 'store'])->name('clinical-notes.store');
 
+});
+
+Route::prefix('doctor/reports')->name('doctor.reports.')->group(function () {
+
+    Route::get(
+        '/consultations',
+        [DoctorReportController::class, 'consultationSummary']
+    )->name('consultations');
+
+    Route::get(
+    '/opd-summary',
+    [DoctorReportController::class, 'opdSummary']
+)->name('opd-summary');
+
+Route::get(
+    '/ipd-summary',
+    [DoctorReportController::class, 'ipdSummary']
+)->name('ipd-summary');
+
+Route::get(
+    '/prescription-summary',
+    [DoctorReportController::class, 'prescriptionSummary']
+)->name('prescription-summary');
+
+
+Route::get(
+    '/surgery-summary',
+    [DoctorReportController::class, 'surgerySummary']
+)->name('surgery-summary');
+
+Route::get(
+    '/followup-compliance',
+    [DoctorReportController::class, 'followupCompliance']
+)->name('followup-compliance');
 });
 
     // These names match the sidebar EXACTLY (no doctor. prefix)

@@ -16,6 +16,9 @@ use App\Models\ClinicalNote;
 use App\Models\LabReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+
 
 
 
@@ -94,6 +97,48 @@ class LabRequestController extends Controller
 
             });
         }
+    }
+    public function historicalReports(Request $request)
+    {
+        $query = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->where('status', 'Completed');
+
+        // SEARCH
+        if ($request->search) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                // Search patient name
+                $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
+
+                    $patient->where('first_name', 'like', "%$search%")
+                        ->orWhere('last_name', 'like', "%$search%");
+
+                })
+
+                    // Search test name
+                    ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
+
+                        $lab->where('test_name', 'like', "%$search%");
+
+                    });
+
+            });
+
+        }
+
+        // DATE FILTER
+        if ($request->date) {
+
+            $query->whereDate('created_at', $request->date);
+
+        }
+
+        $reports = $query->latest()->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -167,20 +212,20 @@ class LabRequestController extends Controller
         );
     }
 
-    public function historicalReports()
-    {
-        $reports = LabReport::with([
-            'sample.labRequest.patient'
-        ])
-            ->where('status', 'Completed')
-            ->latest()
-            ->get();
+    // public function historicalReports()
+    // {
+    //     $reports = LabReport::with([
+    //         'sample.labRequest.patient'
+    //     ])
+    //         ->where('status', 'Completed')
+    //         ->latest()
+    //         ->get();
 
-        return view(
-            'doctor.laboratory.historical-reports',
-            compact('reports')
-        );
-    }
+    //     return view(
+    //         'doctor.laboratory.historical-reports',
+    //         compact('reports')
+    //     );
+    // }
 
     public function storeClinicalNote(Request $request)
     {
@@ -440,6 +485,21 @@ class LabRequestController extends Controller
             'message' => 'Clinical note added successfully',
             'data' => $note
         ]);
+    }
+
+    public function reportPdf($id)
+    {
+        $report = LabReport::with([
+            'sample.labRequest.patient',
+            'clinicalNotes'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'doctor.laboratory.reports-pdf',
+            compact('report')
+        );
+
+        return $pdf->download('lab-report-' . $report->id . '.pdf');
     }
 
 
