@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,7 +10,7 @@ use Illuminate\Support\Str;
 
 class AddExpenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $expenses = Expense::with([
                             'category',
@@ -20,13 +19,21 @@ class AddExpenseController extends Controller
                         ->latest()
                         ->get();
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expenses retrieved successfully',
+                'data' => $expenses
+            ]);
+        }
+
         return view(
             'admin.Accountant.Expense_Management.AddExpense.index',
             compact('expenses')
         );
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = ExpenseCategory::where('is_deleted', false)
                         ->orderBy('category_name')
@@ -35,6 +42,17 @@ class AddExpenseController extends Controller
         $vendors = InventoryVendor::whereNull('deleted_at')
                         ->orderBy('vendor_name')
                         ->get();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense form data retrieved successfully',
+                'data' => [
+                    'categories' => $categories,
+                    'vendors' => $vendors,
+                ]
+            ]);
+        }
 
         return view(
             'admin.Accountant.Expense_Management.AddExpense.create',
@@ -45,27 +63,16 @@ class AddExpenseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
             'entry_date'      => 'required|date',
-
             'category_id'     => 'required|exists:expense_categories,id',
-
             'vendor_id'       => 'nullable|exists:inventory_vendors,id',
-
             'expense_type'    => 'required|string|max:150',
-
             'invoice_date'    => 'nullable|date',
-
             'invoice_number'  => 'nullable|string|max:150',
-
             'payment_status'  => 'required',
-
             'payment_mode'    => 'nullable',
-
             'payment_date'    => 'nullable|date',
-
             'paid_amount'     => 'nullable|numeric',
-
             'transaction_id'  => 'nullable|string|max:255',
         ]);
 
@@ -77,7 +84,6 @@ class AddExpenseController extends Controller
             $request->payment_status == 'Partial' &&
             empty($request->paid_amount)
         ) {
-
             return back()
                 ->withErrors([
                     'paid_amount' => 'Paid Amount is required for Partial Payment.'
@@ -90,7 +96,6 @@ class AddExpenseController extends Controller
             $request->payment_status == 'Fully Paid' &&
             $request->paid_amount < $calculatedGrandTotal
         ) {
-
             return back()
                 ->withErrors([
                     'paid_amount' => 'Paid Amount must match Grand Total.'
@@ -103,7 +108,6 @@ class AddExpenseController extends Controller
             in_array($request->payment_status, ['Partial', 'Fully Paid']) &&
             empty($request->payment_date)
         ) {
-
             return back()
                 ->withErrors([
                     'payment_date' => 'Payment Date is required.'
@@ -116,7 +120,6 @@ class AddExpenseController extends Controller
             in_array($request->payment_mode, ['Online', 'UPI']) &&
             empty($request->transaction_id)
         ) {
-
             return back()
                 ->withErrors([
                     'transaction_id' => 'Transaction ID is required.'
@@ -129,41 +132,25 @@ class AddExpenseController extends Controller
             $request->paid_amount >= $calculatedGrandTotal &&
             $calculatedGrandTotal > 0
         ) {
-
             $paymentStatus = 'Fully Paid';
-
         } else {
-
             $paymentStatus = $request->payment_status;
         }
 
         // Save Main Expense
         $expense = Expense::create([
-
             'id' => Str::uuid(),
-
             'entry_date' => $request->entry_date,
-
             'category_id' => $request->category_id,
-
             'vendor_id' => $request->vendor_id,
-
             'expense_type' => $request->expense_type,
-
             'invoice_date' => $request->invoice_date,
-
             'invoice_number' => $request->invoice_number,
-
             'grand_total' => 0,
-
             'payment_status' => $paymentStatus,
-
             'payment_mode' => $request->payment_mode,
-
             'payment_date' => $request->payment_date,
-
             'paid_amount' => $request->paid_amount,
-
             'transaction_id' => $request->transaction_id,
         ]);
 
@@ -171,33 +158,20 @@ class AddExpenseController extends Controller
         $grandTotal = 0;
 
         if ($request->expense_heading) {
-
             foreach ($request->expense_heading as $key => $heading) {
-
                 if (!empty($heading)) {
-
                     $itemTotal = $request->total[$key] ?? 0;
 
                     ExpenseItem::create([
-
                         'id' => Str::uuid(),
-
                         'expense_id' => $expense->id,
-
                         'expense_heading' => $heading,
-
                         'unit' => $request->unit[$key] ?? 1,
-
                         'unit_price' => $request->unit_price[$key] ?? 0,
-
                         'sub_total' => $request->sub_total[$key] ?? 0,
-
                         'cgst' => $request->cgst[$key] ?? 0,
-
                         'sgst' => $request->sgst[$key] ?? 0,
-
                         'igst' => $request->igst[$key] ?? 0,
-
                         'total' => $itemTotal,
                     ]);
 
@@ -211,12 +185,24 @@ class AddExpenseController extends Controller
             'grand_total' => $grandTotal
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense Added Successfully',
+                'data' => $expense->load([
+                    'category',
+                    'vendor',
+                    'items'
+                ])
+            ], 201);
+        }
+
         return redirect()
             ->route('admin.accountant.expense.add.index')
             ->with('success', 'Expense Added Successfully');
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $expense = Expense::with([
                             'category',
@@ -225,13 +211,21 @@ class AddExpenseController extends Controller
                         ])
                         ->findOrFail($id);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense retrieved successfully',
+                'data' => $expense
+            ]);
+        }
+
         return view(
             'admin.Accountant.Expense_Management.AddExpense.show',
             compact('expense')
         );
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $expense = Expense::with('items')
                         ->findOrFail($id);
@@ -243,6 +237,18 @@ class AddExpenseController extends Controller
         $vendors = InventoryVendor::whereNull('deleted_at')
                         ->orderBy('vendor_name')
                         ->get();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense edit data retrieved successfully',
+                'data' => [
+                    'expense' => $expense,
+                    'categories' => $categories,
+                    'vendors' => $vendors,
+                ]
+            ]);
+        }
 
         return view(
             'admin.Accountant.Expense_Management.AddExpense.edit',
@@ -257,27 +263,16 @@ class AddExpenseController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-
             'entry_date'      => 'required|date',
-
             'category_id'     => 'required|exists:expense_categories,id',
-
             'vendor_id'       => 'nullable|exists:inventory_vendors,id',
-
             'expense_type'    => 'required|string|max:150',
-
             'invoice_date'    => 'nullable|date',
-
             'invoice_number'  => 'nullable|string|max:150',
-
             'payment_status'  => 'required',
-
             'payment_mode'    => 'nullable',
-
             'payment_date'    => 'nullable|date',
-
             'paid_amount'     => 'nullable|numeric|min:0',
-
             'transaction_id'  => 'nullable|string|max:255',
         ]);
 
@@ -295,22 +290,20 @@ class AddExpenseController extends Controller
         // Final Paid Amount
         $finalPaidAmount = $previousPaidAmount + $newEnteredAmount;
 
-
         // Prevent Over Payment
-if ($finalPaidAmount > $calculatedGrandTotal) {
+        if ($finalPaidAmount > $calculatedGrandTotal) {
+            return back()
+                ->withErrors([
+                    'paid_amount' => 'Paid Amount cannot exceed Grand Total.'
+                ])
+                ->withInput();
+        }
 
-    return back()
-        ->withErrors([
-            'paid_amount' => 'Paid Amount cannot exceed Grand Total.'
-        ])
-        ->withInput();
-}
         // Partial Payment Validation
         if (
             $request->payment_status == 'Partial' &&
             $newEnteredAmount <= 0
         ) {
-
             return back()
                 ->withErrors([
                     'paid_amount' => 'Paid Amount is required for Partial Payment.'
@@ -323,7 +316,6 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
             in_array($request->payment_status, ['Partial', 'Fully Paid']) &&
             empty($request->payment_date)
         ) {
-
             return back()
                 ->withErrors([
                     'payment_date' => 'Payment Date is required.'
@@ -336,7 +328,6 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
             in_array($request->payment_mode, ['Online', 'UPI']) &&
             empty($request->transaction_id)
         ) {
-
             return back()
                 ->withErrors([
                     'transaction_id' => 'Transaction ID is required.'
@@ -349,47 +340,30 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
             $finalPaidAmount >= $calculatedGrandTotal &&
             $calculatedGrandTotal > 0
         ) {
-
             $paymentStatus = 'Fully Paid';
-
             $finalPaidAmount = $calculatedGrandTotal;
-
         } else {
-
             $paymentStatus = 'Partial';
         }
 
         // Unpaid Condition
         if ($finalPaidAmount == 0) {
-
             $paymentStatus = 'Unpaid';
         }
 
         // Update Expense
         $expense->update([
-
             'entry_date' => $request->entry_date,
-
             'category_id' => $request->category_id,
-
             'vendor_id' => $request->vendor_id,
-
             'expense_type' => $request->expense_type,
-
             'invoice_date' => $request->invoice_date,
-
             'invoice_number' => $request->invoice_number,
-
             'payment_status' => $paymentStatus,
-
             'payment_mode' => $request->payment_mode,
-
             'payment_date' => $request->payment_date,
-
             'paid_amount' => $finalPaidAmount,
-
             'transaction_id' => $request->transaction_id,
-
             'grand_total' => $calculatedGrandTotal,
         ]);
 
@@ -398,35 +372,34 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
 
         // Reinsert Updated Items
         if ($request->expense_heading) {
-
             foreach ($request->expense_heading as $key => $heading) {
-
                 if (!empty($heading)) {
-
                     ExpenseItem::create([
-
                         'id' => Str::uuid(),
-
                         'expense_id' => $expense->id,
-
                         'expense_heading' => $heading,
-
                         'unit' => $request->unit[$key] ?? 1,
-
                         'unit_price' => $request->unit_price[$key] ?? 0,
-
                         'sub_total' => $request->sub_total[$key] ?? 0,
-
                         'cgst' => $request->cgst[$key] ?? 0,
-
                         'sgst' => $request->sgst[$key] ?? 0,
-
                         'igst' => $request->igst[$key] ?? 0,
-
                         'total' => $request->total[$key] ?? 0,
                     ]);
                 }
             }
+        }
+
+if ($request->wantsJson()) {
+                return response()->json([
+                'success' => true,
+                'message' => 'Expense Updated Successfully',
+                'data' => $expense->load([
+                    'category',
+                    'vendor',
+                    'items'
+                ])
+            ]);
         }
 
         return redirect()
@@ -434,18 +407,25 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
             ->with('success', 'Expense Updated Successfully');
     }
 
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
         $expense = Expense::findOrFail($id);
 
         $expense->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense Deleted Successfully'
+            ]);
+        }
 
         return redirect()
             ->route('admin.accountant.expense.add.index')
             ->with('success', 'Expense Deleted Successfully');
     }
 
-    public function deleted()
+    public function deleted(Request $request)
     {
         $deletedExpenses = Expense::onlyTrashed()
                             ->with([
@@ -455,24 +435,40 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
                             ->latest()
                             ->get();
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Deleted expenses retrieved successfully',
+                'data' => $deletedExpenses
+            ]);
+        }
+
         return view(
             'admin.Accountant.Expense_Management.AddExpense.deleted',
             compact('deletedExpenses')
         );
     }
 
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
         $expense = Expense::withTrashed()->findOrFail($id);
 
         $expense->restore();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense Restored Successfully',
+                'data' => $expense
+            ]);
+        }
 
         return redirect()
             ->route('admin.accountant.expense.add.deleted')
             ->with('success', 'Expense Restored Successfully');
     }
 
-    public function voucher($id)
+    public function voucher(Request $request, $id)
     {
         $expense = Expense::with([
                             'category',
@@ -480,6 +476,14 @@ if ($finalPaidAmount > $calculatedGrandTotal) {
                             'items'
                         ])
                         ->findOrFail($id);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Expense voucher retrieved successfully',
+                'data' => $expense
+            ]);
+        }
 
         return view(
             'admin.Accountant.Expense_Management.AddExpense.voucher',

@@ -17,17 +17,58 @@ class ExpenseReportController extends Controller
      */
     public function index()
     {
-        $categories = ExpenseCategory::where('is_deleted', false)
-                        ->orderBy('category_name')
+        $categories = ExpenseCategory::where(
+                            'is_deleted',
+                            false
+                        )
+                        ->orderBy(
+                            'category_name'
+                        )
                         ->get();
 
-        $vendors = InventoryVendor::whereNull('deleted_at')
-                        ->orderBy('vendor_name')
+        $vendors = InventoryVendor::whereNull(
+                            'deleted_at'
+                        )
+                        ->orderBy(
+                            'vendor_name'
+                        )
                         ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | JSON RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if (request()->expectsJson()) {
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                    'Expense Report Filters fetched successfully',
+
+                'categories' =>
+                    $categories,
+
+                'vendors' =>
+                    $vendors,
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | WEB RESPONSE
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'admin.Accountant.Expense_Management.ExpenseReport.index',
-            compact('categories', 'vendors')
+            compact(
+                'categories',
+                'vendors'
+            )
         );
     }
 
@@ -42,7 +83,14 @@ class ExpenseReportController extends Controller
             'items'
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | FILTERS
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->from_date) {
+
             $query->whereDate(
                 'entry_date',
                 '>=',
@@ -51,6 +99,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->to_date) {
+
             $query->whereDate(
                 'entry_date',
                 '<=',
@@ -59,6 +108,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->category_id) {
+
             $query->where(
                 'category_id',
                 $request->category_id
@@ -66,6 +116,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->vendor_id) {
+
             $query->where(
                 'vendor_id',
                 $request->vendor_id
@@ -76,15 +127,59 @@ class ExpenseReportController extends Controller
             $request->payment_status &&
             $request->payment_status != 'All'
         ) {
+
             $query->where(
                 'payment_status',
                 $request->payment_status
             );
         }
 
-        $expenses = $query->latest()->get();
+        /*
+        |--------------------------------------------------------------------------
+        | FETCH DATA
+        |--------------------------------------------------------------------------
+        */
 
-        $finalTotal = $expenses->sum('grand_total');
+        $expenses = $query
+                        ->latest()
+                        ->get();
+
+        $finalTotal =
+            $expenses->sum(
+                'grand_total'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | JSON RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                    'Category Wise Report Generated Successfully',
+
+                'data' =>
+                    $expenses,
+
+                'summary' => [
+
+                    'grand_total' =>
+                        $finalTotal,
+                ],
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | WEB RESPONSE
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'admin.Accountant.Expense_Management.ExpenseReport.category_report',
@@ -100,9 +195,17 @@ class ExpenseReportController extends Controller
      */
     public function incomeExpenseReport(Request $request)
     {
-        $receptionistIncomeQuery = ReceptionistBilling::query();
+        /*
+        |--------------------------------------------------------------------------
+        | RECEPTIONIST INCOME
+        |--------------------------------------------------------------------------
+        */
+
+        $receptionistIncomeQuery =
+            ReceptionistBilling::query();
 
         if ($request->from_date) {
+
             $receptionistIncomeQuery->whereDate(
                 'created_at',
                 '>=',
@@ -111,6 +214,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->to_date) {
+
             $receptionistIncomeQuery->whereDate(
                 'created_at',
                 '<=',
@@ -118,16 +222,26 @@ class ExpenseReportController extends Controller
             );
         }
 
-        $receptionistBillings = $receptionistIncomeQuery
-                                    ->latest()
-                                    ->get();
+        $receptionistBillings =
+            $receptionistIncomeQuery
+                ->latest()
+                ->get();
 
-        $receptionistIncome = $receptionistBillings->sum('amount');
+        $receptionistIncome =
+            $receptionistBillings
+                ->sum('amount');
 
+        /*
+        |--------------------------------------------------------------------------
+        | ACCOUNTANT INCOME
+        |--------------------------------------------------------------------------
+        */
 
-        $accountantIncomeQuery = AccountantPayment::query();
+        $accountantIncomeQuery =
+            AccountantPayment::query();
 
         if ($request->from_date) {
+
             $accountantIncomeQuery->whereDate(
                 'created_at',
                 '>=',
@@ -136,6 +250,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->to_date) {
+
             $accountantIncomeQuery->whereDate(
                 'created_at',
                 '<=',
@@ -143,16 +258,26 @@ class ExpenseReportController extends Controller
             );
         }
 
-        $accountantPayments = $accountantIncomeQuery
-                                    ->latest()
-                                    ->get();
+        $accountantPayments =
+            $accountantIncomeQuery
+                ->latest()
+                ->get();
 
-        $accountantIncome = $accountantPayments->sum('amount');
+        $accountantIncome =
+            $accountantPayments
+                ->sum('amount');
 
+        /*
+        |--------------------------------------------------------------------------
+        | SALES INCOME
+        |--------------------------------------------------------------------------
+        */
 
-        $salesIncomeQuery = SalesBill::query();
+        $salesIncomeQuery =
+            SalesBill::query();
 
         if ($request->from_date) {
+
             $salesIncomeQuery->whereDate(
                 'created_at',
                 '>=',
@@ -161,6 +286,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->to_date) {
+
             $salesIncomeQuery->whereDate(
                 'created_at',
                 '<=',
@@ -168,18 +294,31 @@ class ExpenseReportController extends Controller
             );
         }
 
-        $salesBills = $salesIncomeQuery
-                            ->latest()
-                            ->get();
+        $salesBills =
+            $salesIncomeQuery
+                ->latest()
+                ->get();
 
-        $salesIncome = $salesBills->sum('paid_amount');
+        $salesIncome =
+            $salesBills
+                ->sum('paid_amount');
 
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL INCOME
+        |--------------------------------------------------------------------------
+        */
 
         $totalIncome =
             $receptionistIncome +
             $accountantIncome +
             $salesIncome;
 
+        /*
+        |--------------------------------------------------------------------------
+        | EXPENSES
+        |--------------------------------------------------------------------------
+        */
 
         $expenseQuery = Expense::with([
             'category',
@@ -188,6 +327,7 @@ class ExpenseReportController extends Controller
         ]);
 
         if ($request->from_date) {
+
             $expenseQuery->whereDate(
                 'entry_date',
                 '>=',
@@ -196,6 +336,7 @@ class ExpenseReportController extends Controller
         }
 
         if ($request->to_date) {
+
             $expenseQuery->whereDate(
                 'entry_date',
                 '<=',
@@ -203,13 +344,86 @@ class ExpenseReportController extends Controller
             );
         }
 
-        $expenses = $expenseQuery
-                        ->latest()
-                        ->get();
+        $expenses =
+            $expenseQuery
+                ->latest()
+                ->get();
 
-        $totalExpense = $expenses->sum('grand_total');
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL EXPENSE
+        |--------------------------------------------------------------------------
+        */
 
-        $balance = $totalIncome - $totalExpense;
+        $totalExpense =
+            $expenses
+                ->sum('grand_total');
+
+        /*
+        |--------------------------------------------------------------------------
+        | BALANCE
+        |--------------------------------------------------------------------------
+        */
+
+        $balance =
+            $totalIncome -
+            $totalExpense;
+
+        /*
+        |--------------------------------------------------------------------------
+        | JSON RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                    'Income Expense Report Generated Successfully',
+
+                'summary' => [
+
+                    'receptionist_income' =>
+                        $receptionistIncome,
+
+                    'accountant_income' =>
+                        $accountantIncome,
+
+                    'sales_income' =>
+                        $salesIncome,
+
+                    'total_income' =>
+                        $totalIncome,
+
+                    'total_expense' =>
+                        $totalExpense,
+
+                    'balance' =>
+                        $balance,
+                ],
+
+                'receptionist_billings' =>
+                    $receptionistBillings,
+
+                'accountant_payments' =>
+                    $accountantPayments,
+
+                'sales_bills' =>
+                    $salesBills,
+
+                'expenses' =>
+                    $expenses,
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | WEB RESPONSE
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'admin.Accountant.Expense_Management.ExpenseReport.income_expense_report',
@@ -234,42 +448,107 @@ class ExpenseReportController extends Controller
      * Printable Report
      */
     public function printIncomeExpenseReport(Request $request)
-{
-    $receptionistBillings = ReceptionistBilling::latest()->get();
-    $accountantPayments = AccountantPayment::latest()->get();
-    $salesBills = SalesBill::latest()->get();
+    {
+        $receptionistBillings =
+            ReceptionistBilling::latest()
+                ->get();
 
-    $expenses = Expense::with([
-        'category',
-        'items'
-    ])->latest()->get();
+        $accountantPayments =
+            AccountantPayment::latest()
+                ->get();
 
-    $receptionistIncome = $receptionistBillings->sum('amount');
-    $accountantIncome   = $accountantPayments->sum('amount');
-    $salesIncome        = $salesBills->sum('paid_amount');
+        $salesBills =
+            SalesBill::latest()
+                ->get();
 
-    $totalIncome =
-        $receptionistIncome +
-        $accountantIncome +
-        $salesIncome;
+        $expenses = Expense::with([
+            'category',
+            'items'
+        ])->latest()->get();
 
-    $totalExpense = $expenses->sum('grand_total');
+        $receptionistIncome =
+            $receptionistBillings
+                ->sum('amount');
 
-    $balance =
-        $totalIncome -
-        $totalExpense;
+        $accountantIncome =
+            $accountantPayments
+                ->sum('amount');
 
-    return view(
-        'admin.Accountant.Expense_Management.ExpenseReport.income_expense_print',
-        compact(
-            'receptionistBillings',
-            'accountantPayments',
-            'salesBills',
-            'expenses',
-            'totalIncome',
-            'totalExpense',
-            'balance'
-        )
-    );
-}
+        $salesIncome =
+            $salesBills
+                ->sum('paid_amount');
+
+        $totalIncome =
+            $receptionistIncome +
+            $accountantIncome +
+            $salesIncome;
+
+        $totalExpense =
+            $expenses
+                ->sum('grand_total');
+
+        $balance =
+            $totalIncome -
+            $totalExpense;
+
+        /*
+        |--------------------------------------------------------------------------
+        | JSON RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->expectsJson()) {
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                    'Printable Income Expense Report fetched successfully',
+
+                'summary' => [
+
+                    'total_income' =>
+                        $totalIncome,
+
+                    'total_expense' =>
+                        $totalExpense,
+
+                    'balance' =>
+                        $balance,
+                ],
+
+                'receptionist_billings' =>
+                    $receptionistBillings,
+
+                'accountant_payments' =>
+                    $accountantPayments,
+
+                'sales_bills' =>
+                    $salesBills,
+
+                'expenses' =>
+                    $expenses,
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | WEB RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'admin.Accountant.Expense_Management.ExpenseReport.income_expense_print',
+            compact(
+                'receptionistBillings',
+                'accountantPayments',
+                'salesBills',
+                'expenses',
+                'totalIncome',
+                'totalExpense',
+                'balance'
+            )
+        );
+    }
 }

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseReportController;
+use App\Http\Controllers\AddExpenseController;
 use App\Http\Controllers\Admin\LabTestController;
 /*
 |--------------------------------------------------------------------------
@@ -1638,7 +1640,7 @@ Route::prefix('accountant/billing')->group(function () {
 
 
 
-
+// expense category (Accountant)
 
 Route::prefix('admin/accountant/expense-management/category')
     ->group(function () {
@@ -1657,6 +1659,105 @@ Route::prefix('admin/accountant/expense-management/category')
 
         Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore']);
 });
+
+
+//add Expense  (Accountant)
+
+
+
+Route::prefix('add-expense')
+    ->name('api.add-expense.')
+    ->group(function () {
+
+        Route::get('/', [AddExpenseController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [AddExpenseController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [AddExpenseController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}', [AddExpenseController::class, 'show'])
+            ->name('show');
+
+        Route::get('/voucher/{id}', [AddExpenseController::class, 'voucher'])
+            ->name('voucher');
+
+        Route::get('/edit/{id}', [AddExpenseController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [AddExpenseController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [AddExpenseController::class, 'delete'])
+            ->name('delete');
+
+        Route::get('/deleted', [AddExpenseController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::post('/restore/{id}', [AddExpenseController::class, 'restore'])
+            ->name('restore');
+    });
+
+
+
+
+
+    /*
+|--------------------------------------------------------------------------
+expense report (Accountant)
+|--------------------------------------------------------------------------
+*/
+    Route::prefix(
+    'admin/accountant/expense-management/expense-report'
+)
+->name('api.admin.accountant.expense.report.')
+->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Report Filter Data
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/',
+        [ExpenseReportController::class, 'index']
+    )->name('index');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Category Wise Expense Report
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/category-wise',
+        [ExpenseReportController::class, 'categoryWiseReport']
+    )->name('category');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Income & Expense Report
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/income-expense',
+        [ExpenseReportController::class, 'incomeExpenseReport']
+    )->name('income.expense');
+
+
+    // Print Income & Expense Report API
+Route::get(
+    '/income-expense/print',
+    [ExpenseReportController::class, 'printIncomeExpenseReport']
+)->name('api.admin.accountant.expense.report.print');
+
+});
+
+
 
 
 /*
