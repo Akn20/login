@@ -234,6 +234,7 @@ public function show($id)
                 'Created Successfully'
             );
     }
+
 // EDIT PAGE
 public function edit($id)
 {
@@ -458,5 +459,184 @@ public function forceDelete($id)
             'Record Permanently Deleted'
         );
 }
-   
+
+
+
+// ================= API LIST =================
+
+public function apiIndex()
+{
+    $records = PerformanceReview::latest()->get();
+
+    return response()->json($records);
 }
+
+// ================= FORM DATA =================
+
+public function formData()
+{
+    $employees = Staff::with('department')
+        ->where('status', 'Active')
+        ->get();
+
+    return response()->json([
+        'employees' => $employees
+    ]);
+}
+// ================= SHOW =================
+
+public function apiShow($id)
+{
+    $record = PerformanceReview::findOrFail($id);
+
+    return response()->json($record);
+}
+
+// ================= STORE =================
+
+public function apiStore(Request $request)
+{
+    $record = PerformanceReview::create([
+
+        'id' => Str::uuid(),
+
+        'employee_id' => $request->employee_id,
+
+        'employee_name' => $request->employee_name,
+
+        'department' => $request->department,
+
+        'reviewer_name' => $request->reviewer_name,
+
+        'review_date' => $request->review_date,
+
+        'rating' => $request->rating,
+
+        'review_comments' =>
+            $request->review_comments,
+
+        'review_status' => 'Pending',
+
+        'cycle_name' =>
+            $request->cycle_name,
+
+        'cycle_start_date' =>
+            $request->cycle_start_date,
+
+        'cycle_end_date' =>
+            $request->cycle_end_date,
+
+        'kpi_name' =>
+            $request->kpi_name,
+
+        'target_value' =>
+            $request->target_value,
+
+        'achieved_value' =>
+            $request->achieved_value,
+
+        'kpi_score' =>
+            $request->kpi_score,
+
+        'kpi_remarks' =>
+            $request->kpi_remarks,
+
+        'old_designation' =>
+            $request->old_designation,
+
+        'new_designation' =>
+            $request->new_designation,
+
+        'promotion_date' =>
+            $request->promotion_date,
+
+        'promotion_reason' =>
+            $request->promotion_reason,
+
+        'warning_type' =>
+            $request->warning_type,
+
+        'warning_date' =>
+            $request->warning_date,
+
+        'warning_remarks' =>
+            $request->warning_remarks,
+
+        'issued_by' =>
+            $request->issued_by,
+
+        'action_history' =>
+            'Performance Review created on '
+            . now(),
+    ]);
+
+    return response()->json([
+        'message' => 'Created Successfully',
+        'data' => $record
+    ]);
+}
+
+// ================= UPDATE =================
+
+public function apiUpdate(Request $request, $id)
+{
+    $record = PerformanceReview::findOrFail($id);
+
+    $record->update($request->all());
+
+    return response()->json([
+        'message' => 'Updated Successfully',
+        'data' => $record
+    ]);
+}
+
+// ================= DELETE =================
+
+public function apiDelete($id)
+{
+    PerformanceReview::findOrFail($id)
+        ->delete();
+
+    return response()->json([
+        'message' => 'Deleted Successfully'
+    ]);
+}
+
+// ================= DELETED =================
+
+public function apideleted()
+{
+    $records = PerformanceReview::onlyTrashed()
+        ->get();
+
+    return response()->json($records);
+}
+
+// ================= RESTORE =================
+
+public function apirestore($id)
+{
+    PerformanceReview::onlyTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'message' => 'Restored Successfully'
+    ]);
+}
+
+// ================= FORCE DELETE =================
+
+public function apiforceDelete($id)
+{
+    PerformanceReview::onlyTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'message' => 'Permanently Deleted'
+    ]);
+}   
+}
+
+
