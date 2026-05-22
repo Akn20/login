@@ -51,9 +51,22 @@
 
                     <tr>
 
-                        <td>{{ $case->patient_id }}</td>
+                       <td>
 
-                        <td>{{ $case->doctor_id }}</td>
+                    {{ $case->patient->patient_code ?? '' }}
+
+    -
+
+                         {{ $case->patient->first_name ?? '' }}
+                         {{ $case->patient->last_name ?? '' }}
+
+</td>
+
+<td>
+
+    Dr. {{ $case->doctor->name ?? '' }}
+
+</td>
 
                         <td>{{ $case->visit_type }}</td>
 

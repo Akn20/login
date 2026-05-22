@@ -11,7 +11,9 @@ class CaseSheetController extends Controller
 {
     public function index()
     {
-        $caseSheets = CaseSheet::latest()->get();
+       $caseSheets = CaseSheet::with(['patient', 'doctor'])
+    ->latest()
+    ->get();
 
        return view('casesheets.index', compact('caseSheets'));
     }
