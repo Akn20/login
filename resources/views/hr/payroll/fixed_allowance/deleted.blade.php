@@ -66,14 +66,21 @@
                                         {{-- RESTORE --}}
                                         <form method="POST"
                                             action="{{ route('hr.payroll.allowance.restore', $allowance->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="type" value="fixed">
-                                            <button type="submit" class="btn btn-outline-success btn-icon rounded-circle"
-                                                onclick="return confirm('Restore this allowance?')">
-                                                <i class="feather-rotate-ccw"></i>
-                                            </button>
-                                        </form>
 
+                                            @csrf
+                                            @method('PUT')
+
+                                            <input type="hidden" name="type" value="fixed">
+
+                                            <button type="submit"
+                                                    class="btn btn-outline-success btn-icon rounded-circle"
+                                                    onclick="return confirm('Restore this allowance?')">
+
+                                                <i class="feather-rotate-ccw"></i>
+
+                                            </button>
+
+                                        </form>
                                         {{-- PERMANENT DELETE --}}
                                         <form method="POST"
                                             action="{{ route('hr.payroll.allowance.forceDelete', $allowance->id) }}">

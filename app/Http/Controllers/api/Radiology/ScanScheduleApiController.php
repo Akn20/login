@@ -19,7 +19,7 @@ class ScanScheduleApiController extends Controller
     ]);
 
     // update status
-    \App\Models\ScanRequest::where(
+    ScanRequest::where(
         'id',
         $request->scan_request_id
     )->update([

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\FinancialDiscrepancy;
-use App\Models\FinancialReconciliation;
+use App\Models\FinancialReconciliation; 
 
 class FinancialDiscrepancyController extends Controller
 {
@@ -29,39 +29,39 @@ class FinancialDiscrepancyController extends Controller
      * Create Page
      */
     public function search(Request $request)
-{
-    $query = FinancialDiscrepancy::with(
-        'financialReconciliation'
-    );
+    {
+        $query = FinancialDiscrepancy::with(
+            'financialReconciliation'
+        );
 
-    // SEARCH BY ISSUE TYPE
-    if ($request->filled('search')) {
+        // SEARCH BY ISSUE TYPE
+        if ($request->filled('search')) {
 
-        $query->where(
-            'issue_type',
-            'LIKE',
-            '%' . $request->search . '%'
+            $query->where(
+                'issue_type',
+                'LIKE',
+                '%' . $request->search . '%'
+            );
+        }
+
+        // SEARCH BY STATUS
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        $discrepancies = $query->latest()->get();
+
+        return view(
+            'admin.accountant.financial_discrepancy.index',
+            compact('discrepancies')
         );
     }
 
-    // SEARCH BY STATUS
-    if ($request->filled('status')) {
 
-        $query->where(
-            'status',
-            $request->status
-        );
-    }
-
-    $discrepancies =$query->latest()->get();
-
-    return view(
-        'admin.accountant.financial_discrepancy.index',
-        compact('discrepancies')
-    );
-}
-    
-    
     public function create()
     {
         $reconciliations = FinancialReconciliation::latest()->get();
@@ -96,34 +96,34 @@ class FinancialDiscrepancyController extends Controller
         ]);
 
         $difference =
-    $request->expected_amount -
-    $request->actual_amount;
+            $request->expected_amount -
+            $request->actual_amount;
 
-$discrepancy = FinancialDiscrepancy::create([
+        $discrepancy = FinancialDiscrepancy::create([
 
-    'financial_reconciliation_id' =>
-        $request->financial_reconciliation_id,
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
 
-    'issue_type' =>
-        $request->issue_type,
+            'issue_type' =>
+                $request->issue_type,
 
-    'expected_amount' =>
-        $request->expected_amount,
+            'expected_amount' =>
+                $request->expected_amount,
 
-    'actual_amount' =>
-        $request->actual_amount,
+            'actual_amount' =>
+                $request->actual_amount,
 
-    'difference_amount' =>
-        $difference,
+            'difference_amount' =>
+                $difference,
 
-    'status' =>
-        $difference == 0
-        ? 'Resolved'
-        : 'Open',
+            'status' =>
+                $difference == 0
+                ? 'Resolved'
+                : 'Open',
 
-    'remarks' =>
-        $request->remarks,
-]);
+            'remarks' =>
+                $request->remarks,
+        ]);
 
         return redirect()
             ->route(
@@ -186,39 +186,39 @@ $discrepancy = FinancialDiscrepancy::create([
             'actual_amount' =>
                 'required|numeric|min:0',
 
-            
+
             'remarks' =>
                 'nullable|string',
         ]);
 
         $discrepancy = FinancialDiscrepancy::findOrFail($id);
 
-       $difference =
-    $request->expected_amount -
-    $request->actual_amount;
+        $difference =
+            $request->expected_amount -
+            $request->actual_amount;
 
-$discrepancy->update([
+        $discrepancy->update([
 
-    'financial_reconciliation_id' =>
-        $request->financial_reconciliation_id,
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
 
-    'issue_type' =>
-        $request->issue_type,
+            'issue_type' =>
+                $request->issue_type,
 
-    'expected_amount' =>
-        $request->expected_amount,
+            'expected_amount' =>
+                $request->expected_amount,
 
-    'actual_amount' =>
-        $request->actual_amount,
+            'actual_amount' =>
+                $request->actual_amount,
 
-    'difference_amount' =>
-        $difference,
+            'difference_amount' =>
+                $difference,
 
-    'status' => $request->status,
-       
-    'remarks' =>
-        $request->remarks,
-]);
+            'status' => $request->status,
+
+            'remarks' =>
+                $request->remarks,
+        ]);
         return redirect()
             ->route(
                 'admin.financial-discrepancy.index'
@@ -292,217 +292,217 @@ $discrepancy->update([
     }
 
     public function apiIndex()
-{
-    $discrepancies = FinancialDiscrepancy::with('financialReconciliation')
-        ->latest()
-        ->get();
+    {
+        $discrepancies = FinancialDiscrepancy::with('financialReconciliation')
+            ->latest()
+            ->get();
 
-    return response()->json([
-        'status' => true,
-        'data' => $discrepancies
-    ]);
-}
-
-public function apiShow($id)
-{
-    $discrepancy = FinancialDiscrepancy::with('financialReconciliation')
-        ->findOrFail($id);
-
-    return response()->json([
-        'status' => true,
-        'data' => $discrepancy
-    ]);
-}
-public function apiStore(Request $request)
-{
-    $request->validate([
-
-        'financial_reconciliation_id' =>
-            'required|exists:financial_reconciliations,id',
-
-        'issue_type' =>
-            'required|string|max:255',
-
-        'expected_amount' =>
-            'required|numeric|min:0',
-
-        'actual_amount' =>
-            'required|numeric|min:0',
-
-        'remarks' =>
-            'nullable|string',
-    ]);
-
-    $difference =
-        $request->expected_amount -
-        $request->actual_amount;
-
-    $discrepancy = FinancialDiscrepancy::create([
-
-        'financial_reconciliation_id' =>
-            $request->financial_reconciliation_id,
-
-        'issue_type' =>
-            $request->issue_type,
-
-        'expected_amount' =>
-            $request->expected_amount,
-
-        'actual_amount' =>
-            $request->actual_amount,
-
-        'difference_amount' =>
-            $difference,
-
-        'status' =>
-            $difference == 0
-            ? 'Resolved'
-            : 'Open',
-
-        'remarks' =>
-            $request->remarks,
-    ]);
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Discrepancy created successfully',
-        'data' => $discrepancy
-    ]);
-}
-
-public function apiUpdate(Request $request, $id)
-{
-    $discrepancy = FinancialDiscrepancy::findOrFail($id);
-
-    $request->validate([
-
-        'financial_reconciliation_id' =>
-            'required|exists:financial_reconciliations,id',
-
-        'issue_type' =>
-            'required|string|max:255',
-
-        'expected_amount' =>
-            'required|numeric|min:0',
-
-        'actual_amount' =>
-            'required|numeric|min:0',
-
-        'remarks' =>
-            'nullable|string',
-    ]);
-
-    $difference =
-        $request->expected_amount -
-        $request->actual_amount;
-
-    $discrepancy->update([
-
-        'financial_reconciliation_id' =>
-            $request->financial_reconciliation_id,
-
-        'issue_type' =>
-            $request->issue_type,
-
-        'expected_amount' =>
-            $request->expected_amount,
-
-        'actual_amount' =>
-            $request->actual_amount,
-
-        'difference_amount' =>
-            $difference,
-
-        'status' =>
-            $difference == 0
-            ? 'Resolved'
-            : 'Open',
-
-        'remarks' =>
-            $request->remarks,
-    ]);
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Discrepancy updated successfully'
-    ]);
-}
-public function apiDelete($id)
-{
-    $discrepancy = FinancialDiscrepancy::findOrFail($id);
-
-    $discrepancy->delete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Discrepancy deleted successfully'
-    ]);
-}
-public function apiDeleted()
-{
-    $discrepancies = FinancialDiscrepancy::onlyTrashed()
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-        'data' => $discrepancies
-    ]);
-}
-public function apiRestore($id)
-{
-    $discrepancy = FinancialDiscrepancy::withTrashed()
-        ->findOrFail($id);
-
-    $discrepancy->restore();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Discrepancy restored successfully'
-    ]);
-}
-
-public function apiForceDelete($id)
-{
-    $discrepancy = FinancialDiscrepancy::withTrashed()
-        ->findOrFail($id);
-
-    $discrepancy->forceDelete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Discrepancy permanently deleted'
-    ]);
-}
-
-public function apiSearch(Request $request)
-{
-    $query = FinancialDiscrepancy::with(
-        'financialReconciliation'
-    );
-
-    if ($request->filled('search')) {
-
-        $query->where(
-            'issue_type',
-            'LIKE',
-            '%' . $request->search . '%'
-        );
+        return response()->json([
+            'status' => true,
+            'data' => $discrepancies
+        ]);
     }
 
-    if ($request->filled('status')) {
+    public function apiShow($id)
+    {
+        $discrepancy = FinancialDiscrepancy::with('financialReconciliation')
+            ->findOrFail($id);
 
-        $query->where(
-            'status',
-            $request->status
-        );
+        return response()->json([
+            'status' => true,
+            'data' => $discrepancy
+        ]);
+    }
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+
+            'financial_reconciliation_id' =>
+                'required|exists:financial_reconciliations,id',
+
+            'issue_type' =>
+                'required|string|max:255',
+
+            'expected_amount' =>
+                'required|numeric|min:0',
+
+            'actual_amount' =>
+                'required|numeric|min:0',
+
+            'remarks' =>
+                'nullable|string',
+        ]);
+
+        $difference =
+            $request->expected_amount -
+            $request->actual_amount;
+
+        $discrepancy = FinancialDiscrepancy::create([
+
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
+
+            'issue_type' =>
+                $request->issue_type,
+
+            'expected_amount' =>
+                $request->expected_amount,
+
+            'actual_amount' =>
+                $request->actual_amount,
+
+            'difference_amount' =>
+                $difference,
+
+            'status' =>
+                $difference == 0
+                ? 'Resolved'
+                : 'Open',
+
+            'remarks' =>
+                $request->remarks,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discrepancy created successfully',
+            'data' => $discrepancy
+        ]);
     }
 
-    $discrepancies = $query->latest()->get();
+    public function apiUpdate(Request $request, $id)
+    {
+        $discrepancy = FinancialDiscrepancy::findOrFail($id);
 
-    return response()->json([
-        'status' => true,
-        'data' => $discrepancies
-    ]);
-}
+        $request->validate([
+
+            'financial_reconciliation_id' =>
+                'required|exists:financial_reconciliations,id',
+
+            'issue_type' =>
+                'required|string|max:255',
+
+            'expected_amount' =>
+                'required|numeric|min:0',
+
+            'actual_amount' =>
+                'required|numeric|min:0',
+
+            'remarks' =>
+                'nullable|string',
+        ]);
+
+        $difference =
+            $request->expected_amount -
+            $request->actual_amount;
+
+        $discrepancy->update([
+
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
+
+            'issue_type' =>
+                $request->issue_type,
+
+            'expected_amount' =>
+                $request->expected_amount,
+
+            'actual_amount' =>
+                $request->actual_amount,
+
+            'difference_amount' =>
+                $difference,
+
+            'status' =>
+                $difference == 0
+                ? 'Resolved'
+                : 'Open',
+
+            'remarks' =>
+                $request->remarks,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discrepancy updated successfully'
+        ]);
+    }
+    public function apiDelete($id)
+    {
+        $discrepancy = FinancialDiscrepancy::findOrFail($id);
+
+        $discrepancy->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discrepancy deleted successfully'
+        ]);
+    }
+    public function apiDeleted()
+    {
+        $discrepancies = FinancialDiscrepancy::onlyTrashed()
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $discrepancies
+        ]);
+    }
+    public function apiRestore($id)
+    {
+        $discrepancy = FinancialDiscrepancy::withTrashed()
+            ->findOrFail($id);
+
+        $discrepancy->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discrepancy restored successfully'
+        ]);
+    }
+
+    public function apiForceDelete($id)
+    {
+        $discrepancy = FinancialDiscrepancy::withTrashed()
+            ->findOrFail($id);
+
+        $discrepancy->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discrepancy permanently deleted'
+        ]);
+    }
+
+    public function apiSearch(Request $request)
+    {
+        $query = FinancialDiscrepancy::with(
+            'financialReconciliation'
+        );
+
+        if ($request->filled('search')) {
+
+            $query->where(
+                'issue_type',
+                'LIKE',
+                '%' . $request->search . '%'
+            );
+        }
+
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        $discrepancies = $query->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $discrepancies
+        ]);
+    }
 }

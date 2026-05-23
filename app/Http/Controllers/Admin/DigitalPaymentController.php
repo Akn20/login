@@ -126,30 +126,30 @@ class DigitalPaymentController extends Controller
         ]);
 
         $reconciliation = FinancialReconciliation::findOrFail(
-    $request->financial_reconciliation_id
-);
+            $request->financial_reconciliation_id
+        );
 
-// TOTAL EXISTING PAYMENTS
-$totalPayments =
-    DigitalPayment::where(
-        'financial_reconciliation_id',
-        $request->financial_reconciliation_id
-    )->sum('payment_amount');
+        // TOTAL EXISTING PAYMENTS
+        $totalPayments =
+            DigitalPayment::where(
+                'financial_reconciliation_id',
+                $request->financial_reconciliation_id
+            )->sum('payment_amount');
 
-// ADD CURRENT PAYMENT
-$totalPayments += $request->payment_amount;
+        // ADD CURRENT PAYMENT
+        $totalPayments += $request->payment_amount;
 
-// MATCHING STATUS
-$matchingStatus =
-    $totalPayments == $reconciliation->total_digital
-    ? 'Matched'
-    : 'Mismatch';
+        // MATCHING STATUS
+        $matchingStatus =
+            $totalPayments == $reconciliation->total_digital
+            ? 'Matched'
+            : 'Mismatch';
 
-// SETTLEMENT STATUS
-$settlementStatus =
-    $request->transaction_reference
-    ? 'Settled'
-    : 'Pending';
+        // SETTLEMENT STATUS
+        $settlementStatus =
+            $request->transaction_reference
+            ? 'Settled'
+            : 'Pending';
 
         DigitalPayment::create([
 
@@ -183,31 +183,31 @@ $settlementStatus =
 
         // UPDATE RECONCILIATION TOTAL DIGITAL
 
-            $totalDigital = DigitalPayment::where(
-                'financial_reconciliation_id',
-                $request->financial_reconciliation_id
-            )->sum('payment_amount');
+        $totalDigital = DigitalPayment::where(
+            'financial_reconciliation_id',
+            $request->financial_reconciliation_id
+        )->sum('payment_amount');
 
-            $reconciliation->total_digital = $totalDigital;
+        $reconciliation->total_digital = $totalDigital;
 
-            // CALCULATE DIFFERENCE
+        // CALCULATE DIFFERENCE
 
-            $expected =
-                $reconciliation->total_cash +
-                $totalDigital;
+        $expected =
+            $reconciliation->total_cash +
+            $totalDigital;
 
-            $difference =
-                $expected -
-                $reconciliation->total_bank_deposit;
+        $difference =
+            $expected -
+            $reconciliation->total_bank_deposit;
 
-            $reconciliation->difference_amount = abs($difference);
+        $reconciliation->difference_amount = abs($difference);
 
-            $reconciliation->status =
-                $difference == 0
-                    ? 'Matched'
-                    : 'Mismatch';
+        $reconciliation->status =
+            $difference == 0
+            ? 'Matched'
+            : 'Mismatch';
 
-            $reconciliation->save();
+        $reconciliation->save();
 
         return redirect()
             ->route('admin.digital-payment.index')
@@ -282,33 +282,33 @@ $settlementStatus =
         $payment = DigitalPayment::findOrFail($id);
 
         // MATCHING STATUS
-       $reconciliation = FinancialReconciliation::findOrFail(
-    $request->financial_reconciliation_id
-);
+        $reconciliation = FinancialReconciliation::findOrFail(
+            $request->financial_reconciliation_id
+        );
 
-// TOTAL PAYMENTS EXCEPT CURRENT
-$totalPayments =
-    DigitalPayment::where(
-        'financial_reconciliation_id',
-        $request->financial_reconciliation_id
-    )
-    ->where('id', '!=', $id)
-    ->sum('payment_amount');
+        // TOTAL PAYMENTS EXCEPT CURRENT
+        $totalPayments =
+            DigitalPayment::where(
+                'financial_reconciliation_id',
+                $request->financial_reconciliation_id
+            )
+                ->where('id', '!=', $id)
+                ->sum('payment_amount');
 
-// ADD UPDATED AMOUNT
-$totalPayments += $request->payment_amount;
+        // ADD UPDATED AMOUNT
+        $totalPayments += $request->payment_amount;
 
-// MATCHING STATUS
-$matchingStatus =
-    $totalPayments == $reconciliation->total_digital
-    ? 'Matched'
-    : 'Mismatch';
+        // MATCHING STATUS
+        $matchingStatus =
+            $totalPayments == $reconciliation->total_digital
+            ? 'Matched'
+            : 'Mismatch';
 
-// SETTLEMENT STATUS
-$settlementStatus =
-    $request->transaction_reference
-    ? 'Settled'
-    : 'Pending';
+        // SETTLEMENT STATUS
+        $settlementStatus =
+            $request->transaction_reference
+            ? 'Settled'
+            : 'Pending';
 
         $payment->update([
 
@@ -342,31 +342,31 @@ $settlementStatus =
 
         // UPDATE RECONCILIATION TOTAL DIGITAL
 
-$totalDigital = DigitalPayment::where(
-    'financial_reconciliation_id',
-    $request->financial_reconciliation_id
-)->sum('payment_amount');
+        $totalDigital = DigitalPayment::where(
+            'financial_reconciliation_id',
+            $request->financial_reconciliation_id
+        )->sum('payment_amount');
 
-$reconciliation->total_digital = $totalDigital;
+        $reconciliation->total_digital = $totalDigital;
 
-// RECALCULATE DIFFERENCE
+        // RECALCULATE DIFFERENCE
 
-$expected =
-    $reconciliation->total_cash +
-    $totalDigital;
+        $expected =
+            $reconciliation->total_cash +
+            $totalDigital;
 
-$difference =
-    $expected -
-    $reconciliation->total_bank_deposit;
+        $difference =
+            $expected -
+            $reconciliation->total_bank_deposit;
 
-$reconciliation->difference_amount = abs($difference);
+        $reconciliation->difference_amount = abs($difference);
 
-$reconciliation->status =
-    $difference == 0
-        ? 'Matched'
-        : 'Mismatch';
+        $reconciliation->status =
+            $difference == 0
+            ? 'Matched'
+            : 'Mismatch';
 
-$reconciliation->save();
+        $reconciliation->save();
 
         return redirect()
             ->route('admin.digital-payment.index')
@@ -439,291 +439,361 @@ $reconciliation->save();
     }
 
     public function apiIndex()
-{
-    $payments = DigitalPayment::with('financialReconciliation')
-        ->latest()
-        ->get();
+    {
+        $payments = DigitalPayment::with('financialReconciliation')
+            ->latest()
+            ->get();
 
-    return response()->json([
-        'status' => true,
-        'data' => $payments
-    ]);
-}
-public function apiShow($id)
-{
-    $payment = DigitalPayment::with('financialReconciliation')
-        ->findOrFail($id);
+        return response()->json([
+            'status' => true,
+            'data' => $payments
+        ]);
+    }
+    public function apiShow($id)
+    {
+        $payment = DigitalPayment::with('financialReconciliation')
+            ->findOrFail($id);
 
-    return response()->json([
-        'status' => true,
-        'data' => $payment
-    ]);
-}
-public function apiStore(Request $request)
-{
-    $request->validate([
+        return response()->json([
+            'status' => true,
+            'data' => $payment
+        ]);
+    }
+    public function apiStore(Request $request)
+    {
+        $request->validate([
 
-        'financial_reconciliation_id' =>
-            'required|exists:financial_reconciliations,id',
+            'financial_reconciliation_id' =>
+                'required|exists:financial_reconciliations,id',
 
-        'payment_method' =>
-            'required|string|max:255',
+            'payment_method' =>
+                'required|string|max:255',
 
-        'payment_gateway' =>
-            'required|string|max:255',
+            'payment_gateway' =>
+                'required|string|max:255',
 
-        'payment_amount' =>
-            'required|numeric|min:0',
+            'payment_amount' =>
+                'required|numeric|min:0',
 
-        'payment_date' =>
-            'required|date',
-    ]);
+            'payment_date' =>
+                'required|date',
+        ]);
 
-    $reconciliation = FinancialReconciliation::findOrFail(
-        $request->financial_reconciliation_id
-    );
+        $reconciliation = FinancialReconciliation::findOrFail(
+            $request->financial_reconciliation_id
+        );
 
-    $totalPayments =
-        DigitalPayment::where(
+        $totalPayments =
+            DigitalPayment::where(
+                'financial_reconciliation_id',
+                $request->financial_reconciliation_id
+            )->sum('payment_amount');
+
+        $totalPayments += $request->payment_amount;
+
+        $matchingStatus =
+            $totalPayments == $reconciliation->total_digital
+            ? 'Matched'
+            : 'Mismatch';
+
+        $settlementStatus =
+            $request->transaction_reference
+            ? 'Settled'
+            : 'Pending';
+
+        $payment = DigitalPayment::create([
+
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
+
+            'payment_method' =>
+                $request->payment_method,
+
+            'payment_gateway' =>
+                $request->payment_gateway,
+
+            'payment_amount' =>
+                $request->payment_amount,
+
+            'payment_date' =>
+                $request->payment_date,
+
+            'transaction_reference' =>
+                $request->transaction_reference,
+
+            'matching_status' =>
+                $matchingStatus,
+
+            'settlement_status' =>
+                $settlementStatus,
+
+            'remarks' =>
+                $request->remarks,
+        ]);
+
+        $totalDigital = DigitalPayment::where(
             'financial_reconciliation_id',
             $request->financial_reconciliation_id
         )->sum('payment_amount');
 
-    $totalPayments += $request->payment_amount;
+        $reconciliation->total_digital =
+            $totalDigital;
 
-    $matchingStatus =
-        $totalPayments == $reconciliation->total_digital
-        ? 'Matched'
-        : 'Mismatch';
+        $expected =
+            $reconciliation->total_cash +
+            $totalDigital;
 
-    $settlementStatus =
-        $request->transaction_reference
-        ? 'Settled'
-        : 'Pending';
+        $difference =
+            $expected -
+            $reconciliation->total_bank_deposit;
 
-    $payment = DigitalPayment::create([
+        $reconciliation->difference_amount =
+            abs($difference);
 
-        'financial_reconciliation_id' =>
-            $request->financial_reconciliation_id,
+        $reconciliation->status =
+            $difference == 0
+            ? 'Matched'
+            : 'Mismatch';
 
-        'payment_method' =>
-            $request->payment_method,
+        $reconciliation->save();
 
-        'payment_gateway' =>
-            $request->payment_gateway,
+        return response()->json([
+            'status' => true,
+            'message' => 'Digital payment created successfully',
+            'data' => $payment
+        ]);
+    }
 
-        'payment_amount' =>
-            $request->payment_amount,
+    public function apiUpdate(Request $request, $id)
+    {
+        $payment = DigitalPayment::findOrFail($id);
 
-        'payment_date' =>
-            $request->payment_date,
+        $request->validate([
 
-        'transaction_reference' =>
-            $request->transaction_reference,
+            'financial_reconciliation_id' =>
+                'required|exists:financial_reconciliations,id',
 
-        'matching_status' =>
-            $matchingStatus,
+            'payment_method' =>
+                'required|string|max:255',
 
-        'settlement_status' =>
-            $settlementStatus,
+            'payment_gateway' =>
+                'required|string|max:255',
 
-        'remarks' =>
-            $request->remarks,
-    ]);
+            'payment_amount' =>
+                'required|numeric|min:0',
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Digital payment created successfully',
-        'data' => $payment
-    ]);
-}
+            'payment_date' =>
+                'required|date',
+        ]);
 
-public function apiUpdate(Request $request, $id)
-{
-    $payment = DigitalPayment::findOrFail($id);
+        $reconciliation = FinancialReconciliation::findOrFail(
+            $request->financial_reconciliation_id
+        );
 
-    $request->validate([
+        $totalPayments =
+            DigitalPayment::where(
+                'financial_reconciliation_id',
+                $request->financial_reconciliation_id
+            )
+                ->where('id', '!=', $id)
+                ->sum('payment_amount');
 
-        'financial_reconciliation_id' =>
-            'required|exists:financial_reconciliations,id',
+        $totalPayments += $request->payment_amount;
 
-        'payment_method' =>
-            'required|string|max:255',
+        $matchingStatus =
+            $totalPayments == $reconciliation->total_digital
+            ? 'Matched'
+            : 'Mismatch';
 
-        'payment_gateway' =>
-            'required|string|max:255',
+        $settlementStatus =
+            $request->transaction_reference
+            ? 'Settled'
+            : 'Pending';
 
-        'payment_amount' =>
-            'required|numeric|min:0',
+        $payment->update([
 
-        'payment_date' =>
-            'required|date',
-    ]);
+            'financial_reconciliation_id' =>
+                $request->financial_reconciliation_id,
 
-    $reconciliation = FinancialReconciliation::findOrFail(
-        $request->financial_reconciliation_id
-    );
+            'payment_method' =>
+                $request->payment_method,
 
-    $totalPayments =
-        DigitalPayment::where(
+            'payment_gateway' =>
+                $request->payment_gateway,
+
+            'payment_amount' =>
+                $request->payment_amount,
+
+            'payment_date' =>
+                $request->payment_date,
+
+            'transaction_reference' =>
+                $request->transaction_reference,
+
+            'matching_status' =>
+                $matchingStatus,
+
+            'settlement_status' =>
+                $settlementStatus,
+
+            'remarks' =>
+                $request->remarks,
+        ]);
+
+
+        $totalDigital = DigitalPayment::where(
             'financial_reconciliation_id',
             $request->financial_reconciliation_id
-        )
-        ->where('id', '!=', $id)
-        ->sum('payment_amount');
+        )->sum('payment_amount');
 
-    $totalPayments += $request->payment_amount;
+        $reconciliation->total_digital =
+            $totalDigital;
 
-    $matchingStatus =
-        $totalPayments == $reconciliation->total_digital
-        ? 'Matched'
-        : 'Mismatch';
+        $expected =
+            $reconciliation->total_cash +
+            $totalDigital;
 
-    $settlementStatus =
-        $request->transaction_reference
-        ? 'Settled'
-        : 'Pending';
+        $difference =
+            $expected -
+            $reconciliation->total_bank_deposit;
 
-    $payment->update([
+        $reconciliation->difference_amount =
+            abs($difference);
 
-        'financial_reconciliation_id' =>
-            $request->financial_reconciliation_id,
+        $reconciliation->status =
+            $difference == 0
+            ? 'Matched'
+            : 'Mismatch';
 
-        'payment_method' =>
-            $request->payment_method,
+        $reconciliation->save();
 
-        'payment_gateway' =>
-            $request->payment_gateway,
-
-        'payment_amount' =>
-            $request->payment_amount,
-
-        'payment_date' =>
-            $request->payment_date,
-
-        'transaction_reference' =>
-            $request->transaction_reference,
-
-        'matching_status' =>
-            $matchingStatus,
-
-        'settlement_status' =>
-            $settlementStatus,
-
-        'remarks' =>
-            $request->remarks,
-    ]);
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Digital payment updated successfully'
-    ]);
-}
-
-public function apiDelete($id)
-{
-    $payment = DigitalPayment::findOrFail($id);
-
-    $payment->delete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Digital payment deleted successfully'
-    ]);
-}
-
-public function apiDeleted()
-{
-    $payments = DigitalPayment::onlyTrashed()
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-        'data' => $payments
-    ]);
-}
-
-public function apiRestore($id)
-{
-    $payment = DigitalPayment::withTrashed()
-        ->findOrFail($id);
-
-    $payment->restore();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Digital payment restored successfully'
-    ]);
-}
-public function apiForceDelete($id)
-{
-    $payment = DigitalPayment::withTrashed()
-        ->findOrFail($id);
-
-    $payment->forceDelete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Digital payment permanently deleted'
-    ]);
-}
-
-public function apiSearch(Request $request)
-{
-    $query = DigitalPayment::with('financialReconciliation');
-
-    if ($request->payment_method) {
-        $query->where(
-            'payment_method',
-            'like',
-            '%' . $request->payment_method . '%'
-        );
+        return response()->json([
+            'status' => true,
+            'message' => 'Digital payment updated successfully'
+        ]);
     }
 
-    if ($request->payment_gateway) {
-        $query->where(
-            'payment_gateway',
-            'like',
-            '%' . $request->payment_gateway . '%'
-        );
+    public function apiDelete($id)
+    {
+        $payment = DigitalPayment::findOrFail($id);
+
+        $payment->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Digital payment deleted successfully'
+        ]);
     }
 
-    if ($request->matching_status) {
-        $query->where(
-            'matching_status',
-            $request->matching_status
-        );
+    public function apiDeleted()
+    {
+        $payments = DigitalPayment::onlyTrashed()
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $payments
+        ]);
     }
 
-    if ($request->settlement_status) {
-        $query->where(
-            'settlement_status',
-            $request->settlement_status
-        );
+    public function apiRestore($id)
+    {
+        $payment = DigitalPayment::withTrashed()
+            ->findOrFail($id);
+
+        $payment->restore();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Digital payment restored successfully'
+        ]);
+    }
+    public function apiForceDelete($id)
+    {
+        $payment = DigitalPayment::withTrashed()
+            ->findOrFail($id);
+
+        $payment->forceDelete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Digital payment permanently deleted'
+        ]);
     }
 
-    if ($request->date_from) {
-        $query->whereDate(
-            'payment_date',
-            '>=',
-            $request->date_from
+    public function apiSearch(Request $request)
+    {
+        $search = $request->search;
+
+        $query = DigitalPayment::with(
+            'financialReconciliation'
         );
+
+        if ($search) {
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where(
+                    'payment_method',
+                    'like',
+                    "%{$search}%"
+                )
+
+                    ->orWhere(
+                        'payment_gateway',
+                        'like',
+                        "%{$search}%"
+                    )
+
+                    ->orWhere(
+                        'payment_amount',
+                        'like',
+                        "%{$search}%"
+                    )
+
+                    ->orWhere(
+                        'transaction_reference',
+                        'like',
+                        "%{$search}%"
+                    )
+
+                    ->orWhere(
+                        'matching_status',
+                        'like',
+                        "%{$search}%"
+                    )
+
+                    ->orWhere(
+                        'settlement_status',
+                        'like',
+                        "%{$search}%"
+                    )
+
+                    ->orWhereRaw(
+                        "DATE_FORMAT(payment_date, '%d %b %Y') LIKE ?",
+                        ["%{$search}%"]
+                    )
+
+                    ->orWhereHas(
+                        'financialReconciliation',
+                        function ($r) use ($search) {
+
+                            $r->where(
+                                'id',
+                                'like',
+                                "%{$search}%"
+                            );
+                        }
+                    );
+            });
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    if ($request->date_to) {
-        $query->whereDate(
-            'payment_date',
-            '<=',
-            $request->date_to
-        );
-    }
 
-    return response()->json([
-        'status' => true,
-        'data' => $query->latest()->get()
-    ]);
-}
-
-    
 }

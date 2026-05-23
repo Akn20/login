@@ -63,11 +63,11 @@
                         </td>
 
                         <td>
-                            ₹ {{ number_format($item->bank_deposit, 2) }}
+                            ₹ {{ number_format($item->total_bank_deposit, 2) }}
                         </td>
 
                         <td>
-                            ₹ {{ number_format($item->difference, 2) }}
+                            ₹ {{ number_format($item->difference_amount, 2) }}
                         </td>
 
                         <td>

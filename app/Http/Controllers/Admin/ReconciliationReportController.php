@@ -52,9 +52,9 @@ class ReconciliationReportController extends Controller
             )->sum('total_bank_deposit');
 
         FinancialReconciliation::where(
-    'status',
-    'Mismatch'
-)->sum('difference_amount');
+            'status',
+            'Mismatch'
+        )->sum('difference_amount');
 
         return view(
             'admin.accountant.reconciliation_reports.daily_report',
@@ -142,7 +142,7 @@ class ReconciliationReportController extends Controller
     {
         $discrepancies =
             FinancialDiscrepancy::latest()
-            ->get();
+                ->get();
 
         return view(
             'admin.accountant.reconciliation_reports.discrepancy_report',
@@ -151,169 +151,171 @@ class ReconciliationReportController extends Controller
     }
 
     public function apiIndex()
-{
-    return response()->json([
-        'status' => true,
-        'message' => 'Reconciliation Reports API'
-    ]);
-}
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Reconciliation Reports API'
+        ]);
+    }
 
-public function apiDailyReport()
-{
-    $totalDiscrepancy =
-        FinancialDiscrepancy::sum(
-            'difference_amount'
-        );
+    public function apiDailyReport()
+    {
+        $totalDiscrepancy =
+            FinancialDiscrepancy::sum(
+                'difference_amount'
+            );
 
-    $totalCash =
-        FinancialReconciliation::sum(
-            'total_cash'
-        );
+        $totalCash =
+            FinancialReconciliation::sum(
+                'total_cash'
+            );
 
-    $totalBankDeposits =
-        FinancialReconciliation::sum(
-            'total_bank_deposit'
-        );
+        $totalBankDeposits =
+            FinancialReconciliation::sum(
+                'total_bank_deposit'
+            );
 
-    $totalDigitalPayments =
-        FinancialReconciliation::sum(
-            'total_digital'
-        );
+        $totalDigitalPayments =
+            FinancialReconciliation::sum(
+                'total_digital'
+            );
 
-    $totalReconciled =
-        FinancialReconciliation::where(
-            'status',
-            'Matched'
-        )->sum('total_bank_deposit');
+        $totalReconciled =
+            FinancialReconciliation::where(
+                'status',
+                'Matched'
+            )->sum('total_bank_deposit');
 
-    return response()->json([
-        'status' => true,
-        'data' => [
+        return response()->json([
+            'status' => true,
+            'data' => [
 
-            'total_cash' =>
-                $totalCash,
+                'total_cash' =>
+                    $totalCash,
 
-            'total_bank_deposits' =>
-                $totalBankDeposits,
+                'total_bank_deposits' =>
+                    $totalBankDeposits,
 
-            'total_digital_payments' =>
-                $totalDigitalPayments,
+                'total_digital_payments' =>
+                    $totalDigitalPayments,
 
-            'total_reconciled' =>
-                $totalReconciled,
+                'total_reconciled' =>
+                    $totalReconciled,
 
-            'total_discrepancy' =>
-                $totalDiscrepancy,
-        ]
-    ]);
-}
+                'total_discrepancy' =>
+                    $totalDiscrepancy,
+            ]
+        ]);
+    }
 
-public function apiBankReport()
-{
-    $verifications =
-        BankVerification::latest()
-        ->get();
+    public function apiBankReport()
+    {
+        $verifications =
+            BankVerification::with(
+                'financialReconciliation'
+            )->latest()->get();
 
-    $verified =
-        BankVerification::where(
-            'verification_status',
-            'Verified'
-        )->count();
+        $verified =
+            BankVerification::where(
+                'verification_status',
+                'Verified'
+            )->count();
 
-    $pending =
-        BankVerification::where(
-            'verification_status',
-            'Pending'
-        )->count();
+        $pending =
+            BankVerification::where(
+                'verification_status',
+                'Pending'
+            )->count();
 
-    return response()->json([
-        'status' => true,
-        'summary' => [
+        return response()->json([
+            'status' => true,
+            'summary' => [
 
-            'verified' =>
-                $verified,
+                'verified' =>
+                    $verified,
 
-            'pending' =>
-                $pending,
-        ],
+                'pending' =>
+                    $pending,
+            ],
 
-        'data' => $verifications
-    ]);
-}
+            'data' => $verifications
+        ]);
+    }
 
-public function apiDigitalPaymentReport()
-{
-    $payments =
-        DigitalPayment::latest()
-        ->get();
+    public function apiDigitalPaymentReport()
+    {
+        $payments =
+            DigitalPayment::with(
+                'financialReconciliation'
+            )->latest()->get();
 
-    $success =
-        DigitalPayment::where(
-            'settlement_status',
-            'Settled'
-        )->count();
+        $success =
+            DigitalPayment::where(
+                'settlement_status',
+                'Settled'
+            )->count();
 
-    $failed =
-        DigitalPayment::where(
-            'settlement_status',
-            'Failed'
-        )->count();
+        $failed =
+            DigitalPayment::where(
+                'settlement_status',
+                'Failed'
+            )->count();
 
-    $pending =
-        DigitalPayment::where(
-            'settlement_status',
-            'Pending'
-        )->count();
+        $pending =
+            DigitalPayment::where(
+                'settlement_status',
+                'Pending'
+            )->count();
 
-    return response()->json([
-        'status' => true,
+        return response()->json([
+            'status' => true,
 
-        'summary' => [
+            'summary' => [
 
-            'settled' =>
-                $success,
+                'settled' =>
+                    $success,
 
-            'failed' =>
-                $failed,
+                'failed' =>
+                    $failed,
 
-            'pending' =>
-                $pending,
-        ],
+                'pending' =>
+                    $pending,
+            ],
 
-        'data' => $payments
-    ]);
-}
-public function apiDiscrepancyReport()
-{
-    $discrepancies =
-        FinancialDiscrepancy::latest()
-        ->get();
+            'data' => $payments
+        ]);
+    }
+    public function apiDiscrepancyReport()
+    {
+        $discrepancies =
+            FinancialDiscrepancy::latest()
+                ->get();
 
-    $open =
-        FinancialDiscrepancy::where(
-            'status',
-            'Open'
-        )->count();
+        $open =
+            FinancialDiscrepancy::where(
+                'status',
+                'Open'
+            )->count();
 
-    $resolved =
-        FinancialDiscrepancy::where(
-            'status',
-            'Resolved'
-        )->count();
+        $resolved =
+            FinancialDiscrepancy::where(
+                'status',
+                'Resolved'
+            )->count();
 
-    return response()->json([
-        'status' => true,
+        return response()->json([
+            'status' => true,
 
-        'summary' => [
+            'summary' => [
 
-            'open' =>
-                $open,
+                'open' =>
+                    $open,
 
-            'resolved' =>
-                $resolved,
-        ],
+                'resolved' =>
+                    $resolved,
+            ],
 
-        'data' => $discrepancies
-    ]);
-}
+            'data' => $discrepancies
+        ]);
+    }
 }

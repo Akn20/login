@@ -23,471 +23,482 @@ use Carbon\Carbon;
 class LabRequestController extends Controller
 {
 
-public function index(Request $request)
-{
-    $query = LabRequest::with([
-        'patient',
-        'sample',
-    ]);
+    public function index(Request $request)
+    {
+        $query = LabRequest::with([
+            'patient',
+            'sample',
+        ]);
 
-    // SEARCH
-    if ($request->search) {
+        // SEARCH
+        if ($request->search) {
 
-        $search = $request->search;
+            $search = $request->search;
 
-        $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search) {
 
-            // Patient Name
-            $q->whereHas('patient', function ($patient) use ($search) {
+                // Patient Name
+                $q->whereHas('patient', function ($patient) use ($search) {
 
-                $patient->where('first_name', 'like', "%{$search}%")
+                    $patient->where('first_name', 'like', "%{$search}%")
                         ->orWhere('last_name', 'like', "%{$search}%");
 
-            })
+                })
 
-            // Test Name
-            ->orWhere('test_name', 'like', "%{$search}%");
-
-        });
-    }
-
-    $requests = $query->latest()->get();
-
-    return view(
-        'doctor.laboratory.laboratory-requests',
-        compact('requests')
-    );
-}
-
-public function completedReports(Request $request)
-{
-    $query = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->where('status', 'Completed');
-
-    /*
-    |--------------------------------------------------------------------------
-    | SEARCH
-    |--------------------------------------------------------------------------
-    */
-
-    if ($request->search) {
-
-        $search = $request->search;
-
-        $query->where(function ($q) use ($search) {
-
-            // Search patient name
-            $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
-
-                $patient->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%");
-
-            })
-
-            // Search test name
-            ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
-
-                $lab->where('test_name', 'like', "%{$search}%");
+                    // Test Name
+                    ->orWhere('test_name', 'like', "%{$search}%");
 
             });
+        }
 
-        });
-    }
+        $requests = $query->latest()->get();
 
-    /*
-    |--------------------------------------------------------------------------
-    | DATE FILTER
-    |--------------------------------------------------------------------------
-    */
-
-    if ($request->report_date) {
-
-        $query->whereDate(
-            'created_at',
-            $request->report_date
+        return view(
+            'doctor.laboratory.laboratory-requests',
+            compact('requests')
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | STATUS FILTER
-    |--------------------------------------------------------------------------
-    */
+    public function completedReports(Request $request)
+    {
+        $query = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->where('status', 'Completed');
 
-    if ($request->verification_status &&
-        $request->verification_status != 'All') {
+        /*
+        |--------------------------------------------------------------------------
+        | SEARCH
+        |--------------------------------------------------------------------------
+        */
 
-        $query->where(
-            'verification_status',
-            $request->verification_status
-        );
+        if ($request->search) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                // Search patient name
+                $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
+
+                    $patient->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+
+                })
+
+                    // Search test name
+                    ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
+
+                        $lab->where('test_name', 'like', "%{$search}%");
+
+                    });
+
+            });
+        }
     }
+    public function historicalReports(Request $request)
+    {
+        $query = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->where('status', 'Completed');
 
-    $reports = $query->latest()->get();
+        // SEARCH
+        if ($request->search) {
 
-    return view(
-        'doctor.laboratory.laboratory-reports',
-        compact('reports')
-    );
-}
+            $search = $request->search;
 
-public function compareReports($patientId, $testName)
-{
-    $reports = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->whereHas('sample.labRequest', function ($q) use ($patientId, $testName) {
+            $query->where(function ($q) use ($search) {
 
-        $q->where('patient_id', $patientId)
-          ->where('test_name', $testName);
+                // Search patient name
+                $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
 
-    })
-    ->orderBy('created_at')
-    ->get();
-
-    return view(
-        'doctor.laboratory.compare-reports',
-        compact('reports')
-    );
-}
-
-public function reportDetails($id)
-{
-    $report = LabReport::with([
-        'sample.labRequest.patient',
-        'clinicalNotes'
-    ])->findOrFail($id);
-
-    return view(
-        'doctor.laboratory.report-details',
-        compact('report')
-    );
-}
-
-public function historicalReports(Request $request)
-{
-    $query = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->where('status', 'Completed');
-
-    // SEARCH
-    if ($request->search) {
-
-        $search = $request->search;
-
-        $query->where(function ($q) use ($search) {
-
-            // Search patient name
-            $q->whereHas('sample.labRequest.patient', function ($patient) use ($search) {
-
-                $patient->where('first_name', 'like', "%$search%")
+                    $patient->where('first_name', 'like', "%$search%")
                         ->orWhere('last_name', 'like', "%$search%");
 
-            })
+                })
 
-            // Search test name
-            ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
+                    // Search test name
+                    ->orWhereHas('sample.labRequest', function ($lab) use ($search) {
 
-                $lab->where('test_name', 'like', "%$search%");
+                        $lab->where('test_name', 'like', "%$search%");
+
+                    });
 
             });
 
-        });
+        }
 
-    }
+        // DATE FILTER
+        if ($request->date) {
 
-    // DATE FILTER
-    if ($request->date) {
+            $query->whereDate('created_at', $request->date);
 
-        $query->whereDate('created_at', $request->date);
+        }
 
-    }
+        $reports = $query->latest()->get();
 
-    $reports = $query->latest()->get();
+        /*
+        |--------------------------------------------------------------------------
+        | DATE FILTER
+        |--------------------------------------------------------------------------
+        */
 
-    return view(
-        'doctor.laboratory.historical-reports',
-        compact('reports')
-    );
-}
+        if ($request->report_date) {
 
-public function storeClinicalNote(Request $request)
-{
-    $request->validate([
-
-        'patient_id' => 'required',
-
-        'report_id' => 'required'
-
-    ]);
-
-    $note = ClinicalNote::create([
-
-        'patient_id' => $request->patient_id,
-
-        'doctor_id' => auth()->id(),
-
-        'report_id' => $request->report_id,
-
-        'clinical_observation' =>
-            $request->clinical_observation,
-
-        'diagnosis' =>
-            $request->diagnosis,
-
-        'follow_up_advice' =>
-            $request->follow_up_advice
-
-    ]);
-
-    logAudit(
-        'clinical_note',
-        'NOTE_ADDED',
-        $note->id,
-        'Doctor added clinical note'
-    );
-
-    return back()->with(
-        'success',
-        'Clinical note added successfully'
-    );
-}
-
-public function apiIndex(Request $request)
-{
-    $query = LabRequest::with([
-        'patient',
-        'sample',
-    ]);
-
-    // SEARCH
-    if ($request->search) {
-
-        $search = $request->search;
-
-        $query->where(function ($q) use ($search) {
-
-            // Patient name
-            $q->whereHas('patient', function ($patient) use ($search) {
-
-                $patient->where(
-                    'first_name',
-                    'like',
-                    "%{$search}%"
-                )
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    "%{$search}%"
-                );
-            })
-
-            // Test name
-            ->orWhere(
-                'test_name',
-                'like',
-                "%{$search}%"
+            $query->whereDate(
+                'created_at',
+                $request->report_date
             );
-        });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS FILTER
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->verification_status &&
+            $request->verification_status != 'All'
+        ) {
+
+            $query->where(
+                'verification_status',
+                $request->verification_status
+            );
+        }
+
+        $reports = $query->latest()->get();
+
+        return view(
+            'doctor.laboratory.laboratory-reports',
+            compact('reports')
+        );
     }
 
-    $requests = $query->latest()->get();
+    public function compareReports($patientId, $testName)
+    {
+        $reports = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->whereHas('sample.labRequest', function ($q) use ($patientId, $testName) {
 
-    return response()->json([
-        'status' => true,
-        'data' => $requests
-    ]);
-}
+                $q->where('patient_id', $patientId)
+                    ->where('test_name', $testName);
 
-public function apiCompletedReports(Request $request)
-{
-    $query = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->where('status', 'Completed');
+            })
+            ->orderBy('created_at')
+            ->get();
 
-    // SEARCH
-    if ($request->search) {
+        return view(
+            'doctor.laboratory.compare-reports',
+            compact('reports')
+        );
+    }
 
-        $search = $request->search;
+    public function reportDetails($id)
+    {
+        $report = LabReport::with([
+            'sample.labRequest.patient',
+            'clinicalNotes'
+        ])->findOrFail($id);
 
-        $query->where(function ($q) use ($search) {
+        return view(
+            'doctor.laboratory.report-details',
+            compact('report')
+        );
+    }
 
-            $q->whereHas(
-                'sample.labRequest.patient',
-                function ($patient) use ($search) {
+    // public function historicalReports()
+    // {
+    //     $reports = LabReport::with([
+    //         'sample.labRequest.patient'
+    //     ])
+    //         ->where('status', 'Completed')
+    //         ->latest()
+    //         ->get();
+
+    //     return view(
+    //         'doctor.laboratory.historical-reports',
+    //         compact('reports')
+    //     );
+    // }
+
+    public function storeClinicalNote(Request $request)
+    {
+        $request->validate([
+
+            'patient_id' => 'required',
+
+            'report_id' => 'required'
+
+        ]);
+
+        $note = ClinicalNote::create([
+
+            'patient_id' => $request->patient_id,
+
+            'doctor_id' => auth()->id(),
+
+            'report_id' => $request->report_id,
+
+            'clinical_observation' =>
+                $request->clinical_observation,
+
+            'diagnosis' =>
+                $request->diagnosis,
+
+            'follow_up_advice' =>
+                $request->follow_up_advice
+
+        ]);
+
+        logAudit(
+            'clinical_note',
+            'NOTE_ADDED',
+            $note->id,
+            'Doctor added clinical note'
+        );
+
+        return back()->with(
+            'success',
+            'Clinical note added successfully'
+        );
+    }
+
+    public function apiIndex(Request $request)
+    {
+        $query = LabRequest::with([
+            'patient',
+            'sample',
+        ]);
+
+        // SEARCH
+        if ($request->search) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                // Patient name
+                $q->whereHas('patient', function ($patient) use ($search) {
 
                     $patient->where(
                         'first_name',
                         'like',
                         "%{$search}%"
                     )
+                        ->orWhere(
+                            'last_name',
+                            'like',
+                            "%{$search}%"
+                        );
+                })
+
+                    // Test name
                     ->orWhere(
-                        'last_name',
-                        'like',
-                        "%{$search}%"
-                    );
-                }
-            )
-
-            ->orWhereHas(
-                'sample.labRequest',
-                function ($lab) use ($search) {
-
-                    $lab->where(
                         'test_name',
                         'like',
                         "%{$search}%"
                     );
-                }
-            );
-        });
+            });
+        }
+
+        $requests = $query->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $requests
+        ]);
     }
 
-    // DATE FILTER
-    if ($request->report_date) {
+    public function apiCompletedReports(Request $request)
+    {
+        $query = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->where('status', 'Completed');
 
-        $query->whereDate(
-            'created_at',
-            $request->report_date
-        );
-    }
+        // SEARCH
+        if ($request->search) {
 
-    // VERIFICATION STATUS
-    if (
-        $request->verification_status &&
-        $request->verification_status != 'All'
-    ) {
+            $search = $request->search;
 
-        $query->where(
-            'verification_status',
-            $request->verification_status
-        );
-    }
+            $query->where(function ($q) use ($search) {
 
-    $reports = $query->latest()->get();
+                $q->whereHas(
+                    'sample.labRequest.patient',
+                    function ($patient) use ($search) {
 
-    return response()->json([
-        'status' => true,
-        'data' => $reports
-    ]);
-}
+                        $patient->where(
+                            'first_name',
+                            'like',
+                            "%{$search}%"
+                        )
+                            ->orWhere(
+                                'last_name',
+                                'like',
+                                "%{$search}%"
+                            );
+                    }
+                )
 
-public function apiCompareReports($patientId, $testName)
-{
-    $reports = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->whereHas(
-        'sample.labRequest',
-        function ($q) use ($patientId, $testName) {
+                    ->orWhereHas(
+                        'sample.labRequest',
+                        function ($lab) use ($search) {
 
-            $q->where(
-                'patient_id',
-                $patientId
-            )
-            ->where(
-                'test_name',
-                $testName
+                            $lab->where(
+                                'test_name',
+                                'like',
+                                "%{$search}%"
+                            );
+                        }
+                    );
+            });
+        }
+
+        // DATE FILTER
+        if ($request->report_date) {
+
+            $query->whereDate(
+                'created_at',
+                $request->report_date
             );
         }
-    )
-    ->orderBy('created_at')
-    ->get();
 
-    return response()->json([
-        'status' => true,
-        'data' => $reports
-    ]);
-}
-public function apiReportDetails($id)
-{
-    $report = LabReport::with([
-        'sample.labRequest.patient',
-        'clinicalNotes'
-    ])->findOrFail($id);
+        // VERIFICATION STATUS
+        if (
+            $request->verification_status &&
+            $request->verification_status != 'All'
+        ) {
 
-    return response()->json([
-        'status' => true,
-        'data' => $report
-    ]);
-}
-public function apiHistoricalReports()
-{
-    $reports = LabReport::with([
-        'sample.labRequest.patient'
-    ])
-    ->where('status', 'Completed')
-    ->latest()
-    ->get();
+            $query->where(
+                'verification_status',
+                $request->verification_status
+            );
+        }
 
-    return response()->json([
-        'status' => true,
-        'data' => $reports
-    ]);
-}
-public function apiStoreClinicalNote(Request $request)
-{
-    $request->validate([
+        $reports = $query->latest()->get();
 
-        'patient_id' =>
-            'required|exists:patients,id',
+        return response()->json([
+            'status' => true,
+            'data' => $reports
+        ]);
+    }
 
-        'report_id' =>
-            'required|exists:lab_reports,id'
-    ]);
+    public function apiCompareReports($patientId, $testName)
+    {
+        $reports = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->whereHas(
+                'sample.labRequest',
+                function ($q) use ($patientId, $testName) {
 
-    $note = ClinicalNote::create([
+                    $q->where(
+                        'patient_id',
+                        $patientId
+                    )
+                        ->where(
+                            'test_name',
+                            $testName
+                        );
+                }
+            )
+            ->orderBy('created_at')
+            ->get();
 
-        'patient_id' =>
-            $request->patient_id,
+        return response()->json([
+            'status' => true,
+            'data' => $reports
+        ]);
+    }
+    public function apiReportDetails($id)
+    {
+        $report = LabReport::with([
+            'sample.labRequest.patient',
+            'clinicalNotes'
+        ])->findOrFail($id);
 
-        'doctor_id' =>
-            auth()->id(),
+        return response()->json([
+            'status' => true,
+            'data' => $report
+        ]);
+    }
+    public function apiHistoricalReports()
+    {
+        $reports = LabReport::with([
+            'sample.labRequest.patient'
+        ])
+            ->where('status', 'Completed')
+            ->latest()
+            ->get();
 
-        'report_id' =>
-            $request->report_id,
+        return response()->json([
+            'status' => true,
+            'data' => $reports
+        ]);
+    }
+    public function apiStoreClinicalNote(Request $request)
+    {
+        $request->validate([
 
-        'clinical_observation' =>
-            $request->clinical_observation,
+            'patient_id' =>
+                'required|exists:patients,id',
 
-        'diagnosis' =>
-            $request->diagnosis,
+            'report_id' =>
+                'required|exists:lab_reports,id'
+        ]);
 
-        'follow_up_advice' =>
-            $request->follow_up_advice
-    ]);
+        $note = ClinicalNote::create([
 
-    logAudit(
-        'clinical_note',
-        'NOTE_ADDED',
-        $note->id,
-        'Doctor added clinical note'
-    );
+            'patient_id' =>
+                $request->patient_id,
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Clinical note added successfully',
-        'data' => $note
-    ]);
-}
-public function reportPdf($id)
-{
-    $report = LabReport::with([
-        'sample.labRequest.patient',
-        'clinicalNotes'
-    ])->findOrFail($id);
+            'doctor_id' => 'f6ea9205-63a5-45e5-8233-f41d4466dcb5',
 
-    $pdf = Pdf::loadView(
-        'doctor.laboratory.reports-pdf',
-        compact('report')
-    );
+            'report_id' =>
+                $request->report_id,
 
-    return $pdf->download('lab-report-'.$report->id.'.pdf');
-}
+            'clinical_observation' =>
+                $request->clinical_observation,
+
+            'diagnosis' =>
+                $request->diagnosis,
+
+            'follow_up_advice' =>
+                $request->follow_up_advice
+        ]);
+
+        logAudit(
+            'clinical_note',
+            'NOTE_ADDED',
+            $note->id,
+            'Doctor added clinical note'
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Clinical note added successfully',
+            'data' => $note
+        ]);
+    }
+
+    public function reportPdf($id)
+    {
+        $report = LabReport::with([
+            'sample.labRequest.patient',
+            'clinicalNotes'
+        ])->findOrFail($id);
+
+        $pdf = Pdf::loadView(
+            'doctor.laboratory.reports-pdf',
+            compact('report')
+        );
+
+        return $pdf->download('lab-report-' . $report->id . '.pdf');
+    }
 
 
 
