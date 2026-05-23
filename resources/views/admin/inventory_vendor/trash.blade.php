@@ -32,6 +32,7 @@
                                     <th>Vendor Name</th>
                                     <th>Phone</th>
                                     <th>Email</th>
+                                    <th>GST Number</th>
                                     <th>Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -44,6 +45,7 @@
                                         <td>{{ $vendor->vendor_name }}</td>
                                         <td>{{ $vendor->phone_number ?? '-' }}</td>
                                         <td>{{ $vendor->email ?? '-' }}</td>
+                                        <td>{{ $vendor->gst_number ?? '-' }}</td>
                                         <td>
                                             @if($vendor->status == 'Active')
                                                 <span class="badge bg-soft-success text-success">Active</span>

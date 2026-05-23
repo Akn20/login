@@ -44,6 +44,7 @@
                                             <th>Vendor Name</th>
                                             <th>Phone</th>
                                             <th>Email</th>
+                                            <th>GST Number</th>
                                             <th>Address</th>
                                             <th>Status</th>
                                             <th class="text-end">Actions</th>
@@ -57,6 +58,7 @@
                                                 <td>{{ $vendor->vendor_name }}</td>
                                                 <td>{{ $vendor->phone_number ?? '-' }}</td>
                                                 <td>{{ $vendor->email ?? '-' }}</td>
+                                                <td>{{ $vendor->gst_number ?? '-' }}</td>
                                                 <td>{{ $vendor->address ?? '-' }}</td>
 
                                                 <td>

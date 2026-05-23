@@ -193,6 +193,10 @@ use App\Http\Controllers\ReceptionistDashboardController;
 
 //Accountant
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\ExpenseCategoryController;
+//use App\Http\Controllers\VendorManagementController;
+use App\Http\Controllers\AddExpenseController;
+use App\Http\Controllers\ExpenseReportController;
 use App\Http\Controllers\AccountantReportController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\FinancialReconciliationController;
@@ -3117,6 +3121,128 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/view/{id}', [AccountantBillingController::class, 'show'])->name('view');
             Route::put('/update/{id}', [AccountantBillingController::class, 'update'])->name('update');
         });
+
+
+// ================= EXPENSE CATEGORY =================
+Route::prefix('admin/accountant/expense-management/category')
+    ->name('admin.accountant.expense.category.')
+    ->group(function () {
+
+        Route::get('/', [ExpenseCategoryController::class, 'index'])->name('index');
+
+        Route::get('/create', [ExpenseCategoryController::class, 'create'])->name('create');
+
+        Route::post('/store', [ExpenseCategoryController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [ExpenseCategoryController::class, 'edit'])->name('edit');
+
+        Route::put('/update/{id}', [ExpenseCategoryController::class, 'update'])->name('update');
+
+        Route::delete('/delete/{id}', [ExpenseCategoryController::class, 'destroy'])->name('delete');
+
+    
+        Route::get('/deleted', [ExpenseCategoryController::class, 'deleted'])->name('deleted');
+
+        Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore'])->name('restore');
+});
+
+/*
+// ================= VENDOR MANAGEMENT =================
+Route::prefix('admin/accountant/expense-management/vendor')
+    ->name('admin.accountant.vendor.')
+    ->group(function () {
+
+        Route::get('/', [VendorManagementController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [VendorManagementController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [VendorManagementController::class, 'store'])
+            ->name('store');
+
+        Route::get('/edit/{id}', [VendorManagementController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [VendorManagementController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [VendorManagementController::class, 'destroy'])
+            ->name('delete');
+
+        Route::get('/deleted', [VendorManagementController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::post('/restore/{id}', [VendorManagementController::class, 'restore'])
+            ->name('restore');
+
+});
+
+*/// ================= ADD EXPENSE =================
+Route::prefix('admin/accountant/expense-management/add-expense')
+    ->name('admin.accountant.expense.add.')
+    ->group(function () {
+
+        Route::get('/', [AddExpenseController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [AddExpenseController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [AddExpenseController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}', [AddExpenseController::class, 'show'])
+            ->name('show');
+
+        Route::get('/voucher/{id}', [AddExpenseController::class, 'voucher'])
+            ->name('voucher');
+
+        Route::get('/edit/{id}', [AddExpenseController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [AddExpenseController::class, 'update'])
+            ->name('update');
+
+        // DELETE
+        Route::delete('/delete/{id}', [AddExpenseController::class, 'delete'])
+            ->name('delete');
+
+        // DELETED LIST
+        Route::get('/deleted', [AddExpenseController::class, 'deleted'])
+            ->name('deleted');
+
+        // RESTORE
+        Route::post('/restore/{id}', [AddExpenseController::class, 'restore'])
+            ->name('restore');
+
+});
+// ================= EXPENSE REPORT =================
+Route::prefix('admin/accountant/expense-management/expense-report')
+    ->name('admin.accountant.expense.report.')
+    ->group(function () {
+
+        // Main Report Page
+        Route::get('/', [ExpenseReportController::class, 'index'])
+            ->name('index');
+
+        // Category Wise Report
+        Route::get('/category-wise', [ExpenseReportController::class, 'categoryWiseReport'])
+            ->name('category');
+
+        // Income & Expense Report
+        Route::get('/income-expense', [ExpenseReportController::class, 'incomeExpenseReport'])
+            ->name('income.expense');
+            
+        // Print Income & Expense Report
+        Route::get('/income-expense/print', [ExpenseReportController::class, 'printIncomeExpenseReport'])
+            ->name('print');
+
+
+});
+
+
+
 
 });
 //IPD (Doctor Module)

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseReportController;
+use App\Http\Controllers\AddExpenseController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 use App\Http\Controllers\AccountantReportController;
@@ -80,6 +83,10 @@ use App\Modles\LabTest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Surgery\OTApiController;
 // Api > Inventory
+
+use App\Http\Controllers\Admin\inventory\InventoryVendorController;
+
+
 
 // Api > Surgery
 use App\Http\Controllers\Api\Surgery\PostOperativeApiController;
@@ -2231,6 +2238,152 @@ Route::prefix('revenue')->group(function () {
     Route::get('/doctor', [AccountantRevenueController::class, 'doctorRevenue']);
     Route::get('/service', [AccountantRevenueController::class, 'serviceRevenue']);
 });
+
+
+
+
+// expense category (Accountant)
+
+Route::prefix('admin/accountant/expense-management/category')
+    ->group(function () {
+
+        Route::get('/', [ExpenseCategoryController::class, 'index']);
+
+        Route::post('/store', [ExpenseCategoryController::class, 'store']);
+
+        Route::get('/edit/{id}', [ExpenseCategoryController::class, 'edit']);
+
+        Route::put('/update/{id}', [ExpenseCategoryController::class, 'update']);
+
+        Route::delete('/delete/{id}', [ExpenseCategoryController::class, 'destroy']);
+
+        Route::get('/deleted', [ExpenseCategoryController::class, 'deleted']);
+
+        Route::post('/restore/{id}', [ExpenseCategoryController::class, 'restore']);
+});
+
+
+//add Expense  (Accountant)
+
+
+
+Route::prefix('add-expense')
+    ->name('api.add-expense.')
+    ->group(function () {
+
+        Route::get('/', [AddExpenseController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [AddExpenseController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [AddExpenseController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}', [AddExpenseController::class, 'show'])
+            ->name('show');
+
+        Route::get('/voucher/{id}', [AddExpenseController::class, 'voucher'])
+            ->name('voucher');
+
+        Route::get('/edit/{id}', [AddExpenseController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [AddExpenseController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/delete/{id}', [AddExpenseController::class, 'delete'])
+            ->name('delete');
+
+        Route::get('/deleted', [AddExpenseController::class, 'deleted'])
+            ->name('deleted');
+
+        Route::post('/restore/{id}', [AddExpenseController::class, 'restore'])
+            ->name('restore');
+    });
+
+
+
+
+
+    /*
+|--------------------------------------------------------------------------
+expense report (Accountant)
+|--------------------------------------------------------------------------
+*/
+    Route::prefix(
+    'admin/accountant/expense-management/expense-report'
+)
+->name('api.admin.accountant.expense.report.')
+->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Report Filter Data
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/',
+        [ExpenseReportController::class, 'index']
+    )->name('index');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Category Wise Expense Report
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/category-wise',
+        [ExpenseReportController::class, 'categoryWiseReport']
+    )->name('category');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Income & Expense Report
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/income-expense',
+        [ExpenseReportController::class, 'incomeExpenseReport']
+    )->name('income.expense');
+
+
+    // Print Income & Expense Report API
+Route::get(
+    '/income-expense/print',
+    [ExpenseReportController::class, 'printIncomeExpenseReport']
+)->name('api.admin.accountant.expense.report.print');
+
+});
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+|   Expense Management: Inventory Vendors
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('inventory-vendors')->group(function () {
+
+    Route::get('/', [InventoryVendorController::class, 'index']);
+        Route::get('/trash', [InventoryVendorController::class, 'trash']);
+    Route::post('/store', [InventoryVendorController::class, 'store']);
+    Route::get('/{id}', [InventoryVendorController::class, 'edit']);
+    Route::put('/update/{id}', [InventoryVendorController::class, 'update']);
+    Route::delete('/delete/{id}', [InventoryVendorController::class, 'delete']);
+    Route::put('/restore/{id}', [InventoryVendorController::class, 'restore']);
+    // Force delete vendor permanently
+    Route::delete('/force-delete/{id}', [InventoryVendorController::class, 'forceDelete']);
+    Route::put('/toggle-status/{id}', [InventoryVendorController::class, 'toggleStatus']);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 |   Nurse: Discharge Preparation

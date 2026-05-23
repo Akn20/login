@@ -19,6 +19,7 @@ class InventoryVendor extends Model
         'phone_number',
         'email',
         'address',
+        'gst_number',
         'status',
         'created_by',
         'updated_by'
