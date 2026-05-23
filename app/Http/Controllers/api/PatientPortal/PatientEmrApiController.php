@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\PatientPortal;
 use App\Http\Controllers\Controller;
 use App\Models\IpdAdmission;
 use App\Models\IpdDischarge;
+use App\Models\IpdNote;              // ✅ ADD
+use Illuminate\Http\Request;
 
 class PatientEmrApiController extends Controller
 {
@@ -90,5 +92,31 @@ class PatientEmrApiController extends Controller
             ];
         })
     ]);
+}
+public function storeDoctorNotes(Request $request, $ipd_id)
+{
+    try {
+
+        $request->validate([
+            'notes' => 'required|string'
+        ]);
+
+        IpdNote::create([
+            'ipd_id' => $ipd_id,
+            'notes' => $request->notes
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Notes saved successfully'
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
 }
 }

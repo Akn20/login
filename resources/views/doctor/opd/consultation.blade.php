@@ -217,11 +217,17 @@
                                     </select>
                                 </div>
 
-                                {{-- 🩻 RADIOLOGY (Coming Later) --}}
+                                {{-- 🩻 RADIOLOGY TESTS --}}
                                 <div class="col-md-6">
                                     <label><strong>Radiology Tests</strong></label>
 
-                                    <input type="text" class="form-control" value="">
+                                    <select name="radiology_tests[]" class="form-control" multiple>
+                                        @foreach($scanTypes as $scan)
+                                            <option value="{{ $scan->id }}">
+                                                {{ $scan->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                             </div>

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Patient;
 use App\Models\Consultation;
 use App\Models\LabTest;
+use App\Models\Staff;
+use App\Models\SampleCollection;
 
 class LabRequest extends Model
 {
@@ -19,7 +21,12 @@ class LabRequest extends Model
         'consultation_id',
         'test_name',
         'priority',
-        'status'
+        'status',
+        'doctor_id',
+        'department',
+        'clinical_notes',
+        'doctor_remarks',
+
     ];
 
     /*
@@ -44,6 +51,17 @@ class LabRequest extends Model
     public function labTest()
     {
         return $this->belongsTo(LabTest::class);
+    }
+
+    // Lab Request belongs to Doctor (Staff)
+    public function doctor()
+    {
+        return $this->belongsTo(Staff::class, 'doctor_id');
+    }
+
+    public function sample()
+    {
+        return $this->hasOne(SampleCollection::class);
     }
 
 }
