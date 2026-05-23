@@ -27,4 +27,8 @@ class IpdDischarge extends Model
             $model->id = (string) Str::uuid();
         });
     }
+    public function ipd()
+{
+    return $this->belongsTo(IPDAdmission::class, 'ipd_id');
+}
 }

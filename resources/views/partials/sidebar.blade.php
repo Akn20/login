@@ -399,6 +399,39 @@
 
                             </li>
 
+                            {{-- --- AUDIT & COMPLIANCE --- --}}
+
+<li class="nxl-item nxl-caption">
+
+    <label>
+        Audit & Compliance
+    </label>
+
+</li>
+
+<li class="nxl-item {{ request()->routeIs('admin.doctor-audit.*') ? 'active' : '' }}">
+
+    <a href="{{ route('admin.doctor-audit.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-shield"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Doctor Audit Logs
+
+        </span>
+
+    </a>
+
+</li>
+
                             
                 {{-- --- PATIENT PORTAL --- --}}
             <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>

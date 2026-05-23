@@ -43,6 +43,7 @@ use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\Billing\BillingApiController;
 use App\Http\Controllers\Api\CaseSheetApiController;
+use App\Http\Controllers\Api\DoctorAuditLogApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
 use App\Http\Controllers\Api\InsuranceConsentApiController;
@@ -4004,5 +4005,30 @@ Route::prefix('case-sheets')->group(function () {
     Route::put('/{id}', [CaseSheetApiController::class, 'update']);
 
     Route::delete('/{id}', [CaseSheetApiController::class, 'destroy']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Doctor Audit Logs API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('doctor-audit-logs')->group(function () {
+
+    Route::get(
+        '/',
+        [DoctorAuditLogApiController::class, 'index']
+    );
+
+    Route::get(
+        '/{id}',
+        [DoctorAuditLogApiController::class, 'show']
+    );
+
+    Route::delete(
+        '/{id}',
+        [DoctorAuditLogApiController::class, 'destroy']
+    );
 
 });
