@@ -99,7 +99,8 @@ public function show($id)
  // STORE
     public function store(Request $request)
     {
-       $request->validate([
+       
+  $request->validate([
 
     'employee_id' =>
 
@@ -124,13 +125,13 @@ public function show($id)
     'rating' =>
 
         'required|integer|min:1|max:5',
-        'review_status' =>
+    'review_status' =>
 
     'nullable|in:Pending,Reviewed,Approved',
 
     'kpi_name' =>
 
-        'nullable|string|max:255',
+        'required|string|max:255',
 
     'kpi_score' =>
 
@@ -147,6 +148,32 @@ public function show($id)
     'review_comments' =>
 
         'nullable|string|max:1000',
+        'cycle_name' =>
+
+    'nullable|string|max:255',
+
+
+'old_designation' =>
+
+    'nullable|string|max:255',
+
+'new_designation' =>
+
+    'nullable|string|max:255',
+'cycle_name' => 'required|string|max:255',
+
+'kpi_remarks' => 'required|string|max:1000',
+
+'promotion_reason' => 'required|string|max:1000',
+
+'warning_type' => 'required|string|max:255',
+
+'warning_remarks' => 'required|string|max:1000',
+
+'issued_by' => 'required|string|max:255',
+
+
+
 ]);
 
         PerformanceReview::create([
@@ -289,7 +316,7 @@ public function update(Request $request, $id)
 
     'kpi_name' =>
 
-        'nullable|string|max:255',
+        'required|string|max:255',
 
     'kpi_score' =>
 
@@ -306,6 +333,32 @@ public function update(Request $request, $id)
     'review_comments' =>
 
         'nullable|string|max:1000',
+        'cycle_name' =>
+
+    'nullable|string|max:255',
+
+
+'old_designation' =>
+
+    'nullable|string|max:255',
+
+'new_designation' =>
+
+    'nullable|string|max:255',
+'cycle_name' => 'required|string|max:255',
+
+'kpi_remarks' => 'required|string|max:1000',
+
+'promotion_reason' => 'required|string|max:1000',
+
+'warning_type' => 'required|string|max:255',
+
+'warning_remarks' => 'required|string|max:1000',
+
+'issued_by' => 'required|string|max:255',
+
+
+
 ]);
 
     $record->update([

@@ -260,7 +260,14 @@
             class="form-control"
             rows="3"
         >{{ old('review_comments', $record->review_comments ?? '') }}</textarea>
+{{-- Review Comments Error --}}
+@error('review_comments')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- ================= KPI Tracking ================= --}}
@@ -278,7 +285,7 @@
     <div class="col-md-6 mb-4">
 
         <label class="form-label">
-            KPI Name
+            KPI Name <span class="text-danger">*</span>
         </label>
 
         <input
@@ -287,7 +294,14 @@
             class="form-control"
             value="{{ old('kpi_name', $record->kpi_name ?? '') }}"
         >
+{{-- KPI Name Error --}}
+@error('kpi_name')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- KPI Score --}}
@@ -363,7 +377,7 @@
     <div class="col-md-12 mb-4">
 
         <label class="form-label">
-            KPI Remarks
+            KPI Remarks <span class="text-danger">*</span>
         </label>
 
         <textarea
@@ -371,7 +385,14 @@
             class="form-control"
             rows="3"
         >{{ old('kpi_remarks', $record->kpi_remarks ?? '') }}</textarea>
+{{-- KPI Remarks Error --}}
+@error('kpi_remarks')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- ================= Appraisal Cycle ================= --}}
@@ -389,7 +410,7 @@
     <div class="col-md-4 mb-4">
 
         <label class="form-label">
-            Cycle Name
+            Cycle Name <span class="text-danger">*</span>
         </label>
 
         <input
@@ -400,6 +421,14 @@
             value="{{ old('cycle_name', $record->cycle_name ?? '') }}"
         >
 
+{{-- Cycle Name Error --}}
+@error('cycle_name')
+
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- Cycle Start Date --}}
@@ -496,7 +525,7 @@
 <div class="col-md-6 mb-4">
 
     <label class="form-label">
-        Promotion Reason
+        Promotion Reason <span class="text-danger">*</span>
     </label>
 
     <textarea
@@ -504,7 +533,14 @@
         class="form-control"
         rows="2"
     >{{ old('promotion_reason', $record->promotion_reason ?? '') }}</textarea>
+{{-- Promotion Reason Error --}}
+@error('promotion_reason')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 
 {{-- ================= Warning Details ================= --}}
@@ -522,7 +558,7 @@
 <div class="col-md-6 mb-4">
 
     <label class="form-label">
-        Warning Type
+        Warning Type <span class="text-danger">*</span>
     </label>
 
     <input
@@ -532,7 +568,14 @@
         placeholder="Example: Late Attendance"
         value="{{ old('warning_type', $record->warning_type ?? '') }}"
     >
+{{-- Warning Type Error --}}
+@error('warning_type')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 
 {{-- Warning Date --}}
@@ -555,7 +598,7 @@
 <div class="col-md-6 mb-4">
 
     <label class="form-label">
-        Warning Remarks
+        Warning Remarks <span class="text-danger">*</span>
     </label>
 
     <textarea
@@ -563,14 +606,21 @@
         class="form-control"
         rows="2"
     >{{ old('warning_remarks', $record->warning_remarks ?? '') }}</textarea>
+{{-- Warning Remarks Error --}}
+@error('warning_remarks')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 
 {{-- Issued By --}}
 <div class="col-md-6 mb-4">
 
     <label class="form-label">
-        Issued By
+        Issued By <span class="text-danger">*</span>
     </label>
 
     <input
@@ -579,7 +629,14 @@
         class="form-control"
         value="{{ old('issued_by', $record->issued_by ?? '') }}"
     >
+{{-- Issued By Error --}}
+@error('issued_by')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 </div>
 
