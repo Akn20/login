@@ -20,8 +20,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 
-
-
 class LabRequestController extends Controller
 {
 
@@ -97,7 +95,15 @@ class LabRequestController extends Controller
 
             });
         }
+
+        $reports = $query->latest()->get();
+
+        return view(
+            'doctor.laboratory.laboratory-reports',
+            compact('reports')
+        );
     }
+
     public function historicalReports(Request $request)
     {
         $query = LabReport::with([

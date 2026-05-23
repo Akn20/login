@@ -4,40 +4,24 @@
 
 <div class="container-fluid">
 
-    <div class="page-header mb-4">
+    {{-- PAGE HEADER --}}
+    <div class="card shadow-sm border-0 mb-4">
 
-        <h3 class="fw-bold">
-            Follow-up Compliance Report
-        </h3>
+        <div class="card-body">
 
-    </div>
+            <div class="row align-items-center">
 
-    {{-- SUMMARY --}}
-    <div class="row">
+                <div class="col-md-8">
 
-        <div class="col-md-6 mb-4">
+                    <h2 class="fw-bold mb-1">
+                        Follow-up Compliance Report
+                    </h2>
 
-            <div class="card p-4 text-center">
+                    <p class="text-muted mb-0">
+                        Monitor patient follow-up compliance and attendance
+                    </p>
 
-                <h5>Total Follow-ups</h5>
-
-                <h2 class="text-primary">
-                    {{ $totalFollowups }}
-                </h2>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-6 mb-4">
-
-            <div class="card p-4 text-center">
-
-                <h5>Today's Follow-ups</h5>
-
-                <h2 class="text-success">
-                    {{ $todayFollowups }}
-                </h2>
+                </div>
 
             </div>
 
@@ -45,18 +29,150 @@
 
     </div>
 
-    {{-- FILTER --}}
-    <div class="card mb-4">
+
+
+    {{-- DASHBOARD CARDS --}}
+    <div class="row mb-4">
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Total
+                    </h6>
+
+                    <h2 class="text-primary fw-bold">
+                        {{ $totalFollowups }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Today
+                    </h6>
+
+                    <h2 class="text-info fw-bold">
+                        {{ $todayFollowups }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Completed
+                    </h6>
+
+                    <h2 class="text-success fw-bold">
+                        {{ $completedFollowups }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Pending
+                    </h6>
+
+                    <h2 class="text-warning fw-bold">
+                        {{ $pendingFollowups }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Missed
+                    </h6>
+
+                    <h2 class="text-danger fw-bold">
+                        {{ $missedFollowups }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Compliance
+                    </h6>
+
+                    <h2 class="text-dark fw-bold">
+                        {{ $compliancePercentage }}%
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    {{-- FILTER SECTION --}}
+    <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-body">
 
             <form method="GET">
 
-                <div class="row">
+                <div class="row align-items-end">
 
-                    <div class="col-md-4">
+                    {{-- DOCTOR --}}
+                    <div class="col-md-2 mb-3">
 
-                        <label>Doctor</label>
+                        <label class="form-label">
+                            Doctor
+                        </label>
 
                         <select
                             name="doctor_id"
@@ -82,9 +198,90 @@
 
                     </div>
 
-                    <div class="col-md-3">
+                    {{-- DEPARTMENT --}}
+                    <div class="col-md-2 mb-3">
 
-                        <label>From Date</label>
+                        <label class="form-label">
+                            Department
+                        </label>
+
+                        <select
+                            name="department_id"
+                            class="form-control">
+
+                            <option value="">
+                                All Departments
+                            </option>
+
+                            @foreach($departments as $department)
+
+                                <option
+                                    value="{{ $department->id }}"
+                                    {{ request('department_id') == $department->id ? 'selected' : '' }}>
+
+                                    {{ $department->department_name }}
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- STATUS --}}
+                    <div class="col-md-2 mb-3">
+
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        <select
+                            name="status"
+                            class="form-control">
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                            <option value="Missed">
+                                Missed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    {{-- PATIENT SEARCH --}}
+                    <div class="col-md-2 mb-3">
+
+                        <label class="form-label">
+                            Patient
+                        </label>
+
+                        <input
+                            type="text"
+                            name="patient_name"
+                            value="{{ request('patient_name') }}"
+                            class="form-control"
+                            placeholder="Search patient">
+
+                    </div>
+
+                    {{-- FROM DATE --}}
+                    <div class="col-md-2 mb-3">
+
+                        <label class="form-label">
+                            From Date
+                        </label>
 
                         <input
                             type="date"
@@ -94,9 +291,12 @@
 
                     </div>
 
-                    <div class="col-md-3">
+                    {{-- TO DATE --}}
+                    <div class="col-md-2 mb-3">
 
-                        <label>To Date</label>
+                        <label class="form-label">
+                            To Date
+                        </label>
 
                         <input
                             type="date"
@@ -106,15 +306,16 @@
 
                     </div>
 
-                    <div class="col-md-2 mt-4">
+                </div>
 
-                        <button class="btn btn-primary w-100">
+                <div class="mt-2">
 
-                            FILTER
+                    <button class="btn btn-primary">
 
-                        </button>
+                        <i class="fa fa-filter"></i>
+                        Filter
 
-                    </div>
+                    </button>
 
                 </div>
 
@@ -124,94 +325,140 @@
 
     </div>
 
+
+
     {{-- TABLE --}}
-    <div class="card">
+    <div class="card shadow-sm border-0">
 
-        <div class="card-header">
+        <div class="card-header bg-white">
 
-            <h4>
-                Follow-up List
-            </h4>
+            <h5 class="mb-0">
+                Follow-up Records
+            </h5>
 
         </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered">
+            <div class="table-responsive">
 
-                <thead>
+                <table class="table table-bordered table-hover align-middle">
 
-                    <tr>
-
-                        <th>#</th>
-                        <th>Patient</th>
-                        <th>Doctor</th>
-                        <th>Department</th>
-                        <th>Diagnosis</th>
-                        <th>Consultation Date</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @forelse($consultations as $key => $consultation)
+                    <thead class="table-light">
 
                         <tr>
 
-                            <td>{{ $key + 1 }}</td>
-
-                            <td>
-
-                                {{ $consultation->patient->first_name ?? '' }}
-                                {{ $consultation->patient->last_name ?? '' }}
-
-                            </td>
-
-                            <td>
-
-                                {{ optional($consultation->doctor)->name ?? 'N/A' }}
-
-                            </td>
-
-                            <td>
-
-                                {{ optional(optional($consultation->doctor)->department)->department_name ?? 'N/A' }}
-
-                            </td>
-
-                            <td>
-
-                                {{ $consultation->diagnosis }}
-
-                            </td>
-
-                            <td>
-
-                                {{ \Carbon\Carbon::parse($consultation->consultation_date)->format('d M Y h:i A') }}
-
-                            </td>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Department</th>
+                            <th>Follow-up Date</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
 
                         </tr>
 
-                    @empty
+                    </thead>
 
-                        <tr>
+                    <tbody>
 
-                            <td colspan="6" class="text-center">
+                        @forelse($followUps as $key => $followUp)
 
-                                No follow-up records found
+                            <tr>
 
-                            </td>
+                                <td>
+                                    {{ $loop->iteration }}
+                                </td>
 
-                        </tr>
+                                {{-- PATIENT --}}
+                                <td>
 
-                    @endforelse
+                                    {{ $followUp->patient->first_name ?? '' }}
+                                    {{ $followUp->patient->last_name ?? '' }}
 
-                </tbody>
+                                </td>
 
-            </table>
+                                {{-- DOCTOR --}}
+                                <td>
+
+                                    {{ optional($followUp->doctor)->name ?? 'N/A' }}
+
+                                </td>
+
+                                {{-- DEPARTMENT --}}
+                                <td>
+
+                                    {{ optional(optional($followUp->doctor)->department)->department_name ?? 'N/A' }}
+
+                                </td>
+
+                                {{-- FOLLOW-UP DATE --}}
+                                <td>
+
+                                    {{ \Carbon\Carbon::parse($followUp->follow_up_date)->format('d M Y') }}
+
+                                </td>
+
+                                {{-- STATUS --}}
+                                <td>
+
+                                    @if($followUp->status == 'Completed')
+
+                                        <span class="badge bg-success">
+                                            Completed
+                                        </span>
+
+                                    @elseif($followUp->status == 'Pending')
+
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-danger">
+                                            Missed
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                                {{-- REMARKS --}}
+                                <td>
+
+                                    {{ $followUp->remarks ?? 'N/A' }}
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="7" class="text-center">
+
+                                    No follow-up records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {{-- PAGINATION --}}
+            <div class="mt-3">
+
+                {{ $followUps->links() }}
+
+            </div>
 
         </div>
 

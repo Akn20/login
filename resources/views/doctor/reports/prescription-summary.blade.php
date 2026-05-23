@@ -4,6 +4,14 @@
 
 <div class="container-fluid">
 
+<div class="page-header mb-4">
+
+        <h3 class="fw-bold">
+            Prescription Summary Report
+        </h3>
+
+    </div>
+
     <div class="row">
 
         <div class="col-md-4 mb-4">
