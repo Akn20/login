@@ -7,58 +7,132 @@ use Illuminate\Http\Request;
 use App\Models\Consultation;
 use App\Models\Staff;
 use App\Models\Surgery;
+use App\Models\FollowUp;
 use App\Models\IPDAdmission;
+use App\Models\Department;
 use Carbon\Carbon;
-use DB;
-
-use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DoctorReportController extends Controller
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONSULTATION SUMMARY PAGE
+    |--------------------------------------------------------------------------
+    */
+
     public function consultationSummary(Request $request)
     {
+
         $query = Consultation::with([
+            'patient',
             'doctor.department',
-            'patient'
+            'medicines'
         ]);
 
-        // SEARCH BY DOCTOR
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DOCTOR
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->doctor_id) {
+
             $query->where('doctor_id', $request->doctor_id);
         }
 
-        // DATE FILTER
-        if ($request->from_date && $request->to_date) {
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DEPARTMENT
+        |--------------------------------------------------------------------------
+        */
 
-            $query->whereBetween(
+        if ($request->department_id) {
+
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+
+                $q->where('id', $request->department_id);
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DATE RANGE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->from_date) {
+
+            $query->whereDate(
                 'consultation_date',
-                [
-                    $request->from_date,
-                    $request->to_date
-                ]
+                '>=',
+                $request->from_date
             );
         }
 
-        $consultations = $query->latest()->get();
+        if ($request->to_date) {
 
-        // DASHBOARD COUNTS
-        $totalConsultations = $consultations->count();
+            $query->whereDate(
+                'consultation_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : PATIENT NAME
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->patient_name) {
+
+            $query->whereHas('patient', function ($q) use ($request) {
+
+                $q->where('first_name', 'like', '%' . $request->patient_name . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CONSULTATION DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $consultations = $query
+            ->latest()
+            ->paginate(10);
+
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD COUNTS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalConsultations = Consultation::count();
 
         $todayConsultations = Consultation::whereDate(
             'consultation_date',
-            today()
+            Carbon::today()
         )->count();
 
-        // DOCTOR SUMMARY
-        $doctorSummary = Consultation::select(
-                'doctor_id',
-                DB::raw('COUNT(*) as total_consultations')
-            )
-            ->groupBy('doctor_id')
-            ->with('doctor.department')
-            ->get();
+       $opdCount = Consultation::count();
 
-        $doctors = Staff::all();
+    $ipdCount = IPDAdmission::count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | DROPDOWNS
+        |--------------------------------------------------------------------------
+        */
+
+       
+
+        $departments = Department::all();
 
         return view(
             'doctor.reports.consultation-summary',
@@ -66,10 +140,100 @@ class DoctorReportController extends Controller
                 'consultations',
                 'totalConsultations',
                 'todayConsultations',
-                'doctorSummary',
-                'doctors'
+                'opdCount',
+                'ipdCount',
+                'departments'
             )
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD PDF REPORT
+    |--------------------------------------------------------------------------
+    */
+
+    public function downloadConsultationReport(Request $request)
+    {
+
+        $query = Consultation::with([
+            'patient',
+            'doctor.department',
+            'medicines'
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | APPLY FILTERS
+        |--------------------------------------------------------------------------
+        */
+
+    
+
+        if ($request->department_id) {
+
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+
+                $q->where('id', $request->department_id);
+
+            });
+        }
+
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'consultation_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'consultation_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        if ($request->patient_name) {
+
+            $query->whereHas('patient', function ($q) use ($request) {
+
+                $q->where('first_name', 'like', '%' . $request->patient_name . '%')
+                  ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GET REPORT DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $consultations = $query
+            ->latest()
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | PDF GENERATION
+        |--------------------------------------------------------------------------
+        */
+
+        $pdf = Pdf::loadView(
+            'doctor.reports.consultation_report_pdf',
+            compact('consultations')
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOWNLOAD PDF
+        |--------------------------------------------------------------------------
+        */
+    return $pdf->download('consultation_report.pdf');
     }
 
     public function opdSummary(Request $request)
@@ -217,12 +381,12 @@ public function ipdSummary(Request $request)
 
     $activeAdmissions = IPDAdmission::where(
         'status',
-        'Admitted'
+        'active'
     )->count();
 
     $dischargedPatients = IPDAdmission::where(
         'status',
-        'Discharged'
+        'discharged'
     )->count();
 
     $todayAdmissions = IPDAdmission::whereDate(
@@ -387,63 +551,199 @@ $normalSurgeries = Surgery::where(
 }
 
 
-public function followupCompliance(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department'
-    ]);
+ public function followupCompliance(Request $request)
+    {
 
-    // Doctor filter
-    if ($request->doctor_id) {
+        /*
+        |--------------------------------------------------------------------------
+        | BASE QUERY
+        |--------------------------------------------------------------------------
+        */
 
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
+        $query = FollowUp::with([
+            'patient',
+            'doctor.department',
+            'consultation'
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DOCTOR
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->doctor_id) {
+
+            $query->where(
+                'doctor_id',
+                $request->doctor_id
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DEPARTMENT
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->department_id) {
+
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+
+                $q->where(
+                    'id',
+                    $request->department_id
+                );
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->status) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : PATIENT SEARCH
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->patient_name) {
+
+            $query->whereHas('patient', function ($q) use ($request) {
+
+                $q->where(
+                    'first_name',
+                    'like',
+                    '%' . $request->patient_name . '%'
+                )
+
+                ->orWhere(
+                    'last_name',
+                    'like',
+                    '%' . $request->patient_name . '%'
+                );
+
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER : DATE RANGE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'follow_up_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'follow_up_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FOLLOW-UP DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $followUps = $query
+            ->latest()
+            ->paginate(10);
+
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD COUNTS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalFollowups = FollowUp::count();
+
+        $todayFollowups = FollowUp::whereDate(
+            'follow_up_date',
+            today()
+        )->count();
+
+        $completedFollowups = FollowUp::where(
+            'status',
+            'Completed'
+        )->count();
+
+        $pendingFollowups = FollowUp::where(
+            'status',
+            'Pending'
+        )->count();
+
+        $missedFollowups = FollowUp::where(
+            'status',
+            'Missed'
+        )->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | COMPLIANCE %
+        |--------------------------------------------------------------------------
+        */
+
+        $compliancePercentage = 0;
+
+        if ($totalFollowups > 0) {
+
+            $compliancePercentage = round(
+                ($completedFollowups / $totalFollowups) * 100,
+                2
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DROPDOWNS
+        |--------------------------------------------------------------------------
+        */
+
+        $doctors = Staff::all();
+
+        $departments = Department::all();
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN VIEW
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'doctor.reports.followup-compliance',
+            compact(
+                'followUps',
+                'totalFollowups',
+                'todayFollowups',
+                'completedFollowups',
+                'pendingFollowups',
+                'missedFollowups',
+                'compliancePercentage',
+                'doctors',
+                'departments'
+            )
         );
     }
-
-    // From date
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    // To date
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $consultations = $query
-        ->latest()
-        ->get();
-
-    $totalFollowups = $consultations->count();
-
-    $todayFollowups = Consultation::whereDate(
-        'consultation_date',
-        today()
-    )->count();
-
-    $doctors = Staff::all();
-
-    return view(
-        'doctor.reports.followup-compliance',
-        compact(
-            'consultations',
-            'totalFollowups',
-            'todayFollowups',
-            'doctors'
-        )
-    );
-}
 }

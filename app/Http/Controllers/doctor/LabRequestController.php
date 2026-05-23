@@ -20,8 +20,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 
-
-
 class LabRequestController extends Controller
 {
 

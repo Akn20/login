@@ -73,4 +73,9 @@ class Consultation extends Model
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function followUps()
+    {
+        return $this->hasMany(Followup::class);
+    }
 }

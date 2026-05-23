@@ -251,6 +251,11 @@ Route::prefix('doctor/reports')->name('doctor.reports.')->group(function () {
     )->name('consultations');
 
     Route::get(
+    '/consultations/download',
+    [DoctorReportController::class, 'downloadConsultationReport']
+)->name('consultations.download');
+
+    Route::get(
     '/opd-summary',
     [DoctorReportController::class, 'opdSummary']
 )->name('opd-summary');

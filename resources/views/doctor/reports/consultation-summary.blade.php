@@ -3,105 +3,215 @@
 @section('content')
 
 <div class="container-fluid">
-    <div class="page-header mb-4">
-        <div class="page-header-left">
-            <h5 class="m-b-0">Consultation Report</h5>
-    </div>
+
+    {{-- PAGE HEADER --}}
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <h2 class="fw-bold mb-1">
+                        Consultation Summary Report
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Doctor consultation analytics and patient summary
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+    <a href="{{ route('doctor.reports.consultations.download', request()->all()) }}"
+       class="btn btn-success btn-lg me-2">
+
+        <i class="fa fa-download"></i>
+        Download Report
+
+    </a>
+
+</div>
+
+            </div>
+
+        </div>
+
     </div>
 
     {{-- DASHBOARD CARDS --}}
-    <div class="row">
+    <div class="row mb-4">
 
-        <div class="col-md-4 mb-4">
+    <div class="col-md-3">
 
-            <div class="card p-4 text-center">
-                <div class="card-body text-center">
-                    <h5>Total Consultations</h5>
-                    <h2 class="text-primary">
-                        {{ $totalConsultations }}
-                    </h2>
-                </div>
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-3">
+                    Total Consultations
+                </h6>
+
+                <h2 class="text-primary fw-bold">
+                    {{ $totalConsultations }}
+                </h2>
+
             </div>
-        </div>
 
-      <div class="col-md-4 mb-4">
-
-            <div class="card p-4 text-center">
-                <div class="card-body text-center">
-                    <h5>Today's Consultations</h5>
-                    <h2 class="text-success">
-                        {{ $todayConsultations }}
-                    </h2>
-                </div>
-            </div>
         </div>
 
     </div>
 
+    <div class="col-md-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-3">
+                    Today's Consultations
+                </h6>
+
+                <h2 class="text-success fw-bold">
+                    {{ $todayConsultations }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-3">
+                    OPD Appointments
+                </h6>
+
+                <h2 class="text-info fw-bold">
+                    {{ $opdCount }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted mb-3">
+                    IPD Admissions
+                </h6>
+
+                <h2 class="text-danger fw-bold">
+                    {{ $ipdCount }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
     {{-- FILTER SECTION --}}
-    <div class="card mt-4">
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Filter Reports</h5>
+        </div>
 
         <div class="card-body">
 
             <form method="GET">
 
-                <div class="row">
+            <div class="row align-items-end">
 
-                    <div class="col-md-3">
-                        <label>Doctor</label>
+    <div class="col-md-3 mb-3">
 
-                        <select
-                            name="doctor_id"
-                            class="form-control">
+        <label class="form-label">
+            Department
+        </label>
 
-                            <option value="">
-                                All Doctors
-                            </option>
+        <select name="department_id" class="form-control">
 
-                            @foreach($doctors as $doctor)
+            <option value="">
+                All Departments
+            </option>
 
-                                <option
-                                    value="{{ $doctor->id }}"
-                                    {{ request('doctor_id') == $doctor->id ? 'selected' : '' }}>
+            @foreach($departments as $department)
 
-                                    {{ $doctor->name }}
+                <option value="{{ $department->id }}">
 
-                                </option>
+                    {{ $department->department_name }}
 
-                            @endforeach
+                </option>
 
-                        </select>
-                    </div>
+            @endforeach
 
-                    <div class="col-md-3">
-                        <label>From Date</label>
+        </select>
 
-                        <input
-                            type="date"
-                            name="from_date"
-                            value="{{ request('from_date') }}"
-                            class="form-control">
-                    </div>
+    </div>
 
-                    <div class="col-md-3">
-                        <label>To Date</label>
+    <div class="col-md-2 mb-3">
 
-                        <input
-                            type="date"
-                            name="to_date"
-                            value="{{ request('to_date') }}"
-                            class="form-control">
-                    </div>
+        <label class="form-label">
+            From Date
+        </label>
 
-                    <div class="col-md-3 mt-4">
+        <input type="date"
+               name="from_date"
+               class="form-control">
 
-                        <button class="btn btn-primary w-100">
-                            Filter
-                        </button>
+    </div>
 
-                    </div>
+    <div class="col-md-2 mb-3">
 
-                </div>
+        <label class="form-label">
+            To Date
+        </label>
+
+        <input type="date"
+               name="to_date"
+               class="form-control">
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <label class="form-label">
+            Patient Name
+        </label>
+
+        <input type="text"
+               name="patient_name"
+               class="form-control"
+               placeholder="Search patient">
+
+    </div>
+
+    <div class="col-md-2 mb-3 d-grid">
+
+        <button class="btn btn-primary">
+            <i class="fa fa-filter"></i>
+            Filter
+        </button>
+
+    </div>
+
+</div>
 
             </form>
 
@@ -109,79 +219,151 @@
 
     </div>
 
-    {{-- CONSULTATION TABLE --}}
-    <div class="card mt-4">
+    {{-- VALIDATION ERROR --}}
+    @if(request('from_date') && request('to_date'))
 
-        <div class="card-header">
-            <h4>Consultation List</h4>
+        @if(request('from_date') > request('to_date'))
+
+            <div class="alert alert-danger">
+                Invalid date range selected.
+            </div>
+
+        @endif
+
+    @endif
+
+    {{-- CONSULTATION TABLE --}}
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+            <h5 class="mb-0">Consultation List</h5>
+
+            <span class="badge bg-primary">
+                Total Records: {{ $consultations->count() }}
+            </span>
+
         </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered">
+            <div class="table-responsive">
 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Patient</th>
-                        <th>Doctor</th>
-                        <th>Department</th>
-                        <th>Symptoms</th>
-                        <th>Diagnosis</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
+                <table class="table table-bordered table-hover">
 
-                <tbody>
-
-                    @forelse($consultations as $key => $consultation)
+                    <thead class="table-light">
 
                         <tr>
 
-                            <td>{{ $key + 1 }}</td>
+                            <th>#</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Department</th>
+                            <th>Symptoms</th>
+                            <th>Diagnosis</th>
+                            <th>Prescription</th>
 
-                            <td>
-    {{ $consultation->patient->first_name ?? '' }}
-    {{ $consultation->patient->last_name ?? '' }}
-</td>
-
-<td>
-    {{ optional($consultation->doctor)->name ?? 'N/A' }}
-</td>
-
-<td>
-    {{ optional(optional($consultation->doctor)->department)->department_name ?? 'N/A' }}
-</td>
-                            <td>
-                                {{ $consultation->symptoms }}
-                            </td>
-
-                            <td>
-                                {{ $consultation->diagnosis }}
-                            </td>
-
-                            <td>
-                                {{ \Carbon\Carbon::parse($consultation->consultation_date)->format('d M Y h:i A') }}
-                            </td>
+                            <th>Date</th>
 
                         </tr>
 
-                    @empty
+                    </thead>
 
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                No consultation records found
-                            </td>
-                        </tr>
+                    <tbody>
 
-                    @endforelse
+                        @forelse($consultations as $key => $consultation)
 
-                </tbody>
+                            <tr>
 
-            </table>
+                                <td>
+                                    {{ $loop->iteration }}
+                                </td>
+
+                                {{-- PATIENT --}}
+                                <td>
+
+                                    {{ $consultation->patient->first_name ?? '' }}
+                                    {{ $consultation->patient->last_name ?? '' }}
+
+                                </td>
+
+                                {{-- DOCTOR --}}
+                                <td>
+                                    {{ optional($consultation->doctor)->name ?? 'N/A' }}
+                                </td>
+
+                                {{-- DEPARTMENT --}}
+                                <td>
+                                    {{ optional(optional($consultation->doctor)->department)->department_name ?? 'N/A' }}
+                                </td>
+
+                                {{-- SYMPTOMS --}}
+                                <td>
+                                    {{ $consultation->symptoms ?? 'N/A' }}
+                                </td>
+
+                                {{-- DIAGNOSIS --}}
+                                <td>
+                                    {{ $consultation->diagnosis ?? 'N/A' }}
+                                </td>
+
+                                {{-- PRESCRIPTION --}}
+                                <td>
+
+                                    @if($consultation->medicines->count() > 0)
+
+                                        <span class="badge bg-success">
+                                            Yes
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-secondary">
+                                            No
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                                {{-- DATE --}}
+                                <td>
+
+                                    {{ \Carbon\Carbon::parse($consultation->consultation_date)->format('d M Y h:i A') }}
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="10" class="text-center text-muted">
+
+                                    No consultation records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {{-- PAGINATION --}}
+            <div class="mt-3">
+                {{ $consultations->appends(request()->query())->links() }}
+            </div>
 
         </div>
 
     </div>
+
+</div>
 
 @endsection

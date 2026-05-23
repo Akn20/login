@@ -194,6 +194,7 @@
                             <th>Department</th>
                             <th>Symptoms</th>
                             <th>Diagnosis</th>
+                            <th>Prescription</th>
                             <th>Date</th>
 
                         </tr>
@@ -240,6 +241,24 @@
                                     {{ $consultation->diagnosis }}
 
                                 </td>
+
+                                <td>
+
+                                @if($consultation->medicines->count() > 0)
+
+                                    <span class="badge bg-success">
+                                        Yes
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-secondary">
+                                        No
+                                    </span>
+
+                                @endif
+
+                            </td>
 
                                 <td>
 

@@ -123,13 +123,13 @@
                                 All Status
                             </option>
 
-                            <option value="Admitted"
-                                {{ request('status') == 'Admitted' ? 'selected' : '' }}>
-                                Admitted
+                            <option value="Active"
+                                {{ request('status') == 'active' ? 'selected' : '' }}>
+                                Active
                             </option>
 
                             <option value="Discharged"
-                                {{ request('status') == 'Discharged' ? 'selected' : '' }}>
+                                {{ request('status') == 'discharged' ? 'selected' : '' }}>
                                 Discharged
                             </option>
 
@@ -256,10 +256,10 @@
 
                                 <td>
 
-                                    @if($admission->status == 'Admitted')
+                                    @if($admission->status == 'active')
 
                                         <span class="badge bg-success">
-                                            Admitted
+                                            Active
                                         </span>
 
                                     @else
