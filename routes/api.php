@@ -96,6 +96,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\IpdController;
+use App\Http\Controllers\Doctor\ReferralController;
+
 use App\Http\Controllers\Doctor\LabRequestController;
 
 // HR
@@ -4095,4 +4097,48 @@ Route::prefix('refunds')->group(function () {
         RefundApiController::class,
         'fetchBillDetails'
     ]);
+});
+
+//Refferal managemnet(doctor)
+Route::prefix('doctor/referrals')->group(function () {
+
+    // Referral List
+    Route::get('/', [ReferralController::class, 'apiIndex']);
+
+    // Create Page Data
+    Route::get('/create-data', [ReferralController::class, 'apiCreateData']);
+
+    // Store Referral
+    Route::post('/store', [ReferralController::class, 'apiStore']);
+
+    // View Referral
+    Route::get('/view/{id}', [ReferralController::class, 'apiView']);
+
+    // Edit Page Data
+    Route::get('/edit-data/{id}', [ReferralController::class, 'apiEditData']);
+
+    // Update Referral
+    Route::post('/update/{id}', [ReferralController::class, 'apiUpdate']);
+
+    // Delete Referral
+    Route::delete('/delete/{id}', [ReferralController::class, 'apiDelete']);
+
+    //Update status
+    Route::post('/update-status/{id}', [ReferralController::class, 'apiUpdateStatus']);
+
+    // Complete Referral
+    Route::post('/complete/{id}', [ReferralController::class, 'apiMarkCompleted']);
+
+    // Reject Referral
+    Route::post('/reject/{id}', [ReferralController::class, 'apiReject']);
+
+    // Trash List
+    Route::get('/trash', [ReferralController::class, 'apiTrash']);
+
+    // Restore
+    Route::post('/restore/{id}', [ReferralController::class, 'apiRestore']);
+
+    // Permanent Delete
+    Route::delete('/force-delete/{id}', [ReferralController::class, 'apiForceDelete']);
+
 });

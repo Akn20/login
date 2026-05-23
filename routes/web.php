@@ -147,6 +147,7 @@ use App\Http\Controllers\WorkStatusController;
 use App\Http\Controllers\ReturnController;
 //use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\IPDAdmissionController;
+use App\Http\Controllers\Doctor\ReferralController;
 
 use App\Http\Controllers\ReceptionistReportController;
 
@@ -3289,6 +3290,46 @@ Route::prefix('doctor/ipd')->group(function () {
     ->name('doctor.ipd.storeLabRadiology');
 });
 
+//Referral Management (Doctor)
+
+Route::prefix('doctor/referrals')->name('doctor.referrals.')->group(function () {
+
+    Route::get('/', [ReferralController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [ReferralController::class, 'create'])
+        ->name('create');
+
+    Route::get('/view/{id}', [ReferralController::class, 'view'])
+        ->name('view');
+
+    Route::get('/edit/{id}', [ReferralController::class, 'edit'])
+        ->name('edit');
+
+    Route::post('/store', [ReferralController::class, 'store'])
+        ->name('store');
+
+    Route::delete('/{id}', [ReferralController::class, 'destroy'])
+        ->name('destroy');
+
+    Route::post('/complete/{id}', [ReferralController::class, 'markCompleted'])
+        ->name('complete');
+
+    Route::post('/reject/{id}', [ReferralController::class, 'reject'])
+        ->name('reject');
+
+    Route::put('/update/{id}', [ReferralController::class, 'update'])
+        ->name('update');
+
+    Route::get('/trash', [ReferralController::class, 'trash'])
+        ->name('trash');
+
+    Route::post('/restore/{id}', [ReferralController::class, 'restore'])
+        ->name('restore');
+
+    Route::delete('/force-delete/{id}', [ReferralController::class, 'forceDelete'])
+        ->name('forceDelete');
+});
 
 
 // =============================

@@ -789,6 +789,9 @@
                                 
 
                     </li>
+                    <li class="nxl-item"><a href="{{ route('doctor.referrals.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-share-2 me-2"></i>Referral Management</a>
+                    </li>
                 </ul>
             </li>
             <li
