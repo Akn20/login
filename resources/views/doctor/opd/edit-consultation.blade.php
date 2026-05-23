@@ -69,8 +69,6 @@
     </script>
 
 
-
-
     <div class="container-fluid">
 
         @if(session('success'))
@@ -268,54 +266,39 @@
                         $selectedTests = $consultation->labRequests->pluck('test_name')->toArray();
                     @endphp
 
-                    <div class="mb-3">
-                        <label><strong>Recommended Tests</strong></label>
-
-                            <!-- Visible Input -->
-                            <input type="text" id="testDisplay" class="form-control"
-                                value="{{ $consultation->labRequests->pluck('test_name')->implode(', ') }}"
-                                readonly onclick="toggleDropdown()">
-
-                            <!-- Hidden Dropdown -->
-                            <select id="testDropdown" name="tests[]" class="form-control mt-2"
-                                multiple size="5" style="display:none;">
-
-                                @foreach($labTests as $test)
-                                    <option value="{{ $test->id }}"
-                                        {{ in_array($test->test_name, $consultation->labRequests->pluck('test_name')->toArray()) ? 'selected' : '' }}>
-                                        {{ $test->test_name }}
-                                    </option>
-                                @endforeach
-
-                            </select>
-                        </div>
-
+                
                         <div class="card-body">
                             <div class="row">
 
-                                {{--  LAB TESTS --}}
-                                <div class="col-md-6">
-                                    <label><strong>Laboratory Tests</strong></label>
+    <div class="col-md-6">
+        <label><strong>Laboratory Tests</strong></label>
 
-                                    <select name="tests[]" class="form-select" multiple>
-                                        @foreach($labTests as $test)
-                                            <option value="{{ $test->id }}" {{ in_array($test->test_name, $selectedTests) ? 'selected' : '' }}>
-                                                {{ $test->test_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+        <select name="tests[]" class="form-control" multiple>
+            @foreach($labTests as $test)
+                <option value="{{ $test->id }}"
+                    {{ in_array($test->test_name, $selectedTests) ? 'selected' : '' }}>
+                    {{ $test->test_name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
-                                {{--  RADIOLOGY --}}
-                                <div class="col-md-6">
-                                    <label><strong>Radiology Tests</strong></label>
+    <div class="col-md-6">
+        <label><strong>Radiology Tests</strong></label>
 
-                                    <input type="text" class="form-control" placeholder="Enter Radiology Tests">
-                                </div>
+        <select name="radiology_tests[]" class="form-control" multiple>
+            @foreach($scanTypes as $scan)
+                <option value="{{ $scan->id }}"
+                    {{ $consultation->scanRequests->pluck('scan_type_id')->contains($scan->id) ? 'selected' : '' }}>
+                    {{ $scan->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
-                            </div>
+</div>
                         </div>
-                    </div>
+                    
 
                     {{-- PRIORITY (Single for now) --}}
                     <div class="mb-3">
@@ -374,7 +357,7 @@
 
         </div>
 
-    </div>
+    
 
 
 

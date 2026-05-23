@@ -46,4 +46,14 @@ class Organization extends Model
             }
         });
     }
+
+    public function subscription()
+{
+    return $this->hasOne(Subscription::class);
+}
+
+public function usageTracker()
+{
+    return $this->hasOne(UsageTracker::class);
+}
 }

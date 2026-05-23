@@ -9,7 +9,8 @@ use App\Models\EmployeeSalaryAssignment;
 use App\Models\SalaryStructure;
 use App\Models\Staff;
 use App\Models\User;
-
+use App\Models\PayrollResultDeduction;
+use App\Models\PayrollResultEarning;
 class PayrollResult extends Model
 {
 
@@ -149,5 +150,18 @@ class PayrollResult extends Model
             'id'
         );
     }
-
+    public function earnings()
+{
+    return $this->hasMany(
+        PayrollResultEarning::class,
+        'payroll_result_id'
+    );
+}
+public function deductions()
+{
+    return $this->hasMany(
+        PayrollResultDeduction::class,
+        'payroll_result_id'
+    );
+}
 }
