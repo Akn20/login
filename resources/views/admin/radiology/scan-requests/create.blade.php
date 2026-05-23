@@ -42,8 +42,10 @@
 <div class="mb-3">
     <label>Priority</label>
     <select name="priority" class="form-control">
-        <option value="Normal">Normal</option>
+        <option value="Routine">Routine</option>
         <option value="Urgent">Urgent</option>
+        <option value="Stat">Stat</option>
+
     </select>
 </div>
 

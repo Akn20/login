@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\Patient;
 use App\Models\Staff;
 use App\Models\Medicine;
+use App\Models\Prescription;
 
 
 class Consultation extends Model
@@ -61,5 +62,20 @@ class Consultation extends Model
     public function labRequests()
     {
         return $this->hasMany(LabRequest::class);
+    }
+
+    public function scanRequests()
+    {
+        return $this->hasMany(ScanRequest::class);
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
+    public function followUps()
+    {
+        return $this->hasMany(Followup::class);
     }
 }

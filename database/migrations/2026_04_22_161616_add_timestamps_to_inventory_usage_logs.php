@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::table('sales_bills', function (Blueprint $table) {
-        $table->string('prescription_number')->nullable()->after('prescription_id');
-    });
-}
+    public function up(): void
+    {
+        Schema::table('inventory_usage_logs', function (Blueprint $table) {
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('sales_bills', function (Blueprint $table) {
-            //
+        Schema::table('inventory_usage_logs', function (Blueprint $table) {
+            $table->dropTimestamps();
         });
     }
 };
