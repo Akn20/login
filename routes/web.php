@@ -76,12 +76,15 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\Doctor\NotificationController;
+use App\Http\Controllers\Doctor\ClinicalNoteController;
+use App\Http\Controllers\Doctor\DoctorReportController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
 // Leave Management
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\Doctor\LabRequestController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\EmergencyRecordController;
 use App\Http\Controllers\ExpiryController;
@@ -262,6 +265,54 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     });
+
+        Route::prefix('doctor/laboratory')->name('doctor.laboratory.')->group(function () {
+
+        Route::get('/requests',[LabRequestController::class, 'index'])->name('requests');
+        Route::get('/reports',[LabRequestController::class, 'completedReports'] )->name('reports');
+        Route::get('/reports/{id}',[LabRequestController::class, 'reportDetails'])->name('reports.details');
+        // Server-side PDF download for a single report
+        Route::get('/reports/{id}/pdf',[LabRequestController::class, 'reportPdf'])->name('report.pdf');
+        Route::get('/historical-reports',[LabRequestController::class, 'historicalReports'])->name('historical');
+        Route::get('/compare-reports/{patientId}/{testName}',[LabRequestController::class, 'compareReports'])->name('compare');
+        Route::get('/clinical-notes',[ClinicalNoteController::class, 'index'])->name('clinical-notes');
+        Route::post('/clinical-notes/store',[ClinicalNoteController::class, 'store'])->name('clinical-notes.store');
+
+});
+
+Route::prefix('doctor/reports')->name('doctor.reports.')->group(function () {
+
+    Route::get(
+        '/consultations',
+        [DoctorReportController::class, 'consultationSummary']
+    )->name('consultations');
+
+    Route::get(
+    '/opd-summary',
+    [DoctorReportController::class, 'opdSummary']
+)->name('opd-summary');
+
+Route::get(
+    '/ipd-summary',
+    [DoctorReportController::class, 'ipdSummary']
+)->name('ipd-summary');
+
+Route::get(
+    '/prescription-summary',
+    [DoctorReportController::class, 'prescriptionSummary']
+)->name('prescription-summary');
+
+
+Route::get(
+    '/surgery-summary',
+    [DoctorReportController::class, 'surgerySummary']
+)->name('surgery-summary');
+
+Route::get(
+    '/followup-compliance',
+    [DoctorReportController::class, 'followupCompliance']
+)->name('followup-compliance');
+});
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
     Route::get('/surgery', [SurgeryController::class, 'index'])->name('surgery.index');

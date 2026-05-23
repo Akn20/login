@@ -306,11 +306,17 @@
                                     </select>
                                 </div>
 
-                                {{--  RADIOLOGY --}}
+                                {{--  RADIOLOGY TESTS --}}
                                 <div class="col-md-6">
                                     <label><strong>Radiology Tests</strong></label>
 
-                                    <input type="text" class="form-control" placeholder="Enter Radiology Tests">
+                                    <select name="radiology_tests[]" class="form-select" multiple>
+                                        @foreach($scanTypes as $scan)
+                                            <option value="{{ $scan->id }}" {{ $consultation->scanRequests->pluck('scan_type_id')->contains($scan->id) ? 'selected' : '' }}>
+                                                {{ $scan->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                             </div>

@@ -10,6 +10,7 @@ class ScanRequest extends Model
     protected $fillable = [
         'patient_id',
         'scan_type_id',
+        'consultation_id',
         'body_part',
         'reason',
         'priority',
@@ -45,7 +46,12 @@ class ScanRequest extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(\App\Models\User::class, 'doctor_id');
+        return $this->belongsTo(\App\Models\Staff::class, 'doctor_id');
+    }
+
+    public function consultation()
+    {
+        return $this->belongsTo(\App\Models\Consultation::class);
     }
 
     public function uploads()
