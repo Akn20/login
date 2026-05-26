@@ -86,6 +86,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Doctor\IpdController;
 use App\Http\Controllers\Doctor\DoctorRadiologyController;
+use App\Http\Controllers\Doctor\EmrController;
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -781,6 +782,9 @@ Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::
 Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
 
 Route::prefix('doctor')->group(function () {
+    Route::get('/emr', [EmrController::class, 'apiIndex']);
+    Route::get('/emr/{id}', [EmrController::class, 'apiShow']);
+
     Route::get('/radiology', [DoctorRadiologyController::class, 'apiIndex']);
     Route::get('/radiology/create-data', [DoctorRadiologyController::class, 'apiCreateData']);
     Route::post('/radiology/store', [DoctorRadiologyController::class, 'apiStore']);

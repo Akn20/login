@@ -18,7 +18,9 @@
                 <li class="breadcrumb-item">Doctor</li>
                 <li class="breadcrumb-item">EMR</li>
             </ul>
+
         </div>
+
     </div>
 
     <div class="main-content">
@@ -51,9 +53,12 @@
 
                             <tr>
 
-                                <td>{{ $patient->patient_code }}</td>
+                                <td>
+                                    {{ $patient->patient_code }}
+                                </td>
 
-                                <td>{{ $patient->first_name }}{{ $patient->last_name }}
+                                <td>
+                                    {{ $patient->first_name }} {{ $patient->last_name }}
                                 </td>
 
                                 <td>
@@ -66,7 +71,7 @@
 
                                 <td>
 
-                                    <a href="{{ route('doctor.emr.show',$patient->id) }}"
+                                    <a href="{{ route('doctor.emr.show', $patient->id) }}"
                                        class="btn btn-sm btn-primary">
 
                                         View EMR
@@ -102,6 +107,7 @@
         </div>
 
     </div>
+
 </div>
 
 @endsection
