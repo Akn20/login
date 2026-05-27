@@ -709,6 +709,26 @@
         </span>
     </a>
 </li>
+
+<!-- Performance Management -->
+<li class="nxl-item {{ request()->is('hr/performance-management*') ? 'active' : '' }}">
+
+    <a
+        href="{{ route('hr.performance-management.index') }}"
+        class="nxl-link"
+    >
+
+        <span class="nxl-micon">
+            <i class="feather-bar-chart-2"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Performance Management
+        </span>
+
+    </a>
+
+</li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*', 'hr/leave-report*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
