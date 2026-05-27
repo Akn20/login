@@ -32,4 +32,27 @@ class PayrollDashboardController extends Controller
 
         return view('hr.payroll.dashboard', compact('stats'));
     }
+
+    public function apiDashboard()
+{
+    $stats = [
+
+        'pending_pre_payroll' =>
+            PrePayrollAdjustment::where('status', 'pending')->count(),
+
+        'salary_structures' =>
+            SalaryStructure::count(),
+
+        'salary_assignments' =>
+            EmployeeSalaryAssignment::count(),
+
+        'payroll_results' =>
+            PayrollResult::count(),
+    ];
+
+    return response()->json([
+        'status' => true,
+        'data' => $stats
+    ]);
+}
 }

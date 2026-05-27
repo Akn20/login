@@ -43,13 +43,13 @@ class PayrollResultEarningController extends Controller
     }
 
     if ($request->staff_id && $request->payroll_month) {
-        $selectedPayrollResult = \App\Models\PayrollResult::where('staff_id', $request->staff_id)
+        $selectedPayrollResult = PayrollResult::where('staff_id', $request->staff_id)
             ->where('payroll_month', $request->payroll_month)
             ->first();
 
         if ($selectedPayrollResult) {
             // For earnings controller:
-            $earnings = \App\Models\PayrollResultEarning::where('payroll_result_id', $selectedPayrollResult->id)
+            $earnings = PayrollResultEarning::where('payroll_result_id', $selectedPayrollResult->id)
                 ->orderBy('display_order')->get();
             }
         }
