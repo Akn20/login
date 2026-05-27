@@ -55,4 +55,9 @@ class LabReport extends Model
     {
         return $this->belongsTo(SampleCollection::class, 'sample_id');
     }
+
+    public function clinicalNotes()
+    {
+        return $this->hasMany(ClinicalNote::class, 'report_id');
+    }
 }

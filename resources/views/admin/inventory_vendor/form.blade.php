@@ -28,6 +28,21 @@
     <small class="text-danger">{{ $message }}</small>
 @enderror
 
+{{-- GST NUMBER --}}
+<div class="mb-4">
+    <label class="form-label">GST Number</label>
+
+    <input type="text"
+        name="gst_number"
+        class="form-control"
+        value="{{ old('gst_number', $vendor->gst_number ?? '') }}"
+        placeholder="Enter GST number">
+</div>
+
+@error('gst_number')
+    <small class="text-danger">{{ $message }}</small>
+@enderror
+
 <div class="mb-4">
     <label class="form-label">Address <span class="text-danger">*</span></label>
     <textarea name="address" class="form-control" rows="3"
