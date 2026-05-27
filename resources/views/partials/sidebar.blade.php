@@ -718,6 +718,25 @@
     </a>
 
 </li>
+<!-- Statutory Compliance -->
+<li class="nxl-item {{ request()->is('hr/statutory-compliance*') ? 'active' : '' }}">
+
+    <a
+        href="{{ route('hr.statutory-compliance.index') }}"
+        class="nxl-link"
+    >
+
+        <span class="nxl-micon">
+            <i class="feather-file-text"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Statutory Compliance
+        </span>
+
+    </a>
+
+</li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('hr/leave-*', 'hr/weekends*', 'hr/holidays*', 'hr/compoffs*', 'hr/leave-report*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">

@@ -107,6 +107,7 @@ use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\hr\PerformanceManagementController;
+use App\Http\Controllers\HR\StatutoryComplianceController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -1680,6 +1681,65 @@ Route::prefix('performance-management')
     Route::post('/{id}/restore',[PerformanceManagementController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete',[PerformanceManagementController::class, 'forceDelete'])->name('forceDelete');
     Route::delete('/{id}',[PerformanceManagementController::class, 'destroy'])->name('delete');
+
+});
+
+
+//---------Statutory Compliance----------------
+
+Route::prefix('statutory-compliance')
+    ->name('statutory-compliance.')
+    ->group(function () {
+
+    Route::get(
+        '/',
+        [StatutoryComplianceController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/deleted',
+        [StatutoryComplianceController::class, 'deleted']
+    )->name('deleted');
+
+    Route::get(
+        '/create',
+        [StatutoryComplianceController::class, 'create']
+    )->name('create');
+
+    Route::post(
+        '/store',
+        [StatutoryComplianceController::class, 'store']
+    )->name('store');
+
+    Route::get(
+        '/{id}/show',
+        [StatutoryComplianceController::class, 'show']
+    )->name('show');
+
+    Route::get(
+        '/{id}/edit',
+        [StatutoryComplianceController::class, 'edit']
+    )->name('edit');
+
+    Route::put(
+        '/{id}',
+        [StatutoryComplianceController::class, 'update']
+    )->name('update');
+
+    Route::post(
+        '/{id}/restore',
+        [StatutoryComplianceController::class, 'restore']
+    )->name('restore');
+
+    Route::delete(
+        '/{id}/force-delete',
+        [StatutoryComplianceController::class, 'forceDelete']
+    )->name('forceDelete');
+
+    Route::delete(
+        '/{id}',
+        [StatutoryComplianceController::class, 'destroy']
+    )->name('delete');
 
 });
 
