@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 // Auth
 use App\Http\Controllers\Admin\DashboardController;
 // Admin
+use App\Http\Controllers\Admin\DoctorAuditLogController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
@@ -214,6 +215,7 @@ use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
 use App\Http\Controllers\AccountantRevenueController;
 
+use App\Http\Controllers\CaseSheetController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -3892,3 +3894,34 @@ Route::prefix('reconciliation-reports')->group(function () {
 
 });
 
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource('casesheets', CaseSheetController::class);
+
+});
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+      /*
+|--------------------------------------------------------------------------
+| Doctor Audit Logs
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/doctor-audit-logs',
+    [DoctorAuditLogController::class, 'index']
+)->name('doctor-audit.index');
+
+Route::get(
+    '/doctor-audit-logs/{id}',
+    [DoctorAuditLogController::class, 'show']
+)->name('doctor-audit.show');
+});

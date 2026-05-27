@@ -45,6 +45,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\Attendance\AttendanceApiController;
 // Api
 use App\Http\Controllers\Api\Billing\BillingApiController;
+use App\Http\Controllers\Api\CaseSheetApiController;
+use App\Http\Controllers\Api\DoctorAuditLogApiController;
 use App\Http\Controllers\Api\EDM\EmployeeDocumentApiController;
 use App\Http\Controllers\Api\Emergency\EmergencyReportApiController;
 use App\Http\Controllers\Api\InsuranceConsentApiController;
@@ -137,7 +139,7 @@ use App\Http\Controllers\HR\PerformanceManagementController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
-use App\Http\Controllers\HR\TrainingCertificationTrackingController;
+
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1479,7 +1481,7 @@ Route::prefix('nurse-shift-handover')->group(function () {
 
     //     // Update handover status
 //     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
-// });
+});
     Route::prefix('edm')->group(function () {
 
         // ✅ FIRST: LIST (no params)
@@ -2071,6 +2073,91 @@ Route::prefix('inventory-expiry')->group(function () {
     ]);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| INVENTORY ALERTS
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('inventory-alerts')->group(function () {
+
+    Route::get('/', [
+        InventoryAlertController::class,
+        'apiIndex'
+    ]);
+
+    Route::get('/status/{status}', [
+        InventoryAlertController::class,
+        'apiByStatus'
+    ]);
+
+    Route::post('/acknowledge/{id}', [
+        InventoryAlertController::class,
+        'apiAcknowledge'
+    ]);
+
+    Route::post('/resolve/{id}', [
+        InventoryAlertController::class,
+        'apiResolve'
+    ]);
+
+});
+
+Route::prefix('receptionist/ipd')->group(function () {
+
+    // =========================
+    // MASTER APIs (TOP)
+    // =========================
+    Route::get('/patients', [IPDAdmissionController::class, 'apiPatients']);
+    Route::get('/doctors', [IPDAdmissionController::class, 'apiDoctors']);
+    Route::get('/departments', [IPDAdmissionController::class, 'apiDepartments']);
+    Route::get('/wards', [IPDAdmissionController::class, 'apiWards']);
+    Route::get('/rooms', [IPDAdmissionController::class, 'apiRooms']);
+    Route::get('/beds', [IPDAdmissionController::class, 'apiBeds']);
+
+    // =========================
+    // MAIN IPD APIs
+    // =========================
+    Route::get('/', [IPDAdmissionController::class, 'apiIndex']);
+    Route::post('/', [IPDAdmissionController::class, 'apiStore']);
+
+    // ⚠️ KEEP THESE AT LAST
+    Route::get('{id}', [IPDAdmissionController::class, 'apiView']);
+    Route::put('{id}', [IPDAdmissionController::class, 'apiUpdate']);
+    Route::post('{id}/discharge', [IPDAdmissionController::class, 'apiDischarge']);
+});
+
+//ReceptionistReport
+
+Route::prefix('receptionist/reports')->group(function () {
+
+    Route::get('registration', [ReceptionistReportController::class, 'apiRegistration']);
+    Route::get('appointment', [ReceptionistReportController::class, 'apiAppointment']);
+    Route::get('token', [ReceptionistReportController::class, 'apiToken']);
+    Route::get('collection', [ReceptionistReportController::class, 'apiCollection']);
+    Route::get('admission', [ReceptionistReportController::class, 'apiAdmission']);
+});
+
+Route::prefix('billing')->group(function () {
+
+    Route::get('/', [BillingApiController::class, 'index']);
+    Route::post('/', [BillingApiController::class, 'store']);
+    Route::get('/{id}', [BillingApiController::class, 'show']);
+    Route::delete('/{id}', [BillingApiController::class, 'destroy']);
+});
+
+/*
+|------------------------------------------------
+|   Nurse: Shift Management
+|--------------------------------------------------------------------------
+*/
+Route::prefix('nurse-shifts')->group(function () {
+
+});
+
+Route::prefix('admin/patient-portal')->group(function () {
 
     Route::get(
         '/reports/attendance',
@@ -3775,7 +3862,7 @@ Route::prefix('refunds')->group(function () {
         'fetchBillDetails'
     ]);
 });
-});
+
 Route::prefix('bank-verification')->group(function () {
 
     Route::get('/', [BankVerificationController::class, 'apiIndex']);
@@ -4233,5 +4320,46 @@ Route::prefix('doctor/referrals')->group(function () {
 
     // Permanent Delete
     Route::delete('/force-delete/{id}', [ReferralController::class, 'apiForceDelete']);
+});
+Route::prefix('case-sheets')->group(function () {
+
+    Route::get('/', [CaseSheetApiController::class, 'index']);
+
+    Route::post('/', [CaseSheetApiController::class, 'store']);
+
+    Route::get('/patients', [CaseSheetApiController::class, 'patients']);
+
+    Route::get('/doctors', [CaseSheetApiController::class, 'doctors']);
+
+    Route::get('/{id}', [CaseSheetApiController::class, 'show']);
+
+    Route::put('/{id}', [CaseSheetApiController::class, 'update']);
+
+    Route::delete('/{id}', [CaseSheetApiController::class, 'destroy']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Doctor Audit Logs API
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('doctor-audit-logs')->group(function () {
+
+    Route::get(
+        '/',
+        [DoctorAuditLogApiController::class, 'index']
+    );
+
+    Route::get(
+        '/{id}',
+        [DoctorAuditLogApiController::class, 'show']
+    );
+
+    Route::delete(
+        '/{id}',
+        [DoctorAuditLogApiController::class, 'destroy']
+    );
 
 });
