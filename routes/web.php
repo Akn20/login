@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -928,6 +929,15 @@ Route::middleware(['auth', 'role:admin'])
             ->name('patients.toggleStatus');
         Route::patch('patients/{id}/toggle-vip', [PatientController::class, 'toggleVip'])
             ->name('patients.toggleVip');
+
+
+    Route::get('patients/medical-history', [MedicalHistoryController::class, 'index'])
+    ->name('patients.medical-history');
+
+
+    Route::get('patients/medical-history/{patientId}', [MedicalHistoryController::class, 'show'])
+    ->name('patients.medical-history.show');
+
 
         Route::resource('patients', PatientController::class);
 
