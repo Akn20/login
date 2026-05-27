@@ -494,4 +494,281 @@ if ($request->hasFile('license_upload')) {
                 'Record Permanently Deleted'
             );
     }
+//-------------Api methods---------------------------------------
+public function apiIndex()
+{
+    return response()->json(
+        StatutoryCompliance::latest()->get()
+    );
+}
+public function formData()
+{
+    $employees = Staff::with('department')
+        ->where('status', 'Active')
+        ->get();
+
+    return response()->json([
+        'employees' => $employees
+    ]);
+}
+public function apiShow($id)
+{
+    $record =
+        StatutoryCompliance::findOrFail($id);
+
+    return response()->json($record);
+}
+public function apiStore(Request $request)
+{
+    $employee = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    $licenseUpload = null;
+
+    if ($request->hasFile('license_upload')) {
+
+        $licenseUpload =
+            $request
+                ->file('license_upload')
+                ->store(
+                    'statutory-compliance',
+                    'public'
+                );
+    }
+
+    $record = StatutoryCompliance::create([
+
+        'id' => Str::uuid(),
+
+        'employee_id' =>
+            $request->employee_id,
+
+        'employee_name' =>
+            $employee->name ?? null,
+
+        'department' =>
+            optional($employee->department)
+                ->department_name,
+
+        'pf_applicable' =>
+            $request->pf_applicable,
+
+        'pf_number' =>
+            $request->pf_number,
+
+        'pf_contribution_amount' =>
+            $request->pf_contribution_amount,
+
+        'pf_start_date' =>
+            $request->pf_start_date,
+
+        'esi_applicable' =>
+            $request->esi_applicable,
+
+        'esi_number' =>
+            $request->esi_number,
+
+        'esi_contribution_amount' =>
+            $request->esi_contribution_amount,
+
+        'professional_tax_applicable' =>
+            $request->professional_tax_applicable,
+
+        'professional_tax_amount' =>
+            $request->professional_tax_amount,
+
+        'state_applicable' =>
+            $request->state_applicable,
+
+        'tds_applicable' =>
+            $request->tds_applicable,
+
+        'pan_number' =>
+            $request->pan_number,
+
+        'tds_percentage' =>
+            $request->tds_percentage,
+
+        'contract_start_date' =>
+            $request->contract_start_date,
+
+        'contract_end_date' =>
+            $request->contract_end_date,
+
+        'contract_status' =>
+            $request->contract_status,
+
+        'license_number' =>
+            $request->license_number,
+
+        'license_issue_date' =>
+            $request->license_issue_date,
+
+        'license_expiry_date' =>
+            $request->license_expiry_date,
+
+        'license_upload' =>
+            $licenseUpload,
+
+        'license_status' =>
+            $request->license_status,
+
+        'remarks' =>
+            $request->remarks,
+
+        'status' =>
+            $request->status ?? 'Active',
+    ]);
+
+    return response()->json([
+        'message' => 'Created Successfully',
+        'data' => $record
+    ]);
+}
+public function apiUpdate(
+    Request $request,
+    $id
+)
+{
+    $record =
+        StatutoryCompliance::findOrFail($id);
+
+    $employee = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    if ($request->hasFile('license_upload')) {
+
+        $record->license_upload =
+            $request
+                ->file('license_upload')
+                ->store(
+                    'statutory-compliance',
+                    'public'
+                );
+    }
+
+    $record->update([
+
+        'employee_id' =>
+            $request->employee_id,
+
+        'employee_name' =>
+            $employee->name ?? null,
+
+        'department' =>
+            optional($employee->department)
+                ->department_name,
+
+        'pf_applicable' =>
+            $request->pf_applicable,
+
+        'pf_number' =>
+            $request->pf_number,
+
+        'pf_contribution_amount' =>
+            $request->pf_contribution_amount,
+
+        'pf_start_date' =>
+            $request->pf_start_date,
+
+        'esi_applicable' =>
+            $request->esi_applicable,
+
+        'esi_number' =>
+            $request->esi_number,
+
+        'esi_contribution_amount' =>
+            $request->esi_contribution_amount,
+
+        'professional_tax_applicable' =>
+            $request->professional_tax_applicable,
+
+        'professional_tax_amount' =>
+            $request->professional_tax_amount,
+
+        'state_applicable' =>
+            $request->state_applicable,
+
+        'tds_applicable' =>
+            $request->tds_applicable,
+
+        'pan_number' =>
+            $request->pan_number,
+
+        'tds_percentage' =>
+            $request->tds_percentage,
+
+        'contract_start_date' =>
+            $request->contract_start_date,
+
+        'contract_end_date' =>
+            $request->contract_end_date,
+
+        'contract_status' =>
+            $request->contract_status,
+
+        'license_number' =>
+            $request->license_number,
+
+        'license_issue_date' =>
+            $request->license_issue_date,
+
+        'license_expiry_date' =>
+            $request->license_expiry_date,
+
+        'license_status' =>
+            $request->license_status,
+
+        'remarks' =>
+            $request->remarks,
+
+        'status' =>
+            $request->status,
+    ]);
+
+    return response()->json([
+        'message' => 'Updated Successfully'
+    ]);
+}
+public function apiDelete($id)
+{
+    StatutoryCompliance::findOrFail($id)
+        ->delete();
+
+    return response()->json([
+        'message' => 'Deleted Successfully'
+    ]);
+}
+public function apideleted()
+{
+    return response()->json(
+        StatutoryCompliance::onlyTrashed()
+            ->latest()
+            ->get()
+    );
+}
+public function apirestore($id)
+{
+    StatutoryCompliance::onlyTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'message' => 'Restored Successfully'
+    ]);
+}
+public function apiforceDelete($id)
+{
+    StatutoryCompliance::onlyTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'message' => 'Permanently Deleted'
+    ]);
+}
 }
