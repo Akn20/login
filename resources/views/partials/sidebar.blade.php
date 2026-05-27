@@ -131,85 +131,7 @@
                 </ul>
             </li>
 
-            {{-- ---  ACCOUNTANT --- --}}
-            <li class="nxl-item nxl-caption"><label>Accounts</label></li>
-
-            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
-                <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
-                    <span class="nxl-mtext">Accountant</span>
-                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                </a>
-
-                <ul class="nxl-submenu">
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.dashboard') }}" class="nxl-link">
-                            <i class="feather-home me-2"></i> Dashboard
-                        </a>
-                    </li>
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.appointments') }}" class="nxl-link">
-                            <i class="feather-calendar me-2"></i> Appointments
-                    </li>
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.lab') }}" class="nxl-link">
-                            <i class="feather-activity me-2"></i> Lab Reports
-                        </a>
-                    </li>
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.radiology') }}" class="nxl-link">
-                            <i class="feather-camera me-2"></i> Radiology Reports
-                        </a>
-                    </li>
-                    <li class="nxl-item">
-
-                            <a href="{{ route('admin.data-consent.index') }}"
-                            class="nxl-link"
-                            up-follow
-                            up-target="#main-container">
-
-                                <i class="feather-shield me-2"></i>
-
-                                Data Usage Consent
-
-                            </a>
-
-                        </li>
-                        <li class="nxl-item">
-
-                        <a href="{{ route('admin.insurance-consent.index') }}"
-                        class="nxl-link"
-                        up-follow
-                        up-target="#main-container">
-
-                            <span class="nxl-micon">
-                                <i class="feather-shield"></i>
-                            </span>
-
-                            <span class="nxl-mtext">
-                                Insurance Consent
-                            </span>
-
-                        </a>
-
-                    </li>
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Discharge Summary
-                        </a>
-                    </li>
-                     <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Doctor Notes
-                        </a>
-                    </li>
-
-                </ul>
+           
 
 
  {{-- ---  ACCOUNTANT --- --}}
@@ -780,6 +702,11 @@
                     <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
+                     <li class="nxl-item"><a href="{{ route('doctor.radiology.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-camera me-2"></i>Radiology</a>
+                    </li>
+                </ul>
+            </li>
 
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/doctor*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -818,7 +745,7 @@
                 
                                 
 
-                        </li>
+                     </li>
 
                      <li class="nxl-item nxl-hasmenu {{ request()->is('doctor*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
