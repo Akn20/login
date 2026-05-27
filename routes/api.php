@@ -1747,6 +1747,63 @@ Route::prefix('performance-management')
         '/{id}',
         [PerformanceManagementController::class, 'apiDelete']
     );
+Route::prefix('statutory-compliance')
+    ->group(function () {
 
+    // LIST
+    Route::get(
+        '/',
+        [StatutoryComplianceController::class, 'apiIndex']
+    );
+
+    // FORM DATA
+    Route::get(
+        '/form-data',
+        [StatutoryComplianceController::class, 'formData']
+    );
+
+    // SHOW
+    Route::get(
+        '/{id}',
+        [StatutoryComplianceController::class, 'apiShow']
+    );
+
+    // STORE
+    Route::post(
+        '/',
+        [StatutoryComplianceController::class, 'apiStore']
+    );
+
+    // UPDATE
+    Route::post(
+        '/{id}',
+        [StatutoryComplianceController::class, 'apiUpdate']
+    );
+
+    // DELETE
+    Route::delete(
+        '/{id}',
+        [StatutoryComplianceController::class, 'apiDelete']
+    );
+
+    // DELETED LIST
+    Route::get(
+        '/deleted',
+        [StatutoryComplianceController::class, 'deleted']
+    );
+
+    // RESTORE
+    Route::post(
+        '/{id}/restore',
+        [StatutoryComplianceController::class, 'restore']
+    );
+
+    // FORCE DELETE
+    Route::delete(
+        '/{id}/force-delete',
+        [StatutoryComplianceController::class, 'forceDelete']
+    );
+
+});
 });
 
