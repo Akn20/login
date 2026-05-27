@@ -80,6 +80,7 @@ use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\DoctorReportController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
+use App\Http\Controllers\doctor\MedicalCertificationController;
 // Leave Management
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
@@ -119,6 +120,7 @@ use App\Http\Controllers\HR\ShiftSchedulingController;
 // Root-level Controllers (alphabetical)
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
+use App\Http\Controllers\hr\PerformanceManagementController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -342,6 +344,62 @@ Route::get(
     Route::get('/postoperative/{id}/edit', [PostOperativeController::class, 'edit'])->name('post.edit');
     Route::put('/postoperative/{id}', [PostOperativeController::class, 'update'])->name('post.update');
     Route::delete('/postoperative/{id}', [PostOperativeController::class, 'destroy'])->name('post.destroy');
+
+    Route::prefix('doctor/medical-certification')
+    ->name('doctor.medical-certification.')
+    ->group(function () {
+
+   Route::get(
+    '/',
+    [MedicalCertificationController::class, 'index']
+)->name('index');
+
+Route::get(
+    '/create',
+    [MedicalCertificationController::class, 'create']
+)->name('create');
+
+Route::post(
+    '/store',
+    [MedicalCertificationController::class, 'store']
+)->name('store');
+
+Route::get(
+    '/{id}/show',
+    [MedicalCertificationController::class, 'show']
+)->name('show');
+
+Route::get(
+    '/{id}/edit',
+    [MedicalCertificationController::class, 'edit']
+)->name('edit');
+
+Route::put(
+    '/{id}/update',
+    [MedicalCertificationController::class, 'update']
+)->name('update');
+
+Route::delete(
+    '/{id}/delete',
+    [MedicalCertificationController::class, 'destroy']
+)->name('delete');
+Route::get(
+    '/{id}/pdf',
+    [MedicalCertificationController::class, 'downloadPdf']
+)->name('pdf');
+Route::post(
+    '/{id}/sign',
+    [MedicalCertificationController::class, 'sign']
+)->name('sign');
+Route::get(
+    '/{id}/print',
+    [MedicalCertificationController::class, 'printPdf']
+)->name('print');
+Route::post(
+    '/{id}/cancel',
+    [MedicalCertificationController::class, 'cancel']
+)->name('cancel');
+});
 });
 
 /*
@@ -1986,6 +2044,24 @@ Route::prefix('training-certification-tracking')
 
 });
 
+//---------Performance Management----------------
+
+Route::prefix('performance-management')
+    ->name('performance-management.')
+    ->group(function () {
+
+    Route::get( '/', [PerformanceManagementController::class, 'index'] )->name('index');
+    Route::get('/deleted',[PerformanceManagementController::class, 'deleted']  )->name('deleted');
+    Route::get('/create',[PerformanceManagementController::class, 'create'] )->name('create');
+    Route::post('/store', [PerformanceManagementController::class, 'store'])->name('store');
+    Route::get('/{id}/show',[PerformanceManagementController::class, 'show'] )->name('show');
+    Route::get('/{id}/edit',[PerformanceManagementController::class, 'edit'])->name('edit');
+    Route::put('/{id}',[PerformanceManagementController::class, 'update'])->name('update');
+    Route::post('/{id}/restore',[PerformanceManagementController::class, 'restore'])->name('restore');
+    Route::delete('/{id}/force-delete',[PerformanceManagementController::class, 'forceDelete'])->name('forceDelete');
+    Route::delete('/{id}',[PerformanceManagementController::class, 'destroy'])->name('delete');
+
+});
 
     // Payroll Dashboard
 Route::get('/payroll-dashboard',
