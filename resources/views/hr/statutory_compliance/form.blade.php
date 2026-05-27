@@ -603,6 +603,8 @@
         </option>
 
     </select>
+
+</div>
 {{-- License Upload --}}
 <div class="col-md-3 mb-4">
 
@@ -616,7 +618,6 @@
         class="form-control"
     >
 
-</div>
 </div>
 {{-- ================= Additional Information ================= --}}
 <div class="col-12 mt-4">
