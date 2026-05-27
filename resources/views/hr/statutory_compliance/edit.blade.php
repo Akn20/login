@@ -32,10 +32,11 @@
 
         <div class="card-body">
 
-            <form
-                action="{{ route('hr.statutory-compliance.update', $record->id) }}"
-                method="POST"
-            >
+         <form
+    action="{{ route('hr.statutory-compliance.update', $record->id) }}"
+    method="POST"
+    enctype="multipart/form-data"
+>
 
                 @csrf
                 @method('PUT')

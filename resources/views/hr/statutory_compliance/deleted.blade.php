@@ -2,47 +2,39 @@
 
 @section(
     'page-title',
-    'Statutory Compliance | ' . config('app.name')
+    'Deleted Statutory Compliance | ' . config('app.name')
 )
 
 @section('content')
 
 <div class="nxl-content">
 
+    {{-- Page Header --}}
     <div class="page-header mb-4 d-flex justify-content-between align-items-center">
 
         <div>
 
             <h5 class="mb-1">
-                Statutory Compliance
+                Deleted Statutory Compliance Records
             </h5>
 
         </div>
 
-        <div class="d-flex gap-2">
-
-            <a
-                href="{{ route('hr.statutory-compliance.deleted') }}"
-                class="btn btn-light"
-            >
-                Deleted Records
-            </a>
-
-            <a
-                href="{{ route('hr.statutory-compliance.create') }}"
-                class="btn btn-primary"
-            >
-                Add Record
-            </a>
-
-        </div>
+        <a
+            href="{{ route('hr.statutory-compliance.index') }}"
+            class="btn btn-light"
+        >
+            Back
+        </a>
 
     </div>
 
+    {{-- Card --}}
     <div class="card">
 
         <div class="card-body">
 
+            {{-- Success Message --}}
             @if(session('success'))
 
                 <div class="alert alert-success alert-dismissible fade show">
@@ -74,10 +66,6 @@
                             <th>Employee Name</th>
 
                             <th>Department</th>
-
-                            <th>Contract Status</th>
-
-                            <th>License Status</th>
 
                             <th>Status</th>
 
@@ -114,56 +102,11 @@
                                     {{ $record->department }}
                                 </td>
 
-                                {{-- Contract Status --}}
                                 <td>
 
-                                    @if($record->contract_status)
-
-                                        <span class="badge bg-soft-info text-info">
-                                            {{ $record->contract_status }}
-                                        </span>
-
-                                    @else
-
-                                        -
-
-                                    @endif
-
-                                </td>
-
-                                {{-- License Status --}}
-                                <td>
-
-                                    @if($record->license_status)
-
-                                        <span class="badge bg-soft-warning text-warning">
-                                            {{ $record->license_status }}
-                                        </span>
-
-                                    @else
-
-                                        -
-
-                                    @endif
-
-                                </td>
-
-                                {{-- Main Status --}}
-                                <td>
-
-                                    @if($record->status == 'Active')
-
-                                        <span class="badge bg-soft-success text-success">
-                                            Active
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge bg-soft-danger text-danger">
-                                            Inactive
-                                        </span>
-
-                                    @endif
+                                    <span class="badge bg-soft-danger text-danger">
+                                        Deleted
+                                    </span>
 
                                 </td>
 
@@ -172,30 +115,32 @@
 
                                     <div class="hstack gap-2 justify-content-end">
 
-                                        {{-- View --}}
-                                        <a
-                                            href="{{ route('hr.statutory-compliance.show', $record->id) }}"
-                                            class="avatar-text avatar-md action-icon"
-                                            title="View"
-                                        >
-                                            <i class="feather-eye"></i>
-                                        </a>
-
-                                        {{-- Edit --}}
-                                        <a
-                                            href="{{ route('hr.statutory-compliance.edit', $record->id) }}"
-                                            class="avatar-text avatar-md action-icon action-edit"
-                                            title="Edit"
-                                        >
-                                            <i class="feather-edit"></i>
-                                        </a>
-
-                                        {{-- Delete --}}
+                                        {{-- Restore --}}
                                         <form
-                                            action="{{ route('hr.statutory-compliance.delete', $record->id) }}"
+                                            action="{{ route('hr.statutory-compliance.restore', $record->id) }}"
                                             method="POST"
                                             class="d-inline"
-                                            onsubmit="return confirm('Are you sure you want to delete this record?');"
+                                            onsubmit="return confirm('Restore this record?');"
+                                        >
+
+                                            @csrf
+
+                                            <button
+                                                type="submit"
+                                                class="avatar-text avatar-md action-icon"
+                                                title="Restore"
+                                            >
+                                                <i class="feather-rotate-ccw"></i>
+                                            </button>
+
+                                        </form>
+
+                                        {{-- Permanent Delete --}}
+                                        <form
+                                            action="{{ route('hr.statutory-compliance.forceDelete', $record->id) }}"
+                                            method="POST"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Permanently delete this record?');"
                                         >
 
                                             @csrf
@@ -204,7 +149,7 @@
                                             <button
                                                 type="submit"
                                                 class="avatar-text avatar-md action-icon action-delete"
-                                                title="Delete"
+                                                title="Permanent Delete"
                                             >
                                                 <i class="feather-trash-2"></i>
                                             </button>
@@ -222,10 +167,10 @@
                             <tr>
 
                                 <td
-                                    colspan="8"
+                                    colspan="6"
                                     class="text-center py-4"
                                 >
-                                    No Records Found
+                                    No Deleted Records Found
                                 </td>
 
                             </tr>

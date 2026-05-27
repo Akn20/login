@@ -437,7 +437,242 @@
         >
 
     </div>
+    {{-- ================= Contract Details ================= --}}
+<div class="col-12 mt-4">
 
+    <h5 class="mb-3 text-primary">
+        Contract Details
+    </h5>
+
+    <hr>
+
+</div>
+
+{{-- Contract Start Date --}}
+<div class="col-md-4 mb-4">
+
+    <label class="form-label">
+        Contract Start Date
+    </label>
+
+    <input
+        type="date"
+        name="contract_start_date"
+        class="form-control"
+        value="{{ old('contract_start_date', $record->contract_start_date ?? '') }}"
+    >
+
+</div>
+
+{{-- Contract End Date --}}
+<div class="col-md-4 mb-4">
+
+    <label class="form-label">
+        Contract End Date
+    </label>
+
+    <input
+        type="date"
+        name="contract_end_date"
+        class="form-control"
+        value="{{ old('contract_end_date', $record->contract_end_date ?? '') }}"
+    >
+
+</div>
+
+{{-- Contract Status --}}
+<div class="col-md-4 mb-4">
+
+    <label class="form-label">
+        Contract Status
+    </label>
+
+    <select
+        name="contract_status"
+        class="form-select"
+    >
+
+        <option value="">
+            Select
+        </option>
+
+        <option
+            value="Valid"
+            {{ old('contract_status', $record->contract_status ?? '') == 'Valid' ? 'selected' : '' }}
+        >
+            Valid
+        </option>
+
+        <option
+            value="Expired"
+            {{ old('contract_status', $record->contract_status ?? '') == 'Expired' ? 'selected' : '' }}
+        >
+            Expired
+        </option>
+
+    </select>
+
+</div>
+{{-- ================= Medical License ================= --}}
+<div class="col-12 mt-4">
+
+    <h5 class="mb-3 text-primary">
+        Medical License Details
+    </h5>
+
+    <hr>
+
+</div>
+
+{{-- License Number --}}
+<div class="col-md-3 mb-4">
+
+    <label class="form-label">
+        License Number
+    </label>
+
+    <input
+        type="text"
+        name="license_number"
+        class="form-control"
+        value="{{ old('license_number', $record->license_number ?? '') }}"
+    >
+
+</div>
+
+{{-- License Issue Date --}}
+<div class="col-md-3 mb-4">
+
+    <label class="form-label">
+        License Issue Date
+    </label>
+
+    <input
+        type="date"
+        name="license_issue_date"
+        class="form-control"
+        value="{{ old('license_issue_date', $record->license_issue_date ?? '') }}"
+    >
+
+</div>
+
+{{-- License Expiry Date --}}
+<div class="col-md-3 mb-4">
+
+    <label class="form-label">
+        License Expiry Date
+    </label>
+
+    <input
+        type="date"
+        name="license_expiry_date"
+        class="form-control"
+        value="{{ old('license_expiry_date', $record->license_expiry_date ?? '') }}"
+    >
+
+</div>
+
+{{-- License Status --}}
+<div class="col-md-3 mb-4">
+
+    <label class="form-label">
+        License Status
+    </label>
+
+    <select
+        name="license_status"
+        class="form-select"
+    >
+
+        <option value="">
+            Select
+        </option>
+
+        <option
+            value="Valid"
+            {{ old('license_status', $record->license_status ?? '') == 'Valid' ? 'selected' : '' }}
+        >
+            Valid
+        </option>
+
+        <option
+            value="Expired"
+            {{ old('license_status', $record->license_status ?? '') == 'Expired' ? 'selected' : '' }}
+        >
+            Expired
+        </option>
+
+    </select>
+{{-- License Upload --}}
+<div class="col-md-3 mb-4">
+
+    <label class="form-label">
+        License Upload
+    </label>
+
+    <input
+        type="file"
+        name="license_upload"
+        class="form-control"
+    >
+
+</div>
+</div>
+{{-- ================= Additional Information ================= --}}
+<div class="col-12 mt-4">
+
+    <h5 class="mb-3 text-primary">
+        Additional Information
+    </h5>
+
+    <hr>
+
+</div>
+
+{{-- Remarks --}}
+<div class="col-md-6 mb-4">
+
+    <label class="form-label">
+        Remarks
+    </label>
+
+    <textarea
+        name="remarks"
+        class="form-control"
+        rows="3"
+    >{{ old('remarks', $record->remarks ?? '') }}</textarea>
+
+</div>
+
+{{-- Status --}}
+<div class="col-md-6 mb-4">
+
+    <label class="form-label">
+        Status
+    </label>
+
+    <select
+        name="status"
+        class="form-select"
+    >
+
+        <option
+            value="Active"
+            {{ old('status', $record->status ?? '') == 'Active' ? 'selected' : '' }}
+        >
+            Active
+        </option>
+
+        <option
+            value="Inactive"
+            {{ old('status', $record->status ?? '') == 'Inactive' ? 'selected' : '' }}
+        >
+            Inactive
+        </option>
+
+    </select>
+
+</div>
 </div>
 
 <script>

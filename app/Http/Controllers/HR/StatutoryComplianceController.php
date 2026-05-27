@@ -39,6 +39,7 @@ class StatutoryComplianceController extends Controller
     // ================= STORE =================
     public function store(Request $request)
     {
+
         $request->validate([
 
             'employee_id' =>
@@ -88,8 +89,57 @@ class StatutoryComplianceController extends Controller
 
             'tds_percentage' =>
                 'nullable|numeric|min:0|max:100',
+                'contract_start_date' =>
+
+    'nullable|date',
+
+'contract_end_date' =>
+
+    'nullable|date|after_or_equal:contract_start_date',
+
+'contract_status' =>
+
+    'nullable|string|max:255',
+
+'license_number' =>
+
+    'nullable|string|max:255',
+
+'license_issue_date' =>
+
+    'nullable|date',
+
+'license_expiry_date' =>
+
+    'nullable|date|after_or_equal:license_issue_date',
+
+'license_status' =>
+
+    'nullable|string|max:255',
+    'license_upload' =>
+
+    'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+
+'remarks' =>
+
+    'nullable|string|max:1000',
+
+'status' =>
+
+    'nullable|in:Active,Inactive',
 
         ]);
+        $licenseFile = null;
+
+if ($request->hasFile('license_upload')) {
+
+    $licenseFile = $request
+        ->file('license_upload')
+        ->store(
+            'license_uploads',
+            'public'
+        );
+}
 
         StatutoryCompliance::create([
 
@@ -142,6 +192,44 @@ class StatutoryComplianceController extends Controller
 
             'tds_percentage' =>
                 $request->tds_percentage,
+                'contract_start_date' =>
+
+    $request->contract_start_date,
+
+'contract_end_date' =>
+
+    $request->contract_end_date,
+
+'contract_status' =>
+
+    $request->contract_status,
+
+'license_number' =>
+
+    $request->license_number,
+
+'license_issue_date' =>
+
+    $request->license_issue_date,
+
+'license_expiry_date' =>
+
+    $request->license_expiry_date,
+
+'license_status' =>
+
+    $request->license_status,
+    'license_upload' =>
+
+    $licenseFile,
+
+'remarks' =>
+
+    $request->remarks,
+
+'status' =>
+
+    $request->status,
 
         ]);
 
@@ -198,9 +286,57 @@ class StatutoryComplianceController extends Controller
 
             'department' =>
                 'required|string|max:255',
+                'contract_start_date' =>
+
+    'nullable|date',
+
+'contract_end_date' =>
+
+    'nullable|date|after_or_equal:contract_start_date',
+
+'contract_status' =>
+
+    'nullable|string|max:255',
+
+'license_number' =>
+
+    'nullable|string|max:255',
+
+'license_issue_date' =>
+
+    'nullable|date',
+
+'license_expiry_date' =>
+
+    'nullable|date|after_or_equal:license_issue_date',
+
+'license_status' =>
+
+    'nullable|string|max:255',
+    'license_upload' =>
+
+    'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+
+'remarks' =>
+
+    'nullable|string|max:1000',
+
+'status' =>
+
+    'nullable|in:Active,Inactive',
 
         ]);
+$licenseFile = $record->license_upload;
 
+if ($request->hasFile('license_upload')) {
+
+    $licenseFile = $request
+        ->file('license_upload')
+        ->store(
+            'license_uploads',
+            'public'
+        );
+}
         $record->update([
 
             'employee_id' =>
@@ -250,6 +386,44 @@ class StatutoryComplianceController extends Controller
 
             'tds_percentage' =>
                 $request->tds_percentage,
+                'contract_start_date' =>
+
+    $request->contract_start_date,
+
+'contract_end_date' =>
+
+    $request->contract_end_date,
+
+'contract_status' =>
+
+    $request->contract_status,
+
+'license_number' =>
+
+    $request->license_number,
+
+'license_issue_date' =>
+
+    $request->license_issue_date,
+
+'license_expiry_date' =>
+
+    $request->license_expiry_date,
+
+'license_status' =>
+
+    $request->license_status,
+    'license_upload' =>
+
+    $licenseFile,
+
+'remarks' =>
+
+    $request->remarks,
+
+'status' =>
+
+    $request->status,
 
         ]);
 
