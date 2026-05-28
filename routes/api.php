@@ -84,6 +84,7 @@ use App\Http\Controllers\HR\Payroll\PayrollResultEarningController;
 use App\Http\Controllers\HR\Payroll\PayrollResultDeductionController;
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\HR\PerformanceManagementController;
+use App\Http\Controllers\HR\StatutoryComplianceController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -1747,63 +1748,28 @@ Route::prefix('performance-management')
         '/{id}',
         [PerformanceManagementController::class, 'apiDelete']
     );
+    });
+//---------statutory compliance--------------
 Route::prefix('statutory-compliance')
     ->group(function () {
 
-    // LIST
-    Route::get(
-        '/',
-        [StatutoryComplianceController::class, 'apiIndex']
-    );
+    Route::get('/', [StatutoryComplianceController::class, 'apiIndex']);
 
-    // FORM DATA
-    Route::get(
-        '/form-data',
-        [StatutoryComplianceController::class, 'formData']
-    );
+    Route::get('/form-data', [StatutoryComplianceController::class, 'formData']);
 
-    // SHOW
-    Route::get(
-        '/{id}',
-        [StatutoryComplianceController::class, 'apiShow']
-    );
+    Route::get('/deleted',[StatutoryComplianceController::class, 'apideleted']);
 
-    // STORE
-    Route::post(
-        '/',
-        [StatutoryComplianceController::class, 'apiStore']
-    );
+    Route::get('/{id}', [StatutoryComplianceController::class, 'apiShow']);
 
-    // UPDATE
-    Route::post(
-        '/{id}',
-        [StatutoryComplianceController::class, 'apiUpdate']
-    );
+    Route::post('/', [StatutoryComplianceController::class, 'apiStore']);
 
-    // DELETE
-    Route::delete(
-        '/{id}',
-        [StatutoryComplianceController::class, 'apiDelete']
-    );
+    Route::post('/{id}', [StatutoryComplianceController::class, 'apiUpdate']);
 
-    // DELETED LIST
-    Route::get(
-        '/deleted',
-        [StatutoryComplianceController::class, 'deleted']
-    );
+    Route::delete('/{id}', [StatutoryComplianceController::class, 'apiDelete']);
 
-    // RESTORE
-    Route::post(
-        '/{id}/restore',
-        [StatutoryComplianceController::class, 'restore']
-    );
+    Route::post('/{id}/restore',[StatutoryComplianceController::class, 'apirestore']);
 
-    // FORCE DELETE
-    Route::delete(
-        '/{id}/force-delete',
-        [StatutoryComplianceController::class, 'forceDelete']
-    );
-
+    Route::delete('/{id}/force-delete',[StatutoryComplianceController::class, 'apiforceDelete']);
 });
-});
+
 
