@@ -570,8 +570,8 @@ public function apiStore(Request $request)
         'pf_number' =>
             $request->pf_number,
 
-        'pf_contribution_amount' =>
-            $request->pf_contribution_amount,
+        'pf_amount' =>
+            $request->pf_amount,
 
         'pf_start_date' =>
             $request->pf_start_date,
@@ -582,8 +582,8 @@ public function apiStore(Request $request)
         'esi_number' =>
             $request->esi_number,
 
-        'esi_contribution_amount' =>
-            $request->esi_contribution_amount,
+        'esi_amount' =>
+            $request->esi_amount,
 
         'professional_tax_applicable' =>
             $request->professional_tax_applicable,
@@ -681,8 +681,8 @@ public function apiUpdate(
         'pf_number' =>
             $request->pf_number,
 
-        'pf_contribution_amount' =>
-            $request->pf_contribution_amount,
+        'pf_amount' =>
+            $request->pf_amount,
 
         'pf_start_date' =>
             $request->pf_start_date,
@@ -693,8 +693,8 @@ public function apiUpdate(
         'esi_number' =>
             $request->esi_number,
 
-        'esi_contribution_amount' =>
-            $request->esi_contribution_amount,
+        'esi_amount' =>
+            $request->esi_amount,
 
         'professional_tax_applicable' =>
             $request->professional_tax_applicable,
@@ -738,8 +738,8 @@ public function apiUpdate(
         'remarks' =>
             $request->remarks,
 
-        'status' =>
-            $request->status,
+       'status' =>
+    $request->status ?? 'Active',
     ]);
 
     return response()->json([
