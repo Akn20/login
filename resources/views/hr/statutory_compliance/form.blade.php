@@ -124,9 +124,10 @@
     {{-- PF Applicable --}}
     <div class="col-md-3 mb-4">
 
-        <label class="form-label">
-            PF Applicable
-        </label>
+     <label class="form-label">
+    PF Applicable
+    <span class="text-danger">*</span>
+</label>
 
         <select
             name="pf_applicable"
@@ -152,7 +153,13 @@
             </option>
 
         </select>
+@error('pf_applicable')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- PF Number --}}
@@ -167,6 +174,7 @@
             name="pf_number"
             class="form-control"
             value="{{ old('pf_number', $record->pf_number ?? '') }}"
+            placeholder="e.g. PF8926"
         >
 
     </div>
@@ -220,6 +228,7 @@
 
         <label class="form-label">
             ESI Applicable
+            <span class="text-danger">*</span>
         </label>
 
         <select
@@ -246,7 +255,13 @@
             </option>
 
         </select>
+@error('esi_applicable')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- ESI Number --}}
@@ -261,6 +276,7 @@
             name="esi_number"
             class="form-control"
             value="{{ old('esi_number', $record->esi_number ?? '') }}"
+            placeholder="e.g. ESI923456"
         >
 
     </div>
@@ -298,6 +314,7 @@
 
         <label class="form-label">
             PT Applicable
+            <span class="text-danger">*</span>
         </label>
 
         <select
@@ -324,7 +341,13 @@
             </option>
 
         </select>
+@error('pt_applicable')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- PT Amount --}}
@@ -376,6 +399,7 @@
 
         <label class="form-label">
             TDS Applicable
+            <span class="text-danger">*</span>
         </label>
 
         <select
@@ -402,7 +426,13 @@
             </option>
 
         </select>
+    @error('tds_applicable')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
     </div>
 
     {{-- PAN Number --}}
@@ -416,6 +446,7 @@
             type="text"
             name="pan_number"
             class="form-control"
+            placeholder="e.g. ABCDE1234F"
             value="{{ old('pan_number', $record->pan_number ?? '') }}"
         >
 
@@ -433,6 +464,7 @@
             step="0.01"
             name="tds_percentage"
             class="form-control"
+            placeholder="e.g. 10.00"
             value="{{ old('tds_percentage', $record->tds_percentage ?? '') }}"
         >
 
@@ -477,7 +509,13 @@
         class="form-control"
         value="{{ old('contract_end_date', $record->contract_end_date ?? '') }}"
     >
+@error('contract_end_date')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 
 {{-- Contract Status --}}
@@ -535,6 +573,7 @@
         type="text"
         name="license_number"
         class="form-control"
+        placeholder="MED56767"
         value="{{ old('license_number', $record->license_number ?? '') }}"
     >
 
@@ -618,6 +657,14 @@
         class="form-control"
     >
 
+    @error('license_upload')
+
+        <small class="text-danger">
+            {{ $message }}
+        </small>
+
+    @enderror
+
 </div>
 {{-- ================= Additional Information ================= --}}
 <div class="col-12 mt-4">
@@ -648,10 +695,10 @@
 {{-- Status --}}
 <div class="col-md-6 mb-4">
 
-    <label class="form-label">
-        Status
-    </label>
-
+ <label class="form-label">
+    Status
+    <span class="text-danger">*</span>
+</label>
     <select
         name="status"
         class="form-select"
@@ -672,7 +719,13 @@
         </option>
 
     </select>
+@error('status')
 
+    <small class="text-danger">
+        {{ $message }}
+    </small>
+
+@enderror
 </div>
 </div>
 

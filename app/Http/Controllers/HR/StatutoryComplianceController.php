@@ -52,7 +52,7 @@ class StatutoryComplianceController extends Controller
                 'required|string|max:255',
 
             'pf_applicable' =>
-                'nullable|in:Yes,No',
+                'required|in:Yes,No',
 
             'pf_number' =>
                 'nullable|string|max:255',
@@ -64,7 +64,7 @@ class StatutoryComplianceController extends Controller
                 'nullable|date',
 
             'esi_applicable' =>
-                'nullable|in:Yes,No',
+                'required|in:Yes,No',
 
             'esi_number' =>
                 'nullable|string|max:255',
@@ -73,7 +73,7 @@ class StatutoryComplianceController extends Controller
                 'nullable|numeric|min:0',
 
             'pt_applicable' =>
-                'nullable|in:Yes,No',
+                'required|in:Yes,No',
 
             'pt_amount' =>
                 'nullable|numeric|min:0',
@@ -82,7 +82,7 @@ class StatutoryComplianceController extends Controller
                 'nullable|string|max:255',
 
             'tds_applicable' =>
-                'nullable|in:Yes,No',
+                'required|in:Yes,No',
 
             'pan_number' =>
                 'nullable|string|max:255',
@@ -126,7 +126,7 @@ class StatutoryComplianceController extends Controller
 
 'status' =>
 
-    'nullable|in:Active,Inactive',
+    'required|in:Active,Inactive',
 
         ]);
         $licenseFile = null;
@@ -321,9 +321,21 @@ if ($request->hasFile('license_upload')) {
 
     'nullable|string|max:1000',
 
-'status' =>
+'pf_applicable' =>
+    'required|in:Yes,No',
 
-    'nullable|in:Active,Inactive',
+'esi_applicable' =>
+    'required|in:Yes,No',
+
+    
+'pt_applicable' =>
+    'required|in:Yes,No',
+
+'tds_applicable' =>
+    'required|in:Yes,No',
+
+'status' =>
+    'required|in:Active,Inactive',
 
         ]);
 $licenseFile = $record->license_upload;
