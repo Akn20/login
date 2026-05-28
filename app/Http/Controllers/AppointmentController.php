@@ -179,7 +179,7 @@ class AppointmentController extends Controller
     }
     public function getDoctors($department_id)
     {
-        $doctors = \App\Models\Staff::where('department_id', $department_id)
+        $doctors = Staff::where('department_id', $department_id)
             ->whereHas('role', function ($query) {
                 $query->where('name', 'Doctor');
             })

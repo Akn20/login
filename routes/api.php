@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Api\Configuration\CurrencyApiController;
+use App\Http\Controllers\Api\Configuration\GlobalTimezoneApiController;
+use App\Http\Controllers\Api\Configuration\RoundingRuleApiController;
+use App\Http\Controllers\Api\Configuration\TaxApiController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseReportController;
 use App\Http\Controllers\AddExpenseController;
@@ -4379,5 +4383,87 @@ Route::prefix('doctor-audit-logs')->group(function () {
         '/{id}',
         [DoctorAuditLogApiController::class, 'destroy']
     );
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Tax Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration/taxes')->group(function () {
+
+    Route::get('/', [TaxApiController::class, 'index']);
+
+    Route::post('/', [TaxApiController::class, 'store']);
+
+    Route::get('/{id}', [TaxApiController::class, 'show']);
+
+    Route::put('/{id}', [TaxApiController::class, 'update']);
+
+    Route::delete('/{id}', [TaxApiController::class, 'destroy']);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Currency Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration/currencies')->group(function () {
+
+    Route::get('/', [CurrencyApiController::class, 'index']);
+
+    Route::post('/', [CurrencyApiController::class, 'store']);
+
+    Route::get('/{id}', [CurrencyApiController::class, 'show']);
+
+    Route::put('/{id}', [CurrencyApiController::class, 'update']);
+
+    Route::delete('/{id}', [CurrencyApiController::class, 'destroy']);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Rounding Rules
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration/rounding-rules')->group(function () {
+
+    Route::get('/', [RoundingRuleApiController::class, 'index']);
+
+    Route::post('/', [RoundingRuleApiController::class, 'store']);
+
+    Route::get('/{id}', [RoundingRuleApiController::class, 'show']);
+
+    Route::put('/{id}', [RoundingRuleApiController::class, 'update']);
+
+    Route::delete('/{id}', [RoundingRuleApiController::class, 'destroy']);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Timezone Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration/timezones')->group(function () {
+
+    Route::get('/', [GlobalTimezoneApiController::class, 'index']);
+
+    Route::post('/', [GlobalTimezoneApiController::class, 'store']);
+
+    Route::get('/{id}', [GlobalTimezoneApiController::class, 'show']);
+
+    Route::put('/{id}', [GlobalTimezoneApiController::class, 'update']);
+
+    Route::delete('/{id}', [GlobalTimezoneApiController::class, 'destroy']);
 
 });

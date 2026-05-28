@@ -24,12 +24,118 @@
                     : 'hr.dashboard';
             @endphp
 
+
             <li class="nxl-item {{ request()->routeIs($route) ? 'active' : '' }}">
                 <a href="{{ route($route) }}" class="nxl-link" up-follow up-target="#main-container">
                     <span class="nxl-micon"><i class="feather-activity"></i></span>
                     <span class="nxl-mtext">Dashboard</span>
                 </a>
             </li>
+            <li class="nxl-item nxl-caption">
+    <label>System Configuration</label>
+</li>
+
+
+{{-- CURRENCY SETTINGS --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.currencies.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-dollar-sign"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Currency Settings
+
+        </span>
+
+    </a>
+
+</li>
+
+{{-- ROUNDING RULES --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.rounding-rules.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-disc"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Rounding Rules
+
+        </span>
+
+    </a>
+
+</li>
+
+{{-- TIMEZONE SETTINGS --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.timezones.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-clock"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Timezone Settings
+
+        </span>
+
+    </a>
+
+</li>
+
+
+
+
+
+
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.taxes.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+            <i class="feather-percent"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Tax Settings
+        </span>
+
+    </a>
+
+</li>
+
 
             {{-- --- 2. FRONT DESK --- --}}
             <li class="nxl-item nxl-caption"><label>Front Desk</label></li>

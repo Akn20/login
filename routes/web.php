@@ -3934,3 +3934,81 @@ Route::get(
     [DoctorAuditLogController::class, 'show']
 )->name('doctor-audit.show');
 });
+
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'taxes',
+        \App\Http\Controllers\Admin\Configuration\TaxStructureController::class
+    );
+
+});
+});
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Configuration : Currency Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'currencies',
+        \App\Http\Controllers\Admin\Configuration\GlobalCurrencyController::class
+    );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Rounding Rules
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'rounding-rules',
+        \App\Http\Controllers\Admin\Configuration\RoundingRuleController::class
+    );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Timezone Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'timezones',
+        \App\Http\Controllers\Admin\Configuration\GlobalTimezoneController::class
+    );
+
+});
+
+
+
+
+    });
