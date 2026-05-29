@@ -68,6 +68,18 @@
                             up-target="#main-container"><i class="feather-user-plus me-2"></i>Add Patient</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.patients.duplicates') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-copy me-2"></i>Duplicates</a></li>
+                   <li class="nxl-item">
+    <a href="{{ route('admin.patient.appointments.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <i class="feather-calendar me-2"></i>
+
+        Appointment Tracking
+
+    </a>
+</li>
 
                     <li class="nxl-item">
                         <a href="{{ route('admin.patients.emergency.list') }}" 

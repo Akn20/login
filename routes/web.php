@@ -70,6 +70,7 @@ use App\Http\Controllers\doctor\MedicalCertificationController;
 use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\EmergencyRecordController;
 use App\Http\Controllers\ExpiryController;
@@ -1295,7 +1296,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{id}/toggle-vip', [PatientController::class, 'toggleVip'])->name('toggleVip');
         Route::resource('/', PatientController::class)->parameters(['' => 'patient']);
     });
+    Route::prefix('patient/appointments')
+    ->name('patient.appointments.')
+    ->group(function () {
 
+    Route::get('/',
+        [PatientAppointmentController::class, 'index']
+    )->name('index');
+
+    Route::get('/show/{id}',
+        [PatientAppointmentController::class, 'show']
+    )->name('show');
+
+    Route::post('/cancel/{id}',
+        [PatientAppointmentController::class, 'cancel']
+    )->name('cancel');
+
+});
     // --- Receptionist Tools ---
     Route::resource('tokens', TokenController::class);
     Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])->name('tokens.skip');
