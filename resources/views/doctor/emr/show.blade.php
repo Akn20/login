@@ -24,9 +24,7 @@
 
         <div class="page-header-right ms-auto d-flex gap-2">
 
-            <a href="{{ route('doctor.emr.index') }}" class="btn btn-secondary">
-                Back
-            </a>
+            <a href="{{ route('doctor.emr.index') }}" class="btn btn-secondary"> Back</a>
 
         </div>
 
@@ -120,9 +118,7 @@
                         @empty
 
                             <tr>
-                                <td colspan="4" class="text-center">
-                                    No Consultation History
-                                </td>
+                                <td colspan="4" class="text-center"> No Consultation History</td>
                             </tr>
 
                         @endforelse
@@ -160,19 +156,15 @@
                         @forelse($labs as $lab)
 
                             <tr>
-
                                 <td>{{ $lab->test_name }}</td>
                                 <td>{{ $lab->priority }}</td>
                                 <td>{{ $lab->status }}</td>
-
                             </tr>
 
                         @empty
 
                             <tr>
-                                <td colspan="3" class="text-center">
-                                    No Lab Records
-                                </td>
+                                <td colspan="3" class="text-center">No Lab Records</td>
                             </tr>
 
                         @endforelse
@@ -210,19 +202,15 @@
                         @forelse($scans as $scan)
 
                             <tr>
-
                                 <td>{{ $scan->scanType->name ?? '-' }}</td>
                                 <td>{{ $scan->body_part }}</td>
                                 <td>{{ $scan->status }}</td>
-
                             </tr>
 
                         @empty
 
                             <tr>
-                                <td colspan="3" class="text-center">
-                                    No Scan Records
-                                </td>
+                                <td colspan="3" class="text-center">No Scan Records</td>
                             </tr>
 
                         @endforelse
@@ -260,19 +248,15 @@
                         @forelse($surgeries as $surgery)
 
                             <tr>
-
                                 <td>{{ $surgery->surgery_type }}</td>
                                 <td>{{ $surgery->surgery_date }}</td>
                                 <td>{{ $surgery->ot_room }}</td>
-
                             </tr>
 
                         @empty
 
                             <tr>
-                                <td colspan="3" class="text-center">
-                                    No Surgery Records
-                                </td>
+                                <td colspan="3" class="text-center">No Surgery Records</td>
                             </tr>
 
                         @endforelse
@@ -280,7 +264,6 @@
                     </tbody>
 
                 </table>
-
             </div>
 
         </div>
@@ -311,20 +294,16 @@
                         @forelse($ipdHistory as $ipd)
 
                             <tr>
-
                                 <td>{{ $ipd->admission_date }}</td>
                                 <td>{{ $ipd->ward->ward_name ?? '-' }}</td>
                                 <td>{{ $ipd->bed->bed_number ?? '-' }}</td>
                                 <td>{{ $ipd->status }}</td>
-
                             </tr>
 
                         @empty
 
                             <tr>
-                                <td colspan="4" class="text-center">
-                                    No IPD History
-                                </td>
+                                <td colspan="4" class="text-center"> No IPD History</td>
                             </tr>
 
                         @endforelse
