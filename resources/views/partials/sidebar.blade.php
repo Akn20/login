@@ -464,6 +464,10 @@
                     <li class="nxl-item"><a href="{{ route('doctor.radiology.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-camera me-2"></i>Radiology</a>
                     </li>
+
+                    <li class="nxl-item"><a href="{{ route('doctor.emr.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="fas fa-notes-medical me-2"></i>EMR</a>
+                    </li>
                 </ul>
             </li>
             <li

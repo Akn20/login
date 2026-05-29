@@ -71,6 +71,7 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Doctor\IpdController;
 use App\Http\Controllers\Doctor\DoctorRadiologyController;
+use App\Http\Controllers\Doctor\EmrController;
 
 // HR
 use App\Http\Controllers\DepartmentController;
@@ -263,6 +264,10 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/radiology/{id}',[DoctorRadiologyController::class,'show'])->name('radiology.show');
         Route::post('/radiology/note',[DoctorRadiologyController::class,'addNote'])->name('radiology.note');
         Route::get('/radiology/download/{id}',[DoctorRadiologyController::class,'download'])->name('radiology.download');
+
+        //EMR (Doctor)
+        Route::get('/emr',[EmrController::class,'index'])->name('emr.index');
+        Route::get('/emr/{id}',[EmrController::class,'show'])->name('emr.show');
     });
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
