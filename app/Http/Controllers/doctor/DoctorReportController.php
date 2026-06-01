@@ -92,7 +92,7 @@ class DoctorReportController extends Controller
             $query->whereHas('patient', function ($q) use ($request) {
 
                 $q->where('first_name', 'like', '%' . $request->patient_name . '%')
-                  ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
 
             });
         }
@@ -120,9 +120,9 @@ class DoctorReportController extends Controller
             Carbon::today()
         )->count();
 
-       $opdCount = Consultation::count();
+        $opdCount = Consultation::count();
 
-    $ipdCount = IPDAdmission::count();
+        $ipdCount = IPDAdmission::count();
 
         /*
         |--------------------------------------------------------------------------
@@ -130,7 +130,7 @@ class DoctorReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-       
+
 
         $departments = Department::all();
 
@@ -168,7 +168,7 @@ class DoctorReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-    
+
 
         if ($request->department_id) {
 
@@ -202,7 +202,7 @@ class DoctorReportController extends Controller
             $query->whereHas('patient', function ($q) use ($request) {
 
                 $q->where('first_name', 'like', '%' . $request->patient_name . '%')
-                  ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
 
             });
         }
@@ -233,325 +233,325 @@ class DoctorReportController extends Controller
         | DOWNLOAD PDF
         |--------------------------------------------------------------------------
         */
-    return $pdf->download('consultation_report.pdf');
+        return $pdf->download('consultation_report.pdf');
     }
 
     public function opdSummary(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department'
-    ]);
+    {
+        $query = Consultation::with([
+            'patient',
+            'doctor.department'
+        ]);
 
-    // Doctor filter
-    if ($request->doctor_id) {
+        // Doctor filter
+        if ($request->doctor_id) {
 
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
+            $query->where(
+                'doctor_id',
+                $request->doctor_id
+            );
+        }
 
-    // Patient search
-    if ($request->patient_name) {
+        // Patient search
+        if ($request->patient_name) {
 
-        $query->whereHas('patient', function ($q) use ($request) {
+            $query->whereHas('patient', function ($q) use ($request) {
 
-            $q->where('first_name', 'like', '%' . $request->patient_name . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+                $q->where('first_name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
 
-        });
-    }
+            });
+        }
 
-    // From date
-    if ($request->from_date) {
+        // From date
+        if ($request->from_date) {
 
-        $query->whereDate(
+            $query->whereDate(
+                'consultation_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        // To date
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'consultation_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $consultations = $query
+            ->latest()
+            ->get();
+
+        $totalOpdCases = Consultation::count();
+
+        $todayOpdCases = Consultation::whereDate(
             'consultation_date',
-            '>=',
-            $request->from_date
+            today()
+        )->count();
+
+        $followUpCases = Consultation::whereNotNull(
+            'diagnosis'
+        )->count();
+
+        $newPatients = Consultation::distinct(
+            'patient_id'
+        )->count('patient_id');
+
+        $doctors = Staff::all();
+
+        return view(
+            'doctor.reports.opd-summary',
+            compact(
+                'consultations',
+                'totalOpdCases',
+                'todayOpdCases',
+                'followUpCases',
+                'newPatients',
+                'doctors'
+            )
         );
     }
 
-    // To date
-    if ($request->to_date) {
+    public function ipdSummary(Request $request)
+    {
+        $query = IPDAdmission::with([
+            'patient',
+            'doctor.department'
+        ]);
 
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
+        // Doctor filter
+        if ($request->doctor_id) {
 
-    $consultations = $query
-        ->latest()
-        ->get();
+            $query->where(
+                'doctor_id',
+                $request->doctor_id
+            );
+        }
 
-    $totalOpdCases = Consultation::count();
+        // Patient search
+        if ($request->patient_name) {
 
-    $todayOpdCases = Consultation::whereDate(
-        'consultation_date',
-        today()
-    )->count();
+            $query->whereHas('patient', function ($q) use ($request) {
 
-    $followUpCases = Consultation::whereNotNull(
-        'diagnosis'
-    )->count();
+                $q->where('first_name', 'like', '%' . $request->patient_name . '%')
+                    ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
 
-    $newPatients = Consultation::distinct(
-        'patient_id'
-    )->count('patient_id');
+            });
+        }
 
-    $doctors = Staff::all();
+        // Status filter
+        if ($request->status) {
 
-    return view(
-        'doctor.reports.opd-summary',
-        compact(
-            'consultations',
-            'totalOpdCases',
-            'todayOpdCases',
-            'followUpCases',
-            'newPatients',
-            'doctors'
-        )
-    );
-}
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
 
-public function ipdSummary(Request $request)
-{
-    $query = IPDAdmission::with([
-        'patient',
-        'doctor.department'
-    ]);
+        // From date
+        if ($request->from_date) {
 
-    // Doctor filter
-    if ($request->doctor_id) {
+            $query->whereDate(
+                'admission_date',
+                '>=',
+                $request->from_date
+            );
+        }
 
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
+        // To date
+        if ($request->to_date) {
 
-    // Patient search
-    if ($request->patient_name) {
+            $query->whereDate(
+                'admission_date',
+                '<=',
+                $request->to_date
+            );
+        }
 
-        $query->whereHas('patient', function ($q) use ($request) {
+        $admissions = $query
+            ->latest()
+            ->get();
 
-            $q->where('first_name', 'like', '%' . $request->patient_name . '%')
-              ->orWhere('last_name', 'like', '%' . $request->patient_name . '%');
+        $totalAdmissions = IPDAdmission::count();
 
-        });
-    }
-
-    // Status filter
-    if ($request->status) {
-
-        $query->where(
+        $activeAdmissions = IPDAdmission::where(
             'status',
-            $request->status
-        );
-    }
+            'active'
+        )->count();
 
-    // From date
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'admission_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    // To date
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'admission_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $admissions = $query
-        ->latest()
-        ->get();
-
-    $totalAdmissions = IPDAdmission::count();
-
-    $activeAdmissions = IPDAdmission::where(
-        'status',
-        'active'
-    )->count();
-
-    $dischargedPatients = IPDAdmission::where(
-        'status',
-        'discharged'
-    )->count();
-
-    $todayAdmissions = IPDAdmission::whereDate(
-        'admission_date',
-        today()
-    )->count();
-
-    $doctors = Staff::all();
-
-    return view(
-        'doctor.reports.ipd-summary',
-        compact(
-            'admissions',
-            'totalAdmissions',
-            'activeAdmissions',
-            'dischargedPatients',
-            'todayAdmissions',
-            'doctors'
-        )
-    );
-}
-
-public function prescriptionSummary(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department',
-        'medicines'
-    ]);
-
-    // Doctor Filter
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    // From Date
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    // To Date
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $consultations = $query
-        ->latest()
-        ->get();
-
-    $totalPrescriptions = Consultation::count();
-
-    $todayPrescriptions = Consultation::whereDate(
-        'consultation_date',
-        today()
-    )->count();
-
-    $doctors = Staff::all();
-
-    return view(
-        'doctor.reports.prescription-summary',
-        compact(
-            'consultations',
-            'totalPrescriptions',
-            'todayPrescriptions',
-            'doctors'
-        )
-    );
-}
-
-public function surgerySummary(Request $request)
-{
-    $query = Surgery::with([
-        'patient',
-        'doctor.department'
-    ]);
-
-    // Doctor filter
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    // Surgery status
-    if ($request->status) {
-
-        $query->where(
+        $dischargedPatients = IPDAdmission::where(
             'status',
-            $request->status
+            'discharged'
+        )->count();
+
+        $todayAdmissions = IPDAdmission::whereDate(
+            'admission_date',
+            today()
+        )->count();
+
+        $doctors = Staff::all();
+
+        return view(
+            'doctor.reports.ipd-summary',
+            compact(
+                'admissions',
+                'totalAdmissions',
+                'activeAdmissions',
+                'dischargedPatients',
+                'todayAdmissions',
+                'doctors'
+            )
         );
     }
 
-    // From date
-    if ($request->from_date) {
+    public function prescriptionSummary(Request $request)
+    {
+        $query = Consultation::with([
+            'patient',
+            'doctor.department',
+            'medicines'
+        ]);
 
-        $query->whereDate(
+        // Doctor Filter
+        if ($request->doctor_id) {
+
+            $query->where(
+                'doctor_id',
+                $request->doctor_id
+            );
+        }
+
+        // From Date
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'consultation_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        // To Date
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'consultation_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $consultations = $query
+            ->latest()
+            ->get();
+
+        $totalPrescriptions = Consultation::count();
+
+        $todayPrescriptions = Consultation::whereDate(
+            'consultation_date',
+            today()
+        )->count();
+
+        $doctors = Staff::all();
+
+        return view(
+            'doctor.reports.prescription-summary',
+            compact(
+                'consultations',
+                'totalPrescriptions',
+                'todayPrescriptions',
+                'doctors'
+            )
+        );
+    }
+
+    public function surgerySummary(Request $request)
+    {
+        $query = Surgery::with([
+            'patient',
+            'doctor.department'
+        ]);
+
+        // Doctor filter
+        if ($request->doctor_id) {
+
+            $query->where(
+                'doctor_id',
+                $request->doctor_id
+            );
+        }
+
+        // Surgery status
+        if ($request->status) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        // From date
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'surgery_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        // To date
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'surgery_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        $surgeries = $query
+            ->latest()
+            ->get();
+
+        $totalSurgeries = Surgery::count();
+
+        $todaySurgeries = Surgery::whereDate(
             'surgery_date',
-            '>=',
-            $request->from_date
+            today()
+        )->count();
+
+        $emergencySurgeries = Surgery::where(
+            'priority',
+            'Emergency'
+        )->count();
+
+        $normalSurgeries = Surgery::where(
+            'priority',
+            'Normal'
+        )->count();
+        $doctors = Staff::all();
+
+        return view(
+            'doctor.reports.surgery-summary',
+            compact(
+                'surgeries',
+                'totalSurgeries',
+                'emergencySurgeries',
+                'normalSurgeries',
+                'todaySurgeries',
+                'doctors'
+            )
         );
     }
 
-    // To date
-    if ($request->to_date) {
 
-        $query->whereDate(
-            'surgery_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $surgeries = $query
-        ->latest()
-        ->get();
-
-   $totalSurgeries = Surgery::count();
-
-$todaySurgeries = Surgery::whereDate(
-    'surgery_date',
-    today()
-)->count();
-
-$emergencySurgeries = Surgery::where(
-    'priority',
-    'Emergency'
-)->count();
-
-$normalSurgeries = Surgery::where(
-    'priority',
-    'Normal'
-)->count();
-    $doctors = Staff::all();
-
-    return view(
-        'doctor.reports.surgery-summary',
-        compact(
-            'surgeries',
-            'totalSurgeries',
-            'emergencySurgeries',
-            'normalSurgeries',
-            'todaySurgeries',
-            'doctors'
-        )
-    );
-}
-
-
- public function followupCompliance(Request $request)
+    public function followupCompliance(Request $request)
     {
 
         /*
@@ -628,11 +628,11 @@ $normalSurgeries = Surgery::where(
                     '%' . $request->patient_name . '%'
                 )
 
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                );
+                    ->orWhere(
+                        'last_name',
+                        'like',
+                        '%' . $request->patient_name . '%'
+                    );
 
             });
         }
@@ -733,538 +733,284 @@ $normalSurgeries = Surgery::where(
         );
     }
 
-
     public function apiConsultationSummary(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department',
-        'medicines'
-    ]);
-
-    // Doctor filter
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    // Department filter
-    if ($request->department_id) {
-
-        $query->whereHas(
+    {
+        $query = Consultation::with([
+            'patient',
             'doctor.department',
-            function ($q) use ($request) {
+            'medicines'
+        ]);
 
-                $q->where(
-                    'id',
-                    $request->department_id
-                );
-            }
-        );
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        if ($request->department_id) {
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+                $q->where('id', $request->department_id);
+            });
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('consultation_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('consultation_date', '<=', $request->to_date);
+        }
+
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient_name}%")
+                    ->orWhere('last_name', 'like', "%{$request->patient_name}%");
+            });
+        }
+
+        return response()->json([
+            'status' => true,
+            'totalConsultations' => Consultation::count(),
+            'todayConsultations' => Consultation::whereDate('consultation_date', today())->count(),
+            'opdCount' => Consultation::count(),
+            'ipdCount' => IPDAdmission::count(),
+            'departments' => Department::all(),
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    // Date filters
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    // Patient search
-    if ($request->patient_name) {
-
-        $query->whereHas(
+    public function apiDownloadConsultationReport(Request $request)
+    {
+        $query = Consultation::with([
             'patient',
-            function ($q) use ($request) {
-
-                $q->where(
-                    'first_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                )
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                );
-            }
-        );
-    }
-
-    $consultations = $query
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-
-        'summary' => [
-
-            'total_consultations' =>
-                Consultation::count(),
-
-            'today_consultations' =>
-                Consultation::whereDate(
-                    'consultation_date',
-                    today()
-                )->count(),
-
-            'opd_count' =>
-                Consultation::count(),
-
-            'ipd_count' =>
-                IPDAdmission::count(),
-        ],
-
-        'data' => $consultations
-    ]);
-}
-
-public function apiOpdSummary(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department'
-    ]);
-
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    if ($request->patient_name) {
-
-        $query->whereHas(
-            'patient',
-            function ($q) use ($request) {
-
-                $q->where(
-                    'first_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                )
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                );
-            }
-        );
-    }
-
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $consultations = $query
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-
-        'summary' => [
-
-            'total_opd_cases' =>
-                Consultation::count(),
-
-            'today_opd_cases' =>
-                Consultation::whereDate(
-                    'consultation_date',
-                    today()
-                )->count(),
-
-            'followup_cases' =>
-                Consultation::whereNotNull(
-                    'diagnosis'
-                )->count(),
-
-            'new_patients' =>
-                Consultation::distinct(
-                    'patient_id'
-                )->count('patient_id'),
-        ],
-
-        'data' => $consultations
-    ]);
-}
-
-public function apiIpdSummary(Request $request)
-{
-    $query = IPDAdmission::with([
-        'patient',
-        'doctor.department'
-    ]);
-
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    if ($request->patient_name) {
-
-        $query->whereHas(
-            'patient',
-            function ($q) use ($request) {
-
-                $q->where(
-                    'first_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                )
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                );
-            }
-        );
-    }
-
-    if ($request->status) {
-
-        $query->where(
-            'status',
-            $request->status
-        );
-    }
-
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'admission_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'admission_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $admissions = $query
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-
-        'summary' => [
-
-            'total_admissions' =>
-                IPDAdmission::count(),
-
-            'active_admissions' =>
-                IPDAdmission::where(
-                    'status',
-                    'active'
-                )->count(),
-
-            'discharged_patients' =>
-                IPDAdmission::where(
-                    'status',
-                    'discharged'
-                )->count(),
-
-            'today_admissions' =>
-                IPDAdmission::whereDate(
-                    'admission_date',
-                    today()
-                )->count(),
-        ],
-
-        'data' => $admissions
-    ]);
-}
-
-public function apiPrescriptionSummary(Request $request)
-{
-    $query = Consultation::with([
-        'patient',
-        'doctor.department',
-        'medicines'
-    ]);
-
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'consultation_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $consultations = $query
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-
-        'summary' => [
-
-            'total_prescriptions' =>
-                Consultation::count(),
-
-            'today_prescriptions' =>
-                Consultation::whereDate(
-                    'consultation_date',
-                    today()
-                )->count(),
-        ],
-
-        'data' => $consultations
-    ]);
-}
-
-public function apiSurgerySummary(Request $request)
-{
-    $query = Surgery::with([
-        'patient',
-        'doctor.department'
-    ]);
-
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    if ($request->status) {
-
-        $query->where(
-            'status',
-            $request->status
-        );
-    }
-
-    if ($request->from_date) {
-
-        $query->whereDate(
-            'surgery_date',
-            '>=',
-            $request->from_date
-        );
-    }
-
-    if ($request->to_date) {
-
-        $query->whereDate(
-            'surgery_date',
-            '<=',
-            $request->to_date
-        );
-    }
-
-    $surgeries = $query
-        ->latest()
-        ->get();
-
-    return response()->json([
-        'status' => true,
-
-        'summary' => [
-
-            'total_surgeries' =>
-                Surgery::count(),
-
-            'today_surgeries' =>
-                Surgery::whereDate(
-                    'surgery_date',
-                    today()
-                )->count(),
-
-            'emergency_surgeries' =>
-                Surgery::where(
-                    'priority',
-                    'Emergency'
-                )->count(),
-
-            'normal_surgeries' =>
-                Surgery::where(
-                    'priority',
-                    'Normal'
-                )->count(),
-        ],
-
-        'data' => $surgeries
-    ]);
-}
-
-public function apiFollowupCompliance(Request $request)
-{
-    $query = FollowUp::with([
-        'patient',
-        'doctor.department',
-        'consultation'
-    ]);
-
-    if ($request->doctor_id) {
-
-        $query->where(
-            'doctor_id',
-            $request->doctor_id
-        );
-    }
-
-    if ($request->department_id) {
-
-        $query->whereHas(
             'doctor.department',
-            function ($q) use ($request) {
+            'medicines'
+        ]);
 
-                $q->where(
-                    'id',
-                    $request->department_id
-                );
-            }
-        );
+        if ($request->department_id) {
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+                $q->where('id', $request->department_id);
+            });
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('consultation_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('consultation_date', '<=', $request->to_date);
+        }
+
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient_name}%")
+                    ->orWhere('last_name', 'like', "%{$request->patient_name}%");
+            });
+        }
+
+        $consultations = $query->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $consultations
+        ]);
     }
 
-    if ($request->status) {
-
-        $query->where(
-            'status',
-            $request->status
-        );
-    }
-
-    if ($request->patient_name) {
-
-        $query->whereHas(
+    public function apiOpdSummary(Request $request)
+    {
+        $query = Consultation::with([
             'patient',
-            function ($q) use ($request) {
+            'doctor.department',
+            'medicines'
+        ]);
 
-                $q->where(
-                    'first_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                )
-                ->orWhere(
-                    'last_name',
-                    'like',
-                    '%' . $request->patient_name . '%'
-                );
-            }
-        );
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient_name}%")
+                    ->orWhere('last_name', 'like', "%{$request->patient_name}%");
+            });
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('consultation_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('consultation_date', '<=', $request->to_date);
+        }
+
+        return response()->json([
+            'status' => true,
+            'totalOpdCases' => Consultation::count(),
+            'todayOpdCases' => Consultation::whereDate('consultation_date', today())->count(),
+            'followUpCases' => Consultation::whereNotNull('diagnosis')->count(),
+            'newPatients' => Consultation::distinct('patient_id')->count('patient_id'),
+            'doctors' => Staff::all(),
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    if ($request->from_date) {
+    public function apiIpdSummary(Request $request)
+    {
+        $query = IPDAdmission::with([
+            'patient',
+            'doctor.department'
+        ]);
 
-        $query->whereDate(
-            'follow_up_date',
-            '>=',
-            $request->from_date
-        );
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient_name}%")
+                    ->orWhere('last_name', 'like', "%{$request->patient_name}%");
+            });
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('admission_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('admission_date', '<=', $request->to_date);
+        }
+
+        return response()->json([
+            'status' => true,
+            'totalAdmissions' => IPDAdmission::count(),
+            'activeAdmissions' => IPDAdmission::where('status', 'active')->count(),
+            'dischargedPatients' => IPDAdmission::where('status', 'discharged')->count(),
+            'todayAdmissions' => IPDAdmission::whereDate('admission_date', today())->count(),
+            'doctors' => Staff::all(),
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    if ($request->to_date) {
+    public function apiPrescriptionSummary(Request $request)
+    {
+        $query = Consultation::with([
+            'patient',
+            'doctor.department',
+            'medicines'
+        ]);
 
-        $query->whereDate(
-            'follow_up_date',
-            '<=',
-            $request->to_date
-        );
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('consultation_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('consultation_date', '<=', $request->to_date);
+        }
+
+        return response()->json([
+            'status' => true,
+            'totalPrescriptions' => Consultation::count(),
+            'todayPrescriptions' => Consultation::whereDate('consultation_date', today())->count(),
+            'doctors' => Staff::all(),
+            'data' => $query->latest()->get()
+        ]);
     }
 
-    $followUps = $query
-        ->latest()
-        ->get();
+    public function apiSurgerySummary(Request $request)
+    {
+        $query = Surgery::with([
+            'patient',
+            'doctor.department'
+        ]);
 
-    return response()->json([
-        'status' => true,
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
 
-        'summary' => [
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
 
-            'total_followups' =>
-                FollowUp::count(),
+        if ($request->from_date) {
+            $query->whereDate('surgery_date', '>=', $request->from_date);
+        }
 
-            'today_followups' =>
-                FollowUp::whereDate(
-                    'follow_up_date',
-                    today()
-                )->count(),
+        if ($request->to_date) {
+            $query->whereDate('surgery_date', '<=', $request->to_date);
+        }
 
-            'completed_followups' =>
-                FollowUp::where(
-                    'status',
-                    'Completed'
-                )->count(),
+        return response()->json([
+            'status' => true,
+            'totalSurgeries' => Surgery::count(),
+            'todaySurgeries' => Surgery::whereDate('surgery_date', today())->count(),
+            'emergencySurgeries' => Surgery::where('priority', 'Emergency')->count(),
+            'normalSurgeries' => Surgery::where('priority', 'Normal')->count(),
+            'doctors' => Staff::all(),
+            'data' => $query->latest()->get()
+        ]);
+    }
 
-            'pending_followups' =>
-                FollowUp::where(
-                    'status',
-                    'Pending'
-                )->count(),
+    public function apiFollowupCompliance(Request $request)
+    {
+        $query = FollowUp::with([
+            'patient',
+            'doctor.department',
+            'consultation'
+        ]);
 
-            'missed_followups' =>
-                FollowUp::where(
-                    'status',
-                    'Missed'
-                )->count(),
-        ],
+        if ($request->doctor_id) {
+            $query->where('doctor_id', $request->doctor_id);
+        }
 
-        'data' => $followUps
-    ]);
-}
+        if ($request->department_id) {
+            $query->whereHas('doctor.department', function ($q) use ($request) {
+                $q->where('id', $request->department_id);
+            });
+        }
 
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->patient_name) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('first_name', 'like', "%{$request->patient_name}%")
+                    ->orWhere('last_name', 'like', "%{$request->patient_name}%");
+            });
+        }
+
+        if ($request->from_date) {
+            $query->whereDate('follow_up_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('follow_up_date', '<=', $request->to_date);
+        }
+
+        $total = FollowUp::count();
+
+        $completed = FollowUp::where(
+            'status',
+            'Completed'
+        )->count();
+
+        return response()->json([
+            'status' => true,
+            'totalFollowups' => $total,
+            'todayFollowups' => FollowUp::whereDate('follow_up_date', today())->count(),
+            'completedFollowups' => $completed,
+            'pendingFollowups' => FollowUp::where('status', 'Pending')->count(),
+            'missedFollowups' => FollowUp::where('status', 'Missed')->count(),
+            'compliancePercentage' => $total > 0 ? round(($completed / $total) * 100, 2) : 0,
+            'doctors' => Staff::all(),
+            'departments' => Department::all(),
+            'data' => $query->latest()->get()
+        ]);
+    }
 }
