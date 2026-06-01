@@ -80,6 +80,8 @@ use App\Http\Controllers\attendance\AttendanceController;
 use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\IpdController;
 use App\Http\Controllers\Doctor\LabRequestController;
+use App\Http\Controllers\Doctor\DoctorReportController;
+use App\Http\Controllers\Doctor\FollowUpController;
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -2356,10 +2358,43 @@ Route::prefix('doctor-lab')->group(function () {
     Route::post('/clinical-note/store', [LabRequestController::class,'apiStoreClinicalNote']);
 });
 
+Route::prefix('doctor-reports')->group(function () {
+
+    Route::get('/consultation-summary', [
+        DoctorReportController::class,
+        'apiConsultationSummary'
+    ]);
+
+    Route::get('/opd-summary', [
+        DoctorReportController::class,
+        'apiOpdSummary'
+    ]);
+
+    Route::get('/ipd-summary', [
+        DoctorReportController::class,
+        'apiIpdSummary'
+    ]);
+
+    Route::get('/prescription-summary', [
+        DoctorReportController::class,
+        'apiPrescriptionSummary'
+    ]);
+
+    Route::get('/surgery-summary', [
+        DoctorReportController::class,
+        'apiSurgerySummary'
+    ]);
+
+    Route::get('/followup-compliance', [
+        DoctorReportController::class,
+        'apiFollowupCompliance'
+    ]);
+
+});
+
 
 
 /*
-|--------------------------------------------------------------------------
 | 38. Payroll: PayrollResultDeductionController
 |--------------------------------------------------------------------------
 */
@@ -2629,3 +2664,83 @@ Route::prefix('refunds')->group(function () {
         'fetchBillDetails'
     ]);
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| FOLLOW-UP API ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('followups')->group(function () {
+
+    // List
+    Route::get('/', [FollowUpController::class,'apiIndex']);
+
+    // Deleted
+    Route::get('/deleted', [FollowUpController::class,'apiDeleted']);
+
+    // Search
+    Route::get('/search', [FollowUpController::class,'apiSearch']);
+
+    // Show
+    Route::get('/{id}', [FollowUpController::class,'apiShow']);
+
+    // Store
+    Route::post('/', [FollowUpController::class,'apiStore']);
+
+    // Update
+    Route::put('/{id}', [FollowUpController::class,'apiUpdate']);
+
+    // Delete
+    Route::delete('/{id}', [FollowUpController::class,'apiDelete']);
+
+    // Restore
+    Route::put('/{id}/restore', [FollowUpController::class,'apiRestore']);
+
+    // Force Delete
+    Route::delete('/{id}/force-delete', [FollowUpController::class,'apiForceDelete']);
+
+    // Mark Completed
+    Route::put('/{id}/completed', [FollowUpController::class,'apiMarkCompleted']);
+
+    // Mark Missed
+    Route::put('/{id}/missed', [FollowUpController::class,'apiMarkMissed']);
+
+});
+
+Route::prefix('notifications')->group(function () {
+
+    // All notifications
+    Route::get('/', [NotificationController::class,'apiIndex']);
+
+    // Dashboard counts
+    Route::get('/dashboard', [NotificationController::class,'apiDashboard']);
+
+    // Latest notification
+    Route::get('/latest', [NotificationController::class,'apiLatestNotification']);
+
+    // Unread notifications
+    Route::get('/unread', [NotificationController::class,'apiUnread']);
+
+    // Read notifications
+    Route::get('/read', [NotificationController::class,'apiRead']);
+
+    // Search/filter
+    Route::get('/search', [NotificationController::class,'apiSearch']);
+
+    // Show notification
+    Route::get('/{id}', [NotificationController::class,'apiShow']);
+
+    // Mark single as read
+    Route::put('/{id}/read', [NotificationController::class,'apiMarkAsRead']);
+
+    // Mark all as read
+    Route::put('/mark-all-read', [NotificationController::class,'apiMarkAllAsRead']);
+
+    // Delete notification
+    Route::delete('/{id}', [NotificationController::class,'apiDelete']);
+
+});
+
+
