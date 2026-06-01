@@ -22,32 +22,27 @@ class CurrencyApiController extends Controller
     {
         $request->validate([
 
-            'currency_name' => 'required',
-
-            'currency_code' => 'required',
-
-            'currency_symbol' => 'required'
+            'currency_name'   => 'required',
+            'currency_code'   => 'required',
+            'currency_symbol' => 'required',
+            'decimal_places'  => 'required|integer|min:0|max:5'
 
         ]);
 
         $currency = GlobalCurrency::create([
 
-            'currency_name' => $request->currency_name,
-
-            'currency_code' => strtoupper($request->currency_code),
-
+            'currency_name'   => $request->currency_name,
+            'currency_code'   => strtoupper($request->currency_code),
             'currency_symbol' => $request->currency_symbol,
-
-            'is_active' => $request->is_active ?? true
+            'decimal_places'  => $request->decimal_places,
+            'is_default'      => $request->is_default ?? false
 
         ]);
 
         return response()->json([
 
             'success' => true,
-
             'message' => 'Currency Created Successfully',
-
             'data' => $currency
 
         ], 201);
@@ -69,32 +64,27 @@ class CurrencyApiController extends Controller
 
         $request->validate([
 
-            'currency_name' => 'required',
-
-            'currency_code' => 'required',
-
-            'currency_symbol' => 'required'
+            'currency_name'   => 'required',
+            'currency_code'   => 'required',
+            'currency_symbol' => 'required',
+            'decimal_places'  => 'required|integer|min:0|max:5'
 
         ]);
 
         $currency->update([
 
-            'currency_name' => $request->currency_name,
-
-            'currency_code' => strtoupper($request->currency_code),
-
+            'currency_name'   => $request->currency_name,
+            'currency_code'   => strtoupper($request->currency_code),
             'currency_symbol' => $request->currency_symbol,
-
-            'is_active' => $request->is_active ?? true
+            'decimal_places'  => $request->decimal_places,
+            'is_default'      => $request->is_default ?? false
 
         ]);
 
         return response()->json([
 
             'success' => true,
-
             'message' => 'Currency Updated Successfully',
-
             'data' => $currency
 
         ]);
@@ -109,7 +99,6 @@ class CurrencyApiController extends Controller
         return response()->json([
 
             'success' => true,
-
             'message' => 'Currency Deleted Successfully'
 
         ]);
