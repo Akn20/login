@@ -72,6 +72,7 @@ use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Doctor\IpdController;
 use App\Http\Controllers\Doctor\DoctorRadiologyController;
 use App\Http\Controllers\Doctor\EmrController;
+use App\Http\Controllers\Doctor\DoctorDashboardController;
 
 // HR
 use App\Http\Controllers\DepartmentController;
@@ -268,6 +269,9 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         //EMR (Doctor)
         Route::get('/emr',[EmrController::class,'index'])->name('emr.index');
         Route::get('/emr/{id}',[EmrController::class,'show'])->name('emr.show');
+
+        //Doctor Dashboard
+       Route::get('/dashboard',[DoctorDashboardController::class,'index'])->name('dashboard');
     });
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
