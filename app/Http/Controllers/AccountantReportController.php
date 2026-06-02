@@ -1494,14 +1494,421 @@ class AccountantReportController extends Controller
         );
     }
 
-    public function expenseReport()
+    public function expenseReport(Request $request)
     {
-        return view('admin.accountant.reports.expense_report');
+        /*
+        |--------------------------------------------------------------------------
+        | MAIN QUERY
+        |--------------------------------------------------------------------------
+        */
+
+        $query = DB::table('expenses')
+
+            ->leftJoin(
+                'expense_categories',
+                'expenses.category_id',
+                '=',
+                'expense_categories.id'
+            )
+
+            ->leftJoin(
+                'inventory_vendors',
+                'expenses.vendor_id',
+                '=',
+                'inventory_vendors.id'
+            )
+
+            ->select(
+
+                'expenses.id',
+
+                'expenses.expense_type',
+
+                'expenses.invoice_number',
+
+                'expenses.payment_mode',
+
+                'expenses.payment_status',
+
+                'expenses.payment_date',
+
+                'expenses.paid_amount',
+
+                'expense_categories.category_name',
+
+                'inventory_vendors.vendor_name'
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTERS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'expenses.payment_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'expenses.payment_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        if ($request->category) {
+
+            $query->where(
+                'expense_categories.category_name',
+                $request->category
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GET DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $expenses = $query
+            ->orderByDesc('expenses.payment_date')
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUMMARY
+        |--------------------------------------------------------------------------
+        */
+
+        $totalExpenses = $expenses->sum('paid_amount');
+
+        $highestExpenseCategory = $expenses
+
+            ->groupBy('category_name')
+
+            ->map(function ($items) {
+
+                return $items->sum('paid_amount');
+
+            })
+
+            ->sortDesc()
+
+            ->keys()
+
+            ->first();
+
+        $totalVendors = $expenses
+            ->pluck('vendor_name')
+            ->filter()
+            ->unique()
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORY LIST
+        |--------------------------------------------------------------------------
+        */
+
+        $categories = DB::table('expense_categories')
+
+            ->where('is_deleted', 0)
+
+            ->orderBy('category_name')
+
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN VIEW
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'admin.Accountant.Reports.expense_report',
+
+            compact(
+
+                'expenses',
+
+                'totalExpenses',
+
+                'highestExpenseCategory',
+
+                'totalVendors',
+
+                'categories'
+            )
+        );
     }
 
-    public function profitLoss()
+    public function profitLoss(Request $request)
     {
-        return view('admin.accountant.reports.profit_loss');
+        /*
+        |--------------------------------------------------------------------------
+        | DATE FILTERS
+        |--------------------------------------------------------------------------
+        */
+
+        $fromDate = $request->from_date;
+
+        $toDate = $request->to_date;
+
+        /*
+        |--------------------------------------------------------------------------
+        | OPD REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $opdQuery = DB::table('receptionist_billing');
+
+        if ($fromDate) {
+
+            $opdQuery->whereDate(
+                'created_at',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $opdQuery->whereDate(
+                'created_at',
+                '<=',
+                $toDate
+            );
+        }
+
+        $opdRevenue = $opdQuery->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | IPD REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $ipdQuery = DB::table('accountant_payments');
+
+        if ($fromDate) {
+
+            $ipdQuery->whereDate(
+                'payment_date',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $ipdQuery->whereDate(
+                'payment_date',
+                '<=',
+                $toDate
+            );
+        }
+
+        $ipdRevenue = $ipdQuery->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | PHARMACY REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $pharmacyQuery = DB::table('sales_bills')
+
+            ->where(
+                'payment_status',
+                '!=',
+                'Unpaid'
+            );
+
+        if ($fromDate) {
+
+            $pharmacyQuery->whereDate(
+                'created_at',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $pharmacyQuery->whereDate(
+                'created_at',
+                '<=',
+                $toDate
+            );
+        }
+
+        $pharmacyRevenue =
+            $pharmacyQuery->sum('paid_amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $totalRevenue =
+
+            $opdRevenue
+            +
+            $ipdRevenue
+            +
+            $pharmacyRevenue;
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL EXPENSES
+        |--------------------------------------------------------------------------
+        */
+
+        $expenseQuery = DB::table('expenses');
+
+        if ($fromDate) {
+
+            $expenseQuery->whereDate(
+                'payment_date',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $expenseQuery->whereDate(
+                'payment_date',
+                '<=',
+                $toDate
+            );
+        }
+
+        $totalExpenses =
+            $expenseQuery->sum('paid_amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | NET PROFIT
+        |--------------------------------------------------------------------------
+        */
+
+        $netProfit =
+            $totalRevenue
+            -
+            $totalExpenses;
+
+        /*
+        |--------------------------------------------------------------------------
+        | DETAILS ARRAY
+        |--------------------------------------------------------------------------
+        */
+
+        $details = collect([
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' =>
+                    'OPD Revenue',
+
+                'amount' =>
+                    $opdRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()
+                    ->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' =>
+                    'IPD Revenue',
+
+                'amount' =>
+                    $ipdRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()
+                    ->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' =>
+                    'Pharmacy Revenue',
+
+                'amount' =>
+                    $pharmacyRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()
+                    ->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Expense',
+
+                'description' =>
+                    'Operational Expenses',
+
+                'amount' =>
+                    $totalExpenses,
+
+                'type' => 'Expense',
+
+                'date' => now()
+                    ->format('d-m-Y'),
+
+                'status' => 'Paid',
+            ],
+
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN VIEW
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+
+            'admin.Accountant.Reports.profit_loss',
+
+            compact(
+
+                'totalRevenue',
+
+                'totalExpenses',
+
+                'netProfit',
+
+                'details'
+            )
+        );
     }
 
     //Api functions
@@ -3087,6 +3494,365 @@ class AccountantReportController extends Controller
 
             'data' => $refunds
 
+        ]);
+    }
+
+    public function apiExpenseReport(Request $request)
+    {
+        $query = DB::table('expenses')
+
+            ->leftJoin(
+                'expense_categories',
+                'expenses.category_id',
+                '=',
+                'expense_categories.id'
+            )
+
+            ->leftJoin(
+                'inventory_vendors',
+                'expenses.vendor_id',
+                '=',
+                'inventory_vendors.id'
+            )
+
+            ->select(
+
+                'expenses.id',
+
+                'expenses.payment_mode',
+
+                'expenses.payment_status',
+
+                'expenses.payment_date',
+
+                'expenses.paid_amount',
+
+                'expense_categories.category_name',
+
+                'inventory_vendors.vendor_name'
+            );
+
+        if ($request->from_date) {
+
+            $query->whereDate(
+                'expenses.payment_date',
+                '>=',
+                $request->from_date
+            );
+        }
+
+        if ($request->to_date) {
+
+            $query->whereDate(
+                'expenses.payment_date',
+                '<=',
+                $request->to_date
+            );
+        }
+
+        if ($request->category) {
+
+            $query->where(
+                'expense_categories.category_name',
+                $request->category
+            );
+        }
+
+        $expenses = $query
+            ->orderByDesc('expenses.payment_date')
+            ->get();
+
+        $totalExpenses =
+            $expenses->sum('paid_amount');
+
+        $highestExpenseCategory = $expenses
+
+            ->groupBy('category_name')
+
+            ->map(function ($items) {
+
+                return $items->sum('paid_amount');
+
+            })
+
+            ->sortDesc()
+
+            ->keys()
+
+            ->first();
+
+        $totalVendors = $expenses
+
+            ->pluck('vendor_name')
+
+            ->filter()
+
+            ->unique()
+
+            ->count();
+
+        $categories = DB::table('expense_categories')
+
+            ->where('is_deleted', 0)
+
+            ->orderBy('category_name')
+
+            ->get();
+
+        return response()->json([
+
+            'success' => true,
+
+            'expenses' => $expenses,
+
+            'categories' => $categories,
+
+            'summary' => [
+
+                'total_expenses' =>
+                    $totalExpenses,
+
+                'highest_expense_category' =>
+                    $highestExpenseCategory,
+
+                'total_vendors' =>
+                    $totalVendors,
+
+            ]
+        ]);
+    }
+
+    public function apiProfitLoss(Request $request)
+    {
+        $fromDate = $request->from_date;
+
+        $toDate = $request->to_date;
+
+        /*
+        |--------------------------------------------------------------------------
+        | OPD REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $opdQuery = DB::table('receptionist_billing');
+
+        if ($fromDate) {
+
+            $opdQuery->whereDate(
+                'created_at',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $opdQuery->whereDate(
+                'created_at',
+                '<=',
+                $toDate
+            );
+        }
+
+        $opdRevenue =
+            $opdQuery->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | IPD REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $ipdQuery = DB::table('accountant_payments');
+
+        if ($fromDate) {
+
+            $ipdQuery->whereDate(
+                'payment_date',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $ipdQuery->whereDate(
+                'payment_date',
+                '<=',
+                $toDate
+            );
+        }
+
+        $ipdRevenue =
+            $ipdQuery->sum('amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | PHARMACY REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $pharmacyQuery = DB::table('sales_bills')
+
+            ->where(
+                'payment_status',
+                '!=',
+                'Unpaid'
+            );
+
+        if ($fromDate) {
+
+            $pharmacyQuery->whereDate(
+                'created_at',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $pharmacyQuery->whereDate(
+                'created_at',
+                '<=',
+                $toDate
+            );
+        }
+
+        $pharmacyRevenue =
+            $pharmacyQuery->sum('paid_amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL REVENUE
+        |--------------------------------------------------------------------------
+        */
+
+        $totalRevenue =
+
+            $opdRevenue
+            +
+            $ipdRevenue
+            +
+            $pharmacyRevenue;
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL EXPENSES
+        |--------------------------------------------------------------------------
+        */
+
+        $expenseQuery = DB::table('expenses');
+
+        if ($fromDate) {
+
+            $expenseQuery->whereDate(
+                'payment_date',
+                '>=',
+                $fromDate
+            );
+        }
+
+        if ($toDate) {
+
+            $expenseQuery->whereDate(
+                'payment_date',
+                '<=',
+                $toDate
+            );
+        }
+
+        $totalExpenses =
+            $expenseQuery->sum('paid_amount');
+
+        /*
+        |--------------------------------------------------------------------------
+        | NET PROFIT
+        |--------------------------------------------------------------------------
+        */
+
+        $netProfit =
+            $totalRevenue
+            -
+            $totalExpenses;
+
+        $details = [
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' => 'OPD Revenue',
+
+                'amount' => $opdRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' => 'IPD Revenue',
+
+                'amount' => $ipdRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Revenue',
+
+                'description' => 'Pharmacy Revenue',
+
+                'amount' => $pharmacyRevenue,
+
+                'type' => 'Income',
+
+                'date' => now()->format('d-m-Y'),
+
+                'status' => 'Completed',
+            ],
+
+            [
+
+                'category' => 'Expense',
+
+                'description' => 'Operational Expenses',
+
+                'amount' => $totalExpenses,
+
+                'type' => 'Expense',
+
+                'date' => now()->format('d-m-Y'),
+
+                'status' => 'Paid',
+            ],
+        ];
+
+        return response()->json([
+
+            'success' => true,
+
+            'totalRevenue' =>
+                $totalRevenue,
+
+            'totalExpenses' =>
+                $totalExpenses,
+
+            'netProfit' =>
+                $netProfit,
+
+            'details' =>
+                $details,
         ]);
     }
     

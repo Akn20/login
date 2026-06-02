@@ -1455,7 +1455,7 @@ Route::prefix('pharmacy')->group(function () {
 |   Nurse: Shift Handover Notes
 |--------------------------------------------------------------------------
 */
-Route::prefix('nurse-shift-handover')->group(function () {
+//Route::prefix('nurse-shift-handover')->group(function () {
 
 // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
@@ -1486,7 +1486,8 @@ Route::prefix('nurse-shift-handover')->group(function () {
 
     //     // Update handover status
 //     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
-});
+// });
+
     Route::prefix('edm')->group(function () {
 
         // ✅ FIRST: LIST (no params)
@@ -1596,8 +1597,6 @@ Route::prefix('lab')->group(function () {
 
 //Insurance(Receptionist)
 
-
-
 Route::prefix('insurance')->group(function () {
 
     Route::get('/', [InsuranceController::class, 'apiIndex']);
@@ -1644,7 +1643,6 @@ Route::prefix('billing')->group(function () {
 
 });
 
-
 //ReceptionistReport
 
 Route::prefix('receptionist/reports')->group(function () {
@@ -1682,17 +1680,17 @@ Route::prefix('receptionist/ipd')->group(function () {
 
 });
 
-   Route::prefix('pharmacy/reports')->group(function () {
+Route::prefix('pharmacy/reports')->group(function () {
 
-    Route::get('sales', [PharmacyReportController::class, 'salesApi']);
-    Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
-    Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
-    Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
-    Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
-    Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
-    Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
-    Route::get('grn', [PharmacyReportController::class, 'grnApi']);
-    Route::get('billing', [PharmacyReportController::class, 'billingApi']);
+Route::get('sales', [PharmacyReportController::class, 'salesApi']);
+Route::get('medicine', [PharmacyReportController::class, 'medicineApi']);
+Route::get('low-stock', [PharmacyReportController::class, 'lowStockApi']);
+Route::get('expiry', [PharmacyReportController::class, 'expiryApi']);
+Route::get('batch-wise', [PharmacyReportController::class, 'batchWiseApi']);
+Route::get('controlled', [PharmacyReportController::class, 'controlledApi']);
+Route::get('vendor', [PharmacyReportController::class, 'vendorApi']);
+Route::get('grn', [PharmacyReportController::class, 'grnApi']);
+Route::get('billing', [PharmacyReportController::class, 'billingApi']);
 
 });
 
@@ -1867,7 +1865,7 @@ Route::prefix('payroll-deductions')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('inventory')->group(function () {
+//Route::prefix('inventory')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -2219,8 +2217,6 @@ Route::prefix('admin/patient-portal')->group(function () {
 
     //Insurance(Receptionist)
 
-
-
     Route::prefix('insurance')->group(function () {
 
         Route::get('/', [InsuranceController::class, 'apiIndex']);
@@ -2291,40 +2287,24 @@ Route::prefix('accountant/billing')->group(function () {
 
 });
 
-//Accountant Reports
 
-Route::prefix('accountant/reports')->group(function () {
 
-    Route::get('/daily-collection',[AccountantReportController::class, 'apiDailyCollection']);
+Route::prefix('claims')->group(function () {
 
-    Route::get('/department-revenue',[AccountantReportController::class, 'apiDepartmentRevenue']);
+    Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
+    Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
 
-    Route::get('/opd-ipd-revenue',[AccountantReportController::class, 'apiOpdIpdRevenue']);
+    Route::post('/', [InsuranceClaimController::class, 'apiStore']);
+    Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
 
-    Route::get('/outstanding-dues',[AccountantReportController::class, 'apiOutstandingDues']);
+    Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
+    Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
 
-    Route::get('/insurance-settlement',[AccountantReportController::class, 'apiInsuranceSettlement']);
+    Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
+    Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
 
-    Route::get('/refund-report',[AccountantReportController::class, 'apiRefundReport']);
-
-});
-
-        Route::prefix('claims')->group(function () {
-
-            Route::get('/', [InsuranceClaimController::class, 'apiIndex']);
-            Route::get('/{id}', [InsuranceClaimController::class, 'apiShow']);
-
-            Route::post('/', [InsuranceClaimController::class, 'apiStore']);
-            Route::put('/{id}', [InsuranceClaimController::class, 'apiUpdate']);
-
-            Route::delete('/{id}', [InsuranceClaimController::class, 'apiDelete']);
-            Route::put('/{id}/restore', [InsuranceClaimController::class, 'apiRestore']);
-            Route::delete('/{id}/force-delete', [InsuranceClaimController::class, 'apiForceDelete']);
-
-            Route::post('/approval', [InsuranceClaimController::class, 'apiApproval']);
-            Route::post('/payment', [InsuranceClaimController::class, 'apiPayment']);
-
-            Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
+    Route::get('/reports/summary', [InsuranceClaimController::class, 'apiReports']);
 });
 
 Route::prefix('accountant/payment')->group(function () {
@@ -3801,7 +3781,7 @@ Route::prefix('accountant/dashboard')->group(function () {
             Route::delete('/{id}', [PlanModuleApiController::class, 'destroy']);
         });
     });
-});
+//});
 Route::prefix('payroll/payroll-result')->group(function () {
     Route::get('/', [PayrollResultController::class, 'index']);
       Route::get('/{id}', [PayrollResultController::class, 'show']);
@@ -3876,7 +3856,6 @@ Route::prefix('refunds')->group(function () {
         'fetchBillDetails'
     ]);
 });
-
 Route::prefix('bank-verification')->group(function () {
 
     Route::get('/', [BankVerificationController::class, 'apiIndex']);
@@ -4529,4 +4508,27 @@ Route::prefix('doctor/reports')->group(function () {
     Route::get('/surgery-summary', [DoctorReportController::class, 'apiSurgerySummary']);
 
     Route::get('/followup-compliance', [DoctorReportController::class, 'apiFollowupCompliance']);
+});
+
+
+//Accountant Reports
+
+Route::prefix('accountant/reports')->group(function () {
+
+    Route::get('/daily-collection',[AccountantReportController::class, 'apiDailyCollection']);
+
+    Route::get('/department-revenue',[AccountantReportController::class, 'apiDepartmentRevenue']);
+
+    Route::get('/opd-ipd-revenue',[AccountantReportController::class, 'apiOpdIpdRevenue']);
+
+    Route::get('/outstanding-dues',[AccountantReportController::class, 'apiOutstandingDues']);
+
+    Route::get('/insurance-settlement',[AccountantReportController::class, 'apiInsuranceSettlement']);
+
+    Route::get('/refund-report',[AccountantReportController::class, 'apiRefundReport']);
+
+    Route::get('/expense-report',[AccountantReportController::class, 'apiExpenseReport']);
+
+    Route::get('/profit-loss',[AccountantReportController::class, 'apiProfitLoss']);
+
 });
