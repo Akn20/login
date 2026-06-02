@@ -447,12 +447,14 @@
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
                 <ul class="nxl-submenu">
+                    <li class="nxl-item"><a href="{{ route('doctor.dashboard') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="fas fa-chart-line me-2"></i>Dashboard</a>
+                    </li>
                     <li class="nxl-item"><a href="{{ route('doctor.view-appointment') }}" class="nxl-link" up-follow
-                            up-target="#main-container"><i class="feather-file-text me-2"></i>OPD List</a></li>
-                    <li class="nxl-item">
-                        <a href="{{ route('doctor.ipd.index') }}" class="nxl-link" up-follow up-target="#main-container">
-                            <i class="feather-activity me-2"></i>IPD List
-                        </a>
+                            up-target="#main-container"><i class="feather-file-text me-2"></i>OPD List</a>
+                    </li>
+                    <li class="nxl-item"><a href="{{ route('doctor.ipd.index') }}" class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-activity me-2"></i>IPD List</a>
                     </li>
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
