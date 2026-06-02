@@ -4467,3 +4467,13 @@ Route::prefix('configuration/timezones')->group(function () {
     Route::delete('/{id}', [GlobalTimezoneApiController::class, 'destroy']);
 
 });
+
+Route::prefix('configuration')->group(function () {
+
+    Route::get('/currencies', [CurrencyApiController::class, 'index']);
+    Route::post('/currencies', [CurrencyApiController::class, 'store']);
+    Route::get('/currencies/{id}', [CurrencyApiController::class, 'show']);
+    Route::put('/currencies/{id}', [CurrencyApiController::class, 'update']);
+    Route::delete('/currencies/{id}', [CurrencyApiController::class, 'destroy']);
+
+});
