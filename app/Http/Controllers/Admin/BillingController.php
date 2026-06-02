@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\ReceptionistBilling;
 use App\Models\Patient;
 use Illuminate\Support\Str;
+
 use Barryvdh\DomPDF\Facade\Pdf;
+
+
 
 class BillingController extends Controller
 {
