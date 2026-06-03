@@ -1335,7 +1335,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/get-doctors/{department_id}', [AppointmentController::class, 'getDoctors'])->name('getDoctors');
-    });
+        Route::post('/send-reminder/{id}',[AppointmentController::class, 'sendReminder'])->name('sendReminder');
+        });
 
     // --- Admin Pharmacy & Sales Return ---
 
