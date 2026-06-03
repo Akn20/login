@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 // Admin
 
@@ -1771,5 +1772,24 @@ Route::prefix('statutory-compliance')
 
     Route::delete('/{id}/force-delete',[StatutoryComplianceController::class, 'apiforceDelete']);
 });
+//----------------Patient Appointment Tracking------------------------------
 
+Route::prefix('appointment-tracking')->group(function () {
+
+    Route::get(
+        '/',
+        [PatientAppointmentController::class, 'apiIndex']
+    );
+
+    Route::get(
+        '/{id}',
+        [PatientAppointmentController::class, 'apiShow']
+    );
+
+    Route::post(
+        '/cancel/{id}',
+        [PatientAppointmentController::class, 'apiCancel']
+    );
+
+});
 

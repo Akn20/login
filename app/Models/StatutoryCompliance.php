@@ -63,3 +63,4 @@ class StatutoryCompliance extends Model
 
 ];
 }
+

@@ -80,4 +80,48 @@ $appointments = Appointment::with([
         );
     }
 
+
+    // ================= API METHODS =================
+    public function apiIndex()
+{
+    $appointments = Appointment::with([
+        'doctor',
+        'department',
+        'patient'
+    ])->latest()->get();
+
+    return response()->json($appointments);
+}
+
+public function apiShow($id)
+{
+    $appointment = Appointment::with([
+        'doctor',
+        'department',
+        'patient'
+    ])->findOrFail($id);
+
+    return response()->json($appointment);
+}
+
+public function apiCancel($id)
+{
+    $appointment = Appointment::findOrFail($id);
+
+    if ($appointment->appointment_status == 'Completed') {
+
+        return response()->json([
+            'message' => 'Completed appointment cannot be cancelled'
+        ], 400);
+    }
+
+    $appointment->update([
+        'appointment_status' => 'Cancelled'
+    ]);
+
+    return response()->json([
+        'message' => 'Appointment cancelled successfully'
+    ]);
+}
+
 }
