@@ -49,4 +49,58 @@ class DoctorDashboardController extends Controller
             )
         );
     }
+// API Method to fetch dashboard data
+    public function apiIndex()
+    {
+        $todayAppointments = Appointment::whereDate('appointment_date', today())->count();
+        $totalConsultations = Consultation::count();
+        $admittedPatients = IPDAdmission::count();
+        $pendingLabRequests = LabRequest::where('status', 'Pending')->count();
+        $totalPatients = Patient::count();
+        $totalLabRequests = LabRequest::count();
+
+        $appointments = Appointment::with(['patient', 'doctor'])
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'patient' => optional($appointment->patient)->first_name ?? 'N/A',
+                    'doctor' => optional($appointment->doctor)->name ?? 'N/A',
+                    'date' => $appointment->appointment_date,
+                    'status' => $appointment->appointment_status,
+                ];
+            });
+
+        $consultations = Consultation::with(['patient', 'doctor'])
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($consultation) {
+                return [
+                    'id' => $consultation->id,
+                    'patient' => optional($consultation->patient)->first_name ?? 'N/A',
+                    'doctor' => optional($consultation->doctor)->name ?? 'N/A',
+                    'date' => $consultation->consultation_date,
+                ];
+            });
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'summary' => [
+                    'todayAppointments' => $todayAppointments,
+                    'totalConsultations' => $totalConsultations,
+                    'ipdPatients' => $admittedPatients,
+                    'pendingLabs' => $pendingLabRequests,
+                    'totalPatients' => $totalPatients,
+                    'labRequests' => $totalLabRequests,
+                    'admittedPatients' => $admittedPatients,
+                ],
+                'recentAppointments' => $appointments,
+                'recentConsultations' => $consultations,
+            ],
+        ]);
+    }
 }
