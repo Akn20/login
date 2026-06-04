@@ -217,6 +217,9 @@ use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 use App\Http\Controllers\AccountantRevenueController;
 
 use App\Http\Controllers\CaseSheetController;
+use App\Http\Controllers\EmergencyContactController;
+use App\Http\Controllers\HospitalWorkingHourController;
+use App\Http\Controllers\LocalTaxSettingController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -4007,8 +4010,31 @@ Route::prefix('configuration')
     );
 
 });
+});
+Route::resource(
+    'emergency-contacts',
+    EmergencyContactController::class
+);
+Route::prefix('admin/local-configuration')->name('admin.local-configuration.')->group(function () {
 
+    Route::get('/working-hours', function () {
+        return view('admin.local-configuration.working-hours');
+    })->name('working-hours');
 
+    // Route::get('/emergency-contacts', function () {
+    //     return view('admin.local-configuration.emergency-contacts');
+    // })->name('emergency-contacts');
 
+    Route::get('/tax-settings', function () {
+        return view('admin.local-configuration.tax-settings');
+    })->name('tax-settings');
 
-    });
+});
+Route::resource(
+    'hospital-working-hours',
+    HospitalWorkingHourController::class
+);
+Route::resource(
+    'local-tax-settings',
+    LocalTaxSettingController::class
+);
