@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             .then(data => {
 
-                if (!data) return;
+                if (!data || !data.id) return;
 
                 let latestNotificationId =
                     localStorage.getItem(
@@ -377,7 +377,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-            });
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
 
     }, 5000);
 
