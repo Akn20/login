@@ -167,7 +167,7 @@ use App\Http\Controllers\Admin\Nurse\LabReportController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\BasicBillingController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
-
+use App\Http\Controllers\Admin\Nurse\DoctorOrderExecutionController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -2372,6 +2372,38 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('patientMonitoring/forceDelete/{id}', [PatientMonitoringController::class, 'forceDelete'])
         ->name('patientMonitoring.forceDelete');
+
+});
+
+
+//------------------ Nurse - Doctor Order Execution-------------------------
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('doctor-order-execution')->name('doctor-order-execution.')->group(function () {
+
+        Route::get(
+            '/',
+            [DoctorOrderExecutionController::class, 'index']
+        )->name('index');
+
+        Route::get(
+            '/show/{id}',
+            [DoctorOrderExecutionController::class, 'show']
+        )->name('show');
+
+        Route::post(
+            '/execute/{id}',
+            [DoctorOrderExecutionController::class, 'execute']
+        )->name('execute');
+
+        Route::post(
+            '/escalate/{id}',
+            [DoctorOrderExecutionController::class, 'escalate']
+        )->name('escalate');
+
+    });
 
 });
 

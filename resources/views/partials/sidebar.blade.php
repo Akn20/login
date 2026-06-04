@@ -305,7 +305,6 @@
                             <span class="nxl-mtext">Patient Monitoring</span>
                         </a>
                     </li>
-
                 </ul>
 
                 <ul class="nxl-submenu">
@@ -360,7 +359,18 @@
                         </a>
                     </li>
                 </ul>
-
+<ul class="nxl-submenu">
+    <li class="nxl-item">
+        <a href="{{ route('admin.doctor-order-execution.index') }}" class="nxl-link">
+            <span class="nxl-micon">
+                <i class="feather-clipboard"></i>
+            </span>
+            <span class="nxl-mtext">
+                Doctor Order Execution
+            </span>
+        </a>
+    </li>
+</ul>
             </li>
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/inventory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
@@ -737,6 +747,7 @@
         href="{{ route('hr.statutory-compliance.index') }}"
         class="nxl-link"
     >
+
 
         <span class="nxl-micon">
             <i class="feather-file-text"></i>
