@@ -171,7 +171,12 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 
-
+use App\Http\Controllers\Api\LocalConfiguration\HospitalWorkingHoursApiController;
+use App\Http\Controllers\Api\LocalConfiguration\EmergencyContactApiController;
+use App\Http\Controllers\Api\LocalConfiguration\LocalTaxApiController;
+use App\Http\Controllers\Api\LocalConfiguration\PrintFormatApiController;
+use App\Http\Controllers\Api\LocalConfiguration\InvoiceTemplateApiController;
+use App\Http\Controllers\Api\LocalConfiguration\PrescriptionFormatApiController;
 
 use App\Models\User;
 
@@ -4477,3 +4482,14 @@ Route::prefix('configuration')->group(function () {
     Route::delete('/currencies/{id}', [CurrencyApiController::class, 'destroy']);
 
 });
+Route::get('/hospital-working-hours', [HospitalWorkingHoursApiController::class, 'index']);
+
+Route::get('/emergency-contacts', [EmergencyContactApiController::class, 'index']);
+
+Route::get('/local-tax-settings', [LocalTaxApiController::class, 'index']);
+
+Route::get('/print-format-settings', [PrintFormatApiController::class, 'index']);
+
+Route::get('/invoice-templates', [InvoiceTemplateApiController::class, 'index']);
+
+Route::get('/prescription-format-settings', [PrescriptionFormatApiController::class, 'index']);

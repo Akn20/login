@@ -1430,7 +1430,67 @@
                         </li>
                     </ul>
                 </li>
+            <li class="nxl-item nxl-hasmenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <span class="nxl-micon">
+            <i class="feather-settings"></i>
+        </span>
 
+        <span class="nxl-mtext">
+            Local Configuration
+        </span>
+
+        <span class="nxl-arrow">
+            <i class="feather-chevron-right"></i>
+        </span>
+    </a>
+
+    <ul class="nxl-submenu">
+
+       <li class="nxl-item">
+        <a href="{{ route('hospital-working-hours.index') }}"
+           class="nxl-link">
+            Hospital Working Hours
+        </a>
+    </li>
+
+        <li class="nxl-item">
+   <a href="{{ route('emergency-contacts.index') }}"
+   class="nxl-link">
+    Emergency Contacts
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('local-tax-settings.index') }}"
+   class="nxl-link">
+    Local Tax Settings
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('print-format-settings.index') }}"
+   class="nxl-link">
+    Print Format Settings
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('invoice-templates.index') }}"
+   class="nxl-link">
+    Invoice Templates
+</a>
+        </li>
+
+        <li class="nxl-item">
+           <a href="{{ route('prescription-format-settings.index') }}"
+   class="nxl-link">
+    Prescription Format Settings
+</a>
+        </li>
+
+    </ul>
+</li>
 
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
