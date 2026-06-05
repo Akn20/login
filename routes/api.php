@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountantBillingController;
 use App\Http\Controllers\Admin\Accountant\AccountantPaymentController;
 use App\Http\Controllers\AccountantRevenueController;
 use App\Http\Controllers\Admin\LabTestController;
+use App\Http\Controllers\Admin\PatientInquiryController;
 /*
 |--------------------------------------------------------------------------
 | Controller Imports
@@ -84,7 +85,7 @@ use App\Http\Controllers\Doctor\LabRequestController;
 use App\Http\Controllers\Doctor\DoctorReportController;
 use App\Http\Controllers\Doctor\FollowUpController;
 
-use App\Http\Controllers\Doctor\DoctorReportController;
+
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -2788,4 +2789,26 @@ Route::prefix('doctor/reports')->group(function () {
     Route::get('/surgery-summary', [DoctorReportController::class, 'apiSurgerySummary']);
 
     Route::get('/followup-compliance', [DoctorReportController::class, 'apiFollowupCompliance']);
+});
+
+Route::prefix('patient-inquiry')->group(function () {
+
+    Route::get('/search/uhid',
+        [PatientInquiryController::class, 'apiSearchUHID']);
+
+    Route::get('/search/mobile',
+        [PatientInquiryController::class, 'apiSearchMobile']);
+
+    Route::get('/search/name',
+        [PatientInquiryController::class, 'apiSearchName']);
+
+    Route::get('/patient/{id}',
+        [PatientInquiryController::class, 'apiShow']);
+
+    Route::get('/visit-history/{id}',
+        [PatientInquiryController::class, 'apiVisitHistory']);
+
+    Route::get('/visit-summary/{id}',
+        [PatientInquiryController::class, 'apiVisitSummary']);
+
 });

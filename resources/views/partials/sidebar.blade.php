@@ -45,6 +45,8 @@
                         up-follow up-target="#main-container"><i class="feather-home me-2"></i> Dashboard</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.appointments.index') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-calendar me-2"></i>Appointments</a></li>
+                    <li class="nxl-item"><a href="{{ route('admin.patient-inquiry.index') }}"class="nxl-link" up-follow up-target="#main-container">
+                            <i class="feather-search me-2"></i>Patient Inquiry</a></li>
                     <li class="nxl-item"><a href="{{ route('admin.receptionist.ipd.index') }}" class="nxl-link" up-follow 
                     up-target="#main-container"><i class="fas fa-procedures me-2"></i>IPD Admission</a></li>       
                     <li class="nxl-item"><a href="{{ route('admin.tokens.index') }}" class="nxl-link" up-follow

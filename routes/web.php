@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\InsuranceConsentController;
+use App\Http\Controllers\Admin\PatientInquiryController;
 use App\Http\Controllers\Admin\Inventory\GrnController;
 use App\Http\Controllers\Admin\Inventory\InventoryVendorController;
 use App\Http\Controllers\Admin\Inventory\ItemController;
@@ -1838,16 +1839,16 @@ Route::prefix('reconciliation-reports')
     Route::get('/maintenance', [AdminReportController::class, 'maintenanceReport'])->name('maintenance');
     Route::get('/reagent', [AdminReportController::class, 'reagentUsageReport'])->name('reagent');
 
-});
+    });
 
-        Route::prefix('inventory') ->name('inventory.')->group(function () {
+    Route::prefix('inventory') ->name('inventory.')->group(function () {
 
         // Dashboard
         Route::get('/', [InventoryController::class, 'index'])
             ->name('dashboard');
 
         Route::post('use/{id}', [InventoryController::class, 'useItem'])
-    ->name('use');
+        ->name('use');
 
         Route::resource('items', InventoryItemController::class);
 
@@ -1869,7 +1870,54 @@ Route::prefix('reconciliation-reports')
         Route::get('expiry', [InventoryExpiryController::class, 'index'])
             ->name('expiry.index');
     
-        });
+    });
+});
+
+
+
+    Route::prefix('patient-inquiry')
+    ->name('patient-inquiry.')
+    ->group(function () {
+
+    Route::get(
+        '/',
+        [PatientInquiryController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/search/uhid',
+        [PatientInquiryController::class, 'searchUHID']
+    )->name('search.uhid');
+
+    Route::get(
+        '/search/mobile',
+        [PatientInquiryController::class, 'searchMobile']
+    )->name('search.mobile');
+
+    Route::get(
+        '/search/name',
+        [PatientInquiryController::class, 'searchName']
+    )->name('search.name');
+
+    Route::get(
+        '/show/{id}',
+        [PatientInquiryController::class, 'show']
+    )->name('show');
+
+    Route::get(
+        '/visit-history/{id}',
+        [PatientInquiryController::class, 'visitHistory']
+    )->name('visit-history');
+
+    Route::get(
+        '/visit-summary/{id}',
+        [PatientInquiryController::class, 'visitSummary']
+    )->name('visit-summary');
+
+    Route::get(
+        '/print-summary/{id}',
+        [PatientInquiryController::class, 'printSummary']
+    )->name('print-summary');
     });
 
 });
