@@ -81,25 +81,15 @@
 
                         <td class="text-end">
 
-                            <div class="d-flex gap-2 justify-content-end">
+                          <div class="d-flex justify-content-end">
 
-                                <a href="{{ route('admin.doctor-order-execution.show', ['id' => $lab->id, 'type' => 'Lab']) }}"
-                                   class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
-                                   title="View">
-                                    <i class="feather-eye"></i>
-                                </a>
+    <a href="{{ route('admin.doctor-order-execution.show', ['id' => $lab->id, 'type' => 'Lab']) }}"
+       class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+       title="View">
+        <i class="feather-eye"></i>
+    </a>
 
-                                <button class="btn btn-outline-success btn-icon rounded-circle btn-sm"
-                                        title="Execute">
-                                    <i class="feather-check-circle"></i>
-                                </button>
-
-                                <button class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                                        title="Escalate">
-                                    <i class="feather-alert-triangle"></i>
-                                </button>
-
-                            </div>
+</div>
 
                         </td>
 
