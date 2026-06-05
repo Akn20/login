@@ -40,8 +40,7 @@
 
                     <tbody>
 
-                        @foreach($appointments as $appointment)
-                            @foreach($appointments as $index => $appointment)
+                        @foreach($appointments as $index => $appointment)
 
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
@@ -62,23 +61,34 @@
                                         <div class="hstack gap-2 justify-content-end">
 
                                             {{-- Restore --}}
-                                            <a href="{{ route('admin.appointments.restore', $appointment->id) }}"
-                                                class="avatar-text avatar-md action-icon action-restore">
-                                                <i class="feather-refresh-ccw"></i>
-                                            </a>
+                                            <form action="{{ route('admin.appointments.restore', $appointment->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('PUT')
+
+                                                <button type="submit"
+                                                    class="avatar-text avatar-md action-icon action-restore border-0">
+                                                    <i class="feather-refresh-ccw"></i>
+                                                </button>
+                                            </form>
 
                                             {{-- Permanent Delete --}}
-                                            <a href="{{ route('admin.appointments.forceDelete', $appointment->id) }}"
-                                                class="avatar-text avatar-md action-icon action-delete"
-                                                onclick="return confirm('This will permanently delete the appointment. Continue?')">
-                                                <i class="feather-trash"></i>
-                                            </a>
+                                            <form action="{{ route('admin.appointments.forceDelete', $appointment->id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('This will permanently delete the appointment. Continue?')">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit"
+                                                    class="avatar-text avatar-md action-icon action-delete border-0">
+                                                    <i class="feather-trash"></i>
+                                                </button>
+                                            </form>
 
                                         </div>
                                     </td>
 
                                 </tr>
-                            @endforeach
                         @endforeach
 
                     </tbody>

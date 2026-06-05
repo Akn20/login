@@ -30,6 +30,7 @@ protected static function boot()
 
     // Fillable fields
     protected $fillable = [
+
         'pre_payroll_code',
         'payroll_run_id',
         'payroll_month',
@@ -64,7 +65,9 @@ protected static function boot()
         'submitted_by',
         'approved_by',
         'approved_on',
-        'created_by'
+        'created_by',
+        'per_day_salary',
+        'absence_amount',
     ];
 
 

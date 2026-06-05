@@ -99,4 +99,35 @@ class SurgeryConsentApiController extends Controller
             ], 500);
         }
     }
+    public function index()
+{
+    $consents = SurgeryConsent::with('patient', 'surgery')->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $consents
+    ]);
+}
+
+public function show($id)
+{
+    $consent = SurgeryConsent::with('patient', 'surgery')->findOrFail($id);
+
+    return response()->json([
+        'success' => true,
+        'data' => $consent
+    ]);
+}
+
+public function history($patientId)
+{
+    $history = SurgeryConsent::with('surgery')
+        ->where('patient_id', $patientId)
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $history
+    ]);
+}
 }

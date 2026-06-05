@@ -52,5 +52,14 @@ class Module extends Model
         return $this->hasMany(Module::class, 'parent_module', 'id')
                     ->orderBy('priority');
     }
+    public function plans()
+{
+    return $this->belongsToMany(
+        Plan::class,
+        'plan_modules',
+        'module_id',
+        'plan_id'
+    );
+}
 
 }
