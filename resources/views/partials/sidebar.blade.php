@@ -1469,21 +1469,24 @@
         </li>
 
         <li class="nxl-item">
-            <a href="#" class="nxl-link">
-                Print Format Settings
-            </a>
+            <a href="{{ route('print-format-settings.index') }}"
+   class="nxl-link">
+    Print Format Settings
+</a>
         </li>
 
         <li class="nxl-item">
-            <a href="#" class="nxl-link">
-                Invoice Templates
-            </a>
+            <a href="{{ route('invoice-templates.index') }}"
+   class="nxl-link">
+    Invoice Templates
+</a>
         </li>
 
         <li class="nxl-item">
-            <a href="#" class="nxl-link">
-                Prescription Format Settings
-            </a>
+           <a href="{{ route('prescription-format-settings.index') }}"
+   class="nxl-link">
+    Prescription Format Settings
+</a>
         </li>
 
     </ul>

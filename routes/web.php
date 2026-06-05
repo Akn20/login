@@ -220,6 +220,9 @@ use App\Http\Controllers\CaseSheetController;
 use App\Http\Controllers\EmergencyContactController;
 use App\Http\Controllers\HospitalWorkingHourController;
 use App\Http\Controllers\LocalTaxSettingController;
+use App\Http\Controllers\PrintFormatSettingController;
+use App\Http\Controllers\InvoiceTemplateController;
+use App\Http\Controllers\PrescriptionFormatSettingController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -4037,4 +4040,16 @@ Route::resource(
 Route::resource(
     'local-tax-settings',
     LocalTaxSettingController::class
+);
+Route::resource(
+    'print-format-settings',
+    PrintFormatSettingController::class
+);
+Route::resource(
+    'invoice-templates',
+    InvoiceTemplateController::class
+);
+Route::resource(
+    'prescription-format-settings',
+    PrescriptionFormatSettingController::class
 );
