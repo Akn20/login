@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Nurse\NurseDashboardController;
 use App\Http\Controllers\AccountantBillingController;
+use App\Http\Controllers\Admin\PatientPortal\PatientAlertController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseReportController;
 use App\Http\Controllers\AddExpenseController;
@@ -4142,5 +4143,30 @@ Route::prefix('accountant/reports')->group(function () {
     Route::get('/expense-report',[AccountantReportController::class, 'apiExpenseReport']);
 
     Route::get('/profit-loss',[AccountantReportController::class, 'apiProfitLoss']);
+
+});
+
+//Patient Alerts
+Route::prefix('patient-alerts')->group(function () {
+
+    Route::get('/list',
+        [PatientAlertController::class, 'apiList']
+    );
+
+    Route::get('/view/{id}',
+        [PatientAlertController::class, 'apiView']
+    );
+
+    Route::post('/create',
+        [PatientAlertController::class, 'apiCreate']
+    );
+
+    Route::post('/mark-read/{id}',
+        [PatientAlertController::class, 'apiMarkRead']
+    );
+
+    Route::get( 'create-data',
+        [PatientAlertController::class, 'apiCreateData']
+    );
 
 });

@@ -212,6 +212,9 @@ use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
 use App\Http\Controllers\AccountantRevenueController;
 
+use App\Http\Controllers\Admin\PatientPortal\PatientAlertController;
+
+
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -3816,3 +3819,23 @@ Route::prefix('reconciliation-reports')->group(function () {
 
 });
 
+//Patient Alerts (Patient Module)
+Route::prefix('patient-alerts')->group(function () {
+
+    Route::get('/', 
+        [PatientAlertController::class, 'index']
+    )->name('patient-alerts.index');
+
+    Route::get('/create',
+        [PatientAlertController::class, 'create']
+    )->name('patient-alerts.create');
+
+    Route::post('/store',
+        [PatientAlertController::class, 'store']
+    )->name('patient-alerts.store');
+
+    Route::get('/show/{id}',
+        [PatientAlertController::class, 'show']
+    )->name('patient-alerts.show');
+
+});
