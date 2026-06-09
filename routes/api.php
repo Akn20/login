@@ -121,6 +121,11 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 // Attendance
 use App\Http\Controllers\DepartmentController;
+
+
+
+// medical history
+use App\Http\Controllers\MedicalHistoryController;
 // Leave Management
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 
@@ -4410,6 +4415,26 @@ Route::prefix('case-sheets')->group(function () {
     Route::delete('/{id}', [CaseSheetApiController::class, 'destroy']);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Medical History Management APIs
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('patients')->group(function () {
+
+    Route::get('/medical-history', [MedicalHistoryController::class, 'index'])
+        ->name('api.patients.medical-history');
+
+    Route::get('/medical-history/{patientId}', [MedicalHistoryController::class, 'show'])
+        ->name('api.patients.medical-history.show');
+
+});
+
+
 
 /*
 |--------------------------------------------------------------------------
