@@ -137,7 +137,6 @@ use App\Http\Controllers\HR\PerformanceManagementController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
-use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -3775,7 +3774,7 @@ Route::prefix('refunds')->group(function () {
         'fetchBillDetails'
     ]);
 });
-});
+
 Route::prefix('bank-verification')->group(function () {
 
     Route::get('/', [BankVerificationController::class, 'apiIndex']);
