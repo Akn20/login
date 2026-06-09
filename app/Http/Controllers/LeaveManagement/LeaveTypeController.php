@@ -175,21 +175,22 @@ class LeaveTypeController extends Controller
     /**
      * Soft Delete
      */
-    public function destroy($id)
-    {
-        $leaveType = LeaveType::findOrFail($id);
-$leaveType->delete();
+   public function destroy(Request $request, $id)
+{
+    $leaveType = LeaveType::findOrFail($id);
+    $leaveType->delete();
 
-if ($request->wantsJson()) {
-    return response()->json([
-        'status' => true,
-        'message' => 'Leave Type deleted successfully'
-    ]);
-}
-        return redirect()
-            ->route('hr.leave-type.index')
-            ->with('success', 'Leave Type moved to trash successfully!');
+    if ($request->wantsJson()) {
+        return response()->json([
+            'status' => true,
+            'message' => 'Leave Type deleted successfully'
+        ]);
     }
+
+    return redirect()
+        ->route('hr.leave-type.index')
+        ->with('success', 'Leave Type moved to trash successfully!');
+}
 
     /**
      * Deleted Leave Types
@@ -257,7 +258,7 @@ if (request()->wantsJson()) {
      */
 public function apiIndex()
  {
-     $leaveTypes = \App\Models\LeaveType::select('id','display_name as name')->get();
+     $leaveTypes = LeaveType::select('id','display_name as name')->get();
 
      return response()->json([
          'status' => true,
