@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Configuration\CurrencyApiController;
 use App\Http\Controllers\Api\Configuration\GlobalTimezoneApiController;
 use App\Http\Controllers\Api\Configuration\RoundingRuleApiController;
 use App\Http\Controllers\Api\Configuration\TaxApiController;
+use App\Http\Controllers\Api\LocalConfiguration\LocalTaxSettingApiController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseReportController;
 use App\Http\Controllers\AddExpenseController;
@@ -177,7 +178,12 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
 use App\Http\Controllers\WorkStatusController;
 
-
+use App\Http\Controllers\Api\LocalConfiguration\HospitalWorkingHoursApiController;
+use App\Http\Controllers\Api\LocalConfiguration\EmergencyContactApiController;
+use App\Http\Controllers\Api\LocalConfiguration\LocalTaxApiController;
+use App\Http\Controllers\Api\LocalConfiguration\PrintFormatApiController;
+use App\Http\Controllers\Api\LocalConfiguration\InvoiceTemplateApiController;
+use App\Http\Controllers\Api\LocalConfiguration\PrescriptionFormatApiController;
 
 use App\Models\User;
 
@@ -4637,3 +4643,70 @@ Route::prefix('configuration')->group(function () {
     Route::delete('/currencies/{id}', [CurrencyApiController::class, 'destroy']);
 
 });
+Route::prefix('hospital-working-hours')->group(function () {
+    Route::get('/', [HospitalWorkingHoursApiController::class, 'index']);
+    Route::post('/', [HospitalWorkingHoursApiController::class, 'store']);
+    Route::get('/{id}', [HospitalWorkingHoursApiController::class, 'show']);
+    Route::put('/{id}', [HospitalWorkingHoursApiController::class, 'update']);
+    Route::delete('/{id}', [HospitalWorkingHoursApiController::class, 'destroy']);
+});
+
+Route::prefix('emergency-contacts')->group(function () {
+    Route::get('/', [EmergencyContactApiController::class, 'index']);
+    Route::post('/', [EmergencyContactApiController::class, 'store']);
+    Route::get('/{id}', [EmergencyContactApiController::class, 'show']);
+    Route::put('/{id}', [EmergencyContactApiController::class, 'update']);
+    Route::delete('/{id}', [EmergencyContactApiController::class, 'destroy']);
+});
+
+Route::prefix('local-tax-settings')->group(function () {
+    Route::get('/', [LocalTaxSettingApiController::class, 'index']);
+    Route::post('/', [LocalTaxSettingApiController::class, 'store']);
+    Route::get('/{id}', [LocalTaxSettingApiController::class, 'show']);
+    Route::put('/{id}', [LocalTaxSettingApiController::class, 'update']);
+    Route::delete('/{id}', [LocalTaxSettingApiController::class, 'destroy']);
+});
+
+Route::prefix('print-format-settings')->group(function () {
+    Route::get('/', [PrintFormatApiController::class, 'index']);
+    Route::post('/', [PrintFormatApiController::class, 'store']);
+    Route::get('/{id}', [PrintFormatApiController::class, 'show']);
+    Route::post('/{id}', [PrintFormatApiController::class, 'update']); // for file upload
+    Route::delete('/{id}', [PrintFormatApiController::class, 'destroy']);
+    Route::put('/{id}', [PrintFormatApiController::class, 'update']);
+});
+
+Route::prefix('invoice-templates')->group(function () {
+    Route::get('/', [InvoiceTemplateApiController::class, 'index']);
+    Route::post('/', [InvoiceTemplateApiController::class, 'store']);
+    Route::get('/{id}', [InvoiceTemplateApiController::class, 'show']);
+    Route::put('/{id}', [InvoiceTemplateApiController::class, 'update']);
+    Route::delete('/{id}', [InvoiceTemplateApiController::class, 'destroy']);
+});
+
+
+
+Route::get(
+    '/prescription-format-settings',
+    [PrescriptionFormatApiController::class, 'index']
+);
+
+Route::post(
+    '/prescription-format-settings',
+    [PrescriptionFormatApiController::class, 'store']
+);
+
+Route::get(
+    '/prescription-format-settings/{id}',
+    [PrescriptionFormatApiController::class, 'show']
+);
+
+Route::put(
+    '/prescription-format-settings/{id}',
+    [PrescriptionFormatApiController::class, 'update']
+);
+
+Route::delete(
+    '/prescription-format-settings/{id}',
+    [PrescriptionFormatApiController::class, 'destroy']
+);
