@@ -21,16 +21,11 @@
 
         <div>
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            <button onclick="window.print()"
+                    class="btn btn-primary">
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
                 Print Report
+
             </button>
 
         </div>
@@ -48,7 +43,8 @@
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                action="{{ route('admin.accountant.reports.expense.report') }}">
 
                 <div class="row">
 
@@ -60,6 +56,8 @@
                         </label>
 
                         <input type="date"
+                                name="from_date"
+                                value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
@@ -72,6 +70,8 @@
                         </label>
 
                         <input type="date"
+                                name="to_date"
+                                value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
@@ -83,31 +83,23 @@
                             Expense Category
                         </label>
 
-                        <select class="form-select">
+                        <select name="category"
+                                class="form-select">
 
-                            <option>
+                            <option value="">
                                 All Categories
                             </option>
 
-                            <option>
-                                Salary
-                            </option>
+                            @foreach($categories as $category)
 
-                            <option>
-                                Maintenance
-                            </option>
+                                <option value="{{ $category->category_name }}"
+                                    {{ request('category') == $category->category_name ? 'selected' : '' }}>
 
-                            <option>
-                                Equipment
-                            </option>
+                                    {{ $category->category_name }}
 
-                            <option>
-                                Utilities
-                            </option>
+                                </option>
 
-                            <option>
-                                Pharmacy Stock
-                            </option>
+                            @endforeach
 
                         </select>
 
@@ -148,7 +140,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-danger mt-3">
-                        ₹ 6,80,000
+                        ₹ {{ number_format($totalExpenses, 2) }}
                     </h3>
 
                 </div>
@@ -169,7 +161,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        Salary
+                        {{ $highestExpenseCategory ?? 'N/A' }}
                     </h3>
 
                 </div>
@@ -190,7 +182,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-warning mt-3">
-                        35
+                        {{ $totalVendors }}
                     </h3>
 
                 </div>
@@ -209,10 +201,6 @@
             <h5 class="mb-0 fw-bold">
                 Expense Details
             </h5>
-
-            <input type="text"
-                   class="form-control w-25"
-                   placeholder="Search Expense">
 
         </div>
 
@@ -246,83 +234,84 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($expenses as $key => $expense)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Salary</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>Hospital Staff</td>
+                                <td>
+                                    {{ $expense->category_name }}
+                                </td>
 
-                            <td>₹ 3,00,000</td>
+                                <td>
+                                    {{ $expense->vendor_name ?? 'N/A' }}
+                                </td>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Bank Transfer
-                                </span>
-                            </td>
+                                <td class="fw-bold text-danger">
 
-                            <td>05-05-2026</td>
+                                    ₹ {{ number_format($expense->paid_amount, 2) }}
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Paid
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <td>
 
-                        <tr>
+                                    <span class="badge bg-primary">
 
-                            <td>2</td>
+                                        {{ $expense->payment_mode }}
 
-                            <td>Equipment</td>
+                                    </span>
 
-                            <td>MedTech Solutions</td>
+                                </td>
 
-                            <td>₹ 1,20,000</td>
+                                <td>
 
-                            <td>
-                                <span class="badge bg-warning text-dark">
-                                    Card
-                                </span>
-                            </td>
+                                    {{ \Carbon\Carbon::parse($expense->payment_date)->format('d-m-Y') }}
 
-                            <td>06-05-2026</td>
+                                </td>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Paid
-                                </span>
-                            </td>
+                                <td>
 
-                        </tr>
+                                    @if($expense->payment_status == 'Fully Paid')
 
-                        <tr>
+                                        <span class="badge bg-success">
+                                            Fully Paid
+                                        </span>
 
-                            <td>3</td>
+                                    @elseif($expense->payment_status == 'Partial')
 
-                            <td>Utilities</td>
+                                        <span class="badge bg-warning text-dark">
+                                            Partial
+                                        </span>
 
-                            <td>Electricity Board</td>
+                                    @else
 
-                            <td>₹ 45,000</td>
+                                        <span class="badge bg-danger">
+                                            Unpaid
+                                        </span>
 
-                            <td>
-                                <span class="badge bg-info text-dark">
-                                    UPI
-                                </span>
-                            </td>
+                                    @endif
 
-                            <td>07-05-2026</td>
+                                </td>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                            </tr>
 
-                        </tr>
+                        @empty
+
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
+
+                                    No expense records found
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
@@ -336,4 +325,28 @@
 
 </div>
 
+
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
+</style>
 @endsection

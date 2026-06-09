@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminBiometricEnrollController;
 // Auth
 use App\Http\Controllers\Admin\DashboardController;
 // Admin
+use App\Http\Controllers\Admin\DoctorAuditLogController;
 use App\Http\Controllers\Admin\FinancialYearController;
 use App\Http\Controllers\Admin\FinancialYearMappingController;
 use App\Http\Controllers\Admin\HospitalController;
@@ -70,6 +71,8 @@ use App\Http\Controllers\BedController;
 use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Doctor\IpdController;
+use App\Http\Controllers\Doctor\DoctorRadiologyController;
+use App\Http\Controllers\Doctor\EmrController;
 
 // HR
 use App\Http\Controllers\DepartmentController;
@@ -78,6 +81,7 @@ use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\Doctor\NotificationController;
 use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\DoctorReportController;
+use App\Http\Controllers\Doctor\FollowUpController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
 use App\Http\Controllers\doctor\MedicalCertificationController;
@@ -214,6 +218,16 @@ use App\Http\Controllers\Admin\Accountant\AccountantDashboardController;
 
 use App\Http\Controllers\AccountantRevenueController;
 
+use App\Http\Controllers\Admin\PatientPortal\PatientAlertController;
+
+
+use App\Http\Controllers\CaseSheetController;
+use App\Http\Controllers\EmergencyContactController;
+use App\Http\Controllers\HospitalWorkingHourController;
+use App\Http\Controllers\LocalTaxSettingController;
+use App\Http\Controllers\PrintFormatSettingController;
+use App\Http\Controllers\InvoiceTemplateController;
+use App\Http\Controllers\PrescriptionFormatSettingController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -271,6 +285,19 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/print-prescription/{id}', [ConsultationController::class, 'printPrescription'])->name('print-prescription');
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+        // Radiology (for doctor) Routes
+        Route::get('/radiology',[DoctorRadiologyController::class,'index'])->name('radiology.index');
+        Route::get('/radiology/create',[DoctorRadiologyController::class,'create'])->name('radiology.create');
+        Route::post('/radiology/store',[DoctorRadiologyController::class,'store'])->name('radiology.store');
+        Route::get('/radiology/{id}',[DoctorRadiologyController::class,'show'])->name('radiology.show');
+        Route::post('/radiology/note',[DoctorRadiologyController::class,'addNote'])->name('radiology.note');
+        Route::get('/radiology/download/{id}',[DoctorRadiologyController::class,'download'])->name('radiology.download');
+        Route::get('/latest-notification',[NotificationController::class, 'latestNotification'])->name('notifications.latest');
+
+        //EMR (Doctor)
+        Route::get('/emr',[EmrController::class,'index'])->name('emr.index');
+        Route::get('/emr/{id}',[EmrController::class,'show'])->name('emr.show');
     });
 
         Route::prefix('doctor/laboratory')->name('doctor.laboratory.')->group(function () {
@@ -325,6 +352,80 @@ Route::get(
     [DoctorReportController::class, 'followupCompliance']
 )->name('followup-compliance');
 });
+
+Route::middleware(['auth'])->get('/latest-notification', [NotificationController::class, 'latestNotification']);
+
+/*
+|--------------------------------------------------------------------------
+| FOLLOW-UP ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('followups')->name('doctor.followups.')->group(function () {
+
+    Route::get(
+        '/',
+        [FollowUpController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/create',
+        [FollowUpController::class, 'create']
+    )->name('create');
+
+    Route::post(
+        '/store',
+        [FollowUpController::class, 'store']
+    )->name('store');
+
+    Route::get(
+        '/show/{id}',
+        [FollowUpController::class, 'show']
+    )->name('show');
+
+    Route::get(
+        '/edit/{id}',
+        [FollowUpController::class, 'edit']
+    )->name('edit');
+
+    Route::put(
+        '/update/{id}',
+        [FollowUpController::class, 'update']
+    )->name('update');
+
+    Route::delete(
+        '/delete/{id}',
+        [FollowUpController::class, 'destroy']
+    )->name('destroy');
+
+        Route::get(
+            '/deleted',
+            [FollowUpController::class, 'deleted']
+        )->name('deleted');
+
+    Route::put(
+        '/restore/{id}',
+        [FollowUpController::class, 'restore']
+    )->name('restore');
+
+    Route::delete(
+        '/force-delete/{id}',
+        [FollowUpController::class, 'forceDelete']
+    )->name('force-delete');
+
+    Route::post(
+        '/completed/{id}',
+        [FollowUpController::class, 'markCompleted']
+    )->name('completed');
+
+    Route::post(
+        '/missed/{id}',
+        [FollowUpController::class, 'markMissed']
+    )->name('missed');
+
+});
+
+
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
     Route::get('/surgery', [SurgeryController::class, 'index'])->name('surgery.index');
@@ -3892,3 +3993,167 @@ Route::prefix('reconciliation-reports')->group(function () {
 
 });
 
+//Patient Alerts (Patient Module)
+Route::prefix('patient-alerts')->group(function () {
+
+    Route::get('/', 
+        [PatientAlertController::class, 'index']
+    )->name('patient-alerts.index');
+
+    Route::get('/create',
+        [PatientAlertController::class, 'create']
+    )->name('patient-alerts.create');
+
+    Route::post('/store',
+        [PatientAlertController::class, 'store']
+    )->name('patient-alerts.store');
+
+    Route::get('/show/{id}',
+        [PatientAlertController::class, 'show']
+    )->name('patient-alerts.show');
+
+});
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource('casesheets', CaseSheetController::class);
+
+});
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+      /*
+|--------------------------------------------------------------------------
+| Doctor Audit Logs
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/doctor-audit-logs',
+    [DoctorAuditLogController::class, 'index']
+)->name('doctor-audit.index');
+
+Route::get(
+    '/doctor-audit-logs/{id}',
+    [DoctorAuditLogController::class, 'show']
+)->name('doctor-audit.show');
+});
+
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'taxes',
+        \App\Http\Controllers\Admin\Configuration\TaxStructureController::class
+    );
+
+});
+});
+
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Configuration : Currency Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'currencies',
+        \App\Http\Controllers\Admin\Configuration\GlobalCurrencyController::class
+    );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Rounding Rules
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'rounding-rules',
+        \App\Http\Controllers\Admin\Configuration\RoundingRuleController::class
+    );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Configuration : Timezone Settings
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('configuration')
+    ->name('configuration.')
+    ->group(function () {
+
+    Route::resource(
+        'timezones',
+        \App\Http\Controllers\Admin\Configuration\GlobalTimezoneController::class
+    );
+
+});
+});
+Route::resource(
+    'emergency-contacts',
+    EmergencyContactController::class
+);
+Route::prefix('admin/local-configuration')->name('admin.local-configuration.')->group(function () {
+
+    Route::get('/working-hours', function () {
+        return view('admin.local-configuration.working-hours');
+    })->name('working-hours');
+
+    // Route::get('/emergency-contacts', function () {
+    //     return view('admin.local-configuration.emergency-contacts');
+    // })->name('emergency-contacts');
+
+    Route::get('/tax-settings', function () {
+        return view('admin.local-configuration.tax-settings');
+    })->name('tax-settings');
+
+});
+Route::resource(
+    'hospital-working-hours',
+    HospitalWorkingHourController::class
+);
+Route::resource(
+    'local-tax-settings',
+    LocalTaxSettingController::class
+);
+Route::resource(
+    'print-format-settings',
+    PrintFormatSettingController::class
+);
+Route::resource(
+    'invoice-templates',
+    InvoiceTemplateController::class
+);
+Route::resource(
+    'prescription-format-settings',
+    PrescriptionFormatSettingController::class
+);

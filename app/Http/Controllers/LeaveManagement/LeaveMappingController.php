@@ -22,8 +22,8 @@ class LeaveMappingController extends Controller
 
     public function create()
     {
-        $leaveTypes   = \App\Models\LeaveType::all();
-        $designations = \App\Models\Designation::orderBy('designation_name', 'asc')->get();
+        $leaveTypes   = LeaveType::all();
+        $designations = Designation::orderBy('designation_name', 'asc')->get();
 
         return view('admin.Leave_Management.leave_mappings.create', compact('leaveTypes', 'designations'));
     }
@@ -142,7 +142,7 @@ class LeaveMappingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $mapping = \App\Models\LeaveMapping::findOrFail($id);
+        $mapping = LeaveMapping::findOrFail($id);
 
         // Duplicate check — excludes the current record from comparison
         if ($this->duplicateExists($request, $id)) {
@@ -302,11 +302,10 @@ public function apiShow($id)
             'carry_forward_allowed'     => 'nullable|boolean',
             'carry_forward_limit'       => 'nullable|integer',
             'carry_forward_expiry_days' => 'nullable|integer',
-            'min_leave_per_application' => 'nullable|integer',
-            'max_leave_per_application' => 'nullable|integer',
+            // 'min_leave_per_application' => 'nullable|integer',
+            // 'max_leave_per_application' => 'nullable|integer',
             'status'                    => 'sometimes|in:active,inactive',
-            'gender' => 'sometimes|in:Male,Female,All',
-'employment_type' => 'sometimes|in:Full-time,Part-time,All',
+        
 
 'encashment_allowed' => 'nullable|boolean',
 'encashment_trigger' => 'nullable|string|in:Year-end,Exit,Specific Date',

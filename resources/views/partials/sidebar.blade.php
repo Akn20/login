@@ -24,12 +24,118 @@
                     : 'hr.dashboard';
             @endphp
 
+
             <li class="nxl-item {{ request()->routeIs($route) ? 'active' : '' }}">
                 <a href="{{ route($route) }}" class="nxl-link" up-follow up-target="#main-container">
                     <span class="nxl-micon"><i class="feather-activity"></i></span>
                     <span class="nxl-mtext">Dashboard</span>
                 </a>
             </li>
+            <li class="nxl-item nxl-caption">
+    <label>System Configuration</label>
+</li>
+
+
+{{-- CURRENCY SETTINGS --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.currencies.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-dollar-sign"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Currency Settings
+
+        </span>
+
+    </a>
+
+</li>
+
+{{-- ROUNDING RULES --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.rounding-rules.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-disc"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Rounding Rules
+
+        </span>
+
+    </a>
+
+</li>
+
+{{-- TIMEZONE SETTINGS --}}
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.timezones.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+
+            <i class="feather-clock"></i>
+
+        </span>
+
+        <span class="nxl-mtext">
+
+            Timezone Settings
+
+        </span>
+
+    </a>
+
+</li>
+
+
+
+
+
+
+
+<li class="nxl-item">
+
+    <a href="{{ route('admin.configuration.taxes.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <span class="nxl-micon">
+            <i class="feather-percent"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Tax Settings
+        </span>
+
+    </a>
+
+</li>
+
 
             {{-- --- 2. FRONT DESK --- --}}
             <li class="nxl-item nxl-caption"><label>Front Desk</label></li>
@@ -131,7 +237,7 @@
                 </ul>
             </li>
 
-            {{-- ---  ACCOUNTANT --- --}}
+ {{-- ---  ACCOUNTANT --- --}}
             <li class="nxl-item nxl-caption"><label>Accounts</label></li>
 
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant*') ? 'active nxl-trigger' : '' }}">
@@ -140,18 +246,7 @@
                     <span class="nxl-mtext">Accountant</span>
                     <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
                 </a>
-
-                <ul class="nxl-submenu">
-
-                    {{-- Dashboard Menu --}}
-                    <li class="nxl-item {{ request()->is('admin/accountant/dashboard*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.accountant.dashboard') }}" 
-                        class="nxl-link" up-follow up-target="#main-container">
-
-                            <i class="feather-home me-2"></i> Dashboard
-                        </a>
-                    </li>
-
+                
                     {{-- Billing Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/billing*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -160,8 +255,6 @@
                         </a>
 
                         <ul class="nxl-submenu">
-
-                            {{-- OPD → Receptionist Billing --}}
                             <li class="nxl-item">
                                 <a href="{{ route('admin.receptionist.billing.index') }}" 
                                 class="nxl-link" up-follow up-target="#main-container">
@@ -188,232 +281,142 @@
                             </li>
                     </li>      
                 </ul>
-            </li>
+                
+                    {{-- Refund Management --}}
+                <li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}"></li>  
+                        <a href="javascript:void(0);" class="nxl-link">
 
-                                        {{-- Refund Management --}}
-<li class="nxl-item nxl-hasmenu {{ request()->is('admin/refunds*') ? 'active nxl-trigger' : '' }}">
+                            <i class="feather-rotate-ccw me-2"></i>
 
-    <a href="javascript:void(0);" class="nxl-link">
+                            Refund Management
 
-        <i class="feather-rotate-ccw me-2"></i>
+                            <span class="nxl-arrow">
+                                <i class="feather-chevron-right"></i>
+                            </span>
 
-        Refund Management
+                        </a>
 
-        <span class="nxl-arrow">
-            <i class="feather-chevron-right"></i>
-        </span>
+                        <ul class="nxl-submenu">
 
-    </a>
+                            <li class="nxl-item">
 
-    <ul class="nxl-submenu">
+                                <a href="{{ route('admin.refunds.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
 
-        <li class="nxl-item">
-
-            <a href="{{ route('admin.refunds.index') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
-
-                All Refunds
-
-            </a>
-
-        </li>
-
-        <li class="nxl-item">
-
-            <a href="{{ route('admin.refunds.create') }}"
-               class="nxl-link"
-               up-follow
-               up-target="#main-container">
-
-                Create Refund
-
-            </a>
-
-        </li>
-
-    </ul>
-
-</li>
-                </ul>
-
-
-
-                            {{-- Financial Reconciliation Menu --}}
-
-                            <li class="nxl-item nxl-hasmenu">
-
-                                <a href="javascript:void(0);"
-                                class="nxl-link">
-
-                                    <i class="feather-briefcase me-2"></i>
-
-                                    <span>
-                                        Financial Reconciliation
-                                    </span>
-
-                                    <span class="nxl-arrow">
-                                        <i class="feather-chevron-right"></i>
-                                    </span>
+                                    All Refunds
 
                                 </a>
 
-                                <ul class="nxl-submenu">
+                            </li>
 
-                                    {{-- Financial Reconciliation --}}
-                                    <li class="nxl-item {{ request()->is('admin/financial-reconciliation*') ? 'active' : '' }}">
+                            <li class="nxl-item">
 
-                                        <a href="{{ route('admin.financial-reconciliation.index') }}"
-                                        class="nxl-link"
-                                        up-follow
-                                        up-target="#main-container">
+                                <a href="{{ route('admin.refunds.create') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
 
-                                             Reconciliations
+                                    Create Refund
 
-                                        </a>
-
-                                    </li>
-
-                                    {{-- Bank Verification --}}
-                                    <li class="nxl-item {{ request()->is('admin/bank-verification*') ? 'active' : '' }}">
-
-                                        <a href="{{ route('admin.bank-verification.index') }}"
-                                        class="nxl-link"
-                                        up-follow
-                                        up-target="#main-container">
-
-                                            Bank Verification
-
-                                        </a>
-
-                                    </li>
-
-                                    {{-- Digital Payments --}}
-                                    <li class="nxl-item {{ request()->is('admin/digital-payment*') ? 'active' : '' }}">
-
-                                        <a href="{{ route('admin.digital-payment.index') }}"
-                                        class="nxl-link"
-                                        up-follow
-                                        up-target="#main-container">
-
-                                            Digital Payments
-
-                                        </a>
-
-                                    </li>
-
-                                    {{-- Discrepancy Management --}} 
-                                    <li class="nxl-item {{ request()->is('admin/financial-discrepancy*') ? 'active' : '' }}">
-
-                                        <a href="{{ route('admin.financial-discrepancy.index') }}"
-                                        class="nxl-link"
-                                        up-follow
-                                        up-target="#main-container">
-
-                                            Discrepancy Management
-
-                                        </a>
-
-                                    </li>
-                                    <li class="nxl-item">
-
-                <a href="{{ route('admin.reconciliation-reports.index') }}"
-                class="nxl-link">
-
-                    Reconciliation Reports
-
-                </a>
-
-</li>
-
-                                </ul>
+                                </a>
 
                             </li>
 
-                            
-                {{-- --- PATIENT PORTAL --- --}}
-            <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>
+        
 
-            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patient-portal*') ? 'active nxl-trigger' : '' }}">
-                <a href="javascript:void(0);" class="nxl-link">
-                    <span class="nxl-micon"><i class="feather-user"></i></span>
-                    <span class="nxl-mtext">Patient Portal</span>
-                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
-                </a>
+                    {{-- Financial Reconciliation Menu --}}
 
-                <ul class="nxl-submenu">
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.dashboard') }}" class="nxl-link">
-                            <i class="feather-home me-2"></i> Dashboard
+                    <li class="nxl-item nxl-hasmenu">
+
+                        <a href="javascript:void(0);"
+                        class="nxl-link">
+
+                            <i class="feather-briefcase me-2"></i>
+
+                            <span>
+                                Financial Reconciliation
+                            </span>
+
+                            <span class="nxl-arrow">
+                                <i class="feather-chevron-right"></i>
+                            </span>
+
                         </a>
-                    </li>
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.appointments') }}" class="nxl-link">
-                            <i class="feather-calendar me-2"></i> Appointments
-                        </a>
-                    </li>
+                        <ul class="nxl-submenu">
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.lab') }}" class="nxl-link">
-                            <i class="feather-activity me-2"></i> Lab Reports
-                        </a>
-                    </li>
+                            {{-- Financial Reconciliation --}}
+                            <li class="nxl-item {{ request()->is('admin/financial-reconciliation*') ? 'active' : '' }}">
 
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.radiology') }}" class="nxl-link">
-                            <i class="feather-camera me-2"></i> Radiology Reports
-                        </a>
-                    </li>
-                    <li class="nxl-item">
+                                <a href="{{ route('admin.financial-reconciliation.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
 
-                            <a href="{{ route('admin.data-consent.index') }}"
-                            class="nxl-link"
-                            up-follow
-                            up-target="#main-container">
+                                        Reconciliations
 
-                                <i class="feather-shield me-2"></i>
+                                </a>
 
-                                Data Usage Consent
+                            </li>
+
+                            {{-- Bank Verification --}}
+                            <li class="nxl-item {{ request()->is('admin/bank-verification*') ? 'active' : '' }}">
+
+                                <a href="{{ route('admin.bank-verification.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Bank Verification
+
+                                </a>
+
+                            </li>
+
+                            {{-- Digital Payments --}}
+                            <li class="nxl-item {{ request()->is('admin/digital-payment*') ? 'active' : '' }}">
+
+                                <a href="{{ route('admin.digital-payment.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Digital Payments
+
+                                </a>
+
+                            </li>
+
+                            {{-- Discrepancy Management --}} 
+                            <li class="nxl-item {{ request()->is('admin/financial-discrepancy*') ? 'active' : '' }}">
+
+                                <a href="{{ route('admin.financial-discrepancy.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Discrepancy Management
+
+                                </a>
+
+                            </li>
+                            <li class="nxl-item">
+
+                            <a href="{{ route('admin.reconciliation-reports.index') }}"
+                            class="nxl-link">
+
+                                Reconciliation Reports
 
                             </a>
+
                             </li>
-                        <li class="nxl-item">
 
-                        <a href="{{ route('admin.insurance-consent.index') }}"
-                        class="nxl-link"
-                        up-follow
-                        up-target="#main-container">
-
-                            <span class="nxl-micon">
-                                <i class="feather-shield"></i>
-                            </span>
-
-                            <span class="nxl-mtext">
-                                Insurance Consent
-                            </span>
-
-                        </a>
+                        </ul>
 
                     </li>
-
-                    <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Discharge Summary
-                        </a>
-                    </li>
-                     <li class="nxl-item">
-                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
-                            <i class="feather-file-text me-2"></i> Doctor Notes
-                        </a>
-                    </li>
-
-                </ul>
-            </li>
-
-
-                
+                    
                     {{-- Financial Reports Menu --}}
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/reports*') ? 'active nxl-trigger' : '' }}">
 
@@ -566,91 +569,216 @@
                             </span>
                         </a>
                     </li>
-                
-                   
 
-                        
+                    {{-- Expense Management --}}
+                    <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/expense-management*') ? 'active nxl-trigger' : '' }}">
+
+                        <a href="javascript:void(0);" class="nxl-link">
+
+                            <i class="feather-credit-card me-2"></i>
+
+                            Expense Management
+
+                            <span class="nxl-arrow">
+                                <i class="feather-chevron-right"></i>
+                            </span>
+
+                        </a>
+
+                        <ul class="nxl-submenu">
+
+                            {{-- Expense Categories --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ route('admin.accountant.expense.category.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Expense Categories
+
+                                </a>
+
+                            </li>
+
+                            {{-- Vendor Management --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ route('admin.inventory-vendors.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Vendor Management
+
+                                </a>
+
+                            </li>
+
+                            {{-- Add Expense --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ route('admin.accountant.expense.add.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Add Expense
+
+                                </a>
+
+                            </li>
+
+                            {{-- Expense Report --}}
+                            <li class="nxl-item">
+
+                                <a href="{{ route('admin.accountant.expense.report.index') }}"
+                                class="nxl-link"
+                                up-follow
+                                up-target="#main-container">
+
+                                    Expense Report
+
+                                </a>
+
+                            </li>
+
+                        </ul>
 
                     </li>
 
 
 
-        {{-- Expense Management --}}
-        <li class="nxl-item nxl-hasmenu {{ request()->is('admin/accountant/expense-management*') ? 'active nxl-trigger' : '' }}">
+                </ul>
+            </li>
 
-            <a href="javascript:void(0);" class="nxl-link">
 
-                <i class="feather-credit-card me-2"></i>
+        </ul>
+          {{-- --- AUDIT & COMPLIANCE --- --}}
 
-                Expense Management
+                        <li class="nxl-item nxl-caption">
 
-                <span class="nxl-arrow">
-                    <i class="feather-chevron-right"></i>
-                </span>
+                            <label>
+                                Audit & Compliance
+                            </label>
 
-            </a>
+                        </li>
 
-            <ul class="nxl-submenu">
+                        <li class="nxl-item {{ request()->routeIs('admin.doctor-audit.*') ? 'active' : '' }}">
 
-                {{-- Expense Categories --}}
-                <li class="nxl-item">
+                            <a href="{{ route('admin.doctor-audit.index') }}"
+                            class="nxl-link"
+                            up-follow
+                            up-target="#main-container">
 
-                    <a href="{{ route('admin.accountant.expense.category.index') }}"
-                       class="nxl-link"
-                       up-follow
-                       up-target="#main-container">
+                                <span class="nxl-micon">
 
-                        Expense Categories
+                                    <i class="feather-shield"></i>
 
-                    </a>
+                                </span>
 
-                </li>
+                                <span class="nxl-mtext">
 
-                {{-- Vendor Management --}}
-                <li class="nxl-item">
+                                    Doctor Audit Logs
 
-                    <a href="{{ route('admin.inventory-vendors.index') }}"
-                       class="nxl-link"
-                       up-follow
-                       up-target="#main-container">
+                                </span>
 
-                        Vendor Management
+                            </a>
 
-                    </a>
+                        </li>
 
-                </li>
+            
+                {{-- --- PATIENT PORTAL --- --}}
+            <li class="nxl-item nxl-caption"><label>Patient Portal</label></li>
 
-                {{-- Add Expense --}}
-                <li class="nxl-item">
+            <li class="nxl-item nxl-hasmenu {{ request()->is('admin/patient-portal*') ? 'active nxl-trigger' : '' }}">
+                <a href="javascript:void(0);" class="nxl-link">
+                    <span class="nxl-micon"><i class="feather-user"></i></span>
+                    <span class="nxl-mtext">Patient Portal</span>
+                    <span class="nxl-arrow"><i class="feather-chevron-right"></i></span>
+                </a>
 
-                    <a href="{{ route('admin.accountant.expense.add.index') }}"
-                       class="nxl-link"
-                       up-follow
-                       up-target="#main-container">
+                <ul class="nxl-submenu">
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.dashboard') }}" class="nxl-link">
+                            <i class="feather-home me-2"></i> Dashboard
+                        </a>
+                    </li>
 
-                        Add Expense
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.appointments') }}" class="nxl-link">
+                            <i class="feather-calendar me-2"></i> Appointments
+                        </a>
+                    </li>
 
-                    </a>
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.lab') }}" class="nxl-link">
+                            <i class="feather-activity me-2"></i> Lab Reports
+                        </a>
+                    </li>
 
-                </li>
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.radiology') }}" class="nxl-link">
+                            <i class="feather-camera me-2"></i> Radiology Reports
+                        </a>
+                    </li>
+                    <li class="nxl-item">
 
-                {{-- Expense Report --}}
-                <li class="nxl-item">
+                            <a href="{{ route('admin.data-consent.index') }}"
+                            class="nxl-link"
+                            up-follow
+                            up-target="#main-container">
 
-                    <a href="{{ route('admin.accountant.expense.report.index') }}"
-                       class="nxl-link"
-                       up-follow
-                       up-target="#main-container">
+                                <i class="feather-shield me-2"></i>
 
-                        Expense Report
+                                Data Usage Consent
 
-                    </a>
+                            </a>
+                            </li>
+                        <li class="nxl-item">
 
-                </li>
+                        <a href="{{ route('admin.insurance-consent.index') }}"
+                        class="nxl-link"
+                        up-follow
+                        up-target="#main-container">
 
-            </ul>
+                            <span class="nxl-micon">
+                                <i class="feather-shield"></i>
+                            </span>
 
-        </li>
+                            <span class="nxl-mtext">
+                                Insurance Consent
+                            </span>
+
+                        </a>
+
+                    </li>
+
+                    <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Discharge Summary
+                        </a>
+                    </li>
+                     <li class="nxl-item">
+                        <a href="{{ route('admin.patient.portal.discharge.list') }}" class="nxl-link">
+                            <i class="feather-file-text me-2"></i> Doctor Notes
+                        </a>
+                    </li>
+                    <li class="nxl-item">
+                        <a href="{{ route('patient-alerts.index') }}" class="nxl-link">
+                            <i class="feather-bell me-2"></i> Patient Alerts
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+           
+
+                    </li>
+
+
+
+
 
     </ul>
 
@@ -676,9 +804,22 @@
                     <li class="nxl-item"><a href="{{ route('doctor.view-consultations') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-message-square me-2"></i>Consultations</a>
                     </li>
+
+                    <li class="nxl-item"><a href="{{ route('doctor.followups.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-message-square me-2"></i>Follow-ups</a>
+                    </li>
                     <li class="nxl-item"><a href="{{ route('doctor.notifications') }}" class="nxl-link" up-follow
                             up-target="#main-container"><i class="feather-bell me-2"></i>Notifications @if(auth()->check() && auth()->user()->hasRole('doctor'))<span class="badge bg-danger ms-1">{{ \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count() }}</span>@endif</a>
                     </li>
+                     <li class="nxl-item"><a href="{{ route('doctor.radiology.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="feather-camera me-2"></i>Radiology</a>
+                    </li>
+
+                    <li class="nxl-item"><a href="{{ route('doctor.emr.index') }}" class="nxl-link" up-follow
+                            up-target="#main-container"><i class="fas fa-notes-medical me-2"></i>EMR</a>
+                    </li>
+                </ul>
+            </li>
 
                     <li class="nxl-item nxl-hasmenu {{ request()->is('admin/doctor*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -717,7 +858,7 @@
                 
                                 
 
-                        </li>
+                     </li>
 
                      <li class="nxl-item nxl-hasmenu {{ request()->is('doctor*') ? 'active nxl-trigger' : '' }}">
                         <a href="javascript:void(0);" class="nxl-link">
@@ -793,7 +934,28 @@
                             up-target="#main-container"><i class="feather-share-2 me-2"></i>Referral Management</a>
                     </li>
                 </ul>
+
             </li>
+            <li class="nxl-item nxl-hasmenu">
+
+             <a href="{{ route('admin.casesheets.index') }}"
+                class="nxl-link">
+
+                <span class="nxl-micon">
+                    <i class="feather-clipboard"></i>
+                </span>
+
+                <span class="nxl-mtext">
+                     Case Sheet
+                </span>
+
+                <span class="nxl-arrow">
+                     <i class="feather-chevron-right"></i>
+                </span>
+
+            </a>
+
+        </li>
             <li
                 class="nxl-item nxl-hasmenu {{ request()->is('surgery*', 'ot*', 'postoperative*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">
@@ -1275,7 +1437,67 @@
                         </li>
                     </ul>
                 </li>
+            <li class="nxl-item nxl-hasmenu">
+    <a href="javascript:void(0);" class="nxl-link">
+        <span class="nxl-micon">
+            <i class="feather-settings"></i>
+        </span>
 
+        <span class="nxl-mtext">
+            Local Configuration
+        </span>
+
+        <span class="nxl-arrow">
+            <i class="feather-chevron-right"></i>
+        </span>
+    </a>
+
+    <ul class="nxl-submenu">
+
+       <li class="nxl-item">
+        <a href="{{ route('hospital-working-hours.index') }}"
+           class="nxl-link">
+            Hospital Working Hours
+        </a>
+    </li>
+
+        <li class="nxl-item">
+   <a href="{{ route('emergency-contacts.index') }}"
+   class="nxl-link">
+    Emergency Contacts
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('local-tax-settings.index') }}"
+   class="nxl-link">
+    Local Tax Settings
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('print-format-settings.index') }}"
+   class="nxl-link">
+    Print Format Settings
+</a>
+        </li>
+
+        <li class="nxl-item">
+            <a href="{{ route('invoice-templates.index') }}"
+   class="nxl-link">
+    Invoice Templates
+</a>
+        </li>
+
+        <li class="nxl-item">
+           <a href="{{ route('prescription-format-settings.index') }}"
+   class="nxl-link">
+    Prescription Format Settings
+</a>
+        </li>
+
+    </ul>
+</li>
 
             <li class="nxl-item nxl-hasmenu {{ request()->is('admin/laboratory*') ? 'active nxl-trigger' : '' }}">
                 <a href="javascript:void(0);" class="nxl-link">

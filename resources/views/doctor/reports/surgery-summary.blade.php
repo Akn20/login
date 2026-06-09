@@ -31,7 +31,7 @@
 
     <div class="card p-4 text-center">
 
-        <h5>Emergency Surgeries</h5>
+        <h5>Emergency Surgery</h5>
 
         <h2 class="text-danger">
             {{ $emergencySurgeries }}

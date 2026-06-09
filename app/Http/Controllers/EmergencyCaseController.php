@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\EmergencyCase;
 use App\Models\Patient;
+use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Helpers\ApiResponse;
@@ -24,7 +25,7 @@ class EmergencyCaseController extends Controller
             'emergency_type' => 'required'
         ]);
 
-        EmergencyCase::create([
+        $emergencyCase = EmergencyCase::create([
             'patient_id' => $request->patient_id,
             'patient_name' => $request->patient_name ?? 'Unknown',
             'gender' => $request->gender,
@@ -33,6 +34,31 @@ class EmergencyCaseController extends Controller
             'emergency_type' => $request->emergency_type,
             'created_by' => Auth::id()
         ]);
+
+        Notification::create([
+
+    'user_id' => Auth::id(),
+
+    'patient_id' => $emergencyCase->patient_id,
+
+    'type' => 'Emergency',
+
+    'title' => 'Emergency Case Alert',
+
+    'message' =>
+        'Emergency case registered for patient '
+        . $emergencyCase->patient_name
+        . ' ('
+        . $emergencyCase->emergency_type
+        . '). Immediate medical attention required.',
+
+    'priority' => 'High',
+
+    'reference_id' => $emergencyCase->id,
+
+    'is_read' => 0
+
+]);
 
         return redirect()->back()->with('success', 'Emergency patient registered successfully!');
     }

@@ -21,16 +21,11 @@
 
         <div>
 
-            <button class="btn btn-success me-2">
-                Export Excel
-            </button>
+            <button onclick="window.print()"
+                    class="btn btn-primary">
 
-            <button class="btn btn-danger me-2">
-                Export PDF
-            </button>
-
-            <button class="btn btn-primary">
                 Print Report
+
             </button>
 
         </div>
@@ -50,7 +45,8 @@
 
         <div class="card-body">
 
-            <form>
+            <form method="GET"
+                action="{{ route('admin.accountant.reports.profit.loss') }}">
 
                 <div class="row">
 
@@ -62,6 +58,8 @@
                         </label>
 
                         <input type="date"
+                                name="from_date"
+                                value="{{ request('from_date') }}"
                                class="form-control">
 
                     </div>
@@ -74,6 +72,8 @@
                         </label>
 
                         <input type="date"
+                                name="to_date"
+                                value="{{ request('to_date') }}"
                                class="form-control">
 
                     </div>
@@ -113,7 +113,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-success mt-3">
-                        ₹ 25,00,000
+                        ₹ {{ number_format($totalRevenue, 2) }}
                     </h3>
 
                 </div>
@@ -134,7 +134,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-danger mt-3">
-                        ₹ 15,00,000
+                        ₹ {{ number_format($totalExpenses, 2) }}
                     </h3>
 
                 </div>
@@ -155,7 +155,7 @@
                     </h6>
 
                     <h3 class="fw-bold text-primary mt-3">
-                        ₹ 10,00,000
+                        ₹ {{ number_format($netProfit, 2) }}
                     </h3>
 
                 </div>
@@ -211,83 +211,76 @@
 
                     <tbody>
 
-                        <tr>
+                        @forelse($details as $key => $detail)
 
-                            <td>1</td>
+                            <tr>
 
-                            <td>Revenue</td>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
 
-                            <td>OPD Consultation Revenue</td>
+                                <td>
+                                    {{ $detail['category'] }}
+                                </td>
 
-                            <td>₹ 5,00,000</td>
+                                <td>
+                                    {{ $detail['description'] }}
+                                </td>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Income
-                                </span>
-                            </td>
+                                <td class="fw-bold">
 
-                            <td>01-05-2026</td>
+                                    ₹ {{ number_format($detail['amount'], 2) }}
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                                </td>
 
-                        </tr>
+                                <td>
 
-                        <tr>
+                                    @if($detail['type'] == 'Income')
 
-                            <td>2</td>
+                                        <span class="badge bg-success">
+                                            Income
+                                        </span>
 
-                            <td>Expense</td>
+                                    @else
 
-                            <td>Staff Salary Payments</td>
+                                        <span class="badge bg-danger">
+                                            Expense
+                                        </span>
 
-                            <td>₹ 3,00,000</td>
+                                    @endif
 
-                            <td>
-                                <span class="badge bg-danger">
-                                    Expense
-                                </span>
-                            </td>
+                                </td>
 
-                            <td>03-05-2026</td>
+                                <td>
+                                    {{ $detail['date'] }}
+                                </td>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Paid
-                                </span>
-                            </td>
+                                <td>
 
-                        </tr>
+                                    <span class="badge bg-primary">
 
-                        <tr>
+                                        {{ $detail['status'] }}
 
-                            <td>3</td>
+                                    </span>
 
-                            <td>Revenue</td>
+                                </td>
 
-                            <td>IPD Room Charges</td>
+                            </tr>
 
-                            <td>₹ 7,50,000</td>
+                        @empty
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Income
-                                </span>
-                            </td>
+                            <tr>
 
-                            <td>05-05-2026</td>
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Completed
-                                </span>
-                            </td>
+                                    No records found
 
-                        </tr>
+                                </td>
+
+                            </tr>
+
+                        @endforelse
 
                     </tbody>
 
@@ -301,4 +294,27 @@
 
 </div>
 
+<style>
+
+    @media print {
+
+        .nxl-navigation,
+        .nxl-sidebar,
+        aside,
+        nav,
+        .btn,
+        form {
+
+            display: none !important;
+        }
+
+        .container-fluid {
+
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    }
+
+</style>
 @endsection
