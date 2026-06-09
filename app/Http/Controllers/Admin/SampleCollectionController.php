@@ -32,6 +32,8 @@ class SampleCollectionController extends Controller
             'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
+        //if error occurs,run composer dump-autoload and then try again
+
         logAudit(
         'sample',
         'COLLECTED',

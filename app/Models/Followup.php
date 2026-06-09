@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Followup extends Model
 {
 
+    use SoftDeletes;
+
+    
     protected $table = 'follow_ups';
     protected $fillable = [
         'consultation_id',

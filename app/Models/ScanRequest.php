@@ -60,7 +60,13 @@ class ScanRequest extends Model
     }
 
     public function schedule()
-{
-    return $this->hasOne(ScanSchedule::class);
-}
+    {
+        return $this->hasOne(ScanSchedule::class);
+    }
+
+    public function report()
+    {
+        return $this->hasOne(RadiologyReport::class, 'scan_request_id');
+    }
+
 }

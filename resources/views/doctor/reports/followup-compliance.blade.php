@@ -9,7 +9,7 @@
 
         <div class="card-body">
 
-            <div class="row align-items-center">
+            <div class="row align-items-center g-3">
 
                 <div class="col-md-8">
 
@@ -34,7 +34,7 @@
     {{-- DASHBOARD CARDS --}}
     <div class="row mb-4">
 
-        <div class="col-md-2">
+        <div class="col">
 
             <div class="card border-0 shadow-sm h-100">
 
@@ -54,7 +54,7 @@
 
         </div>
 
-        <div class="col-md-2">
+        <div class="col">
 
             <div class="card border-0 shadow-sm h-100">
 
@@ -74,7 +74,7 @@
 
         </div>
 
-        <div class="col-md-2">
+        <div class="col">
 
             <div class="card border-0 shadow-sm h-100">
 
@@ -94,7 +94,7 @@
 
         </div>
 
-        <div class="col-md-2">
+        <div class="col">
 
             <div class="card border-0 shadow-sm h-100">
 
@@ -114,7 +114,7 @@
 
         </div>
 
-        <div class="col-md-2">
+        <div class="col">
 
             <div class="card border-0 shadow-sm h-100">
 
@@ -134,25 +134,7 @@
 
         </div>
 
-        <div class="col-md-2">
-
-            <div class="card border-0 shadow-sm h-100">
-
-                <div class="card-body text-center">
-
-                    <h6 class="text-muted">
-                        Compliance
-                    </h6>
-
-                    <h2 class="text-dark fw-bold">
-                        {{ $compliancePercentage }}%
-                    </h2>
-
-                </div>
-
-            </div>
-
-        </div>
+       
 
     </div>
 

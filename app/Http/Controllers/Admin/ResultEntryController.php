@@ -156,6 +156,7 @@ class ResultEntryController extends Controller
                     $consultation = optional($sample->labRequest)->consultation;
                     $doctorStaffId = optional($consultation)->doctor_id;
                     $doctorUserId = optional(optional($consultation)->doctor)->user_id;
+                    $patientId = optional($sample->labRequest)->patient_id;
 
                     $alert = CriticalValueAlert::create([
                         'report_id' => $report->id,
@@ -169,12 +170,25 @@ class ResultEntryController extends Controller
 
                     if ($doctorUserId) {
                         Notification::create([
-                            'user_id' => $doctorUserId,
-                            'message' => 'Critical value detected for ' . $paramName . ' in sample ' . ($sample->sample_id ?? $sample->id),
-                            'is_read' => false,
-                            'created_at' => now(),
-                        ]);
+
+                        'user_id' => $doctorUserId,
+
+                        'patient_id' => $patientId,
+
+                        'type' => 'Critical',
+
+                        'title' => 'Critical Patient Alert',
+
+                    'message' => 'Critical value detected for ' . $paramName . ' in sample ' . ($sample->sample_id ?? $sample->id),
+
+                        'priority' => 'High',
+
+                        'is_read' => false
+
+                    ]);
                     }
+
+                    
 
                     AlertAuditLog::create([
                         'alert_id' => $alert->id,
