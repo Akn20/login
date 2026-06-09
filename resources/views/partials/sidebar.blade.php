@@ -764,6 +764,11 @@
                             <i class="feather-file-text me-2"></i> Doctor Notes
                         </a>
                     </li>
+                    <li class="nxl-item">
+                        <a href="{{ route('patient-alerts.index') }}" class="nxl-link">
+                            <i class="feather-bell me-2"></i> Patient Alerts
+                        </a>
+                    </li>
 
                 </ul>
             </li>
