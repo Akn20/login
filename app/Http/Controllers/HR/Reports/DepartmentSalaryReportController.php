@@ -10,57 +10,66 @@ use Illuminate\Http\Request;
 class DepartmentSalaryReportController extends Controller
 {
     public function index(Request $request)
-    {
-        $staff = Staff::with('department')->get();
+{
+    $staff = Staff::with('department')->get();
 
-        $departments = [];
+    $departments = [];
 
-        foreach ($staff as $s) {
+    foreach ($staff as $s) {
 
-            $deptName = $s->department->name ?? 'Unknown';
+        $deptName = $s->department->name ?? 'Unknown';
 
-            // 🔁 Calculate salary (reuse logic)
-            $basic = $s->basic_salary ?? 0;
-            $allowances = $s->hra + $s->allowance;
-            $gross = $basic + $allowances;
+        $basic = $s->basic_salary ?? 0;
+        $hra = $s->hra ?? 0;
+        $allowance = $s->allowance ?? 0;
 
-            // deductions (simple for now)
-            $deductions = $gross * 0.1;
+        $allowances = $hra + $allowance;
 
-            $net = $gross - $deductions;
+        $gross = $basic + $allowances;
 
-            // 🧠 Group by department
-            if (!isset($departments[$deptName])) {
-                $departments[$deptName] = [
-                    'employees' => 0,
-                    'total_salary' => 0,
-                    'salaries' => []
-                ];
-            }
+        $deductions = $gross * 0.1;
 
-            $departments[$deptName]['employees']++;
-            $departments[$deptName]['total_salary'] += $net;
-            $departments[$deptName]['salaries'][] = $net;
-        }
+        $net = $gross - $deductions;
 
-        // 📊 Final Calculations
-        $report = [];
-
-        foreach ($departments as $dept => $data) {
-
-            $total = $data['total_salary'];
-            $count = $data['employees'];
-
-            $report[] = [
-                'department' => $dept,
-                'employees' => $count,
-                'total_salary' => round($total, 2),
-                'average_salary' => round($total / $count, 2),
-                'highest_salary' => max($data['salaries']),
-                'lowest_salary' => min($data['salaries']),
+        if (!isset($departments[$deptName])) {
+            $departments[$deptName] = [
+                'employees' => 0,
+                'total_salary' => 0,
+                'salaries' => []
             ];
         }
 
-        return view('admin.hr.reports.department-salary', compact('report'));
+        $departments[$deptName]['employees']++;
+        $departments[$deptName]['total_salary'] += $net;
+        $departments[$deptName]['salaries'][] = $net;
     }
+
+    $report = [];
+
+    foreach ($departments as $dept => $data) {
+
+        $total = $data['total_salary'];
+        $count = $data['employees'];
+
+        $report[] = [
+            'department' => $dept,
+            'employees' => $count,
+            'total_salary' => round($total, 2),
+            'average_salary' => round($total / $count, 2),
+            'highest_salary' => max($data['salaries']),
+            'lowest_salary' => min($data['salaries']),
+        ];
+    }
+
+    // ⭐ IMPORTANT — detect API request
+    if ($request->wantsJson()) {
+        return response()->json($report);
+    }
+
+    // Web view
+    return view(
+        'admin.hr.reports.department-salary',
+        compact('report')
+    );
+}
 }

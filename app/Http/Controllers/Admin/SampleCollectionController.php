@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SampleCollection;
 use Illuminate\Support\Str;
+use function logAudit;
 
 class SampleCollectionController extends Controller
 {
@@ -31,6 +32,13 @@ class SampleCollectionController extends Controller
             'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
 
+        logAudit(
+        'sample',
+        'COLLECTED',
+        $sample->id,
+        'Sample collected with barcode ' . $sample->barcode
+    );
+
         return back()->with('success', 'Sample Collected Successfully');
     }
 
@@ -43,6 +51,14 @@ class SampleCollectionController extends Controller
             'status' => 'In Process'
         ]);
 
+        logAudit(
+        'sample',
+        'PROCESS_STARTED',
+        $sample->id,
+        'Sample processing started'
+    );
+
+
         return back()->with('success', 'Processing Started');
     }
 
@@ -54,6 +70,13 @@ class SampleCollectionController extends Controller
         $sample->update([
             'status' => 'Completed'
         ]);
+
+        logAudit(
+            'sample',
+            'COMPLETED',
+            $sample->id,
+            'Sample completed'
+        );
 
         // Update Lab Request only when completed
         $sample->labRequest->update([
@@ -76,6 +99,12 @@ class SampleCollectionController extends Controller
         $sample->labRequest->update([
             'status' => 'Pending'
         ]);
+        logAudit(
+            'sample',
+            'REJECTED',
+            $sample->id,
+            'Sample rejected due to: ' . $request->reason
+        );
 
         return back()->with('error', 'Sample Rejected');
     }
@@ -117,6 +146,12 @@ class SampleCollectionController extends Controller
             'sample_id' => 'SMP-' . rand(1000, 9999),
             'barcode' => 'LAB-' . strtoupper(Str::random(6))
         ]);
+        logAudit(
+            'sample',
+            'COLLECTED',
+            $sample->id,
+            'Sample collected with barcode ' . $sample->barcode . ' via API'
+        );
 
         return response()->json(['message' => 'Sample Collected']);
     }
@@ -130,6 +165,13 @@ class SampleCollectionController extends Controller
             'status' => $request->status
         ]);
 
+        logAudit(
+            'sample',
+            'STATUS_UPDATED',
+            $sample->id,
+            'Sample status updated to: ' . $request->status . ' via API'
+        );
+
         return response()->json(['message' => 'Status Updated']);
     }
 
@@ -142,6 +184,12 @@ class SampleCollectionController extends Controller
             'status' => 'Rejected',
             'rejection_reason' => $request->reason
         ]);
+        logAudit(
+            'sample',
+            'REJECTED',
+            $sample->id,
+            'Sample rejected due to: ' . $request->reason . ' via API'
+        );
 
         return response()->json(['message' => 'Sample Rejected']);
     }
