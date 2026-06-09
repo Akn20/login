@@ -198,7 +198,7 @@ if (!$payrollRunId) {
                 $ppa->days_paid,
 
             'lop_days' =>
-                $ppa->lop_days,
+    $ppa->lop_days ?: 0,
 
             'overtime_hours' =>
                 $ppa->ot_hours,
