@@ -72,6 +72,7 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 use App\Http\Controllers\Doctor\IpdController;
 use App\Http\Controllers\Doctor\DoctorRadiologyController;
+use App\Http\Controllers\Doctor\EmrController;
 
 // HR
 use App\Http\Controllers\DepartmentController;
@@ -80,6 +81,7 @@ use App\Http\Controllers\Doctor\ConsultationController;
 use App\Http\Controllers\Doctor\NotificationController;
 use App\Http\Controllers\Doctor\ClinicalNoteController;
 use App\Http\Controllers\Doctor\DoctorReportController;
+use App\Http\Controllers\Doctor\FollowUpController;
 use App\Http\Controllers\doctor\surgery\OTController;
 use App\Http\Controllers\doctor\surgery\PostOperativeController;
 use App\Http\Controllers\doctor\MedicalCertificationController;
@@ -288,6 +290,11 @@ Route::middleware(['auth', 'role:doctor,admin'])->group(function () {
         Route::get('/radiology/{id}',[DoctorRadiologyController::class,'show'])->name('radiology.show');
         Route::post('/radiology/note',[DoctorRadiologyController::class,'addNote'])->name('radiology.note');
         Route::get('/radiology/download/{id}',[DoctorRadiologyController::class,'download'])->name('radiology.download');
+        Route::get('/latest-notification',[NotificationController::class, 'latestNotification'])->name('notifications.latest');
+
+        //EMR (Doctor)
+        Route::get('/emr',[EmrController::class,'index'])->name('emr.index');
+        Route::get('/emr/{id}',[EmrController::class,'show'])->name('emr.show');
     });
 
         Route::prefix('doctor/laboratory')->name('doctor.laboratory.')->group(function () {
@@ -342,6 +349,80 @@ Route::get(
     [DoctorReportController::class, 'followupCompliance']
 )->name('followup-compliance');
 });
+
+Route::middleware(['auth'])->get('/latest-notification', [NotificationController::class, 'latestNotification']);
+
+/*
+|--------------------------------------------------------------------------
+| FOLLOW-UP ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('followups')->name('doctor.followups.')->group(function () {
+
+    Route::get(
+        '/',
+        [FollowUpController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/create',
+        [FollowUpController::class, 'create']
+    )->name('create');
+
+    Route::post(
+        '/store',
+        [FollowUpController::class, 'store']
+    )->name('store');
+
+    Route::get(
+        '/show/{id}',
+        [FollowUpController::class, 'show']
+    )->name('show');
+
+    Route::get(
+        '/edit/{id}',
+        [FollowUpController::class, 'edit']
+    )->name('edit');
+
+    Route::put(
+        '/update/{id}',
+        [FollowUpController::class, 'update']
+    )->name('update');
+
+    Route::delete(
+        '/delete/{id}',
+        [FollowUpController::class, 'destroy']
+    )->name('destroy');
+
+        Route::get(
+            '/deleted',
+            [FollowUpController::class, 'deleted']
+        )->name('deleted');
+
+    Route::put(
+        '/restore/{id}',
+        [FollowUpController::class, 'restore']
+    )->name('restore');
+
+    Route::delete(
+        '/force-delete/{id}',
+        [FollowUpController::class, 'forceDelete']
+    )->name('force-delete');
+
+    Route::post(
+        '/completed/{id}',
+        [FollowUpController::class, 'markCompleted']
+    )->name('completed');
+
+    Route::post(
+        '/missed/{id}',
+        [FollowUpController::class, 'markMissed']
+    )->name('missed');
+
+});
+
+
 
     // These names match the sidebar EXACTLY (no doctor. prefix)
     Route::get('/surgery', [SurgeryController::class, 'index'])->name('surgery.index');
