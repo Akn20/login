@@ -140,15 +140,6 @@
                                     <i class="feather-eye"></i>
                                 </a>
 
-                                <button class="btn btn-outline-success btn-icon rounded-circle btn-sm"
-                                        title="Execute">
-                                    <i class="feather-check-circle"></i>
-                                </button>
-
-                                <button class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                                        title="Escalate">
-                                    <i class="feather-alert-triangle"></i>
-                                </button>
 
                             </div>
 

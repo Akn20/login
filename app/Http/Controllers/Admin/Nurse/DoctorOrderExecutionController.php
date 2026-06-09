@@ -97,75 +97,89 @@ class DoctorOrderExecutionController extends Controller
 
 public function execute(Request $request, $id)
 {
-    $labRequest = LabRequest::find($id);
+    if ($request->type == 'Lab') {
 
-    if (!$labRequest) {
-        abort(404);
+        $order = LabRequest::findOrFail($id);
+
+        $order->update([
+            'status' => 'completed'
+        ]);
+
+        DoctorOrderExecution::create([
+            'order_type' => 'Lab',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Executed',
+            'remarks' => $request->remarks,
+            'executed_by' => auth()->id(),
+            'executed_at' => now()
+        ]);
     }
 
-    DoctorOrderExecution::create([
+    elseif ($request->type == 'Radiology') {
 
-        'order_type' => 'Lab',
+        $order = ScanRequest::findOrFail($id);
 
-        'order_reference_id' => $id,
+        $order->update([
+            'status' => 'Approved'
+        ]);
 
-        'patient_id' => $labRequest->patient_id,
-
-        'execution_status' => 'Executed',
-
-        'remarks' => $request->remarks,
-
-        'executed_by' => auth()->id(),
-
-        'executed_at' => now()
-
-    ]);
-
-    $labRequest->update([
-        'status' => 'completed'
-    ]);
+        DoctorOrderExecution::create([
+            'order_type' => 'Radiology',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Executed',
+            'remarks' => $request->remarks,
+            'executed_by' => auth()->id(),
+            'executed_at' => now()
+        ]);
+    }
 
     return redirect()
         ->route('admin.doctor-order-execution.index')
-        ->with(
-            'success',
-            'Order Executed Successfully'
-        );
+        ->with('success', 'Order Executed Successfully');
 }
 
-  public function escalate(Request $request, $id)
+public function escalate(Request $request, $id)
 {
-    $labRequest = LabRequest::find($id);
+    if ($request->type == 'Lab') {
 
-    if (!$labRequest) {
-        abort(404);
+        $order = LabRequest::findOrFail($id);
+
+        $order->update([
+            'status' => 'in_progress'
+        ]);
+
+        DoctorOrderExecution::create([
+            'order_type' => 'Lab',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Escalated',
+            'escalation_reason' => $request->reason,
+            'executed_by' => auth()->id()
+        ]);
     }
 
-    DoctorOrderExecution::create([
+    elseif ($request->type == 'Radiology') {
 
-        'order_type' => 'Lab',
+        $order = ScanRequest::findOrFail($id);
 
-        'order_reference_id' => $id,
+        $order->update([
+            'status' => 'Under Review'
+        ]);
 
-        'patient_id' => $labRequest->patient_id,
-
-        'execution_status' => 'Escalated',
-
-        'escalation_reason' => $request->reason,
-
-        'executed_by' => auth()->id()
-
-    ]);
-
-    $labRequest->update([
-        'status' => 'in_progress'
-    ]);
+        DoctorOrderExecution::create([
+            'order_type' => 'Radiology',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Escalated',
+            'escalation_reason' => $request->reason,
+            'executed_by' => auth()->id()
+        ]);
+    }
 
     return redirect()
         ->route('admin.doctor-order-execution.index')
-        ->with(
-            'success',
-            'Order Escalated Successfully'
-        );
+        ->with('success', 'Order Escalated Successfully');
 }
 }
