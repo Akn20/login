@@ -93,7 +93,10 @@
 
                         <td>{{ $surgery->patient_id }}</td>
 
-                        <td>{{ $surgery->patient->first_name }} {{ $surgery->patient->last_name }}</td>
+                        <td>
+    {{ optional($surgery->patient)->first_name ?? 'N/A' }}
+    {{ optional($surgery->patient)->last_name ?? '' }}
+</td>
 
                         <td>{{ $surgery->surgery_type }}</td>
 

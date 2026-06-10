@@ -246,6 +246,20 @@
                             Emergency Records
                         </a>
                     </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.patients.medical-history') }}"
+                class="nxl-link"
+                up-follow
+                up-target="#main-container">
+
+                    <i class="feather-file-text me-2"></i>
+                    Medical History
+
+                </a>
+            </li>
+
+
                 </ul>
             </li>
 
