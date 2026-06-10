@@ -185,7 +185,7 @@ Reversed
 <div class="d-flex gap-2 justify-content-end">
 
 <a href="{{ route('hr.payroll.payroll-result.show', $result->id) }}"
-   class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
+   class="btn btn-outline-secondary btn-sm"
    title="View">
 
 <i class="feather-eye"></i>
