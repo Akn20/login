@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 // Admin
 
@@ -152,6 +153,7 @@ use App\Http\Controllers\HR\PerformanceManagementController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
+use App\Http\Controllers\HR\StatutoryComplianceController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -2794,6 +2796,47 @@ Route::prefix('performance-management')
     Route::delete(
         '/{id}',
         [PerformanceManagementController::class, 'apiDelete']
+    );
+    });
+//---------statutory compliance--------------
+Route::prefix('statutory-compliance')
+    ->group(function () {
+
+    Route::get('/', [StatutoryComplianceController::class, 'apiIndex']);
+
+    Route::get('/form-data', [StatutoryComplianceController::class, 'formData']);
+
+    Route::get('/deleted',[StatutoryComplianceController::class, 'apideleted']);
+
+    Route::get('/{id}', [StatutoryComplianceController::class, 'apiShow']);
+
+    Route::post('/', [StatutoryComplianceController::class, 'apiStore']);
+
+    Route::post('/{id}', [StatutoryComplianceController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [StatutoryComplianceController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore',[StatutoryComplianceController::class, 'apirestore']);
+
+    Route::delete('/{id}/force-delete',[StatutoryComplianceController::class, 'apiforceDelete']);
+});
+//----------------Patient Appointment Tracking------------------------------
+
+Route::prefix('appointment-tracking')->group(function () {
+
+    Route::get(
+        '/',
+        [PatientAppointmentController::class, 'apiIndex']
+    );
+
+    Route::get(
+        '/{id}',
+        [PatientAppointmentController::class, 'apiShow']
+    );
+
+    Route::post(
+        '/cancel/{id}',
+        [PatientAppointmentController::class, 'apiCancel']
     );
 
 });
