@@ -109,10 +109,14 @@
 
         <h5>Execute Order</h5>
 
-        <form action="{{ route('admin.doctor-order-execution.execute', $order->id) }}"
-              method="POST">
+   <form action="{{ route('admin.doctor-order-execution.execute', $order->id) }}"
+      method="POST">
 
-            @csrf
+    @csrf
+
+    <input type="hidden"
+           name="type"
+           value="{{ $type }}">
 
             <div class="mb-3">
 
@@ -147,7 +151,10 @@
               method="POST">
 
             @csrf
-
+            <input type="hidden"
+                   name="type"
+                   value="{{ $type }}"> 
+                   
             <div class="mb-3">
 
                 <label class="form-label">
