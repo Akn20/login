@@ -142,7 +142,7 @@
                                                             <i class="feather-edit"></i>
                                                         </a>
 
-                      <form action="{{ route('hr.payroll.deduction.destroy', $deduction->id) }}"
+                      <form action="{{ route('hr.payroll.deduction.delete', $deduction->id) }}"
                         method="POST"
                         class="d-inline"
                         onsubmit="return confirm('Are you sure you want to delete this deduction?');">
