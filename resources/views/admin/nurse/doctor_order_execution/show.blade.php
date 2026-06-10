@@ -22,13 +22,15 @@
 
         <table class="table table-bordered">
 
-            <tr>
-                <th width="250">Patient Name</th>
-                <td>
-                    {{ $order->patient->first_name ?? '' }}
-                    {{ $order->patient->last_name ?? '' }}
-                </td>
-            </tr>
+         @if($type != 'Medication')
+<tr>
+    <th width="250">Patient Name</th>
+    <td>
+        {{ $order->patient->first_name ?? '' }}
+        {{ $order->patient->last_name ?? '' }}
+    </td>
+</tr>
+@endif
 
             <tr>
                 <th>Order Type</th>
@@ -83,25 +85,38 @@
 
             @endif
 
+@if($type == 'Medication')
 
-            {{-- MEDICATION DETAILS --}}
-            @if($type == 'Medication')
+<tr>
+    <th>Patient Name</th>
+    <td>
+        {{ $order->first_name }}
+        {{ $order->last_name }}
+    </td>
+</tr>
 
-            <tr>
-                <th>Medicine</th>
-                <td>
-                    {{ $order->prescriptionItem->medicine->medicine_name ?? '-' }}
-                </td>
-            </tr>
+<tr>
+    <th>Medicine</th>
+    <td>
+        {{ $order->medicine_name }}
+    </td>
+</tr>
 
-            <tr>
-                <th>Status</th>
-                <td>
-                    {{ $order->status }}
-                </td>
-            </tr>
+<tr>
+    <th>Dosage</th>
+    <td>
+        {{ $order->dosage }}
+    </td>
+</tr>
 
-            @endif
+<tr>
+    <th>Frequency</th>
+    <td>
+        {{ $order->frequency }}
+    </td>
+</tr>
+
+@endif
 
         </table>
 

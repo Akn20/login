@@ -6,17 +6,15 @@
     <div class="col-md-12">
         <h3>Doctor Order Execution</h3>
         <p class="text-muted">View and Execute Doctor Orders</p>
-        @if(session('success'))
+       @if(session('success'))
 
 <div class="alert alert-success alert-dismissible fade show">
-
     {{ session('success') }}
 
     <button type="button"
             class="btn-close"
             data-bs-dismiss="alert">
     </button>
-
 </div>
 
 @endif
@@ -154,9 +152,8 @@
 <tr>
 
     <td>
-        {{ $medication->patient->first_name ?? '' }}
-        {{ $medication->patient->last_name ?? '' }}
-    </td>
+{{ $medication->first_name ?? '' }}
+{{ $medication->last_name ?? '' }}    </td>
 
     <td>
         <span class="badge bg-soft-success text-success">
@@ -165,7 +162,7 @@
     </td>
 
     <td>
-        {{ $medication->prescriptionItem->medicine->medicine_name ?? '-' }}
+      {{ $medication->medicine_name ?? '-' }}
     </td>
 
     <td>
@@ -174,43 +171,44 @@
         </span>
     </td>
 
-    <td>
-        <span class="badge bg-soft-secondary text-secondary">
-            {{ $medication->status }}
-        </span>
-    </td>
-
+<td>
+    <span class="badge bg-soft-secondary text-secondary">
+        {{ $medication->status ?? 'Pending' }}
+    </span>
+</td>
     <td class="text-end">
 
         <div class="d-flex gap-2 justify-content-end">
 
-            <a href="{{ route('admin.doctor-order-execution.show', ['id' => $medication->id]) }}"
+            <a href="{{ route('admin.doctor-order-execution.show', [
+    'id' => $medication->id,
+    'type' => 'Medication'
+]) }}"
                class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
                title="View">
                 <i class="feather-eye"></i>
             </a>
 
-            <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
-                  method="POST">
-                @csrf
+      <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
+      method="POST">
+    @csrf
 
-                <button type="submit"
-                        class="btn btn-outline-success btn-icon rounded-circle btn-sm"
-                        title="Execute">
-                    <i class="feather-check-circle"></i>
-                </button>
-            </form>
+    <input type="hidden"
+           name="type"
+           value="Medication">
 
-            <form action="{{ route('admin.doctor-order-execution.escalate', $medication->id) }}"
-                  method="POST">
-                @csrf
 
-                <button type="submit"
-                        class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                        title="Escalate">
-                    <i class="feather-alert-triangle"></i>
-                </button>
-            </form>
+</form>
+           <form action="{{ route('admin.doctor-order-execution.escalate', $medication->id) }}"
+      method="POST">
+    @csrf
+
+    <input type="hidden"
+           name="type"
+           value="Medication">
+
+
+</form>
 
         </div>
 
