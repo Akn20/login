@@ -377,6 +377,7 @@ class ControlledDrugController extends Controller
 
     public function apiStore(Request $request)
     {
+        
         $drug = ControlledDrug::create([
 
             'controlled_drug_id' => Str::uuid(),

@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
 // Admin
 
@@ -42,7 +43,7 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
-
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\FinancialYearController;
 
@@ -122,6 +123,11 @@ use App\Http\Controllers\BloodGroupController;
 use App\Http\Controllers\ControlledDrugController;
 // Attendance
 use App\Http\Controllers\DepartmentController;
+
+
+
+// medical history
+use App\Http\Controllers\MedicalHistoryController;
 // Leave Management
 use App\Http\Controllers\LeaveManagement\LeaveApplicationController;
 
@@ -152,6 +158,7 @@ use App\Http\Controllers\HR\PerformanceManagementController;
 use App\Http\Controllers\HR\Payroll\PayrollResultController;
 use App\Http\Controllers\HR\Payroll\PayrollDashboardController;
 
+use App\Http\Controllers\HR\StatutoryComplianceController;
 
 use App\Http\Controllers\HR\ShiftSchedulingAPIController;
 use App\Http\Controllers\HR\StaffManagementController;
@@ -940,7 +947,32 @@ Route::prefix('pharmacy')->group(function () {
     Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
     Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
 });
+/*
+|--------------------------------------------------------------------------
+| Pharmacy Vendor Management
+|--------------------------------------------------------------------------
+*/
 
+Route::prefix('vendors')->group(function () {
+
+    Route::get('/', [VendorController::class, 'apiIndex']);
+
+    Route::get('/active/list', [VendorController::class, 'apiActiveVendors']);
+
+    Route::get('/trash/list', [VendorController::class, 'apiTrash']);
+
+    Route::get('/{id}', [VendorController::class, 'apiShow']);
+
+    Route::post('/', [VendorController::class, 'apiStore']);
+
+    Route::put('/{id}', [VendorController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [VendorController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [VendorController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
+});
 /*
 |--------------------------------------------------------------------------
 | 12. Expiry Management
@@ -992,6 +1024,12 @@ Route::prefix('controlled-drugs')->group(function () {
     Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
+
+//dispense and log
+Route::get('/controlled-drug-dispense', [ControlledDrugController::class, 'apiDispense']);
+Route::post('/controlled-drug-dispense', [ControlledDrugController::class, 'apiStoreDispense']);
+Route::get('/controlled-drug-log', [ControlledDrugController::class, 'apiDrugLog']);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1478,23 +1516,23 @@ Route::prefix('pharmacy')->group(function () {
 |   Nurse: Shift Handover Notes
 |--------------------------------------------------------------------------
 */
-//Route::prefix('nurse-shift-handover')->group(function () {
+Route::prefix('nurse-shift-handover')->group(function () {
 
 // Get handover notes by assignment
-//     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
+    Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
-//     // Create handover note
-//     Route::post('/', [NurseShiftsController::class, 'apiStore']);
+    // Create handover note
+    Route::post('/', [NurseShiftsController::class, 'apiStore']);
 
-//     // Update handover note
-//     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
+    // Update handover note
+    Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
 
-//     // Delete handover note
-//     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
+    // Delete handover note
+    Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
 
-//     // Update handover status
-//     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
-// });
+    // Update handover status
+    Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
+});
 //     // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
@@ -2794,6 +2832,47 @@ Route::prefix('performance-management')
     Route::delete(
         '/{id}',
         [PerformanceManagementController::class, 'apiDelete']
+    );
+    });
+//---------statutory compliance--------------
+Route::prefix('statutory-compliance')
+    ->group(function () {
+
+    Route::get('/', [StatutoryComplianceController::class, 'apiIndex']);
+
+    Route::get('/form-data', [StatutoryComplianceController::class, 'formData']);
+
+    Route::get('/deleted',[StatutoryComplianceController::class, 'apideleted']);
+
+    Route::get('/{id}', [StatutoryComplianceController::class, 'apiShow']);
+
+    Route::post('/', [StatutoryComplianceController::class, 'apiStore']);
+
+    Route::post('/{id}', [StatutoryComplianceController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [StatutoryComplianceController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore',[StatutoryComplianceController::class, 'apirestore']);
+
+    Route::delete('/{id}/force-delete',[StatutoryComplianceController::class, 'apiforceDelete']);
+});
+//----------------Patient Appointment Tracking------------------------------
+
+Route::prefix('appointment-tracking')->group(function () {
+
+    Route::get(
+        '/',
+        [PatientAppointmentController::class, 'apiIndex']
+    );
+
+    Route::get(
+        '/{id}',
+        [PatientAppointmentController::class, 'apiShow']
+    );
+
+    Route::post(
+        '/cancel/{id}',
+        [PatientAppointmentController::class, 'apiCancel']
     );
 
 });
@@ -4410,6 +4489,26 @@ Route::prefix('case-sheets')->group(function () {
     Route::delete('/{id}', [CaseSheetApiController::class, 'destroy']);
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Medical History Management APIs
+|--------------------------------------------------------------------------
+*/
+
+
+Route::prefix('patients')->group(function () {
+
+    Route::get('/medical-history', [MedicalHistoryController::class, 'index'])
+        ->name('api.patients.medical-history');
+
+    Route::get('/medical-history/{patientId}', [MedicalHistoryController::class, 'show'])
+        ->name('api.patients.medical-history.show');
+
+});
+
+
 
 /*
 |--------------------------------------------------------------------------

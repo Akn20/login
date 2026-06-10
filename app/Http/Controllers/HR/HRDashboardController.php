@@ -169,48 +169,30 @@ class HRDashboardController extends Controller
                 'inactive'
             )->count(),
         ];
+        $pendingPayroll = PrePayrollAdjustment::where(
+    'status',
+    'pending'
+)->count();
 
         // IMPORTANT — return JSON
-        return response()->json([
+       return view('hr.dashboard.index', [
+    'stats' => [
+        'total_staff'      => $totalEmployees,
+        'active_staff'     => $activeStaff,
+        'pending_leaves'   => $pendingLeaves,
+        'pending_payroll'  => $pendingPayroll,
+    ],
 
-            'success' => true,
+    'departmentLabels' => $departmentLabels,
+    'departmentCounts' => $departmentCounts,
 
-            'data' => [
+    'attendanceLabels' => $dates,
+    'presentCounts'    => $presentCounts,
+    'absentCounts'     => $absentCounts,
 
-                'totalEmployees' =>
-                    $totalEmployees,
-
-                'activeStaff' =>
-                    $activeStaff,
-
-                'pendingLeaves' =>
-                    $pendingLeaves,
-
-                'departmentLabels' =>
-                    $departmentLabels,
-
-                'departmentCounts' =>
-                    $departmentCounts,
-
-                'attendanceLabels' =>
-                    $dates,
-
-                'presentCounts' =>
-                    $presentCounts,
-
-                'absentCounts' =>
-                    $absentCounts,
-
-                'statusLabels' =>
-                    $statusLabels,
-
-                'statusCounts' =>
-                    $statusCounts,
-
-                // needed for your dashboard card
-                'totalReports' => 6,
-            ],
-        ]);
+    'statusLabels'     => $statusLabels,
+    'statusCounts'     => $statusCounts,
+]);
 
     } catch (\Exception $e) {
 

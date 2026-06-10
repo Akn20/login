@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\Nurse\NurseReportController;
 
 // Admin > Pharmacy
 use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\MedicalHistoryController;
 use App\Http\Controllers\Admin\PatientPortal\PatientEmrController;
 use App\Http\Controllers\Admin\PatientPortal\PatientPortalController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyGrnController;
@@ -90,6 +91,7 @@ use App\Http\Controllers\doctor\surgery\SurgeryController;
 use App\Http\Controllers\Doctor\ViewAppointmentController;
 use App\Http\Controllers\Doctor\ViewPatientController;
 use App\Http\Controllers\Doctor\LabRequestController;
+use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\EmergencyCaseController;
 use App\Http\Controllers\EmergencyRecordController;
 use App\Http\Controllers\ExpiryController;
@@ -125,6 +127,7 @@ use App\Http\Controllers\HR\ShiftSchedulingController;
 use App\Http\Controllers\HR\StaffManagementController;
 use App\Http\Controllers\HR\TrainingCertificationTrackingController;
 use App\Http\Controllers\hr\PerformanceManagementController;
+use App\Http\Controllers\HR\StatutoryComplianceController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\LeaveManagement\CompOffController;
@@ -228,6 +231,7 @@ use App\Http\Controllers\LocalTaxSettingController;
 use App\Http\Controllers\PrintFormatSettingController;
 use App\Http\Controllers\InvoiceTemplateController;
 use App\Http\Controllers\PrescriptionFormatSettingController;
+use App\Http\Controllers\Admin\Nurse\DoctorOrderExecutionController;
 //use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 
 //use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
@@ -1147,6 +1151,15 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('patients/{id}/toggle-vip', [PatientController::class, 'toggleVip'])
             ->name('patients.toggleVip');
 
+
+    Route::get('patients/medical-history', [MedicalHistoryController::class, 'index'])
+    ->name('patients.medical-history');
+
+
+    Route::get('patients/medical-history/{patientId}', [MedicalHistoryController::class, 'show'])
+    ->name('patients.medical-history.show');
+
+
         Route::resource('patients', PatientController::class);
 
         /*
@@ -1537,7 +1550,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{id}/toggle-vip', [PatientController::class, 'toggleVip'])->name('toggleVip');
         Route::resource('/', PatientController::class)->parameters(['' => 'patient']);
     });
+    Route::prefix('patient/appointments')
+    ->name('patient.appointments.')
+    ->group(function () {
 
+    Route::get('/',
+        [PatientAppointmentController::class, 'index']
+    )->name('index');
+
+    Route::get('/show/{id}',
+        [PatientAppointmentController::class, 'show']
+    )->name('show');
+
+    Route::post('/cancel/{id}',
+        [PatientAppointmentController::class, 'cancel']
+    )->name('cancel');
+
+});
     // --- Receptionist Tools ---
     Route::resource('tokens', TokenController::class);
     Route::patch('tokens/{id}/skip', [TokenController::class, 'skip'])->name('tokens.skip');
@@ -1560,7 +1589,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::put('/{id}/restore', [AppointmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [AppointmentController::class, 'forceDelete'])->name('forceDelete');
         Route::get('/get-doctors/{department_id}', [AppointmentController::class, 'getDoctors'])->name('getDoctors');
-    });
+        Route::post('/send-reminder/{id}',[AppointmentController::class, 'sendReminder'])->name('sendReminder');
+        });
 
     // --- Admin Pharmacy & Sales Return ---
 
@@ -2161,6 +2191,65 @@ Route::prefix('performance-management')
     Route::post('/{id}/restore',[PerformanceManagementController::class, 'restore'])->name('restore');
     Route::delete('/{id}/force-delete',[PerformanceManagementController::class, 'forceDelete'])->name('forceDelete');
     Route::delete('/{id}',[PerformanceManagementController::class, 'destroy'])->name('delete');
+
+});
+
+
+//---------Statutory Compliance----------------
+
+Route::prefix('statutory-compliance')
+    ->name('statutory-compliance.')
+    ->group(function () {
+
+    Route::get(
+        '/',
+        [StatutoryComplianceController::class, 'index']
+    )->name('index');
+
+    Route::get(
+        '/deleted',
+        [StatutoryComplianceController::class, 'deleted']
+    )->name('deleted');
+
+    Route::get(
+        '/create',
+        [StatutoryComplianceController::class, 'create']
+    )->name('create');
+
+    Route::post(
+        '/store',
+        [StatutoryComplianceController::class, 'store']
+    )->name('store');
+
+    Route::get(
+        '/{id}/show',
+        [StatutoryComplianceController::class, 'show']
+    )->name('show');
+
+    Route::get(
+        '/{id}/edit',
+        [StatutoryComplianceController::class, 'edit']
+    )->name('edit');
+
+    Route::put(
+        '/{id}',
+        [StatutoryComplianceController::class, 'update']
+    )->name('update');
+
+    Route::post(
+        '/{id}/restore',
+        [StatutoryComplianceController::class, 'restore']
+    )->name('restore');
+
+    Route::delete(
+        '/{id}/force-delete',
+        [StatutoryComplianceController::class, 'forceDelete']
+    )->name('forceDelete');
+
+    Route::delete(
+        '/{id}',
+        [StatutoryComplianceController::class, 'destroy']
+    )->name('delete');
 
 });
 
@@ -2829,6 +2918,38 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('patientMonitoring/forceDelete/{id}', [PatientMonitoringController::class, 'forceDelete'])
         ->name('patientMonitoring.forceDelete');
+
+});
+
+
+//------------------ Nurse - Doctor Order Execution-------------------------
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::prefix('doctor-order-execution')->name('doctor-order-execution.')->group(function () {
+
+        Route::get(
+            '/',
+            [DoctorOrderExecutionController::class, 'index']
+        )->name('index');
+
+        Route::get(
+            '/show/{id}',
+            [DoctorOrderExecutionController::class, 'show']
+        )->name('show');
+
+        Route::post(
+            '/execute/{id}',
+            [DoctorOrderExecutionController::class, 'execute']
+        )->name('execute');
+
+        Route::post(
+            '/escalate/{id}',
+            [DoctorOrderExecutionController::class, 'escalate']
+        )->name('escalate');
+
+    });
 
 });
 

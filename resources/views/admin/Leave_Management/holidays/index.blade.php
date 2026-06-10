@@ -90,17 +90,7 @@
                                                     </button>
                                                 </form>
                                                 {{-- Update the status check to use strings --}}
-                                                <form action="{{ route('hr.holidays.toggleStatus', $holiday->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit"
-                                                        class="status-toggle {{ $holiday->status === 'active' ? 'active' : 'inactive' }}">
-                                                        <span>
-                                                            {{ $holiday->status === 'active' ? 'Deactivate' : 'Activate' }}
-                                                        </span>
-                                                    </button>
-                                                </form>
+                                               
 
                                             </div>
                                         </td>

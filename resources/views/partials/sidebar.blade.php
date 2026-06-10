@@ -226,6 +226,18 @@
                             <i class="feather-dollar-sign me-2"></i> Patient Billing
                         </a>
                     </li>
+                   <li class="nxl-item">
+    <a href="{{ route('admin.patient.appointments.index') }}"
+       class="nxl-link"
+       up-follow
+       up-target="#main-container">
+
+        <i class="feather-calendar me-2"></i>
+
+        Appointment Tracking
+
+    </a>
+</li>
 
                     <li class="nxl-item">
                         <a href="{{ route('admin.patients.emergency.list') }}" 
@@ -234,6 +246,20 @@
                             Emergency Records
                         </a>
                     </li>
+
+            <li class="nxl-item">
+                <a href="{{ route('admin.patients.medical-history') }}"
+                class="nxl-link"
+                up-follow
+                up-target="#main-container">
+
+                    <i class="feather-file-text me-2"></i>
+                    Medical History
+
+                </a>
+            </li>
+
+
                 </ul>
             </li>
 
@@ -1239,7 +1265,18 @@
                         </a>
                     </li>
                 </ul>
-
+<ul class="nxl-submenu">
+    <li class="nxl-item">
+        <a href="{{ route('admin.doctor-order-execution.index') }}" class="nxl-link">
+            <span class="nxl-micon">
+                <i class="feather-clipboard"></i>
+            </span>
+            <span class="nxl-mtext">
+                Doctor Order Execution
+            </span>
+        </a>
+    </li>
+</ul>
             </li>
                     
 
@@ -1851,6 +1888,26 @@
 
         <span class="nxl-mtext">
             Performance Management
+        </span>
+
+    </a>
+
+</li>
+<!-- Statutory Compliance -->
+<li class="nxl-item {{ request()->is('hr/statutory-compliance*') ? 'active' : '' }}">
+
+    <a
+        href="{{ route('hr.statutory-compliance.index') }}"
+        class="nxl-link"
+    >
+
+
+        <span class="nxl-micon">
+            <i class="feather-file-text"></i>
+        </span>
+
+        <span class="nxl-mtext">
+            Statutory Compliance
         </span>
 
     </a>
