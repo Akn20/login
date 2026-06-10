@@ -176,6 +176,9 @@ use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\IPDAdmissionController;
+use App\Http\Controllers\WardController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\BedController;
 use App\Http\Controllers\WorkStatusController;
 
 
@@ -819,6 +822,55 @@ Route::post('/financial-years', [FinancialYearApiController::class, 'store']);
 Route::put('/financial-years/{financial_year}', [FinancialYearApiController::class, 'update']);
 Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::class, 'destroy']);
 Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
+
+Route::prefix('wards')->group(function () {
+
+    Route::get('/', [WardController::class, 'apiIndex']);
+    Route::post('/', [WardController::class, 'apiStore']);
+
+    Route::get('/trash', [WardController::class, 'apiTrash']);
+
+    Route::get('/{id}', [WardController::class, 'apiShow']);
+    Route::put('/{id}', [WardController::class, 'apiUpdate']);
+    Route::delete('/{id}', [WardController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [WardController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [WardController::class, 'apiForceDelete']);
+
+    Route::put('/{id}/toggle-status', [WardController::class, 'apiToggleStatus']);
+});
+
+Route::prefix('rooms')->group(function () {
+
+    Route::get('/', [RoomController::class, 'apiIndex']);
+    Route::post('/', [RoomController::class, 'apiStore']);
+
+    Route::get('/trash', [RoomController::class, 'apiTrash']);
+
+    Route::get('/{id}', [RoomController::class, 'apiShow']);
+    Route::put('/{id}', [RoomController::class, 'apiUpdate']);
+    Route::delete('/{id}', [RoomController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [RoomController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [RoomController::class, 'apiForceDelete']);
+
+    Route::put('/{id}/toggle-status', [RoomController::class, 'apiToggleStatus']);
+});
+
+Route::prefix('beds')->group(function () {
+
+    Route::get('/', [BedController::class, 'apiIndex']);
+    Route::post('/', [BedController::class, 'apiStore']);
+
+    Route::get('/trash', [BedController::class, 'trash']);
+
+    Route::get('/{id}', [BedController::class, 'apiShow']);
+    Route::put('/{id}', [BedController::class, 'apiUpdate']);
+    Route::delete('/{id}', [BedController::class, 'apiDelete']);
+
+    Route::put('/{id}/restore', [BedController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [BedController::class, 'forceDeleteApi']);
+});
 
 Route::prefix('doctor')->group(function () {
     Route::get('/emr', [EmrController::class, 'apiIndex']);

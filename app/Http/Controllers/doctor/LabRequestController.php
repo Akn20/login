@@ -138,27 +138,19 @@ class LabRequestController extends Controller
         }
 
         // DATE FILTER
-        if ($request->date) {
+        if ($request->from_date) {
 
-            $query->whereDate('created_at', $request->date);
+            $query->whereDate('created_at', '>=', $request->from_date);
+
+        }
+
+        if ($request->to_date) {
+
+            $query->whereDate('created_at', '<=', $request->to_date);
 
         }
 
         $reports = $query->latest()->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATE FILTER
-        |--------------------------------------------------------------------------
-        */
-
-        if ($request->report_date) {
-
-            $query->whereDate(
-                'created_at',
-                $request->report_date
-            );
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -180,7 +172,7 @@ class LabRequestController extends Controller
         $reports = $query->latest()->get();
 
         return view(
-            'doctor.laboratory.laboratory-reports',
+            'doctor.laboratory.historical-reports',
             compact('reports')
         );
     }

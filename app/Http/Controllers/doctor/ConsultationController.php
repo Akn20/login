@@ -555,11 +555,12 @@ class ConsultationController extends Controller
                 if (! empty($med['medicine'])) {
 
                     $consultation->medicines()->attach($med['medicine'], [
-                        'dosage' => $med['dosage'] ?? null,
-                        'frequency' => $med['frequency'] ?? null,
-                        'duration' => $med['duration'] ?? null,
-                        'instructions' => $med['instructions'] ?? null,
-                    ]);
+    'id' => (string) Str::uuid(),
+    'dosage' => $med['dosage'] ?? null,
+    'frequency' => $med['frequency'] ?? null,
+    'duration' => $med['duration'] ?? null,
+    'instructions' => $med['instructions'] ?? null,
+]);
                 }
             }
         }
@@ -628,11 +629,12 @@ class ConsultationController extends Controller
                 if (! empty($med['medicine'])) {
 
                     $consultation->medicines()->attach($med['medicine'], [
-                        'dosage' => $med['dosage'] ?? null,
-                        'frequency' => $med['frequency'] ?? null,
-                        'duration' => $med['duration'] ?? null,
-                        'instructions' => $med['instructions'] ?? null,
-                    ]);
+    'id' => (string) Str::uuid(),
+    'dosage' => $med['dosage'] ?? null,
+    'frequency' => $med['frequency'] ?? null,
+    'duration' => $med['duration'] ?? null,
+    'instructions' => $med['instructions'] ?? null,
+]);
                 }
             }
         }
