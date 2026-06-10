@@ -1478,23 +1478,23 @@ Route::prefix('pharmacy')->group(function () {
 |   Nurse: Shift Handover Notes
 |--------------------------------------------------------------------------
 */
-//Route::prefix('nurse-shift-handover')->group(function () {
+Route::prefix('nurse-shift-handover')->group(function () {
 
 // Get handover notes by assignment
-//     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
+    Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
-//     // Create handover note
-//     Route::post('/', [NurseShiftsController::class, 'apiStore']);
+    // Create handover note
+    Route::post('/', [NurseShiftsController::class, 'apiStore']);
 
-//     // Update handover note
-//     Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
+    // Update handover note
+    Route::put('/{id}', [NurseShiftsController::class, 'apiUpdateHandover']);
 
-//     // Delete handover note
-//     Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
+    // Delete handover note
+    Route::delete('/{id}', [NurseShiftsController::class, 'apiDeleteHandover']);
 
-//     // Update handover status
-//     Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
-// });
+    // Update handover status
+    Route::put('/{id}/status', [NurseShiftsController::class, 'apiMarkComplete']);
+});
 //     // Get handover notes by assignment
 //     Route::get('/assignment/{shiftAssignmentId}', [NurseShiftsController::class, 'apiShow']);
 
