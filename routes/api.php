@@ -43,7 +43,7 @@ use App\Http\Controllers\Admin\Pharmacy\PrescriptionController;
 use App\Http\Controllers\Admin\Pharmacy\SalesReturnController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SampleCollectionController;
-
+use App\Http\Controllers\VendorController;
 use App\Http\Controllers\Admin\InsuranceClaimController;
 use App\Http\Controllers\Admin\FinancialYearController;
 
@@ -942,7 +942,32 @@ Route::prefix('pharmacy')->group(function () {
     Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
     Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
 });
+/*
+|--------------------------------------------------------------------------
+| Pharmacy Vendor Management
+|--------------------------------------------------------------------------
+*/
 
+Route::prefix('vendors')->group(function () {
+
+    Route::get('/', [VendorController::class, 'apiIndex']);
+
+    Route::get('/active/list', [VendorController::class, 'apiActiveVendors']);
+
+    Route::get('/trash/list', [VendorController::class, 'apiTrash']);
+
+    Route::get('/{id}', [VendorController::class, 'apiShow']);
+
+    Route::post('/', [VendorController::class, 'apiStore']);
+
+    Route::put('/{id}', [VendorController::class, 'apiUpdate']);
+
+    Route::delete('/{id}', [VendorController::class, 'apiDestroy']);
+
+    Route::post('/restore/{id}', [VendorController::class, 'apiRestore']);
+
+    Route::delete('/force-delete/{id}', [VendorController::class, 'apiForceDelete']);
+});
 /*
 |--------------------------------------------------------------------------
 | 12. Expiry Management
@@ -994,6 +1019,12 @@ Route::prefix('controlled-drugs')->group(function () {
     Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);
     Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
+
+//dispense and log
+Route::get('/controlled-drug-dispense', [ControlledDrugController::class, 'apiDispense']);
+Route::post('/controlled-drug-dispense', [ControlledDrugController::class, 'apiStoreDispense']);
+Route::get('/controlled-drug-log', [ControlledDrugController::class, 'apiDrugLog']);
+
 
 /*
 |--------------------------------------------------------------------------
