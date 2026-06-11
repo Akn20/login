@@ -9,11 +9,22 @@
 @enderror
 
 <div class="mb-4">
-    <label class="form-label">Phone Number</label>
-    <input type="text" name="phone_number" class="form-control"
+    <label class="form-label">
+        Phone Number <span class="text-danger">*</span>
+    </label>
+
+    <input
+        type="phone"
+        name="phone_number"
+        class="form-control"
+        maxlength="10"
         value="{{ old('phone_number', $vendor->phone_number ?? '') }}"
-        placeholder="Enter phone number">
+        placeholder="Enter 10 digit phone number"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+        required
+    >
 </div>
+
 @error('phone_number')
     <small class="text-danger">{{ $message }}</small>
 @enderror
