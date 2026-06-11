@@ -1426,7 +1426,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/show/{id}', [VendorController::class, 'show'])->name('show');
         Route::put('/update/{id}', [VendorController::class, 'update'])->name('update');
         Route::get('/trash', [VendorController::class, 'trash'])->name('trash');
-        Route::delete('/delete/{id}', [VendorController::class, 'delete'])->name('delete');
+        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('delete');
         Route::put('/toggle-status/{id}', [VendorController::class, 'toggleStatus'])->name('toggleStatus');
     });
 
