@@ -9,6 +9,10 @@ use Illuminate\Support\Str;
 
 class EquipmentController extends Controller
 {
+    // ==========================================
+    // WEB FUNCTIONS
+    // ==========================================
+
     public function index(Request $request)
     {
         $query = Equipment::query();
@@ -117,6 +121,93 @@ class EquipmentController extends Controller
         return view('admin.laboratory.equipment.show', compact('equipment'));
     }
 
+    // ==========================================
+    // API FUNCTIONS
+    // ==========================================
+
+    public function apiIndex(Request $request)
+    {
+        $query = Equipment::withTrashed();
+
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('equipment_code', 'like', '%' . $request->search . '%')
+                  ->orWhere('serial_number', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $equipment = $query->latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $equipment
+        ]);
+    }
+
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'type' => 'required',
+            'installation_date' => 'required|date|date_format:Y-m-d',
+            'condition_status' => 'required'
+        ]);
+
+        $equipment = Equipment::create([
+            'id' => (string) Str::uuid(),
+            'equipment_code' => 'EQP-' . rand(10000,99999),
+            'name' => $request->name,
+            'type' => $request->type,
+            'manufacturer' => $request->manufacturer,
+            'model_number' => $request->model_number,
+            'serial_number' => $request->serial_number,
+            'installation_date' => $request->installation_date,
+            'location' => $request->location,
+            'condition_status' => $request->condition_status,
+            'status' => $request->status ?? 1
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment Created Successfully',
+            'data' => $equipment
+        ]);
+    }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $equipment = Equipment::findOrFail($id);
+        $equipment->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'manufacturer' => $request->manufacturer,
+            'model_number' => $request->model_number,
+            'serial_number' => $request->serial_number,
+            'installation_date' => $request->installation_date,
+            'location' => $request->location,
+            'condition_status' => $request->condition_status,
+            'status' => $request->status ?? $equipment->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment Updated Successfully',
+            'data' => $equipment
+        ]);
+    }
+
+    public function apiDestroy($id)
+    {
+        $equipment = Equipment::findOrFail($id);
+        $equipment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment moved to trash'
+        ]);
+    }
+
     public function toggleStatus($id)
     {
         $equipment = Equipment::findOrFail($id);
@@ -126,6 +217,16 @@ class EquipmentController extends Controller
         return response()->json([
             'success' => true,
             'is_active' => (bool) $equipment->status
+        ]);
+    }
+
+    public function apiRestore($id)
+    {
+        Equipment::withTrashed()->findOrFail($id)->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment Restored'
         ]);
     }
 }

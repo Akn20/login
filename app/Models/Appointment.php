@@ -27,7 +27,9 @@ class Appointment extends Model
         'appointment_status',
         'consultation_fee',
         'institution_id',
-        'receptionist_user_id'
+        'receptionist_user_id',
+        'reminder_status',
+        'reminder_sent_at'
     ];
 
     protected $dates = [
