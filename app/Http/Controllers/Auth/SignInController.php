@@ -211,31 +211,45 @@ class SignInController extends Controller
     }
 
     public function setMpin(Request $request)
-    {
-        $mobile = session('otp_mobile');
+{
+    $mobile = session('otp_mobile');
 
-        if (! $mobile) {
-            return redirect()->route('login')->with('error', 'Session expired.');
-        }
-
-        $request->validate([
-            'mpin' => 'required|digits_between:4,6',
-        ]);
-
-        $user = User::where('mobile', $mobile)->first();
-
-        if (! $user) {
-            return back()->with('error', 'User not found.');
-        }
-
-        $user->update([
-            'mpin' => Hash::make($request->mpin),
-        ]);
-
-        session()->forget('otp_mobile');
-
-        return redirect()->route('login')->with('success', 'MPIN set successfully. Please login.');
+    if (! $mobile) {
+        return redirect()
+            ->route('login')
+            ->with('error', 'Session expired.');
     }
+
+    $request->validate([
+        'mpin' => 'required|digits_between:4,6|confirmed',
+    ], [
+        'mpin.required' => 'MPIN is required.',
+        'mpin.digits_between' => 'MPIN must be 4 to 6 digits.',
+        'mpin.confirmed' => 'MPIN and Confirm MPIN do not match.',
+    ]);
+
+    $user = User::where('mobile', $mobile)->first();
+
+    if (! $user) {
+        return back()->with(
+            'error',
+            'User not found.'
+        );
+    }
+
+    $user->update([
+        'mpin' => Hash::make($request->mpin),
+    ]);
+
+    session()->forget('otp_mobile');
+
+    return redirect()
+        ->route('login')
+        ->with(
+            'success',
+            'MPIN set successfully. Please login.'
+        );
+}
 
     public function logout(Request $request)
     {

@@ -244,4 +244,204 @@ DoctorOrderExecution::create([
         ->route('admin.doctor-order-execution.index')
         ->with('success', 'Order Escalated Successfully');
 }
+//-----------api---------------------------------
+public function apiIndex()
+{
+    $labRequests = LabRequest::with('patient')
+        ->latest()
+        ->get()
+        ->map(function ($item) {
+
+            return [
+                'id' => $item->id,
+                'type' => 'Lab',
+                'patient_name' =>
+                    optional($item->patient)->name,
+                'status' =>
+                    $item->status,
+                'created_at' =>
+                    $item->created_at,
+            ];
+        });
+
+    $scanRequests = ScanRequest::with([
+        'patient',
+        'scanType'
+    ])
+    ->latest()
+    ->get()
+    ->map(function ($item) {
+
+        return [
+            'id' => $item->id,
+            'type' => 'Radiology',
+            'patient_name' =>
+                optional($item->patient)->name,
+            'scan_type' =>
+                optional($item->scanType)->name,
+            'status' =>
+                $item->status,
+            'created_at' =>
+                $item->created_at,
+        ];
+    });
+
+    $medications = MedicationAdministration::with([
+        'patient',
+        'prescriptionItem.medicine'
+    ])
+    ->latest()
+    ->get()
+    ->map(function ($item) {
+
+        return [
+            'id' => $item->id,
+            'type' => 'Medication',
+            'patient_name' =>
+                optional($item->patient)->name,
+            'medicine' =>
+                optional(
+                    optional(
+                        $item->prescriptionItem
+                    )->medicine
+                )->medicine_name,
+            'status' =>
+                $item->status,
+            'created_at' =>
+                $item->created_at,
+        ];
+    });
+
+    $orders = collect()
+        ->merge($labRequests)
+        ->merge($scanRequests)
+        ->merge($medications)
+        ->sortByDesc('created_at')
+        ->values();
+
+    return response()->json($orders);
+}
+public function apiShow($id)
+{
+    $labRequest = LabRequest::with([
+        'patient',
+        'consultation'
+    ])->find($id);
+
+    if ($labRequest) {
+
+        return response()->json([
+            'data' => $labRequest,
+            'type' => 'Lab'
+        ]);
+    }
+
+    $scanRequest = ScanRequest::with([
+        'patient',
+        'scanType'
+    ])->find($id);
+
+    if ($scanRequest) {
+
+        return response()->json([
+            'data' => $scanRequest,
+            'type' => 'Radiology'
+        ]);
+    }
+
+    $medication =
+        MedicationAdministration::with([
+            'patient',
+            'prescriptionItem.medicine'
+        ])->find($id);
+
+    if ($medication) {
+
+        return response()->json([
+            'data' => $medication,
+            'type' => 'Medication'
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Not Found'
+    ], 404);
+}
+public function apiExecute(
+    Request $request,
+    $id
+)
+{
+    $labRequest =
+        LabRequest::findOrFail($id);
+
+    DoctorOrderExecution::create([
+
+        'order_type' => 'Lab',
+
+        'order_reference_id' => $id,
+
+        'patient_id' =>
+            $labRequest->patient_id,
+
+        'execution_status' =>
+            'Executed',
+
+        'remarks' =>
+            $request->remarks,
+
+        'executed_by' =>
+            1,
+
+        'executed_at' =>
+            now(),
+
+    ]);
+
+    $labRequest->update([
+        'status' => 'completed'
+    ]);
+
+    return response()->json([
+        'message' =>
+            'Order Executed Successfully'
+    ]);
+}
+public function apiEscalate(
+    Request $request,
+    $id
+)
+{
+    $labRequest =
+        LabRequest::findOrFail($id);
+
+    DoctorOrderExecution::create([
+
+        'order_type' => 'Lab',
+
+        'order_reference_id' => $id,
+
+        'patient_id' =>
+            $labRequest->patient_id,
+
+        'execution_status' =>
+            'Escalated',
+
+        'escalation_reason' =>
+            $request->reason,
+
+        'executed_by' =>
+            1,
+
+    ]);
+
+    $labRequest->update([
+        'status' => 'in_progress'
+    ]);
+
+    return response()->json([
+        'message' =>
+            'Order Escalated Successfully'
+    ]);
+}
 }

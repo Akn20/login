@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Nurse\MedicationAdministrationController;
 use App\Http\Controllers\Admin\Nurse\NurseShiftsController;
 use App\Http\Controllers\Admin\Nurse\PatientMonitoringController;
 use App\Http\Controllers\Admin\Nurse\PpeComplianceController;
+use App\Http\Controllers\Admin\Nurse\DoctorOrderExecutionController;
 use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\PatientAppointmentController;
 use App\Http\Controllers\Admin\Pharmacy\PharmacyBillingController;
@@ -442,15 +443,32 @@ Route::delete('/weekends/{id}/force-delete', [WeekendController::class, 'forceDe
 Route::patch('/weekends/{id}/toggle-status', [WeekendController::class, 'toggleStatus']);
 
 // Holidays
-Route::get('/holidays', [HolidayController::class, 'index']);
-Route::post('/holidays', [HolidayController::class, 'store']);
-Route::get('/holidays/{id}', [HolidayController::class, 'show']);
-Route::patch('/holidays/{id}', [HolidayController::class, 'update']);
-Route::delete('/holidays/{id}', [HolidayController::class, 'destroy']);
-Route::get('/holidays/deleted', [HolidayController::class, 'deleted']);
-Route::post('/holidays/{id}/restore', [HolidayController::class, 'restore']);
-Route::delete('/holidays/{id}/force-delete', [HolidayController::class, 'forceDelete']);
-Route::patch('/holidays/{id}/toggle-status', [HolidayController::class, 'toggleStatus']);
+Route::get('/holidays/deleted',
+    [HolidayController::class, 'deleted']);
+
+Route::post('/holidays/{id}/restore',
+    [HolidayController::class, 'restore']);
+
+Route::delete('/holidays/{id}/force-delete',
+    [HolidayController::class, 'forceDelete']);
+
+Route::patch('/holidays/{id}/toggle-status',
+    [HolidayController::class, 'toggleStatus']);
+
+Route::get('/holidays',
+    [HolidayController::class, 'index']);
+
+Route::post('/holidays',
+    [HolidayController::class, 'store']);
+
+Route::get('/holidays/{id}',
+    [HolidayController::class, 'show']);
+
+Route::patch('/holidays/{id}',
+    [HolidayController::class, 'update']);
+
+Route::delete('/holidays/{id}',
+    [HolidayController::class, 'destroy']);
 
 // Prefixed /calendar
 Route::prefix('calendar')->group(function () {
@@ -1031,6 +1049,8 @@ Route::prefix('vitals')->group(function () {
     Route::put('/{id}/restore', [PatientMonitoringController::class, 'apiRestore']);
     Route::delete('/{id}/force-delete', [PatientMonitoringController::class, 'apiForceDelete']);
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1792,4 +1812,32 @@ Route::prefix('appointment-tracking')->group(function () {
     );
 
 });
+Route::prefix(
+    'doctor-order-execution'
+)
+->group(function () {
 
+    Route::get(
+        '/',
+        [DoctorOrderExecutionController::class,
+        'apiIndex']
+    );
+
+    Route::get(
+        '/{id}',
+        [DoctorOrderExecutionController::class,
+        'apiShow']
+    );
+
+    Route::post(
+        '/execute/{id}',
+        [DoctorOrderExecutionController::class,
+        'apiExecute']
+    );
+
+    Route::post(
+        '/escalate/{id}',
+        [DoctorOrderExecutionController::class,
+        'apiEscalate']
+    );
+});
