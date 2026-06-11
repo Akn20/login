@@ -41,7 +41,7 @@ class PatientController extends Controller
 
         Patient::create([
             'id' => (string) Str::uuid(),
-            'patient_code' => 'PAT-' . rand(10000,99999),
+            'patient_code' => 'PAT-' . rand(10000, 99999),
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'gender' => $request->gender,
@@ -89,7 +89,7 @@ class PatientController extends Controller
     }
 
     public function restore($id)
-    {   
+    {
         Patient::withTrashed()->findOrFail($id)->restore();
         return redirect()->route('admin.patients.deleted')
             ->with('success', 'Patient Restored Successfully');
@@ -115,16 +115,16 @@ class PatientController extends Controller
         return response()->json([
             'success' => true,
             'is_active' => (bool) $patient->status
-        ]); 
+        ]);
     }
 
     public function toggleVip($id)
-    {   
+    {
         $patient = Patient::findOrFail($id);
         $patient->is_vip = !$patient->is_vip;
         $patient->save();
 
-       return response()->json([
+        return response()->json([
             'success' => true,
             'is_active' => (bool) $patient->is_vip
         ]);
@@ -170,14 +170,176 @@ class PatientController extends Controller
     }
     //added by sushan for api
     public function apiIndex()
-{
-    $patients = Patient::select('id','first_name','last_name','patient_code')
-        ->where('status',1)
-        ->get();
+    {
+        $patients = Patient::select('id', 'first_name', 'last_name', 'patient_code')
+            ->where('status', 1)
+            ->get();
 
-    return response()->json([
-        'success' => true,
-        'data' => $patients
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'data' => $patients
+        ]);
+    }
+
+
+    // GET /patients/{id}
+    public function apiShow($id)
+    {
+        $patient = Patient::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $patient
+        ]);
+    }
+
+    // POST /patients
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'gender' => 'required',
+            'mobile' => 'required|regex:/^[0-9]{10}$/'
+        ]);
+
+        $patient = Patient::create([
+            'id' => (string) Str::uuid(),
+            'patient_code' => 'PAT-' . rand(10000, 99999),
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'gender' => $request->gender,
+            'date_of_birth' => $request->date_of_birth,
+            'mobile' => $request->mobile,
+            'email' => $request->email,
+            'blood_group' => $request->blood_group,
+            'address' => $request->address,
+            'emergency_contact' => $request->emergency_contact,
+            'is_vip' => $request->is_vip ?? 0,
+            'status' => 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient created successfully',
+            'data' => $patient
+        ], 201);
+    }
+
+    // PUT /patients/{id}
+    public function apiUpdate(Request $request, $id)
+    {
+        $patient = Patient::findOrFail($id);
+
+        $patient->update($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient updated successfully',
+            'data' => $patient
+        ]);
+    }
+
+    // DELETE /patients/{id}
+    public function apiDelete($id)
+    {
+        Patient::findOrFail($id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient moved to trash successfully'
+        ]);
+    }
+
+    // GET /patients/deleted/list
+    public function apiDeleted()
+    {
+        $patients = Patient::onlyTrashed()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $patients
+        ]);
+    }
+
+    // POST /patients/{id}/restore
+    public function apiRestore($id)
+    {
+        Patient::withTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient restored successfully'
+        ]);
+    }
+
+    // DELETE /patients/{id}/force-delete
+    public function apiForceDelete($id)
+    {
+        Patient::withTrashed()
+            ->findOrFail($id)
+            ->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patient permanently deleted'
+        ]);
+    }
+
+    // GET /patients/duplicates/list
+    public function apiDuplicates()
+    {
+        $duplicateGroups = Patient::select(
+            'mobile',
+            'first_name',
+            'last_name'
+        )
+            ->groupBy(
+                'mobile',
+                'first_name',
+                'last_name'
+            )
+            ->havingRaw('COUNT(*) > 1')
+            ->get();
+
+        $groups = [];
+
+        foreach ($duplicateGroups as $group) {
+
+            $patients = Patient::where('mobile', $group->mobile)
+                ->where('first_name', $group->first_name)
+                ->where('last_name', $group->last_name)
+                ->get();
+
+            $groups[] = $patients;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $groups
+        ]);
+    }
+
+    // POST /patients/merge
+    public function apiMerge(Request $request)
+    {
+        $request->validate([
+            'master_id' => 'required',
+            'duplicate_ids' => 'required|array'
+        ]);
+
+        foreach ($request->duplicate_ids as $id) {
+
+            if ($id != $request->master_id) {
+                Patient::where('id', $id)->delete();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Patients merged successfully'
+        ]);
+    }
 }

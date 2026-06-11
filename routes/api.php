@@ -4735,3 +4735,24 @@ Route::delete(
     '/prescription-format-settings/{id}',
     [PrescriptionFormatApiController::class, 'destroy']
 );
+
+Route::prefix('patients')->group(function () {
+
+    Route::get('/', [PatientController::class, 'apiIndex']);
+
+    Route::get('/deleted/list', [PatientController::class, 'apiDeleted']);
+    Route::get('/duplicates/list', [PatientController::class, 'apiDuplicates']);
+
+    Route::post('/', [PatientController::class, 'apiStore']);
+    Route::post('/merge', [PatientController::class, 'apiMerge']);
+
+    Route::get('/{id}', [PatientController::class, 'apiShow']);
+    Route::put('/{id}', [PatientController::class, 'apiUpdate']);
+    Route::delete('/{id}', [PatientController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore', [PatientController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [PatientController::class, 'apiForceDelete']);
+
+    Route::post('/{id}/toggle-status', [PatientController::class, 'toggleStatus']);
+    Route::post('/{id}/toggle-vip', [PatientController::class, 'toggleVip']);
+});
