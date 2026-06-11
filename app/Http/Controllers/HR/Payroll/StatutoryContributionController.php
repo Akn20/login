@@ -56,20 +56,20 @@ class StatutoryContributionController extends Controller
             'rule_set_code' => 'required',
             'status' => 'required',
             'compliance_head' => 'required',
-            'statutory_code' => 'required',
+         'statutory_code' => 'required',
 
-            'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
-            'applicable_states' => 'required_if:state_applicable,1|nullable|array',
+'state_applicable' => 'required',
 
-            'prorata_applicable' => 'required',
+'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
+'applicable_states' => 'required_if:state_applicable,1|nullable|array',
             'lop_impact' => 'required',
             'show_in_payslip' => 'required',
             'included_in_ctc' => 'required',
             'payslip_order' => 'nullable|integer|min:1',
         ]);
-
-        if ($request->has('applicable_states')) {
-$validated['applicable_states'] = $request->applicable_states;        }
+if ($request->has('applicable_states')) {
+    $validated['applicable_states'] = json_encode($request->applicable_states);
+}
 
         $contribution = StatutoryContribution::create($validated);
 
@@ -140,7 +140,7 @@ $validated['applicable_states'] = $request->applicable_states;        }
             'status' => 'required',
             'compliance_head' => 'required',
             'statutory_code' => 'required',
-
+'state_applicable' => 'required',
             'salary_ceiling_amount' => 'required_if:salary_ceiling_applicable,1|nullable|numeric|min:1',
             'applicable_states' => 'required_if:state_applicable,1|nullable|array',
 
@@ -151,8 +151,9 @@ $validated['applicable_states'] = $request->applicable_states;        }
             'payslip_order' => 'nullable|integer|min:1',
         ]);
 
-        if ($request->has('applicable_states')) {
-$validated['applicable_states'] = $request->applicable_states;        }
+if ($request->has('applicable_states')) {
+    $validated['applicable_states'] = json_encode($request->applicable_states);
+}
 
         $statutoryContribution->update($validated);
 
