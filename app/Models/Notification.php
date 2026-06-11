@@ -11,13 +11,17 @@ class Notification extends Model
     public $timestamps = true;
     protected $keyType = 'string';
 
-    
+
 
     protected $fillable = [
         'user_id',
+        'patient_id',
+        'type',
+        'title',
         'message',
-        'is_read',
-        'created_at'
+        'priority',
+        'reference_id',
+        'is_read'
     ];
 
     protected $casts = [

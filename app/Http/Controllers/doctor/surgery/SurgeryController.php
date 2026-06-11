@@ -10,6 +10,7 @@ use App\Models\Staff;
 use Illuminate\Support\Str;
 use App\Models\PreOperative;
 use App\Models\PostOperative;
+use App\Models\Notification;
 
 class SurgeryController extends Controller
 {
@@ -97,6 +98,35 @@ class SurgeryController extends Controller
 
     );
 
+    if ($request->priority == 'Emergency') {
+
+        $patient = Patient::find($request->patient_id);
+
+        Notification::create([
+
+            'user_id' => auth()->id(),
+
+            'patient_id' => $request->patient_id,
+
+            'type' => 'Emergency',
+
+            'title' => 'Emergency Case Alert',
+
+            'message' =>
+                'Emergency surgery case updated for patient '
+                . $patient->first_name . ' '
+                . $patient->last_name
+                . '. Immediate attention required.',
+
+            'priority' => 'High',
+
+            'reference_id' => $surgery->id,
+
+            'is_read' => false
+
+        ]);
+    }
+
 
     return redirect()->route('surgery.index')
         ->with('success','Surgery Updated Successfully');
@@ -157,6 +187,38 @@ class SurgeryController extends Controller
         'risk_factors'=>$request->risk_factors
 
     ]);
+
+    
+if ($request->priority == 'Emergency') {
+
+    $patient = Patient::find($request->patient_id);
+
+    Notification::create([
+
+        'user_id' => auth()->id(),
+
+        'patient_id' => $request->patient_id,
+
+        'type' => 'Emergency',
+
+        'title' => 'Emergency Case Alert',
+
+        'message' =>
+            'Emergency surgery case registered for patient '
+            . $patient->first_name . ' '
+            . $patient->last_name
+            . '. Immediate attention required.',
+
+        'priority' => 'High',
+
+        'reference_id' => $surgery->id,
+
+        'is_read' => false
+
+    ]);
+}
+
+
 
 
     return redirect()->route('surgery.index')
