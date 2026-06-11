@@ -189,6 +189,7 @@ Reversed
    title="View">
 
 <i class="feather-eye"></i>
+</a>
 </div>
 
 </td>
