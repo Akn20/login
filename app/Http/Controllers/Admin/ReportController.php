@@ -892,25 +892,29 @@ public function finalize($id)
 
     // ================= SIGN =================
     public function apiSign($id)
-    {
+{
+    try {
+
         $report = LabReport::findOrFail($id);
 
-        if ($report->verification_status !== 'Verified') {
-            return response()->json([
-                'status' => false,
-                'message' => 'Verify before signing'
-            ]);
-        }
-
-        $report->update([
-            'digital_signature' => auth()->user()->name
-        ]);
+       $report->update([
+    'digital_signature' => auth()->user()->name ?? 'Unknown User'
+]);
 
         return response()->json([
-            'status' => true,
-            'message' => 'Signed successfully'
+            'status' => true
         ]);
+
+    } catch (\Exception $e) {
+
+        \Log::error($e->getMessage());
+
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
 
     // ================= FINALIZE =================
     public function apiFinalize($id)
