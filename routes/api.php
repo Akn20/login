@@ -115,6 +115,7 @@ use App\Http\Controllers\Doctor\FollowUpController;
 
 
 use App\Http\Controllers\Doctor\EmrController;
+use App\Http\Controllers\Doctor\DoctorDashboardController;
 
 // HR
 use App\Http\Controllers\Auth\SignInController;
@@ -833,6 +834,7 @@ Route::delete('/financial-years/{financial_year}', [FinancialYearApiController::
 Route::post('/financial-years/{financial_year}/toggle', [FinancialYearApiController::class, 'toggleStatus']);
 
 Route::prefix('doctor')->group(function () {
+    Route::get('/dashboard', [DoctorDashboardController::class, 'apiIndex']);
     Route::get('/emr', [EmrController::class, 'apiIndex']);
     Route::get('/emr/{id}', [EmrController::class, 'apiShow']);
 
