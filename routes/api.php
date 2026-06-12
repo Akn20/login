@@ -486,7 +486,7 @@ Route::put('job-types/{id}/restore', [JobTypeController::class, 'apiRestore']);
 Route::delete('job-types/{id}/force-delete', [JobTypeController::class, 'apiForceDelete']);
 
 /* Work Status */
-Route::get('/work-tatus', [WorkStatusController::class, 'apiIndex']);
+Route::get('/work-status', [WorkStatusController::class, 'apiIndex']);
 Route::post('/work-status', [WorkStatusController::class, 'apiStore']);
 Route::put('/work-status/{id}', [WorkStatusController::class, 'apiUpdate']);
 Route::delete('/work-status/{id}', [WorkStatusController::class, 'apiDelete']);
@@ -907,6 +907,15 @@ Route::prefix('pharmacy')->group(function () {
     Route::delete('/grn-trash/{id}/force-delete', [PharmacyGrnController::class, 'apiForceDelete']);
     Route::post('/grn/{id}/verify', [PharmacyGrnController::class, 'apiVerify']);
     Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
+
+    // Sales Returns
+    Route::get('/sales-returns', [SalesReturnController::class, 'apiIndex']);
+    Route::get('/sales-returns/{id}', [SalesReturnController::class, 'apiShow']);
+    Route::post('/sales-returns', [SalesReturnController::class, 'apiStore']);
+    Route::put('/sales-returns/{id}', [SalesReturnController::class, 'apiUpdate']);
+    Route::post('/sales-returns/{id}/approve', [SalesReturnController::class, 'apiApprove']);
+    Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);
+    Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
 
 /*
@@ -952,13 +961,13 @@ Route::prefix('controlled-drugs')->group(function () {
     Route::post('/grn/{id}/reject', [PharmacyGrnController::class, 'apiReject']);
 
     // Sales Returns
-    Route::get('/sales-returns', [SalesReturnController::class, 'apiIndex']);
-    Route::get('/sales-returns/{id}', [SalesReturnController::class, 'apiShow']);
-    Route::post('/sales-returns', [SalesReturnController::class, 'apiStore']);
-    Route::put('/sales-returns/{id}', [SalesReturnController::class, 'apiUpdate']);
-    Route::post('/sales-returns/{id}/approve', [SalesReturnController::class, 'apiApprove']);
-    Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);
-    Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
+    //Route::get('/sales-returns', [SalesReturnController::class, 'apiIndex']);
+    //Route::get('/sales-returns/{id}', [SalesReturnController::class, 'apiShow']);
+    //Route::post('/sales-returns', [SalesReturnController::class, 'apiStore']);
+    //Route::put('/sales-returns/{id}', [SalesReturnController::class, 'apiUpdate']);
+    //Route::post('/sales-returns/{id}/approve', [SalesReturnController::class, 'apiApprove']);
+    //Route::post('/sales-returns/{id}/reject', [SalesReturnController::class, 'apiReject']);
+    //Route::get('/sales-bills/search', [SalesReturnController::class, 'apiBillSearch']);
 });
 
 /*

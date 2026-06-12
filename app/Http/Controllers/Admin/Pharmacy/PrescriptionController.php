@@ -903,6 +903,7 @@ return redirect()
 }
  //API ENDPOINT TO GET PRESCRIPTION DETAILS
  
+ /*
 public function apiIndex()
 {
  
@@ -971,6 +972,62 @@ return response()->json([
 'data'=>$prescriptions
 ]);
  
+}
+*/
+
+public function apiIndex()
+{
+    $digital = DB::table('consultations')
+        ->join('patients','patients.id','=','consultations.patient_id')
+        ->join('staff','staff.id','=','consultations.doctor_id')
+        ->leftJoin('prescription_status','consultations.id','=','prescription_status.consultation_id')
+        ->select(
+            'consultations.id',
+            DB::raw("CONCAT('PR-',LPAD(consultations.id,4,'0')) as prescription_number"),
+            DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
+            'staff.name as doctor_name',
+            'consultations.consultation_date as prescription_date',
+            DB::raw("'Digital' as prescription_type"),
+            DB::raw("COALESCE(prescription_status.status,'Pending') as status")
+        )
+        ->get();
+
+    $offline = DB::table('offline_prescriptions')
+        ->select(
+            'id',
+            'prescription_number',
+            'patient_name',
+            'doctor_name',
+            'prescription_date',
+            DB::raw("'Offline' as prescription_type"),
+            'status'
+        )
+        ->get();
+
+    $ipd = DB::table('ipd_prescriptions')
+        ->join('patients','patients.id','=','ipd_prescriptions.patient_id')
+        ->join('staff','staff.id','=','ipd_prescriptions.doctor_id')
+        ->select(
+            'ipd_prescriptions.id',
+            DB::raw("CONCAT('IPD-', SUBSTRING(ipd_prescriptions.id,1,4)) as prescription_number"),
+            DB::raw("CONCAT(patients.first_name,' ',patients.last_name) as patient_name"),
+            'staff.name as doctor_name',
+            'ipd_prescriptions.prescription_date',
+            DB::raw("'IPD' as prescription_type"),
+            DB::raw("COALESCE(ipd_prescriptions.status,'Pending') as status")
+        )
+        ->get();
+
+    $prescriptions = $digital
+        ->merge($offline)
+        ->merge($ipd)
+        ->sortByDesc('prescription_date')
+        ->values();
+
+    return response()->json([
+        'success' => true,
+        'data' => $prescriptions
+    ]);
 }
 public function apiShow($id)
 {
