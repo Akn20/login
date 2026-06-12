@@ -27,6 +27,59 @@
     </div>
 
     <div class="card-body">
+        <form method="GET" action="{{ route('admin.doctor-order-execution.index') }}">
+    <div class="row mb-3">
+
+        <div class="col-md-3">
+            <select name="order_type" class="form-control">
+                <option value="">All Order Types</option>
+                <option value="Lab">Lab</option>
+                <option value="Radiology">Radiology</option>
+                <option value="Medication">Medication</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+    <select name="status" class="form-control">
+        <option value="">All Status</option>
+        <option value="completed">Completed</option>
+        <option value="Approved">Approved</option>
+        <option value="Pending">Pending</option>
+        <option value="Missed">Missed</option>
+        <option value="in_progress">In Progress</option>
+        <option value="Under Review">Under Review</option>
+    </select>
+</div>
+<div class="col-md-3">
+    <select name="patient_id" class="form-control">
+
+        <option value="">
+            All Patients
+        </option>
+
+        @foreach($patients as $patient)
+
+            <option value="{{ $patient->id }}">
+
+                {{ $patient->first_name }}
+                {{ $patient->last_name }}
+
+            </option>
+
+        @endforeach
+
+    </select>
+</div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">
+                Filter
+            </button>
+        </div>
+
+
+    </div>
+</form>
 
         <div class="table-responsive">
 
@@ -79,8 +132,7 @@
 
                         <td class="text-end">
 
-                          <div class="d-flex justify-content-end">
-
+                      <div class="d-flex gap-2 justify-content-end">
     <a href="{{ route('admin.doctor-order-execution.show', ['id' => $lab->id, 'type' => 'Lab']) }}"
        class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
        title="View">
@@ -189,7 +241,7 @@
                 <i class="feather-eye"></i>
             </a>
 
-      <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
+      <!-- <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
       method="POST">
     @csrf
 
@@ -208,7 +260,7 @@
            value="Medication">
 
 
-</form>
+</form> -->
 
         </div>
 

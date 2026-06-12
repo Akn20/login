@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class DoctorOrderExecutionController extends Controller
 {
-    public function index()
-    {
+    public function index(Request $request)
+{
         $labRequests = LabRequest::with('patient')
             ->latest()
             ->get();
@@ -37,12 +37,67 @@ $medications = DB::table('ipd_prescription_items as items')
     )
     ->get();
 
+    $patients = DB::table('patients')
+    ->select('id', 'first_name', 'last_name')
+    ->get();
+
+    if ($request->status) {
+
+    $labRequests = $labRequests->where(
+        'status',
+        $request->status
+    );
+
+    $scanRequests = $scanRequests->where(
+        'status',
+        $request->status
+    );
+
+    $medications = $medications->where(
+        'status',
+        $request->status
+    );
+}
+
+if ($request->patient_id) {
+
+    $labRequests = $labRequests->where(
+        'patient_id',
+        $request->patient_id
+    );
+
+    $scanRequests = $scanRequests->where(
+        'patient_id',
+        $request->patient_id
+    );
+
+    $medications = $medications->where(
+        'patient_id',
+        $request->patient_id
+    );
+}
+
+    if ($request->order_type == 'Lab') {
+    $scanRequests = collect();
+    $medications = collect();
+}
+
+if ($request->order_type == 'Radiology') {
+    $labRequests = collect();
+    $medications = collect();
+}
+
+if ($request->order_type == 'Medication') {
+    $labRequests = collect();
+    $scanRequests = collect();
+}
         return view(
             'admin.nurse.doctor_order_execution.index',
             compact(
                 'labRequests',
                 'scanRequests',
-                'medications'
+                'medications',
+                'patients'
             )
         );
     }
