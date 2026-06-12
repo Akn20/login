@@ -464,7 +464,7 @@ class StaffManagementController extends Controller
 
         return response()->json($doctors);
     }
-      //added by sushan for api
+      
     public function getSurgeons()
     {
         $surgeons = Staff::whereHas('designation', function ($query) {
@@ -478,7 +478,7 @@ class StaffManagementController extends Controller
             'data' => $surgeons
         ]);
     }
-    //added by sushan for api
+   
     public function getAssistantDoctors()
     {
         $assistantDoctors = Staff::whereHas('designation', function ($query) {
@@ -492,7 +492,7 @@ class StaffManagementController extends Controller
             'data' => $assistantDoctors
         ]);
     }
-    //added by sushan for api
+    
     public function getAnesthetists()
     {
         $anesthetists = Staff::whereHas('designation', function ($query) {
