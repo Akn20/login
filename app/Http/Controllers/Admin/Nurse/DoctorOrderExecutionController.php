@@ -252,13 +252,32 @@ public function apiIndex()
         ->get()
         ->map(function ($item) {
 
+            $execution =
+                DoctorOrderExecution::where(
+                    'order_type',
+                    'Lab'
+                )
+                ->where(
+                    'order_reference_id',
+                    $item->id
+                )
+                ->latest()
+                ->first();
+
             return [
                 'id' => $item->id,
                 'type' => 'Lab',
+
                 'patient_name' =>
-                    optional($item->patient)->name,
+                    optional($item->patient)->first_name .
+                    ' ' .
+                    optional($item->patient)->last_name,
+
                 'status' =>
-                    $item->status,
+                    $execution
+                        ? $execution->execution_status
+                        : 'Pending',
+
                 'created_at' =>
                     $item->created_at,
             ];
@@ -272,41 +291,94 @@ public function apiIndex()
     ->get()
     ->map(function ($item) {
 
+        $execution =
+            DoctorOrderExecution::where(
+                'order_type',
+                'Radiology'
+            )
+            ->where(
+                'order_reference_id',
+                $item->id
+            )
+            ->latest()
+            ->first();
+
         return [
             'id' => $item->id,
             'type' => 'Radiology',
+
             'patient_name' =>
-                optional($item->patient)->name,
+                optional($item->patient)->first_name .
+                ' ' .
+                optional($item->patient)->last_name,
+
             'scan_type' =>
                 optional($item->scanType)->name,
+
             'status' =>
-                $item->status,
+                $execution
+                    ? $execution->execution_status
+                    : 'Pending',
+
             'created_at' =>
                 $item->created_at,
         ];
     });
 
-    $medications = MedicationAdministration::with([
-        'patient',
-        'prescriptionItem.medicine'
-    ])
-    ->latest()
+    $medications = DB::table(
+        'ipd_prescription_items as items'
+    )
+    ->join(
+        'ipd_prescriptions as prescriptions',
+        'items.prescription_id',
+        '=',
+        'prescriptions.id'
+    )
+    ->join(
+        'patients',
+        'prescriptions.patient_id',
+        '=',
+        'patients.id'
+    )
+    ->select(
+        'items.id',
+        'items.created_at',
+        'items.medicine_name',
+        'patients.first_name',
+        'patients.last_name'
+    )
     ->get()
     ->map(function ($item) {
+
+        $execution =
+            DoctorOrderExecution::where(
+                'order_type',
+                'Medication'
+            )
+            ->where(
+                'order_reference_id',
+                $item->id
+            )
+            ->latest()
+            ->first();
 
         return [
             'id' => $item->id,
             'type' => 'Medication',
+
             'patient_name' =>
-                optional($item->patient)->name,
+                $item->first_name .
+                ' ' .
+                $item->last_name,
+
             'medicine' =>
-                optional(
-                    optional(
-                        $item->prescriptionItem
-                    )->medicine
-                )->medicine_name,
+                $item->medicine_name,
+
             'status' =>
-                $item->status,
+                $execution
+                    ? $execution->execution_status
+                    : 'Pending',
+
             'created_at' =>
                 $item->created_at,
         ];
@@ -331,8 +403,8 @@ public function apiShow($id)
     if ($labRequest) {
 
         return response()->json([
-            'data' => $labRequest,
-            'type' => 'Lab'
+            'type' => 'Lab',
+            'data' => $labRequest
         ]);
     }
 
@@ -344,27 +416,43 @@ public function apiShow($id)
     if ($scanRequest) {
 
         return response()->json([
-            'data' => $scanRequest,
-            'type' => 'Radiology'
+            'type' => 'Radiology',
+            'data' => $scanRequest
         ]);
     }
 
-    $medication =
-        MedicationAdministration::with([
-            'patient',
-            'prescriptionItem.medicine'
-        ])->find($id);
+    $medication = DB::table('ipd_prescription_items as items')
+        ->join(
+            'ipd_prescriptions as prescriptions',
+            'items.prescription_id',
+            '=',
+            'prescriptions.id'
+        )
+        ->join(
+            'patients',
+            'prescriptions.patient_id',
+            '=',
+            'patients.id'
+        )
+        ->where('items.id', $id)
+        ->select(
+            'items.*',
+            'prescriptions.patient_id',
+            'patients.first_name',
+            'patients.last_name'
+        )
+        ->first();
 
     if ($medication) {
 
         return response()->json([
-            'data' => $medication,
-            'type' => 'Medication'
+            'type' => 'Medication',
+            'data' => $medication
         ]);
     }
 
     return response()->json([
-        'message' => 'Not Found'
+        'message' => 'Order Not Found'
     ], 404);
 }
 public function apiExecute(
@@ -372,39 +460,78 @@ public function apiExecute(
     $id
 )
 {
-    $labRequest =
-        LabRequest::findOrFail($id);
+    if ($request->type == 'Lab') {
 
-    DoctorOrderExecution::create([
+        $order = LabRequest::findOrFail($id);
 
-        'order_type' => 'Lab',
+        $order->update([
+            'status' => 'completed'
+        ]);
 
-        'order_reference_id' => $id,
+        DoctorOrderExecution::create([
+            'order_type' => 'Lab',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Executed',
+            'remarks' => $request->remarks,
+            'executed_by' => 1,
+            'executed_at' => now()
+        ]);
+    }
 
-        'patient_id' =>
-            $labRequest->patient_id,
+    elseif ($request->type == 'Radiology') {
 
-        'execution_status' =>
-            'Executed',
+        $order = ScanRequest::findOrFail($id);
 
-        'remarks' =>
-            $request->remarks,
+        $order->update([
+            'status' => 'Approved'
+        ]);
 
-        'executed_by' =>
-            1,
+        DoctorOrderExecution::create([
+            'order_type' => 'Radiology',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Executed',
+            'remarks' => $request->remarks,
+            'executed_by' => 1,
+            'executed_at' => now()
+        ]);
+    }
 
-        'executed_at' =>
-            now(),
+    elseif ($request->type == 'Medication') {
 
-    ]);
+        DB::table('ipd_prescription_items')
+            ->where('id', $id)
+            ->update([
+                'status' => 'Completed'
+            ]);
 
-    $labRequest->update([
-        'status' => 'completed'
-    ]);
+        $prescription = DB::table(
+            'ipd_prescription_items as items'
+        )
+        ->join(
+            'ipd_prescriptions as prescriptions',
+            'items.prescription_id',
+            '=',
+            'prescriptions.id'
+        )
+        ->where('items.id', $id)
+        ->select('prescriptions.patient_id')
+        ->first();
+
+        DoctorOrderExecution::create([
+            'order_type' => 'Medication',
+            'order_reference_id' => $id,
+            'patient_id' => $prescription->patient_id,
+            'execution_status' => 'Executed',
+            'remarks' => $request->remarks,
+            'executed_by' => 1,
+            'executed_at' => now()
+        ]);
+    }
 
     return response()->json([
-        'message' =>
-            'Order Executed Successfully'
+        'message' => 'Order Executed Successfully'
     ]);
 }
 public function apiEscalate(
@@ -412,36 +539,75 @@ public function apiEscalate(
     $id
 )
 {
-    $labRequest =
-        LabRequest::findOrFail($id);
+    if ($request->type == 'Lab') {
 
-    DoctorOrderExecution::create([
+        $order = LabRequest::findOrFail($id);
 
-        'order_type' => 'Lab',
+        $order->update([
+            'status' => 'in_progress'
+        ]);
 
-        'order_reference_id' => $id,
+        DoctorOrderExecution::create([
+            'order_type' => 'Lab',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Escalated',
+            'escalation_reason' => $request->reason,
+            'executed_by' => 1
+        ]);
+    }
 
-        'patient_id' =>
-            $labRequest->patient_id,
+    elseif ($request->type == 'Radiology') {
 
-        'execution_status' =>
-            'Escalated',
+        $order = ScanRequest::findOrFail($id);
 
-        'escalation_reason' =>
-            $request->reason,
+        $order->update([
+            'status' => 'Under Review'
+        ]);
 
-        'executed_by' =>
-            1,
+        DoctorOrderExecution::create([
+            'order_type' => 'Radiology',
+            'order_reference_id' => $id,
+            'patient_id' => $order->patient_id,
+            'execution_status' => 'Escalated',
+            'escalation_reason' => $request->reason,
+            'executed_by' => 1
+        ]);
+    }
 
-    ]);
+    elseif ($request->type == 'Medication') {
 
-    $labRequest->update([
-        'status' => 'in_progress'
-    ]);
+        DB::table('ipd_prescription_items')
+            ->where('id', $id)
+            ->update([
+                'status' => 'Missed'
+            ]);
+
+        $prescription = DB::table(
+            'ipd_prescription_items as items'
+        )
+        ->join(
+            'ipd_prescriptions as prescriptions',
+            'items.prescription_id',
+            '=',
+            'prescriptions.id'
+        )
+        ->where('items.id', $id)
+        ->select('prescriptions.patient_id')
+        ->first();
+
+        DoctorOrderExecution::create([
+            'order_type' => 'Medication',
+            'order_reference_id' => $id,
+            'patient_id' => $prescription->patient_id,
+            'execution_status' => 'Escalated',
+            'escalation_reason' => $request->reason,
+            'executed_by' => 1
+        ]);
+    }
 
     return response()->json([
-        'message' =>
-            'Order Escalated Successfully'
+        'message' => 'Order Escalated Successfully'
     ]);
 }
 }
