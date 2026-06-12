@@ -36,11 +36,12 @@ class DoctorRadiologyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'patient_id'   => 'required',
-            'scan_type_id' => 'required',
-            'body_part'    => 'required',
-            'reason'       => 'required'
-        ]);
+        'patient_id'   => 'required',
+        'scan_type_id' => 'required',
+        'body_part'    => 'required',
+        'reason'       => 'required',
+        'priority'     => 'nullable|in:routine,urgent,stat',
+    ]);
 
         $staff = Staff::where(
             'user_id',
@@ -151,35 +152,25 @@ class DoctorRadiologyController extends Controller
     public function apiStore(Request $request)
     {
         $request->validate([
-            'patient_id'   => 'required',
-            'scan_type_id' => 'required',
-            'body_part'    => 'required',
-            'reason'       => 'required',
+        'patient_id'   => 'required',
+        'scan_type_id' => 'required',
+        'body_part'    => 'required',
+        'reason'       => 'required',
+        'priority'     => 'nullable|in:routine,urgent,stat',
         ]);
 
-        $doctorId = Auth::id()
-            ?? $request->doctor_id
-            ?? \App\Models\User::query()
-                ->join('roles', 'users.role_id', '=', 'roles.id')
-                ->where('roles.name', 'like', '%doctor%')
-                ->value('users.id');
+        $staff = Staff::first();
 
-        if (!$doctorId) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Doctor is required',
-            ], 422);
-        }
-
+        $doctorId = $staff->id;
         $scanRequest = ScanRequest::create([
-            'patient_id'   => $request->patient_id,
-            'scan_type_id' => $request->scan_type_id,
-            'body_part'    => $request->body_part,
-            'reason'       => $request->reason,
-            'priority'     => $request->priority ?? 'Normal',
-            'doctor_id'    => $doctorId,
-            'status'       => 'Pending',
-        ]);
+        'patient_id'   => $request->patient_id,
+        'scan_type_id' => $request->scan_type_id,
+        'body_part'    => $request->body_part,
+        'reason'       => $request->reason,
+        'priority'     => $request->priority ?? 'routine',
+        'doctor_id'    => $doctorId,
+        'status'       => 'Pending',
+    ]);
 
         return response()->json([
             'status' => true,
@@ -236,12 +227,9 @@ class DoctorRadiologyController extends Controller
         ]);
 
         $report = RadiologyReport::with('request')->findOrFail($request->report_id);
-        $doctorId = Auth::id()
-            ?? $request->doctor_id
-            ?? \App\Models\User::query()
-                ->join('roles', 'users.role_id', '=', 'roles.id')
-                ->where('roles.name', 'like', '%doctor%')
-                ->value('users.id');
+        $staff = Staff::where('user_id', Auth::id())->first();
+
+        $doctorId = $staff?->id;
 
         if (!$doctorId) {
             return response()->json([
