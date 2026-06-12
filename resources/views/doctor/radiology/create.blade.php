@@ -51,9 +51,9 @@
                                     <div class="col-md-6 mb-3">
                                           <label class="form-label">Priority</label>
                                           <select name="priority" class="form-control">
-                                                <option value="Normal"> Normal </option>
-                                                <option value="Urgent"> Urgent</option>
-
+                                                <option value="routine">Routine</option>
+                                                <option value="urgent">Urgent</option>
+                                                <option value="stat">STAT</option>
                                           </select>
                                     </div>
                               </div>

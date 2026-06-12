@@ -10,6 +10,7 @@ use App\Models\RadiologyReport;
 use App\Models\DoctorRadiologyNote;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Patient;
+use App\Models\Staff;
 
 
 class DoctorRadiologyController extends Controller
@@ -30,7 +31,7 @@ class DoctorRadiologyController extends Controller
 
         return view('doctor.radiology.create', compact('scanTypes','patients'));
     }
-
+    
 
     public function store(Request $request)
     {
@@ -41,19 +42,25 @@ class DoctorRadiologyController extends Controller
             'reason'       => 'required'
         ]);
 
+        $staff = Staff::where(
+            'user_id',
+            Auth::id()
+        )->first();
+
         ScanRequest::create([
             'patient_id'   => $request->patient_id,
             'scan_type_id' => $request->scan_type_id,
             'body_part'    => $request->body_part,
             'reason'       => $request->reason,
-            'priority'     => $request->priority ?? 'Normal',
-            'doctor_id'    => Auth::id(),
+            'priority'     => $request->priority ?? 'routine',
+            'doctor_id'    => $staff ? $staff->id : null,
             'status'       => 'Pending'
         ]);
 
-        return redirect()->route('doctor.radiology.index') ->with('success','Scan requested successfully');
+        return redirect()
+            ->route('doctor.radiology.index')
+            ->with('success', 'Scan requested successfully');
     }
-
 
     public function show($id)
     {
