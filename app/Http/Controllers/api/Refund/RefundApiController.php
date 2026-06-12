@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Refund;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\User;
 use App\Models\Refund;
 use App\Models\RefundApproval;
 use App\Models\RefundAuditLog;
@@ -191,8 +191,7 @@ class RefundApiController extends Controller
     'remarks' => $request->remarks,
 
     'status' => 'Pending',
-
-    'requested_by' => auth()->id(),
+'requested_by' => User::first()->id,
             ]);
 
             /*
@@ -206,8 +205,7 @@ class RefundApiController extends Controller
                 'refund_id' => $refund->id,
 
                 'action_type' => 'Created',
-
-                'performed_by' => auth()->id(),
+'performed_by' => User::first()->id,
 
                 'action_details' =>
                     'Refund created from API',
