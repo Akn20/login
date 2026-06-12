@@ -79,8 +79,7 @@
 
                         <td class="text-end">
 
-                          <div class="d-flex justify-content-end">
-
+                      <div class="d-flex gap-2 justify-content-end">
     <a href="{{ route('admin.doctor-order-execution.show', ['id' => $lab->id, 'type' => 'Lab']) }}"
        class="btn btn-outline-secondary btn-icon rounded-circle btn-sm"
        title="View">
@@ -189,7 +188,7 @@
                 <i class="feather-eye"></i>
             </a>
 
-      <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
+      <!-- <form action="{{ route('admin.doctor-order-execution.execute', $medication->id) }}"
       method="POST">
     @csrf
 
@@ -208,7 +207,7 @@
            value="Medication">
 
 
-</form>
+</form> -->
 
         </div>
 
