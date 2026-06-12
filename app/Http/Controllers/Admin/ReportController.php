@@ -12,6 +12,7 @@ use App\Models\SampleCollection;
 use App\Models\EquipmentMaintenance;
 use App\Models\InventoryUsageLog;
 use App\Models\CriticalValueAlert;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Storage;
 use App\Models\LabRequest;
 use Carbon\Carbon;
@@ -42,7 +43,7 @@ class ReportController extends Controller
         return view('admin.laboratory.report.create', compact('samples'));
     }
 
-    // 💾 Store Report
+    // Store Report
     public function store(Request $request)
     {
         $request->validate([
@@ -53,10 +54,12 @@ class ReportController extends Controller
 
         //CHECK IF REPORT ALREADY EXISTS
         $report = LabReport::where('sample_id', $request->sample_id)->first();
+       
 
         // IF REPORT EXISTS → RESET VERIFICATION
         if ($report) {
             $report->update([
+                'status' => $request->status,
                 'verification_status' => 'Pending',
                 'verified_by' => null,
                 'verified_at' => null,
@@ -74,7 +77,7 @@ class ReportController extends Controller
             ]);
         }
 
-        // 🔥 ADD FILES (NOT NEW REPORT)
+        // ADD FILES (NOT NEW REPORT)
         $this->storeFile($request->file('report_file'), $report, true);
 
         if ($request->hasFile('supporting_files')) {
@@ -82,6 +85,9 @@ class ReportController extends Controller
                 $this->storeFile($file, $report, false);
             }
         }
+
+        
+
 
         return redirect()
             ->route('admin.laboratory.report.show', $report->id)
@@ -233,6 +239,7 @@ class ReportController extends Controller
     public function verify($id)
     {
         $report = LabReport::findOrFail($id);
+        
 
         if ($report->status !== 'Completed') {
             return back()->with('error', 'Report must be completed first');
@@ -276,21 +283,63 @@ class ReportController extends Controller
         return back()->with('success', 'Signed successfully');
     }
 
-    public function finalize($id)
-    {
-        $report = LabReport::findOrFail($id);
+        
+public function finalize($id)
+{
+    $report = LabReport::findOrFail($id);
 
-        if ($report->verification_status !== 'Verified') {
-            return back()->with('error', 'Only verified reports can be finalized');
-        }
+    $sample = $report->sample;
 
-        $report->update([
-            'verification_status' => 'Finalized',
-            'finalized_at' => now(),
-        ]);
+    $labRequest = $sample->labRequest;
 
-        return back()->with('success', 'Report finalized');
+    if ($report->verification_status !== 'Verified') {
+
+        return back()->with(
+            'error',
+            'Only verified reports can be finalized'
+        );
     }
+
+    $report->update([
+
+        'verification_status' => 'Finalized',
+
+        'finalized_at' => now(),
+
+    ]);
+
+    $doctorUserId = optional(optional($labRequest)->doctor)->user_id
+        ?? optional(optional($labRequest)->consultation->doctor)->user_id;
+
+    if ($doctorUserId) {
+
+        Notification::create([
+
+            'user_id' => $doctorUserId,
+
+            'patient_id' => $sample->patient_id,
+
+            'type' => 'Lab Report',
+
+            'title' => 'Lab Report Ready',
+
+            'message' => 'Finalized laboratory report is ready for review.',
+
+            'priority' => 'Medium',
+
+            'reference_id' => $report->id,
+
+            'is_read' => false
+
+        ]);
+    }
+
+    return back()->with(
+        'success',
+        'Report finalized'
+    );
+}
+
 
     public function dailyReport(Request $request)
     {

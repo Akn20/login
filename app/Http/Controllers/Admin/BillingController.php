@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\ReceptionistBilling;
 use App\Models\Patient;
 use Illuminate\Support\Str;
-use PDF; // barryvdh/laravel-dompdf
+
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 
 class BillingController extends Controller
 {
@@ -64,7 +67,7 @@ class BillingController extends Controller
     {
         $billing = ReceptionistBilling::with('patient')->findOrFail($id);
 
-        $pdf = PDF::loadView('admin.billing.receipt', compact('billing'));
+        $pdf = Pdf::loadView('admin.billing.receipt', compact('billing'));
 
         return $pdf->download('receipt_' . $billing->receipt_no . '.pdf');
     }
