@@ -85,12 +85,12 @@ class PatientInquiryController extends Controller
             'like',
             '%' . $request->name . '%'
         )
-        ->orWhere(
-            'last_name',
-            'like',
-            '%' . $request->name . '%'
-        )
-        ->get();
+            ->orWhere(
+                'last_name',
+                'like',
+                '%' . $request->name . '%'
+            )
+            ->get();
 
         return view(
             'admin.Receptionist.patient-inquiry.index',
@@ -127,9 +127,9 @@ class PatientInquiryController extends Controller
         $consultations = Consultation::with([
             'doctor.department'
         ])
-        ->where('patient_id', $id)
-        ->latest()
-        ->get();
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
 
         return view(
             'admin.Receptionist.patient-inquiry.visit-history',
@@ -153,9 +153,9 @@ class PatientInquiryController extends Controller
         $consultations = Consultation::with([
             'doctor.department'
         ])
-        ->where('patient_id', $id)
-        ->latest()
-        ->get();
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
 
         return view(
             'admin.Receptionist.patient-inquiry.visit-summary',
@@ -179,9 +179,9 @@ class PatientInquiryController extends Controller
         $consultations = Consultation::with([
             'doctor.department'
         ])
-        ->where('patient_id', $id)
-        ->latest()
-        ->get();
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
 
         $pdf = Pdf::loadView(
             'admin.Receptionist.patient-inquiry.visit-summary-pdf',
@@ -211,7 +211,42 @@ class PatientInquiryController extends Controller
 
         return response()->json([
             'status' => true,
-            'data' => $patients
+            'data' => $patients->map(function ($patient) {
+
+                return [
+
+                    'id' => $patient->id,
+
+                    'patient_code' => $patient->patient_code,
+
+                    'name' =>
+                        $patient->first_name . ' ' .
+                        $patient->last_name,
+
+                    'mobile' => $patient->mobile,
+
+                    'gender' => $patient->gender,
+
+                    'age' =>
+                        $patient->date_of_birth
+                        ? \Carbon\Carbon::parse(
+                            $patient->date_of_birth
+                        )->age
+                        : null,
+
+                    'registration_date' =>
+                        optional(
+                            $patient->created_at
+                        )->format('d M Y'),
+
+                    'status' =>
+                        $patient->status
+                        ? 'Active'
+                        : 'Inactive'
+
+                ];
+
+            })
         ]);
     }
 
@@ -231,7 +266,42 @@ class PatientInquiryController extends Controller
 
         return response()->json([
             'status' => true,
-            'data' => $patients
+            'data' => $patients->map(function ($patient) {
+
+                return [
+
+                    'id' => $patient->id,
+
+                    'patient_code' => $patient->patient_code,
+
+                    'name' =>
+                        $patient->first_name . ' ' .
+                        $patient->last_name,
+
+                    'mobile' => $patient->mobile,
+
+                    'gender' => $patient->gender,
+
+                    'age' =>
+                        $patient->date_of_birth
+                        ? \Carbon\Carbon::parse(
+                            $patient->date_of_birth
+                        )->age
+                        : null,
+
+                    'registration_date' =>
+                        optional(
+                            $patient->created_at
+                        )->format('d M Y'),
+
+                    'status' =>
+                        $patient->status
+                        ? 'Active'
+                        : 'Inactive'
+
+                ];
+
+            })
         ]);
     }
 
@@ -248,16 +318,51 @@ class PatientInquiryController extends Controller
             'like',
             '%' . $request->name . '%'
         )
-        ->orWhere(
-            'last_name',
-            'like',
-            '%' . $request->name . '%'
-        )
-        ->get();
+            ->orWhere(
+                'last_name',
+                'like',
+                '%' . $request->name . '%'
+            )
+            ->get();
 
         return response()->json([
             'status' => true,
-            'data' => $patients
+            'data' => $patients->map(function ($patient) {
+
+                return [
+
+                    'id' => $patient->id,
+
+                    'patient_code' => $patient->patient_code,
+
+                    'name' =>
+                        $patient->first_name . ' ' .
+                        $patient->last_name,
+
+                    'mobile' => $patient->mobile,
+
+                    'gender' => $patient->gender,
+
+                    'age' =>
+                        $patient->date_of_birth
+                        ? \Carbon\Carbon::parse(
+                            $patient->date_of_birth
+                        )->age
+                        : null,
+
+                    'registration_date' =>
+                        optional(
+                            $patient->created_at
+                        )->format('d M Y'),
+
+                    'status' =>
+                        $patient->status
+                        ? 'Active'
+                        : 'Inactive'
+
+                ];
+
+            })
         ]);
     }
 
@@ -268,27 +373,30 @@ class PatientInquiryController extends Controller
     */
 
     public function apiShow($id)
-{
-    $patient = Patient::findOrFail($id);
+    {
+        $patient = Patient::findOrFail($id);
 
-    return response()->json([
-        'status' => true,
-        'data' => [
-            'id' => $patient->id,
-            'patient_code' => $patient->patient_code,
-            'name' => $patient->first_name . ' ' . $patient->last_name,
-            'gender' => $patient->gender,
-            'age' => $patient->date_of_birth
-                ? \Carbon\Carbon::parse($patient->date_of_birth)->age
-                : null,
-            'mobile' => $patient->mobile,
-            'email' => $patient->email,
-            'blood_group' => $patient->blood_group,
-            'address' => $patient->address,
-            'status' => $patient->status ? 'Active' : 'Inactive',
-        ]
-    ]);
-}
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'id' => $patient->id,
+                'patient_code' => $patient->patient_code,
+                'name' => $patient->first_name . ' ' . $patient->last_name,
+                'gender' => $patient->gender,
+                'age' => $patient->date_of_birth
+                    ? \Carbon\Carbon::parse($patient->date_of_birth)->age
+                    : null,
+                'mobile' => $patient->mobile,
+                'email' => $patient->email,
+                'blood_group' => $patient->blood_group,
+                'address' => $patient->address,
+                'status' => $patient->status ? 'Active' : 'Inactive',
+                'registration_date' =>
+                    optional($patient->created_at)
+                        ->format('d M Y'),
+            ]
+        ]);
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -298,16 +406,65 @@ class PatientInquiryController extends Controller
 
     public function apiVisitHistory($id)
     {
+        $patient = Patient::findOrFail($id);
+
         $consultations = Consultation::with([
             'doctor.department'
         ])
-        ->where('patient_id', $id)
-        ->latest()
-        ->get();
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
 
         return response()->json([
+
             'status' => true,
-            'data' => $consultations
+
+            'patient' => [
+                'id' => $patient->id,
+                'name' => $patient->first_name . ' ' . $patient->last_name,
+                'patient_code' => $patient->patient_code
+            ],
+
+            'data' =>
+
+                $consultations->map(function ($consultation) {
+
+                    return [
+
+                        'id' =>
+                            $consultation->id,
+
+                        'visit_date' =>
+                            \Carbon\Carbon::parse(
+                                $consultation->consultation_date
+                            )->format('d M Y'),
+
+                        'department' =>
+                            optional(
+                                optional($consultation->doctor)
+                                    ->department
+                            )->department_name,
+
+                        'doctor' =>
+                            optional(
+                                $consultation->doctor
+                            )->name,
+
+                        'visit_type' =>
+                            $consultation->appointment_id
+                            ? 'OPD'
+                            : 'IPD',
+
+                        'symptoms' =>
+                            $consultation->symptoms,
+
+                        'diagnosis' =>
+                            $consultation->diagnosis
+
+                    ];
+
+                })
+
         ]);
     }
 
@@ -324,14 +481,90 @@ class PatientInquiryController extends Controller
         $consultations = Consultation::with([
             'doctor.department'
         ])
-        ->where('patient_id', $id)
-        ->latest()
-        ->get();
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
 
         return response()->json([
+
             'status' => true,
-            'patient' => $patient,
-            'consultations' => $consultations
+
+            'patient' => [
+
+                'id' => $patient->id,
+
+                'name' =>
+                    $patient->first_name . ' ' .
+                    $patient->last_name,
+
+                'patient_code' =>
+                    $patient->patient_code,
+
+                'mobile' =>
+                    $patient->mobile,
+
+                'gender' =>
+                    $patient->gender,
+
+                'age' =>
+                    $patient->date_of_birth
+                    ? \Carbon\Carbon::parse(
+                        $patient->date_of_birth
+                    )->age
+                    : null
+
+            ],
+
+            'consultations' =>
+
+                $consultations->map(function ($consultation) {
+
+                    return [
+
+                        'date' =>
+                            \Carbon\Carbon::parse(
+                                $consultation->consultation_date
+                            )->format('d M Y'),
+
+                        'symptoms' =>
+                            $consultation->symptoms,
+
+                        'diagnosis' =>
+                            $consultation->diagnosis,
+
+                        'doctor' =>
+                            optional(
+                                $consultation->doctor
+                            )->name,
+
+                    ];
+
+                })
+
         ]);
+    }
+
+    public function apiDownloadSummary($id)
+    {
+        $patient = Patient::findOrFail($id);
+
+        $consultations = Consultation::with([
+            'doctor.department'
+        ])
+            ->where('patient_id', $id)
+            ->latest()
+            ->get();
+
+        $pdf = Pdf::loadView(
+            'admin.Receptionist.patient-inquiry.visit-summary-pdf',
+            compact(
+                'patient',
+                'consultations'
+            )
+        );
+
+        return $pdf->stream(
+            'patient_visit_summary.pdf'
+        );
     }
 }
