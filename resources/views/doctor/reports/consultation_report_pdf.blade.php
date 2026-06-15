@@ -17,14 +17,14 @@
         }
 
         .pdf-wrapper {
-            padding: 12px 14px;
+            padding: 6px 8px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border-bottom: 1px solid #ccc;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
         }
 
         .header h1 {
@@ -40,18 +40,16 @@
         }
 
         .section {
-            margin-bottom: 15px;
-            page-break-inside: avoid;
-            break-inside: avoid;
+            margin-bottom: 10px;
         }
 
         .section-title {
             background: #f5f5f5;
-            padding: 8px;
+            padding: 6px;
             border: 1px solid #ddd;
             font-size: 14px;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         table {
@@ -67,12 +65,16 @@
             display: table-footer-group;
         }
 
-        table th,
+     
         table td {
             border: 1px solid #ccc;
-            padding: 7px;
+            padding: 5px;
             vertical-align: top;
         }
+
+        tr {
+    page-break-inside: avoid;
+}
 
         table th {
             background: #fafafa;
@@ -97,14 +99,14 @@
         }
 
         .footer {
-            margin-top: 20px;
+            margin-top: 10px;
             text-align: center;
             font-size: 10px;
             color: #777;
         }
 
         @page {
-            margin: 12mm;
+            margin: 6mm;
         }
 
         table,
@@ -171,9 +173,9 @@
             </tr>
 
         </table>
-
     </div>
 
+    
 
 
     {{-- CONSULTATION LIST --}}
@@ -295,7 +297,6 @@
         </table>
 
     </div>
-
 
 
     {{-- FOOTER --}}

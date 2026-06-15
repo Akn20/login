@@ -540,6 +540,15 @@ class ConsultationController extends Controller
                             'priority' => $request->priority ?? 'routine',
                             'status' => 'pending',
                         ]);
+
+                        SampleCollection::create([
+                            'id' => Str::uuid(),
+                            'lab_request_id' => LabRequest::where('consultation_id', $consultation->id)
+                                ->where('test_name', $labTest->test_name)
+                                ->value('id'),
+                            'patient_id' => $request->patient_id,
+                            'status' => 'Pending',
+                        ]);
                     }
                 }
             }
@@ -555,11 +564,12 @@ class ConsultationController extends Controller
                 if (! empty($med['medicine'])) {
 
                     $consultation->medicines()->attach($med['medicine'], [
-                        'dosage' => $med['dosage'] ?? null,
-                        'frequency' => $med['frequency'] ?? null,
-                        'duration' => $med['duration'] ?? null,
-                        'instructions' => $med['instructions'] ?? null,
-                    ]);
+    'id' => (string) Str::uuid(),
+    'dosage' => $med['dosage'] ?? null,
+    'frequency' => $med['frequency'] ?? null,
+    'duration' => $med['duration'] ?? null,
+    'instructions' => $med['instructions'] ?? null,
+]);
                 }
             }
         }
@@ -605,6 +615,8 @@ class ConsultationController extends Controller
 
             foreach ($tests as $test) {
 
+            $labTest = LabTest::where('test_name', trim($test))->first();
+
                 LabRequest::create([
                     'id' => Str::uuid(),
                     'patient_id' => $consultation->patient_id,
@@ -612,6 +624,15 @@ class ConsultationController extends Controller
                     'test_name' => trim($test),
                     'priority' => $request->priority ?? 'routine',
                     'status' => 'pending',
+                ]);
+
+                SampleCollection::create([
+                    'id' => Str::uuid(),
+                    'lab_request_id' => LabRequest::where('consultation_id', $consultation->id)
+                        ->where('test_name', trim($test))
+                        ->value('id'),
+                    'patient_id' => $consultation->patient_id,
+                    'status' => 'Pending',
                 ]);
             }
         }
@@ -628,11 +649,12 @@ class ConsultationController extends Controller
                 if (! empty($med['medicine'])) {
 
                     $consultation->medicines()->attach($med['medicine'], [
-                        'dosage' => $med['dosage'] ?? null,
-                        'frequency' => $med['frequency'] ?? null,
-                        'duration' => $med['duration'] ?? null,
-                        'instructions' => $med['instructions'] ?? null,
-                    ]);
+    'id' => (string) Str::uuid(),
+    'dosage' => $med['dosage'] ?? null,
+    'frequency' => $med['frequency'] ?? null,
+    'duration' => $med['duration'] ?? null,
+    'instructions' => $med['instructions'] ?? null,
+]);
                 }
             }
         }
