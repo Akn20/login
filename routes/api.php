@@ -220,6 +220,11 @@ use App\Http\Controllers\Api\Inventory\VendorApiController;
 use App\Http\Controllers\Api\Inventory\GrnApiController;
 use App\Http\Controllers\Api\Inventory\StockTransferApiController;
 use App\Http\Controllers\Api\Inventory\StockAuditApiController;
+use App\Http\Controllers\Admin\EquipmentController;
+use App\Http\Controllers\Admin\EquipmentMaintenanceController;
+use App\Http\Controllers\Admin\EquipmentCalibrationController;
+use App\Http\Controllers\Admin\EquipmentBreakdownController;
+use App\Http\Controllers\Admin\PreventiveMaintenanceController;
 
 // Doctor notifications
 use App\Http\Controllers\Doctor\NotificationController;
@@ -4756,3 +4761,82 @@ Route::prefix('patients')->group(function () {
     Route::post('/{id}/toggle-status', [PatientController::class, 'toggleStatus']);
     Route::post('/{id}/toggle-vip', [PatientController::class, 'toggleVip']);
 });
+
+Route::prefix('equipment')->group(function () {
+
+    Route::get('/', [EquipmentController::class, 'apiIndex']);
+    Route::post('/', [EquipmentController::class, 'apiStore']);
+
+    Route::get('/deleted/list', [EquipmentController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [EquipmentController::class, 'apiShow']);
+    Route::put('/{id}', [EquipmentController::class, 'apiUpdate']);
+    Route::delete('/{id}', [EquipmentController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore', [EquipmentController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [EquipmentController::class, 'apiForceDelete']);
+
+    Route::post('/{id}/toggle-status', [EquipmentController::class, 'apitoggleStatus']);
+});
+
+Route::prefix('maintenance')->group(function () {
+
+    Route::get('/', [EquipmentMaintenanceController::class, 'apiIndex']);
+    Route::post('/', [EquipmentMaintenanceController::class, 'apiStore']);
+
+    Route::get('/deleted/list', [EquipmentMaintenanceController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [EquipmentMaintenanceController::class, 'apiShow']);
+    Route::put('/{id}', [EquipmentMaintenanceController::class, 'apiUpdate']);
+    Route::delete('/{id}', [EquipmentMaintenanceController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore', [EquipmentMaintenanceController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [EquipmentMaintenanceController::class, 'apiForceDelete']);
+});
+
+Route::prefix('calibration')->group(function () {
+
+    Route::get('/', [EquipmentCalibrationController::class, 'apiIndex']);
+    Route::post('/', [EquipmentCalibrationController::class, 'apiStore']);
+
+    Route::get('/deleted/list', [EquipmentCalibrationController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [EquipmentCalibrationController::class, 'apiShow']);
+    Route::put('/{id}', [EquipmentCalibrationController::class, 'apiUpdate']);
+    Route::delete('/{id}', [EquipmentCalibrationController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore', [EquipmentCalibrationController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [EquipmentCalibrationController::class, 'apiForceDelete']);
+});
+
+Route::prefix('breakdown')->group(function () {
+
+    Route::get('/', [EquipmentBreakdownController::class, 'apiIndex']);
+    Route::post('/', [EquipmentBreakdownController::class, 'apiStore']);
+
+    Route::get('/deleted/list', [EquipmentBreakdownController::class, 'apiDeleted']);
+
+    Route::get('/{id}', [EquipmentBreakdownController::class, 'apiShow']);
+    Route::put('/{id}', [EquipmentBreakdownController::class, 'apiUpdate']);
+    Route::delete('/{id}', [EquipmentBreakdownController::class, 'apiDelete']);
+
+    Route::post('/{id}/restore', [EquipmentBreakdownController::class, 'apiRestore']);
+    Route::delete('/{id}/force-delete', [EquipmentBreakdownController::class, 'apiForceDelete']);
+});
+
+
+
+Route::get('/preventive', [PreventiveMaintenanceController::class, 'apiIndex']);
+Route::post('/preventive', [PreventiveMaintenanceController::class, 'apiStore']);
+
+Route::get('/preventive/{id}', [PreventiveMaintenanceController::class, 'apiShow']);
+
+Route::put('/preventive/{id}', [PreventiveMaintenanceController::class, 'apiUpdate']);
+
+Route::delete('/preventive/{id}', [PreventiveMaintenanceController::class, 'apiDelete']);
+
+Route::get('/preventive/deleted/list', [PreventiveMaintenanceController::class, 'apiDeleted']);
+
+Route::post('/preventive/{id}/restore', [PreventiveMaintenanceController::class, 'apiRestore']);
+
+Route::delete('/preventive/{id}/force-delete', [PreventiveMaintenanceController::class, 'apiForceDelete']);

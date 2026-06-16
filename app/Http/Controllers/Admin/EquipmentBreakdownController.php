@@ -119,4 +119,169 @@ class EquipmentBreakdownController extends Controller
         $breakdown = EquipmentBreakdown::with('equipment')->findOrFail($id);
         return view('admin.laboratory.breakdown.show', compact('breakdown'));
     }
+
+    // ================= API LIST =================
+
+public function apiIndex(Request $request)
+{
+    $query = EquipmentBreakdown::with('equipment');
+
+    if ($request->search) {
+        $query->where('description', 'like', '%' . $request->search . '%')
+              ->orWhere('reported_by', 'like', '%' . $request->search . '%');
+    }
+
+    $breakdowns = $query->latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $breakdowns
+    ]);
+}
+
+// ================= API STORE =================
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'equipment_id' => 'required',
+        'description' => 'required',
+        'reported_by' => 'required',
+        'breakdown_date' => 'required',
+        'severity' => 'required',
+        'status' => 'required',
+    ]);
+
+    $breakdown = EquipmentBreakdown::create([
+        'id' => (string) Str::uuid(),
+        'equipment_id' => $request->equipment_id,
+        'description' => $request->description,
+        'reported_by' => $request->reported_by,
+        'breakdown_date' => $request->breakdown_date,
+        'severity' => $request->severity,
+        'status' => $request->status,
+    ]);
+
+    // AUTO UPDATE EQUIPMENT STATUS
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->status !== 'Resolved'
+                ? 'Out of Service'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Breakdown Created',
+        'data' => $breakdown
+    ]);
+}
+
+// ================= API SHOW =================
+
+public function apiShow($id)
+{
+    $breakdown = EquipmentBreakdown::with('equipment')
+        ->findOrFail($id);
+
+    return response()->json([
+        'success' => true,
+        'data' => $breakdown
+    ]);
+}
+
+// ================= API UPDATE =================
+
+public function apiUpdate(Request $request, $id)
+{
+    $breakdown = EquipmentBreakdown::findOrFail($id);
+
+    $breakdown->update([
+        'equipment_id' => $request->equipment_id,
+        'description' => $request->description,
+        'reported_by' => $request->reported_by,
+        'breakdown_date' => $request->breakdown_date,
+        'severity' => $request->severity,
+        'status' => $request->status,
+    ]);
+
+    // AUTO UPDATE EQUIPMENT STATUS
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->status !== 'Resolved'
+                ? 'Out of Service'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Breakdown Updated',
+        'data' => $breakdown
+    ]);
+}
+
+// ================= API DELETE =================
+
+public function apiDelete($id)
+{
+    EquipmentBreakdown::findOrFail($id)->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Breakdown Deleted'
+    ]);
+}
+
+// ================= API DELETED =================
+
+public function apiDeleted()
+{
+    $breakdowns = EquipmentBreakdown::onlyTrashed()
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $breakdowns
+    ]);
+}
+
+// ================= API RESTORE =================
+
+public function apiRestore($id)
+{
+    EquipmentBreakdown::withTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Breakdown Restored'
+    ]);
+}
+
+// ================= API FORCE DELETE =================
+
+public function apiForceDelete($id)
+{
+    EquipmentBreakdown::withTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Breakdown Permanently Deleted'
+    ]);
+}
+
 }

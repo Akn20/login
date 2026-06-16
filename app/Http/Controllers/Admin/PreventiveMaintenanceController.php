@@ -102,4 +102,138 @@ class PreventiveMaintenanceController extends Controller
         $record = PreventiveMaintenance::with('equipment')->findOrFail($id);
         return view('admin.laboratory.preventive.show', compact('record'));
     }
+
+    // ================= API LIST =================
+
+public function apiIndex(Request $request)
+{
+    $query = PreventiveMaintenance::with('equipment');
+
+    if ($request->search) {
+        $query->whereHas('equipment', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhere('equipment_code', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    $records = $query->latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $records
+    ]);
+}
+
+// ================= API STORE =================
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'equipment_id' => 'required',
+        'frequency' => 'required',
+        'next_maintenance_date' => 'required',
+    ]);
+
+    $record = PreventiveMaintenance::create([
+        'id' => (string) Str::uuid(),
+        'equipment_id' => $request->equipment_id,
+        'frequency' => $request->frequency,
+        'next_maintenance_date' => $request->next_maintenance_date,
+        'technician' => $request->technician,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Schedule Created',
+        'data' => $record
+    ]);
+}
+
+// ================= API SHOW =================
+
+public function apiShow($id)
+{
+    $record = PreventiveMaintenance::with('equipment')
+        ->findOrFail($id);
+
+    return response()->json([
+        'success' => true,
+        'data' => $record
+    ]);
+}
+
+// ================= API UPDATE =================
+
+public function apiUpdate(Request $request, $id)
+{
+    $record = PreventiveMaintenance::findOrFail($id);
+
+    $record->update([
+        'equipment_id' => $request->equipment_id,
+        'frequency' => $request->frequency,
+        'next_maintenance_date' => $request->next_maintenance_date,
+        'technician' => $request->technician,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Updated',
+        'data' => $record
+    ]);
+}
+
+// ================= API DELETE =================
+
+public function apiDelete($id)
+{
+    PreventiveMaintenance::findOrFail($id)->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deleted'
+    ]);
+}
+
+// ================= API DELETED =================
+
+public function apiDeleted()
+{
+    $records = PreventiveMaintenance::onlyTrashed()
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $records
+    ]);
+}
+
+// ================= API RESTORE =================
+
+public function apiRestore($id)
+{
+    PreventiveMaintenance::withTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Restored'
+    ]);
+}
+
+// ================= API FORCE DELETE =================
+
+public function apiForceDelete($id)
+{
+    PreventiveMaintenance::withTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deleted Permanently'
+    ]);
+}
+
 }

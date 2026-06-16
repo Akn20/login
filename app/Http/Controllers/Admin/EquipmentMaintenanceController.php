@@ -145,5 +145,163 @@ class EquipmentMaintenanceController extends Controller
         EquipmentMaintenance::withTrashed()->findOrFail($id)->forceDelete();
         return back()->with('success', 'Deleted permanently');
     }
+
+    // ================= API LIST =================
+
+public function apiIndex(Request $request)
+{
+    $query = EquipmentMaintenance::with('equipment');
+
+    if ($request->search) {
+        $query->where('maintenance_type', 'like', '%' . $request->search . '%')
+              ->orWhere('technician', 'like', '%' . $request->search . '%');
+    }
+
+    $maintenance = $query->latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $maintenance
+    ]);
+}
+
+// ================= API STORE =================
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'equipment_id' => 'required',
+        'maintenance_type' => 'required',
+        'maintenance_date' => 'required',
+        'status' => 'required'
+    ]);
+
+    $maintenance = EquipmentMaintenance::create([
+        'id' => (string) Str::uuid(),
+        'equipment_id' => $request->equipment_id,
+        'maintenance_type' => $request->maintenance_type,
+        'maintenance_date' => $request->maintenance_date,
+        'technician' => $request->technician,
+        'description' => $request->description,
+        'status' => $request->status
+    ]);
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->status !== 'Completed'
+                ? 'Under Maintenance'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Maintenance Created',
+        'data' => $maintenance
+    ]);
+}
+
+// ================= API SHOW =================
+
+public function apiShow($id)
+{
+    $maintenance = EquipmentMaintenance::with('equipment')
+        ->findOrFail($id);
+
+    return response()->json([
+        'success' => true,
+        'data' => $maintenance
+    ]);
+}
+
+// ================= API UPDATE =================
+
+public function apiUpdate(Request $request, $id)
+{
+    $maintenance = EquipmentMaintenance::findOrFail($id);
+
+    $maintenance->update([
+        'equipment_id' => $request->equipment_id,
+        'maintenance_type' => $request->maintenance_type,
+        'maintenance_date' => $request->maintenance_date,
+        'technician' => $request->technician,
+        'description' => $request->description,
+        'status' => $request->status
+    ]);
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->status !== 'Completed'
+                ? 'Under Maintenance'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Maintenance Updated',
+        'data' => $maintenance
+    ]);
+}
+
+// ================= API DELETE =================
+
+public function apiDelete($id)
+{
+    EquipmentMaintenance::findOrFail($id)->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Maintenance Deleted'
+    ]);
+}
+
+// ================= API DELETED =================
+
+public function apiDeleted()
+{
+    $maintenance = EquipmentMaintenance::onlyTrashed()
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $maintenance
+    ]);
+}
+
+// ================= API RESTORE =================
+
+public function apiRestore($id)
+{
+    EquipmentMaintenance::withTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Maintenance Restored'
+    ]);
+}
+
+// ================= API FORCE DELETE =================
+
+public function apiForceDelete($id)
+{
+    EquipmentMaintenance::withTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Maintenance Permanently Deleted'
+    ]);
+}
     
 }   

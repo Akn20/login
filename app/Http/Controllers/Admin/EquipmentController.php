@@ -40,7 +40,7 @@ class EquipmentController extends Controller
 
         Equipment::create([
             'id' => (string) Str::uuid(),
-            'equipment_code' => 'EQP-' . rand(10000,99999),
+            'equipment_code' => 'EQP-' . rand(10000, 99999),
             'name' => $request->name,
             'type' => $request->type,
             'manufacturer' => $request->manufacturer,
@@ -120,6 +120,143 @@ class EquipmentController extends Controller
     public function toggleStatus($id)
     {
         $equipment = Equipment::findOrFail($id);
+        $equipment->status = !$equipment->status;
+        $equipment->save();
+
+        return response()->json([
+            'success' => true,
+            'is_active' => (bool) $equipment->status
+        ]);
+    }
+
+
+    public function apiIndex(Request $request)
+    {
+        $query = Equipment::query();
+
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('equipment_code', 'like', '%' . $request->search . '%')
+                ->orWhere('serial_number', 'like', '%' . $request->search . '%');
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $query->latest()->get()
+        ]);
+    }
+
+
+    public function apiShow($id)
+    {
+        $equipment = Equipment::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $equipment
+        ]);
+    }
+
+
+    public function apiStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'type' => 'required',
+            'installation_date' => 'required|date',
+            'condition_status' => 'required'
+        ]);
+
+        $equipment = Equipment::create([
+            'id' => (string) Str::uuid(),
+            'equipment_code' => 'EQP-' . rand(10000, 99999),
+            'name' => $request->name,
+            'type' => $request->type,
+            'manufacturer' => $request->manufacturer,
+            'model_number' => $request->model_number,
+            'serial_number' => $request->serial_number,
+            'installation_date' => $request->installation_date,
+            'location' => $request->location,
+            'condition_status' => $request->condition_status,
+            'status' => $request->status ?? 1
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment created successfully',
+            'data' => $equipment
+        ], 201);
+    }
+
+    public function apiUpdate(Request $request, $id)
+    {
+        $equipment = Equipment::findOrFail($id);
+
+        $equipment->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'manufacturer' => $request->manufacturer,
+            'model_number' => $request->model_number,
+            'serial_number' => $request->serial_number,
+            'installation_date' => $request->installation_date,
+            'location' => $request->location,
+            'condition_status' => $request->condition_status,
+            'status' => $request->status ?? $equipment->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment updated successfully',
+            'data' => $equipment
+        ]);
+    }
+
+    public function apiDelete($id)
+    {
+        Equipment::findOrFail($id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment moved to trash'
+        ]);
+    }
+
+    public function apiDeleted()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => Equipment::onlyTrashed()->get()
+        ]);
+    }
+
+    public function apiRestore($id)
+    {
+        Equipment::withTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment restored successfully'
+        ]);
+    }
+
+    public function apiForceDelete($id)
+    {
+        Equipment::withTrashed()
+            ->findOrFail($id)
+            ->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment permanently deleted'
+        ]);
+    }
+
+    public function apitoggleStatus($id)
+    {
+        $equipment = Equipment::findOrFail($id);
+
         $equipment->status = !$equipment->status;
         $equipment->save();
 

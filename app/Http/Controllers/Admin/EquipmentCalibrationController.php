@@ -119,4 +119,166 @@ class EquipmentCalibrationController extends Controller
         $calibration = EquipmentCalibration::with('equipment')->findOrFail($id);
         return view('admin.laboratory.calibration.show', compact('calibration'));
     }
+
+
+    // ================= API LIST =================
+
+public function apiIndex(Request $request)
+{
+    $query = EquipmentCalibration::with('equipment');
+
+    if ($request->search) {
+        $query->where('calibration_type', 'like', '%' . $request->search . '%')
+              ->orWhere('technician', 'like', '%' . $request->search . '%');
+    }
+
+    $calibrations = $query->latest()->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $calibrations
+    ]);
+}
+
+// ================= API STORE =================
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+        'equipment_id' => 'required',
+        'calibration_type' => 'required',
+        'calibration_date' => 'required',
+        'result' => 'required'
+    ]);
+
+    $calibration = EquipmentCalibration::create([
+        'id' => (string) Str::uuid(),
+        'equipment_id' => $request->equipment_id,
+        'calibration_type' => $request->calibration_type,
+        'calibration_date' => $request->calibration_date,
+        'technician' => $request->technician,
+        'result' => $request->result,
+        'next_due_date' => $request->next_due_date,
+        'notes' => $request->notes,
+    ]);
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->result === 'Fail'
+                ? 'Out of Service'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Calibration Created',
+        'data' => $calibration
+    ]);
+}
+
+// ================= API SHOW =================
+
+public function apiShow($id)
+{
+    $calibration = EquipmentCalibration::with('equipment')
+        ->findOrFail($id);
+
+    return response()->json([
+        'success' => true,
+        'data' => $calibration
+    ]);
+}
+
+// ================= API UPDATE =================
+
+public function apiUpdate(Request $request, $id)
+{
+    $calibration = EquipmentCalibration::findOrFail($id);
+
+    $calibration->update([
+        'equipment_id' => $request->equipment_id,
+        'calibration_type' => $request->calibration_type,
+        'calibration_date' => $request->calibration_date,
+        'technician' => $request->technician,
+        'result' => $request->result,
+        'next_due_date' => $request->next_due_date,
+        'notes' => $request->notes,
+    ]);
+
+    $equipment = Equipment::find($request->equipment_id);
+
+    if ($equipment) {
+        $equipment->condition_status =
+            $request->result === 'Fail'
+                ? 'Out of Service'
+                : 'Active';
+
+        $equipment->save();
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Calibration Updated',
+        'data' => $calibration
+    ]);
+}
+
+// ================= API DELETE =================
+
+public function apiDelete($id)
+{
+    EquipmentCalibration::findOrFail($id)->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Calibration Deleted'
+    ]);
+}
+
+// ================= API DELETED =================
+
+public function apiDeleted()
+{
+    $calibrations = EquipmentCalibration::onlyTrashed()
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $calibrations
+    ]);
+}
+
+// ================= API RESTORE =================
+
+public function apiRestore($id)
+{
+    EquipmentCalibration::withTrashed()
+        ->findOrFail($id)
+        ->restore();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Calibration Restored'
+    ]);
+}
+
+// ================= API FORCE DELETE =================
+
+public function apiForceDelete($id)
+{
+    EquipmentCalibration::withTrashed()
+        ->findOrFail($id)
+        ->forceDelete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Calibration Permanently Deleted'
+    ]);
+}
+
 }
