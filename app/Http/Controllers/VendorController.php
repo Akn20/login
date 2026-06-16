@@ -21,35 +21,46 @@ class VendorController extends Controller
         return view('admin.pharmacy.vendor.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate(
-            [
-                'vendor_name' => 'required|max:150|unique:vendors,vendor_name',
-                'phone_number' => 'nullable|max:20',
-                'email' => 'nullable|email|max:150',
-                'address' => 'nullable|max:500',
-                'status' => 'required|in:Active,Inactive',
+   public function store(Request $request)
+{
+    $request->validate(
+        [
+            'vendor_name' => 'required|max:150|unique:vendors,vendor_name',
+
+            'phone_number' => [
+                'required',
+                'unique:vendors,phone_number',
+                'regex:/^[6-9][0-9]{9}$/',
             ],
-            [
-                'vendor_name.required' => 'Vendor name is required.',
-                'vendor_name.unique' => 'This vendor already exists.',
-                'status.required' => 'Please select status.',
-            ]
-        );
 
-        Vendor::create([
-            'vendor_name' => $request->vendor_name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'address' => $request->address,
-            'status' => $request->status,
-            'created_by' => 1,
-        ]);
+            'email' => 'nullable|email|max:150',
+            'address' => 'nullable|max:500',
+            'status' => 'required|in:Active,Inactive',
+        ],
+        [
+            'vendor_name.required' => 'Vendor name is required.',
+            'vendor_name.unique' => 'This vendor already exists.',
 
-        return redirect()->route('admin.vendors.index')
-            ->with('success', 'Vendor added successfully');
-    }
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.unique' => 'This phone number already exists.',
+            'phone_number.regex' => 'Phone number must be 10 digits and start with 6, 7, 8, or 9.',
+
+            'status.required' => 'Please select status.',
+        ]
+    );
+
+    Vendor::create([
+        'vendor_name' => $request->vendor_name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'address' => $request->address,
+        'status' => $request->status,
+        'created_by' => 1,
+    ]);
+
+    return redirect()->route('admin.vendors.index')
+        ->with('success', 'Vendor added successfully');
+}
 
     public function show($id)
     {
@@ -65,37 +76,47 @@ class VendorController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $request->validate(
-            [
-                'vendor_name' => "required|max:150|unique:vendors,vendor_name,$id",
-                'phone_number' => 'nullable|max:20',
-                'email' => 'nullable|email|max:150',
-                'address' => 'nullable|max:500',
-                'status' => 'required|in:Active,Inactive',
+{
+    $request->validate(
+        [
+            'vendor_name' => "required|max:150|unique:vendors,vendor_name,$id",
+
+            'phone_number' => [
+                'required',
+                "unique:vendors,phone_number,$id",
+                'regex:/^[6-9][0-9]{9}$/',
             ],
-            [
-                'vendor_name.required' => 'Vendor name is required.',
-                'vendor_name.unique' => 'This vendor already exists.',
-                'status.required' => 'Please select status.',
-            ]
-        );
 
-        $vendor = Vendor::findOrFail($id);
+            'email' => 'nullable|email|max:150',
+            'address' => 'nullable|max:500',
+            'status' => 'required|in:Active,Inactive',
+        ],
+        [
+            'vendor_name.required' => 'Vendor name is required.',
+            'vendor_name.unique' => 'This vendor already exists.',
 
-        $vendor->update([
-            'vendor_name' => $request->vendor_name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'address' => $request->address,
-            'status' => $request->status,
-            'updated_by' => 1,
-        ]);
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.unique' => 'This phone number already exists.',
+            'phone_number.regex' => 'Phone number must be 10 digits and start with 6, 7, 8, or 9.',
 
-        return redirect()->route('admin.vendors.index')
-            ->with('success', 'Vendor updated successfully');
-    }
+            'status.required' => 'Please select status.',
+        ]
+    );
 
+    $vendor = Vendor::findOrFail($id);
+
+    $vendor->update([
+        'vendor_name' => $request->vendor_name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'address' => $request->address,
+        'status' => $request->status,
+        'updated_by' => 1,
+    ]);
+
+    return redirect()->route('admin.vendors.index')
+        ->with('success', 'Vendor updated successfully');
+}
     public function destroy($id)
     {
         $vendor = Vendor::findOrFail($id);
@@ -150,57 +171,75 @@ class VendorController extends Controller
 
     /* Add Vendor (API) */
     public function apiStore(Request $request)
-    {
-        $request->validate([
-            'vendor_name' => 'required|max:150|unique:vendors,vendor_name',
-            'phone_number' => 'nullable|max:20',
-            'email' => 'nullable|email|max:150',
-            'address' => 'nullable|max:500',
-            'status' => 'required|in:Active,Inactive',
-        ]);
+{
+    $request->validate([
+        'vendor_name' => 'required|max:150|unique:vendors,vendor_name',
 
-        $vendor = Vendor::create([
-            'vendor_name' => $request->vendor_name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'address' => $request->address,
-            'status' => $request->status,
-            'created_by' => 1,
-        ]);
+        'phone_number' => [
+            'required',
+            'unique:vendors,phone_number',
+            'regex:/^[6-9][0-9]{9}$/',
+        ],
 
-        return ApiResponse::success($vendor, 'Vendor created successfully');
-    }
+        'email' => 'nullable|email|max:150',
+        'address' => 'nullable|max:500',
+        'status' => 'required|in:Active,Inactive',
+    ], [
+        'phone_number.required' => 'Phone number is required.',
+        'phone_number.unique' => 'This phone number already exists.',
+        'phone_number.regex' => 'Phone number must be 10 digits and start with 6, 7, 8, or 9.',
+    ]);
 
+    $vendor = Vendor::create([
+        'vendor_name' => $request->vendor_name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'address' => $request->address,
+        'status' => $request->status,
+        'created_by' => 1,
+    ]);
+
+    return ApiResponse::success($vendor, 'Vendor created successfully');
+}
 
     /* Update Vendor (API) */
     public function apiUpdate(Request $request, $id)
-    {
-        $vendor = Vendor::find($id);
+{
+    $vendor = Vendor::find($id);
 
-        if (!$vendor) {
-            return ApiResponse::error('Vendor not found');
-        }
-
-        $request->validate([
-            'vendor_name' => "required|max:150|unique:vendors,vendor_name,$id",
-            'phone_number' => 'nullable|max:20',
-            'email' => 'nullable|email|max:150',
-            'address' => 'nullable|max:500',
-            'status' => 'required|in:Active,Inactive',
-        ]);
-
-        $vendor->update([
-            'vendor_name' => $request->vendor_name,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'address' => $request->address,
-            'status' => $request->status,
-            'updated_by' => 1,
-        ]);
-
-        return ApiResponse::success($vendor, 'Vendor updated successfully');
+    if (!$vendor) {
+        return ApiResponse::error('Vendor not found');
     }
 
+    $request->validate([
+        'vendor_name' => "required|max:150|unique:vendors,vendor_name,$id",
+
+        'phone_number' => [
+            'required',
+            "unique:vendors,phone_number,$id",
+            'regex:/^[6-9][0-9]{9}$/',
+        ],
+
+        'email' => 'nullable|email|max:150',
+        'address' => 'nullable|max:500',
+        'status' => 'required|in:Active,Inactive',
+    ], [
+        'phone_number.required' => 'Phone number is required.',
+        'phone_number.unique' => 'This phone number already exists.',
+        'phone_number.regex' => 'Phone number must be 10 digits and start with 6, 7, 8, or 9.',
+    ]);
+
+    $vendor->update([
+        'vendor_name' => $request->vendor_name,
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'address' => $request->address,
+        'status' => $request->status,
+        'updated_by' => 1,
+    ]);
+
+    return ApiResponse::success($vendor, 'Vendor updated successfully');
+}
 
     /* Delete Vendor (Soft Delete API) */
     public function apiDestroy($id)

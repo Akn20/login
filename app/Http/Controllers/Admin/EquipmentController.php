@@ -9,6 +9,10 @@ use Illuminate\Support\Str;
 
 class EquipmentController extends Controller
 {
+    // ==========================================
+    // WEB FUNCTIONS
+    // ==========================================
+
     public function index(Request $request)
     {
         $query = Equipment::query();
@@ -116,6 +120,9 @@ class EquipmentController extends Controller
         $equipment = Equipment::findOrFail($id);
         return view('admin.laboratory.equipment.show', compact('equipment'));
     }
+
+
+    
 
     public function toggleStatus($id)
     {
@@ -250,6 +257,17 @@ class EquipmentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Equipment permanently deleted'
+        ]);
+    }
+
+    public function apiDestroy($id)
+    {
+        $equipment = Equipment::findOrFail($id);
+        $equipment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Equipment moved to trash'
         ]);
     }
 

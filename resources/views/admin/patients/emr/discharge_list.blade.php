@@ -43,15 +43,13 @@
     </td>
 
     <td>
-        <a href="{{ route('admin.patient.portal.discharge', $ipd->id) }}"
-           class="btn btn-info btn-sm">
-           View
+        <a href="{{ route('admin.patient.portal.discharge', $ipd->id) }}" class="btn btn-sm btn-outline-secondary" title="View">
+            <i class="fa fa-eye"></i>
         </a>
 
-        <a href="{{ route('admin.patient.portal.doctor.notes', $ipd->id) }}"
-                class="btn btn-warning btn-sm">
-                Notes
-                </a>
+        <a href="{{ route('admin.patient.portal.doctor.notes', $ipd->id) }}" class="btn btn-sm btn-outline-secondary" title="Notes">
+            <i class="fa fa-file-text"></i>
+        </a>
     </td>
 </tr>
 

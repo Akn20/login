@@ -101,6 +101,13 @@
                                                             class="avatar-text avatar-md action-icon action-edit">
                                                             <i class="feather-edit"></i>
                                                         </a>
+                                                        <form action="{{ route(
+                                                            'admin.appointments.sendReminder',$appointment->id ) }}"method="POST">
+                                                            @csrf
+                                                             <button type="submit" class="avatar-text avatar-md action-icon action-warning border-0 bg-transparent" title="Send Reminder"> 
+                                                                <i class="feather-bell"></i>
+                                                             </button>
+                                                            </form>
 
                                                         <form
                                                             action="{{ route('admin.appointments.delete', $appointment->id) }}"
