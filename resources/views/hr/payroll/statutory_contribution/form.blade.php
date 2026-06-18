@@ -232,6 +232,7 @@ $statutoryContribution->salary_ceiling_amount ?? '') }}">
 <label>State Applicable</label>
 
 <select name="state_applicable"
+        id="state_applicable"
         class="form-control">
 
 <option value="1"
@@ -253,7 +254,7 @@ No
 </div>
 
 {{-- Applicable States (MULTI SELECT) --}}
-<div class="col-md-12 mb-3">
+<div class="col-md-12 mb-3" id="states_section">
 
 <label>Applicable States</label>
 
@@ -275,6 +276,7 @@ true
 @endphp
 
 <select name="applicable_states[]"
+        id="applicable_states"
         class="form-control"
         multiple
         size="5">
@@ -382,18 +384,32 @@ No
 </select>
 
 </div>
-
-
-
 {{-- Rounding Rule --}}
 <div class="col-md-4 mb-3">
 
 <label>Rounding Rule</label>
 
-<input type="text"
-name="rounding_rule"
-class="form-control"
-value="{{ old('rounding_rule', $statutoryContribution->rounding_rule ?? '') }}">
+<select name="rounding_rule"
+        class="form-control">
+
+    <option value="">Select Rule</option>
+
+    <option value="Nearest"
+    {{ old('rounding_rule', $statutoryContribution->rounding_rule ?? '') == 'Nearest' ? 'selected' : '' }}>
+        Nearest
+    </option>
+
+    <option value="Up"
+    {{ old('rounding_rule', $statutoryContribution->rounding_rule ?? '') == 'Up' ? 'selected' : '' }}>
+        Up
+    </option>
+
+    <option value="Down"
+    {{ old('rounding_rule', $statutoryContribution->rounding_rule ?? '') == 'Down' ? 'selected' : '' }}>
+        Down
+    </option>
+
+</select>
 
 </div>
 
@@ -476,16 +492,27 @@ class="form-control">
 <div class="card-body">
 <div class="row">
 
-
 <div class="col-md-6 mb-3">
 
 <label>Compliance Head *</label>
 
-<input type="text"
-name="compliance_head"
-class="form-control"
-value="{{ old('compliance_head', $statutoryContribution->compliance_head ?? '') }}"
-required>
+<select name="compliance_head"
+        class="form-control"
+        required>
+
+    <option value="">Select Compliance Head</option>
+
+    <option value="PF"
+    {{ old('compliance_head', $statutoryContribution->compliance_head ?? '') == 'PF' ? 'selected' : '' }}>
+        PF
+    </option>
+
+    <option value="ESI"
+    {{ old('compliance_head', $statutoryContribution->compliance_head ?? '') == 'ESI' ? 'selected' : '' }}>
+        ESI
+    </option>
+
+</select>
 
 </div>
 
@@ -507,3 +534,31 @@ required>
 </div>
 
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const stateApplicable =
+        document.getElementById('state_applicable');
+
+    const statesSection =
+        document.getElementById('states_section');
+
+    function toggleStates() {
+
+        if (stateApplicable.value === '0') {
+
+            statesSection.style.display = 'none';
+
+        } else {
+
+            statesSection.style.display = 'block';
+
+        }
+    }
+
+    toggleStates();
+
+    stateApplicable.addEventListener('change', toggleStates);
+
+});
+</script>

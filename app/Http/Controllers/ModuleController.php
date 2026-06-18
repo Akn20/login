@@ -272,7 +272,29 @@ class ModuleController extends Controller
             'message' => 'Module deleted',
         ]);
     }
+    public function apiRestore($id)
+{
+    $module = Module::withTrashed()->findOrFail($id);
 
+    $module->restore();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Module restored successfully',
+    ]);
+}
+
+public function apiForceDelete($id)
+{
+    $module = Module::withTrashed()->findOrFail($id);
+
+    $module->forceDelete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Module permanently deleted',
+    ]);
+}
     public function apiShow($id)
     {
         $module = Module::findOrFail($id);
@@ -295,4 +317,5 @@ class ModuleController extends Controller
             ],
         ]);
     }
+
 }

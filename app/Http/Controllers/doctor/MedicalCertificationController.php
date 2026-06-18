@@ -1,0 +1,892 @@
+<?php
+
+namespace App\Http\Controllers\doctor;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\MedicalCertification;
+use Illuminate\Support\Str;
+use App\Models\Staff;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+class MedicalCertificationController extends Controller
+{
+  public function index(Request $request)
+{
+    MedicalCertification::where(
+        'valid_until',
+        '<',
+        now()->toDateString()
+    )
+    ->where('status', 'Signed')
+    ->update([
+        'status' => 'Expired'
+    ]);
+
+    $query = MedicalCertification::query();
+
+    // SEARCH BY EMPLOYEE NAME
+    if ($request->employee_name) {
+
+        $query->where(
+            'employee_name',
+            'like',
+            '%' . $request->employee_name . '%'
+        );
+    }
+
+  
+
+    // FILTER BY CERTIFICATE TYPE
+    if ($request->certificate_type) {
+
+        $query->where(
+            'certificate_type',
+            $request->certificate_type
+        );
+    }
+
+    // FILTER BY STATUS
+    if ($request->status) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+   
+
+    $records = $query
+        ->latest()
+        ->paginate(10);
+
+    return view(
+        'doctor.medical_certification.index',
+        compact('records')
+    );
+}
+
+   public function create()
+{
+    $employees = Staff::with(
+    'department',
+    'designation'
+)->get();
+
+    return view(
+        'doctor.medical_certification.create',
+        compact('employees')
+    );
+}
+     public function store(Request $request)
+{
+    $staff = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    $request->validate([
+
+        'employee_id'      => 'required',
+        'certificate_type' => 'required',
+        'issue_date'       => 'required',
+        'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
+        'doctor_name'      => 'required',
+        'registration_number' => 'required',
+        'hospital_name'=> 'required',
+    ]);
+
+    MedicalCertification::create([
+
+        'id' => Str::uuid(),
+
+        'employee_id'   => $request->employee_id,
+
+        'employee_name' => $staff->name,
+
+        'department'    => $request->department,
+
+        'designation'   => $request->designation,
+
+        'certificate_type' => $request->certificate_type,
+
+        'issue_date' => $request->issue_date,
+
+        'valid_from' => $request->valid_from,
+
+        'valid_until' => $request->valid_until,
+
+        'diagnosis_reason' => $request->diagnosis_reason,
+
+        'medical_remarks' => $request->medical_remarks,
+
+        'doctor_name' => $request->doctor_name,
+
+        'registration_number' => $request->registration_number,
+
+        'hospital_name' => $request->hospital_name,
+
+        'status' => 'Draft',
+
+'action_history' =>
+
+    'Certificate created by '
+
+    . auth()->user()->name
+
+    . ' on '
+
+    . now(),
+    
+
+        'certificate_number' =>
+            'MC-' . rand(1000, 9999),
+    ]);
+
+    return redirect()
+        ->route('doctor.medical-certification.index')
+        ->with('success', 'Created Successfully');
+}
+     public function show($id)
+    {
+        $record = MedicalCertification::findOrFail($id);
+
+        return view(
+            'doctor.medical_certification.show',
+            compact('record')
+        );
+    }
+
+ public function edit($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    if ($record->signature_status) {
+
+        return back()->with(
+            'error',
+            'Signed certificate cannot be edited'
+        );
+    }
+
+$employees = Staff::with(
+    'department',
+    'designation'
+)->get();
+
+    return view(
+        'doctor.medical_certification.edit',
+        compact(
+            'record',
+            'employees'
+        )
+    );
+}
+
+    public function update(Request $request, $id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    if ($record->signature_status) {
+
+        return back()->with(
+            'error',
+            'Signed certificate cannot be edited'
+        );
+    }
+
+    $staff = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+
+    $request->validate([
+
+        'employee_id'      => 'required',
+        'certificate_type' => 'required',
+        'issue_date'       => 'required',
+         'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
+        'doctor_name'      => 'required',
+        'registration_number' => 'required',
+          'hospital_name'=> 'required',
+    ]);
+
+    $record->update([
+
+        'employee_id'   => $request->employee_id,
+
+        'employee_name' => $staff->name,
+
+        'department'    => $request->department,
+
+        'designation'   => $request->designation,
+
+        'certificate_type' => $request->certificate_type,
+
+        'issue_date' => $request->issue_date,
+
+        'valid_from' => $request->valid_from,
+
+        'valid_until' => $request->valid_until,
+
+        'diagnosis_reason' => $request->diagnosis_reason,
+
+        'medical_remarks' => $request->medical_remarks,
+
+        'doctor_name' => $request->doctor_name,
+
+        'registration_number' => $request->registration_number,
+
+        'hospital_name' => $request->hospital_name,
+    ]);
+
+    return redirect()
+        ->route('doctor.medical-certification.index')
+        ->with('success', 'Updated Successfully');
+}
+    public function sign($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    $record->update([
+
+        'signature_status' => 1,
+
+        'status' => 'Signed',
+
+        'signed_by' => auth()->user()->name,
+
+        'signed_at' => now(),
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate signed by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    return back()->with(
+        'success',
+        'Certificate Signed Successfully'
+    );
+}
+public function downloadPdf($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    if ($record->status != 'Signed') {
+
+        return back()->with(
+            'error',
+            'Only signed certificates can be downloaded'
+        );
+    }
+
+    $record->update([
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate downloaded by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->download(
+        $record->certificate_number . '.pdf'
+    );
+}
+public function cancel($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    $record->update([
+
+        'status' => 'Cancelled',
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate cancelled by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    return back()->with(
+        'success',
+        'Certificate Cancelled Successfully'
+    );
+}
+public function printPdf($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+
+    if ($record->status != 'Signed') {
+
+        return back()->with(
+            'error',
+            'Only signed certificates can be printed'
+        );
+    }
+
+    $record->update([
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate printed by "
+
+            . auth()->user()->name
+
+            . " on "
+
+            . now(),
+
+    ]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->stream(
+        $record->certificate_number . '.pdf'
+    );
+}
+    public function destroy($id)
+    {
+        $record = MedicalCertification::findOrFail($id);
+
+        if ($record->signature_status) {
+
+            return back()->with(
+                'error',
+                'Signed certificate cannot be deleted'
+            );
+        }
+
+        $record->delete();
+
+        return back()->with(
+            'success',
+            'Deleted Successfully'
+        );
+    }
+
+    // ================= API METHODS ================= //
+
+public function apiIndex(Request $request)
+{
+    MedicalCertification::where(
+        'valid_until',
+        '<',
+        now()->toDateString()
+    )
+    ->where('status', 'Signed')
+    ->update([
+        'status' => 'Expired'
+    ]);
+
+    $query = MedicalCertification::query();
+
+    // EMPLOYEE NAME
+    if ($request->employee_name) {
+
+        $query->where(
+            'employee_name',
+            'like',
+            '%' . $request->employee_name . '%'
+        );
+    }
+
+    // CERTIFICATE TYPE
+    if ($request->certificate_type) {
+
+        $query->where(
+            'certificate_type',
+            $request->certificate_type
+        );
+    }
+
+    // STATUS
+    if ($request->status) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+    $records = $query
+        ->latest()
+        ->get();
+
+    return response()->json([
+
+        'success' => true,
+
+        'data' => $records
+    ]);
+}
+
+public function apiShow($id)
+{
+  $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+
+    return response()->json([
+        'success' => true,
+        'data' => $record
+    ]);
+}
+
+public function apiStore(Request $request)
+{
+    $request->validate([
+
+    'employee_id'      => 'required',
+
+    'certificate_type' => 'required',
+
+    'issue_date'       => 'required',
+
+    'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
+
+    'doctor_name'      => 'required',
+    'registration_number' => 'required',
+    'hospital_name' => 'required',
+]);
+    $staff = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+    if (!$staff) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Employee not found'
+
+    ], 404);
+}
+
+    $record = MedicalCertification::create([
+
+        'id' => Str::uuid(),
+
+        'employee_id' => $request->employee_id,
+
+        'employee_name' => $staff->name,
+
+        'department' => optional($staff->department)->department_name,
+
+        'designation' => optional($staff->designation)->designation_name,
+
+        'certificate_type' => $request->certificate_type,
+
+        'issue_date' => $request->issue_date,
+
+        'valid_from' => $request->valid_from,
+
+        'valid_until' => $request->valid_until,
+
+        'diagnosis_reason' => $request->diagnosis_reason,
+
+        'medical_remarks' => $request->medical_remarks,
+
+        'doctor_name' => $request->doctor_name,
+
+        'registration_number' => $request->registration_number,
+'hospital_name' => $request->hospital_name,
+
+'status' => 'Draft',
+
+'action_history' =>
+
+    'Certificate created via app on '
+
+    . now(),
+
+'certificate_number' =>
+    'MC-' . rand(1000, 9999),
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Created Successfully',
+        'data' => $record
+    ]);
+}
+
+public function apiUpdate(Request $request, $id)
+{
+    $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+ if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Signed certificate cannot be edited'
+
+    ], 400);
+}
+$request->validate([
+
+    'employee_id'      => 'required',
+
+    'certificate_type' => 'required',
+
+    'issue_date'       => 'required',
+
+  'valid_from'       => 'required|after_or_equal:issue_date',
+        'valid_until'      => 'required|after_or_equal:issue_date',
+
+    'doctor_name'      => 'required',
+    'registration_number' => 'required',
+    'hospital_name' => 'required',
+]);
+    $staff = Staff::where(
+        'employee_id',
+        $request->employee_id
+    )->first();
+    if (!$staff) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Employee not found'
+
+    ], 404);
+}
+
+    $record->update([
+
+        'employee_id' => $request->employee_id,
+
+        'employee_name' => $staff->name,
+
+        'department' => optional($staff->department)->department_name,
+
+        'designation' => optional($staff->designation)->designation_name,
+
+        'certificate_type' => $request->certificate_type,
+
+        'issue_date' => $request->issue_date,
+
+        'valid_from' => $request->valid_from,
+
+        'valid_until' => $request->valid_until,
+
+        'diagnosis_reason' => $request->diagnosis_reason,
+
+        'medical_remarks' => $request->medical_remarks,
+
+        'doctor_name' => $request->doctor_name,
+
+        'registration_number' => $request->registration_number,
+
+        'hospital_name' => $request->hospital_name,
+
+'action_history' =>
+
+    ($record->action_history ?? '')
+
+    . "\nCertificate updated via app on "
+
+    . now(),
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Updated Successfully',
+        'data' => $record
+    ]);
+}
+
+public function apiDelete($id)
+{
+  $record = MedicalCertification::find($id);
+
+if (!$record) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate not found'
+
+    ], 404);
+}
+
+if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Signed certificate cannot be deleted'
+
+    ], 400);
+}
+
+$record->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Deleted Successfully'
+    ]);
+}
+
+public function apiSign($id)
+{
+    $record = MedicalCertification::find($id);
+
+    if (!$record) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Certificate not found'
+        ], 404);
+    }
+
+  if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate cannot be signed'
+
+    ], 400);
+}
+  $record->update([
+
+    'signature_status' => 1,
+
+    'signed_by' => auth()->user()->name ?? 'Doctor',
+
+    'signed_at' => now(),
+
+    'status' => 'Signed',
+
+    'action_history' =>
+
+        ($record->action_history ?? '')
+
+        . "\nCertificate signed via app on "
+
+        . now(),
+]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Certificate Signed Successfully'
+    ]);
+}
+
+public function apiCancel($id)
+{
+    $record = MedicalCertification::findOrFail($id);
+   if (
+    $record->signature_status
+    ||
+    $record->status == 'Cancelled'
+    ||
+    $record->status == 'Expired'
+) {
+
+    return response()->json([
+
+        'success' => false,
+
+        'message' => 'Certificate cannot be cancelled'
+
+    ], 400);
+}
+    $record->update([
+
+        'status' => 'Cancelled',
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate cancelled via app on "
+
+            . now(),
+
+    ]);
+
+    return response()->json([
+
+        'success' => true,
+
+        'message' => 'Certificate Cancelled Successfully'
+    ]);
+}
+public function apiPdf($id)
+{
+    $record = MedicalCertification::find($id);
+
+    if (!$record) {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Certificate not found'
+
+        ], 404);
+    }
+
+    // ALLOW ONLY SIGNED
+    if ($record->status != 'Signed') {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Only signed certificates can be downloaded'
+
+        ], 400);
+    }
+
+    $record->update([
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate downloaded via app on "
+
+            . now(),
+
+    ]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->download(
+        $record->certificate_number . '.pdf'
+    );
+}
+public function apiPrint($id)
+{
+    $record = MedicalCertification::find($id);
+
+    if (!$record) {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Certificate not found'
+
+        ], 404);
+    }
+
+    // ALLOW ONLY SIGNED
+    if ($record->status != 'Signed') {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Only signed certificates can be printed'
+
+        ], 400);
+    }
+
+    $record->update([
+
+        'action_history' =>
+
+            ($record->action_history ?? '')
+
+            . "\nCertificate printed via app on "
+
+            . now(),
+
+    ]);
+
+    $pdf = Pdf::loadView(
+        'doctor.medical_certification.pdf',
+        compact('record')
+    );
+
+    return $pdf->stream(
+        $record->certificate_number . '.pdf'
+    );
+}
+}

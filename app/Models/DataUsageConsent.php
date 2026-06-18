@@ -40,7 +40,7 @@ class DataUsageConsent extends Model
 
             if (!$model->id) {
 
-                $model->id = Str::uuid();
+                $model->id = (string) Str::uuid();
             }
         });
     }

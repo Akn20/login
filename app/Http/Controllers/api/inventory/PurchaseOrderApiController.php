@@ -15,7 +15,7 @@ class PurchaseOrderApiController extends Controller
 
     public function index()
     {
-        return PurchaseOrder::with('vendor','items.item')
+    return PurchaseOrder::with('inventoryVendor','items.item')
             ->latest()
             ->get();
     }
@@ -23,7 +23,7 @@ class PurchaseOrderApiController extends Controller
 
     public function show($id)
     {
-        return PurchaseOrder::with(['vendor', 'items.item'])
+        return PurchaseOrder::with(['inventoryVendor', 'items.item'])
             ->findOrFail($id);
     }
 
@@ -73,7 +73,7 @@ public function store(Request $request)
 
         $request->validate([
             'po_number' => 'required',
-            'vendor_id' => 'required',
+           'inventory_vendor_id' => 'required',
             'order_date' => 'required',
             'total_amount' => 'required',
             'items' => 'required|array|min:1'
@@ -81,7 +81,7 @@ public function store(Request $request)
 
         $po = PurchaseOrder::create([
             'po_number' => $request->po_number,
-            'vendor_id' => $request->vendor_id,
+          'inventory_vendor_id' => $request->inventory_vendor_id,
             'order_date' => $request->order_date,
             'expected_date' => $request->expected_date,
             'total_amount' => $request->total_amount,
@@ -102,8 +102,8 @@ public function store(Request $request)
         DB::commit();
 
         return response()->json(
-            $po->load('vendor', 'items.item'),
-            201
+           $po->load('inventoryVendor', 'items.item')
+            
         );
 
     } catch (\Exception $e) {
@@ -147,7 +147,7 @@ public function update(Request $request, $id)
 
         $request->validate([
             'po_number' => 'required',
-            'vendor_id' => 'required',
+            'inventory_vendor_id' => 'required',
             'order_date' => 'required',
             'total_amount' => 'required',
             'items' => 'required|array|min:1'
@@ -158,7 +158,7 @@ public function update(Request $request, $id)
         // 1️⃣ Update main purchase order
         $po->update([
             'po_number' => $request->po_number,
-            'vendor_id' => $request->vendor_id,
+            'inventory_vendor_id' => $request->inventory_vendor_id,
             'order_date' => $request->order_date,
             'expected_date' => $request->expected_date,
             'total_amount' => $request->total_amount,
@@ -183,7 +183,7 @@ public function update(Request $request, $id)
         DB::commit();
 
         return response()->json(
-            $po->load('vendor', 'items.item')
+          $po->load('inventoryVendor', 'items.item')
         );
 
     } catch (\Exception $e) {
@@ -209,7 +209,7 @@ public function approve($id)
 }
 public function approved()
 {
-    return PurchaseOrder::with(['vendor', 'items.item'])
+return PurchaseOrder::with(['inventoryVendor', 'items.item'])
         ->where('status', 'approved')
         ->latest()
         ->get();

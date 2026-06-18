@@ -28,7 +28,7 @@
 
             {{-- Quick navigation cards --}}
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="mb-2">
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="mb-2">
@@ -62,7 +62,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="mb-2">
@@ -78,11 +78,30 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3">
+    <div class="card mb-3 shadow-sm border-0">
+        <div class="card-body">
+            <h6 class="mb-2">
+                <i class="feather-dollar-sign me-1 text-danger"></i>
+                Payroll
+            </h6>
+
+            <p class="text-muted mb-3">
+                Manage pre-payroll adjustments, salary preparation and payroll processing.
+            </p>
+
+            <a href="{{ route('hr.payroll.dashboard')  }}"
+               class="btn btn-outline-danger btn-sm">
+                Go to Payroll
+            </a>
+        </div>
+    </div>
+</div>
             </div>
 
             {{-- Stats widgets --}}
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 border-0 shadow-sm">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
@@ -98,7 +117,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 border-0 shadow-sm">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
@@ -114,7 +133,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card mb-3 border-0 shadow-sm">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
@@ -129,6 +148,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-3">
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-muted small text-uppercase">
+                    Pending Payroll Adjustments
+                </div>
+
+                <h4 class="mb-0">
+                    {{ $stats['pending_payroll'] ?? '0' }}
+                </h4>
+            </div>
+
+            <div class="avatar-text avatar-md bg-soft-danger text-danger">
+                <i class="feather-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
 
             {{-- Charts row --}}

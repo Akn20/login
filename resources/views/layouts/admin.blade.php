@@ -276,6 +276,115 @@ function closeModal(id) {
     document.getElementById('rejectModal' + id).style.display = 'none';
 }
 </script>
+
+{{-- GLOBAL NOTIFICATION SOUND --}}
+
+<audio id="notificationSound">
+
+    <source
+        src="{{ asset('sound/notification.mp3') }}"
+        type="audio/mpeg">
+
+</audio>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENABLE AUDIO AFTER USER INTERACTION
+    |--------------------------------------------------------------------------
+    */
+
+    document.body.addEventListener('click', function () {
+
+        localStorage.setItem(
+            'sound_enabled',
+            'true'
+        );
+
+    }, { once: true });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK NOTIFICATIONS EVERY 5 SECONDS
+    |--------------------------------------------------------------------------
+    */
+
+    setInterval(function () {
+
+        fetch("{{ route('doctor.notifications.latest') }}")
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (!data || !data.id) return;
+
+                let latestNotificationId =
+                    localStorage.getItem(
+                        'latest_notification_id'
+                    );
+
+                /*
+                |--------------------------------------------------------------------------
+                | FIRST LOAD
+                |--------------------------------------------------------------------------
+                */
+
+                if (!latestNotificationId) {
+
+                    localStorage.setItem(
+                        'latest_notification_id',
+                        data.id
+                    );
+
+                    return;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | NEW NOTIFICATION DETECTED
+                |--------------------------------------------------------------------------
+                */
+
+                if (latestNotificationId != data.id) {
+
+                    localStorage.setItem(
+                        'latest_notification_id',
+                        data.id
+                    );
+
+                    let soundEnabled =
+                        localStorage.getItem(
+                            'sound_enabled'
+                        );
+
+                    if (soundEnabled === 'true') {
+
+                        let sound =
+                            document.getElementById(
+                                'notificationSound'
+                            );
+
+                        sound.play()
+                            .catch(error => {
+
+                                console.log(error);
+
+                            });
+                    }
+                }
+
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+
+    }, 5000);
+
+});
+
+</script>
 </body>
 
 </html>

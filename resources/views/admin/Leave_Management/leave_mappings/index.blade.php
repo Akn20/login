@@ -51,7 +51,7 @@
                                     <tr>
                                         <td>
                                             <span class="badge bg-soft-primary text-primary">
-                                                {{ $mapping->leaveType->display_name }} {{-- Blue badge style  --}}
+                                               {{ $mapping->leaveType?->display_name ?? 'Leave Type Deleted' }} {{-- Blue badge style  --}}
                                             </span>
                                         </td>
                                         <td>{{ is_array($mapping->employee_status) ? implode(', ', $mapping->employee_status) : $mapping->employee_status }}</td>

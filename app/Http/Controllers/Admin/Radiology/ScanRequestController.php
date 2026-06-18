@@ -24,7 +24,7 @@ class ScanRequestController extends Controller
         $doctors = User::join('staff', 'users.id', '=', 'staff.user_id')
         ->join('roles', 'staff.role_id', '=', 'roles.id')
         ->where('roles.name', 'doctor') // or 'Doctor'
-        ->select('users.*')
+        ->select('staff.id as id', 'users.name as name')
         ->get();
 
         return view('admin.radiology.scan-requests.create', compact('patients','scanTypes','doctors'));
@@ -57,7 +57,7 @@ class ScanRequestController extends Controller
     $doctors = User::join('staff', 'users.id', '=', 'staff.user_id')
         ->join('roles', 'staff.role_id', '=', 'roles.id')
         ->where('roles.name', 'doctor')
-        ->select('users.*')
+        ->select('staff.id as id', 'users.name as name')
         ->get();
 
     return view('admin.radiology.scan-requests.edit', compact(

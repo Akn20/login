@@ -73,8 +73,9 @@
                 <div class="mb-3">
                     <label>Priority</label>
                     <select name="priority" class="form-control">
-                        <option value="Normal" {{ $requestData->priority == 'Normal' ? 'selected' : '' }}>Normal</option>
+                        <option value="Routine" {{ $requestData->priority == 'Routine' ? 'selected' : '' }}>Routine</option>
                         <option value="Urgent" {{ $requestData->priority == 'Urgent' ? 'selected' : '' }}>Urgent</option>
+                        <option value="Stat" {{ $requestData->priority == 'Stat' ? 'selected' : '' }}>Stat</option>
                     </select>
                 </div>
 

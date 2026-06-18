@@ -1,274 +1,203 @@
 @extends('layouts.admin')
-
-@section('page-title', 'Payroll Earnings')
-
+@section('page-title', 'Earning Breakdown')
 @section('content')
 
 <div class="page-header mb-4 d-flex align-items-center justify-content-between">
-
-    <div>
-        <h5 class="mb-1">Payroll Earnings</h5>
+    <div class="page-header-left">
+        <h5 class="m-b-10 mb-1">Earning Breakdown</h5>
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Earning Breakdown</li>
+        </ul>
     </div>
-
-    <div class="d-flex gap-2">
-
-        <a href="{{ route('hr.payroll.payroll-result-earnings.create') }}"
-           class="btn btn-primary">
-
-            <i class="feather-plus me-1"></i>
-            Add Earning
-        </a>
-
-    </div>
-
 </div>
 
+{{-- ALERTS --}}
 @if(session('success'))
-
-<div class="alert alert-success">
-    {{ session('success') }}
-</div>
-
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if(session('info'))
+    <div class="alert alert-info">{{ session('info') }}</div>
 @endif
 
-@if(session('error'))
-
-<div class="alert alert-danger">
-    {{ session('error') }}
-</div>
-
-@endif
-
-<div class="card">
-<div class="card-body p-0">
-
-<div class="table-responsive">
-
-<table class="table table-hover align-middle mb-0">
-
-    <thead>
-
-        <tr>
-
-            <th>Payroll Month</th>
-
-            <th>Employee</th>
-
-            <th>Code</th>
-
-            <th>Name</th>
-
-            <th>Type</th>
-
-            <th>Amount</th>
-
-            <th>Status</th>
-
-            <th>Taxable</th>
-
-            <th class="text-end">Actions</th>
-
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        @forelse($records as $item)
-
-        <tr>
-
-            {{-- PAYROLL MONTH --}}
-            <td>
-
-                <span class="badge bg-soft-dark text-dark">
-
-                    {{ $item->payrollResult->payroll_month ?? '-' }}
-
-                </span>
-
-            </td>
-
-            {{-- EMPLOYEE --}}
-            <td>
-
-                <span class="badge bg-soft-primary text-primary">
-
-                    {{ $item->payrollResult->staff_id ?? '-' }}
-
-                </span>
-
-            </td>
-
-            {{-- CODE --}}
-            <td>
-
-                <span class="badge bg-soft-info text-info">
-
-                    {{ $item->earning_code }}
-
-                </span>
-
-            </td>
-
-            {{-- NAME --}}
-            <td>
-
-                {{ $item->earning_name }}
-
-            </td>
-
-            {{-- TYPE --}}
-            <td>
-
-                @if($item->earning_type == 'Fixed')
-
-                    <span class="badge bg-soft-success text-success">
-                        Fixed
-                    </span>
-
-                @elseif($item->earning_type == 'Variable')
-
-                    <span class="badge bg-soft-warning text-warning">
-                        Variable
-                    </span>
-
-                @else
-
-                    <span class="badge bg-soft-secondary text-secondary">
-                        OT
-                    </span>
-
-                @endif
-
-            </td>
-
-            {{-- AMOUNT --}}
-            <td>
-
-                ₹ {{ number_format($item->amount, 2) }}
-
-            </td>
-
-            {{-- PAYROLL STATUS --}}
-            <td>
-
-                @if(($item->payrollResult->status ?? '') == 'Locked')
-
-                    <span class="badge bg-soft-danger text-danger">
-                        Locked
-                    </span>
-
-                @else
-
-                    <span class="badge bg-soft-success text-success">
-
-                        {{ $item->payrollResult->status ?? '-' }}
-
-                    </span>
-
-                @endif
-
-            </td>
-
-            {{-- TAXABLE --}}
-            <td>
-
-                @if($item->taxable)
-
-                    <span class="badge bg-soft-success text-success">
-                        Yes
-                    </span>
-
-                @else
-
-                    <span class="badge bg-soft-danger text-danger">
-                        No
-                    </span>
-
-                @endif
-
-            </td>
-
-            {{-- ACTIONS --}}
-            <td class="text-end">
-
-                <div class="d-flex gap-2 justify-content-end">
-
-                    {{-- VIEW --}}
-                    <a href="{{ route('hr.payroll.payroll-result-earnings.show', $item->id) }}"
-                       class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
-
-                        <i class="feather-eye"></i>
-
-                    </a>
-
-                    {{-- EDIT --}}
-                    @if(($item->payrollResult->status ?? '') != 'Locked')
-
-                    <a href="{{ route('hr.payroll.payroll-result-earnings.edit', $item->id) }}"
-                       class="btn btn-outline-secondary btn-icon rounded-circle btn-sm">
-
-                        <i class="feather-edit-2"></i>
-
-                    </a>
-
-                    @endif
-
-                    {{-- DELETE --}}
-                    @if(($item->payrollResult->status ?? '') != 'Locked')
-
-                    <form action="{{ route('hr.payroll.payroll-result-earnings.delete', $item->id) }}"
-                          method="POST"
-                          onsubmit="return confirm('Delete this earning?')">
-
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit"
-                                class="btn btn-outline-danger btn-icon rounded-circle btn-sm">
-
-                            <i class="feather-trash-2"></i>
-
-                        </button>
-
-                    </form>
-
-                    @endif
-
+{{-- FILTER FORM --}}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('hr.payroll.payroll-result-earnings.index') }}">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label">Employee</label>
+                    <select name="staff_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Select Employee --</option>
+                        @foreach($employees as $emp)
+                            <option value="{{ $emp['staff_id'] }}"
+                                {{ request('staff_id') == $emp['staff_id'] ? 'selected' : '' }}>
+                                {{ $emp['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-            </td>
+                <div class="col-md-4">
+                    <label class="form-label">Payroll Month</label>
+                    <select name="payroll_month" class="form-select">
+                        <option value="">-- Select Month --</option>
+                        @foreach($months as $month)
+                            <option value="{{ $month }}"
+                                {{ request('payroll_month') == $month ? 'selected' : '' }}>
+                                {{ $month }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        </tr>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">View</button>
+                    <a href="{{ route('hr.payroll.payroll-result-earnings.index') }}"
+                       class="btn btn-outline-secondary">Reset</a>
+                </div>
 
-        @empty
-
-        <tr>
-
-            <td colspan="9"
-                class="text-center text-muted py-4">
-
-                No records found
-
-            </td>
-
-        </tr>
-
-        @endforelse
-
-    </tbody>
-
-</table>
-
-<div class="p-3">
-
-    {{ $records->links() }}
-
+            </div>
+        </form>
+    </div>
 </div>
 
-</div>
-</div>
-</div>
+{{-- RESULTS SECTION --}}
+@if($selectedPayrollResult)
+
+    {{-- PAYROLL RESULT SUMMARY --}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <small class="text-muted">Employee</small>
+                    <div><strong>{{ $selectedPayrollResult->staff->name ?? $selectedPayrollResult->staff_id }}</strong></div>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted">Payroll Month</small>
+                    <div><strong>{{ $selectedPayrollResult->payroll_month }}</strong></div>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted">Gross Earnings</small>
+                    <div><strong>₹ {{ number_format($selectedPayrollResult->gross_earnings, 2) }}</strong></div>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted">Status</small>
+                    <div>
+                        @if($selectedPayrollResult->status == 'Locked')
+                            <span class="badge bg-danger">Locked</span>
+                        @else
+                            <span class="badge bg-warning">{{ $selectedPayrollResult->status }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- GENERATE BUTTON --}}
+    @if($earnings->isEmpty())
+        <form method="POST" action="{{ route('hr.payroll.payroll-result-earnings.generate') }}" class="mb-3">
+            @csrf
+            <input type="hidden" name="staff_id" value="{{ request('staff_id') }}">
+            <input type="hidden" name="payroll_month" value="{{ request('payroll_month') }}">
+            <button type="submit" class="btn btn-success btn-sm">
+                Generate Earning Breakdown
+            </button>
+        </form>
+    @endif
+
+    {{-- EARNINGS TABLE --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="card stretch stretch-full">
+
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Earnings Breakdown</h5>
+                    @if($earnings->isNotEmpty())
+                        <a href="{{ route('hr.payroll.payroll-result-earnings.show', $selectedPayrollResult->id) }}"
+                           class="btn btn-outline-secondary btn-sm">
+                            <i class="feather-eye"></i> View Detail
+                        </a>
+                    @endif
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Code</th>
+                                    <th>Earning Name</th>
+                                    <th>Type</th>
+                                    <th>Taxable</th>
+                                    <th>PF</th>
+                                    <th>ESI</th>
+                                    <th class="text-end">Amount (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($earnings as $i => $row)
+                                <tr>
+                                    <td>{{ $i + 1 }}</td>
+                                    <td>
+                                        <span class="badge bg-soft-primary text-primary">
+                                            {{ $row->earning_code }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $row->earning_name }}</td>
+                                    <td>{{ $row->earning_type }}</td>
+                                    <td>
+                                        @if($row->taxable)
+                                            <span class="badge bg-success">Yes</span>
+                                        @else
+                                            <span class="badge bg-secondary">No</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($row->pf_applicable)
+                                            <span class="badge bg-success">Yes</span>
+                                        @else
+                                            <span class="badge bg-secondary">No</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($row->esi_applicable)
+                                            <span class="badge bg-success">Yes</span>
+                                        @else
+                                            <span class="badge bg-secondary">No</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>₹ {{ number_format($row->amount, 2) }}</strong>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-3">
+                                        No earnings generated yet. Click "Generate Earning Breakdown" above.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                            @if($earnings->isNotEmpty())
+                            <tfoot>
+                                <tr>
+                                    <th colspan="7" class="text-end">Total Gross Earnings</th>
+                                    <th class="text-end">₹ {{ number_format($earnings->sum('amount'), 2) }}</th>
+                                </tr>
+                            </tfoot>
+                            @endif
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@endif
 
 @endsection

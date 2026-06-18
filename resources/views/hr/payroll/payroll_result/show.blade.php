@@ -271,7 +271,7 @@ Locked On:
 Locked By:
 
 <strong>
-{{ $payrollResult->locked_by }}
+{{ $payrollResult->lockedByUser->name ?? '-' }}
 </strong>
 
 </div>

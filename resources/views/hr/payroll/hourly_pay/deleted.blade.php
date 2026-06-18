@@ -4,83 +4,153 @@
 
 @section('content')
 
-<div class="page-header mb-4 d-flex justify-content-between align-items-center">
-    <h5 class="mb-1">Deleted Work Types</h5>
+<div class="page-header mb-4 d-flex align-items-center justify-content-between">
 
-    <a href="{{ route('hr.payroll.hourly-pay.index') }}" class="btn btn-light">
+    <div class="page-header-left">
+        <h5 class="m-b-10 mb-1">Deleted Work Types</h5>
+
+        <ul class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+            </li>
+
+            <li class="breadcrumb-item">
+                <a href="{{ route('hr.payroll.hourly-pay.index') }}">
+                    Hourly Pay
+                </a>
+            </li>
+
+            <li class="breadcrumb-item active">
+                Deleted Records
+            </li>
+        </ul>
+    </div>
+
+    <a href="{{ route('hr.payroll.hourly-pay.index') }}"
+       class="btn btn-light">
         <i class="feather-arrow-left me-1"></i> Back
     </a>
+
 </div>
 
-<div class="card">
-    <div class="card-body p-0">
+<div class="row">
+    <div class="col-12">
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+        <div class="card stretch stretch-full">
 
-                <thead>
-                    <tr>
-                        <th>Work Type</th>
-                        <th>Category</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
+            <div class="card-body p-0">
 
-                <tbody>
-                    @forelse($deleted as $item)
-                        <tr>
+                <div class="table-responsive">
 
-                            <td>{{ $item->name }}</td>
-                            <td>{{ $item->category }}</td>
+                    <table class="table table-hover align-middle mb-0">
 
-                            <td class="text-end">
+                        <thead>
+                            <tr>
+                                <th>Work Type</th>
+                                <th>Category</th>
+                                <th>Earnings</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
 
-                                <div class="d-flex gap-2 justify-content-end">
+                        <tbody>
 
-                                    <!-- Restore -->
-                                    <form action="{{ route('hr.payroll.hourly-pay.restore', $item->id) }}"
-                                        method="POST">
+                            @forelse($deleted as $item)
 
-                                        @csrf
-                                        @method('PUT')
+                                <tr>
 
-                                        <button class="btn btn-outline-success btn-icon rounded-circle btn-sm"
-                                                title="Restore">
-                                            <i class="feather-rotate-ccw"></i>
-                                        </button>
+                                    <!-- Work Type -->
+                                    <td>
+                                        <span class="badge bg-soft-primary text-primary">
+                                            {{ $item->name }}
+                                        </span>
+                                    </td>
 
-                                    </form>
+                                    <!-- Category -->
+                                    <td>
+                                        {{ $item->category }}
+                                    </td>
 
-                                    <!-- Permanent Delete -->
-                                    <form action="{{ route('hr.payroll.hourly-pay.force-delete', $item->id) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Permanently delete?')">
+                                    <!-- Earnings -->
+                                    <td>
+                                        <span class="badge bg-soft-info text-info">
+                                            {{ ucfirst($item->earning_type) }}
+                                        </span>
+                                    </td>
 
-                                        @csrf
-                                        @method('DELETE')
+                                    <!-- Status -->
+                                    <td>
+                                        @if($item->status == 'active')
+                                            <span class="text-success">Active</span>
+                                        @else
+                                            <span class="text-danger">Inactive</span>
+                                        @endif
+                                    </td>
 
-                                        <button class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
-                                                title="Delete Permanently">
-                                            <i class="feather-trash-2"></i>
-                                        </button>
+                                    <!-- Actions -->
+                                    <td class="text-end">
 
-                                    </form>
+                                        <div class="d-flex gap-2 justify-content-end">
 
-                                </div>
+                                            <!-- Restore -->
+                                            <form action="{{ route('hr.payroll.hourly-pay.restore', $item->id) }}"
+                                                  method="POST">
 
-                            </td>
+                                                @csrf
 
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                No deleted records
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
+                                                <button type="submit"
+                                                        class="btn btn-outline-success btn-icon rounded-circle btn-sm"
+                                                        title="Restore">
 
-            </table>
+                                                    <i class="feather-rotate-ccw"></i>
+
+                                                </button>
+
+                                            </form>
+
+                                            <!-- Permanent Delete -->
+                                            <form action="{{ route('hr.payroll.hourly-pay.force-delete', $item->id) }}"
+                                                  method="POST"
+                                                  onsubmit="return confirm('Permanently delete?')">
+
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-icon rounded-circle btn-sm"
+                                                        title="Delete Permanently">
+
+                                                    <i class="feather-trash-2"></i>
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        No deleted records
+                                    </td>
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>

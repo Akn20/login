@@ -16,7 +16,7 @@
                 </ul>
             </div>
         @endif
-
+                      
         <div class="row">
 
             {{--  Employee --}}
@@ -225,11 +225,20 @@
         <label>Total Deductions</label>
         <input type="text" id="total_deductions" class="form-control" readonly>
     </div>
+    <div class="col-md-4 mb-3">
+    <label>Per Day Salary</label>
+    <input type="text" id="per_day_salary" class="form-control" readonly>
+</div>
 
+<div class="col-md-4 mb-3">
+    <label>Absence Amount</label>
+    <input type="text" id="absence_amount" class="form-control" readonly>
+</div>
     <div class="col-md-4 mb-3">
         <label>Net Payable</label>
         <input type="text" id="net_payable" class="form-control" readonly>
     </div>
+
 
 </div>
 
@@ -268,21 +277,50 @@ function calculatePayroll() {
 
     let fixedDeductions = parseFloat(document.getElementById('fixed_deductions_total').value) || 0;
     let adhocDeductions = parseFloat(document.getElementById('adhoc_deductions').value) || 0;
+    let pf = parseFloat(document.querySelector('[name="pf_employee"]').value) || 0;
+
+let esi = parseFloat(document.querySelector('[name="esi_employee"]').value) || 0;
+
+let pt = parseFloat(document.querySelector('[name="professional_tax"]').value) || 0;
+
+let tds = parseFloat(document.querySelector('[name="tds_amount"]').value) || 0;
+let workingDays = parseFloat(document.querySelector('[name="working_days"]').value) || 0;
+
+let lopDays = parseFloat(document.querySelector('[name="lop_days"]').value) || 0;
 
     let gross = fixedEarnings + adhocEarnings;
-    let deductions = fixedDeductions + adhocDeductions;
-    let net = gross - deductions;
+
+    let perDaySalary = workingDays > 0 
+    ? gross / workingDays 
+    : 0;
+
+let absenceAmount = lopDays * perDaySalary;
+let deductions = fixedDeductions 
+               + adhocDeductions
+               + pf
+               + esi
+               + pt
+               + tds;
+    let net = gross - deductions- absenceAmount;
 
     document.getElementById('gross_earnings').value = gross.toFixed(2);
     document.getElementById('total_deductions').value = deductions.toFixed(2);
     document.getElementById('net_payable').value = net.toFixed(2);
+    document.getElementById('per_day_salary').value = perDaySalary.toFixed(2);
+
+document.getElementById('absence_amount').value = absenceAmount.toFixed(2);
 }
 
-document.querySelectorAll('#fixed_earnings_total, #adhoc_earnings, #fixed_deductions_total, #adhoc_deductions')
+document.querySelectorAll(
+'#fixed_earnings_total, #adhoc_earnings, #fixed_deductions_total, #adhoc_deductions, [name="pf_employee"], [name="esi_employee"], [name="professional_tax"], [name="tds_amount"], [name="working_days"], [name="lop_days"]'
+)
     .forEach(input => {
         input.addEventListener('input', calculatePayroll);
     });
 
 // RUN ON PAGE LOAD
-window.onload = calculatePayroll;
+document.addEventListener('DOMContentLoaded', function () {
+    calculatePayroll();
+});
+
 </script>

@@ -179,7 +179,7 @@ class AppointmentController extends Controller
     }
     public function getDoctors($department_id)
     {
-        $doctors = \App\Models\Staff::where('department_id', $department_id)
+        $doctors = Staff::where('department_id', $department_id)
             ->whereHas('role', function ($query) {
                 $query->where('name', 'Doctor');
             })
@@ -187,6 +187,23 @@ class AppointmentController extends Controller
 
         return response()->json($doctors);
     }
+    public function sendReminder($id)
+{
+    $appointment = Appointment::findOrFail($id);
+
+    $appointment->update([
+
+        'reminder_status' => 'Sent',
+
+        'reminder_sent_at' => now()
+
+    ]);
+
+    return back()->with(
+        'success',
+        'Reminder sent successfully'
+    );
+}
 
 
     /* ================= API FUNCTIONS ================= */

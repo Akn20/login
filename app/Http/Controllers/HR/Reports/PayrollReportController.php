@@ -15,35 +15,58 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class PayrollReportController extends Controller
 {
     public function index(Request $request)
-    {
-        $staff = Staff::with(['department'])->get();
+{
+    try {
+
+        $staff = Staff::with('department')->get();
 
         $report = [];
 
-       foreach ($staff as $s) {
+        foreach ($staff as $s) {
 
-    $salary = $this->calculateSalary($s);
+            $salary = $this->calculateSalary($s);
 
-    $report[] = [
-        'id' => $s->id,
-        'employee_id' => $s->employee_id,
-        'name' => $s->name,
-        'department' => $s->department->name ?? '-',
-        'basic' => $salary['basic'],
-        'allowances' => $salary['allowances'],
-        'pf' => $salary['pf'],
-        'esi' => $salary['esi'],
-        'tax' => $salary['tax'],
-        'deductions' => $salary['deductions'],
-        'gross' => $salary['gross'],
-        'net' => $salary['net'],
-        'status' => 'Processed',
-    ];
-}
+            $report[] = [
+                'id' => $s->id,
 
-        return view('admin.hr.reports.payroll', compact('report'));
+                'employee_id' => $s->employee_id,
+
+                'name' => $s->name,
+
+                'department' =>
+                    $s->department->department_name
+                    ?? '-',
+
+                'basic' => $salary['basic'],
+
+                'allowances' => $salary['allowances'],
+
+                'pf' => $salary['pf'],
+
+                'esi' => $salary['esi'],
+
+                'tax' => $salary['tax'],
+
+                'deductions' => $salary['deductions'],
+
+                'gross' => $salary['gross'],
+
+                'net' => $salary['net'],
+
+                'status' => 'Processed',
+            ];
+        }
+return view('admin.hr.reports.payroll', [
+    'report' => $report
+]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'message' => $e->getMessage()
+        ], 500);
     }
-
+}
     private function calculateSalary($s)
 {
     $basic = $s->basic_salary ?? 0;

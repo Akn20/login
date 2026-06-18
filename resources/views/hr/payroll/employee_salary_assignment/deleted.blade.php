@@ -81,7 +81,7 @@
                                     method="POST">
 
                                     @csrf
-                                    @method('PUT')
+                               
 
                                     <button type="submit"
                                             class="btn btn-outline-success btn-icon rounded-circle btn-sm"

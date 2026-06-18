@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-
+use App\Models\IPDPayment;
 class IPDAdmission extends Model
 {
     protected $table = 'ipd_admissions';
@@ -73,5 +73,10 @@ public function ward()
 public function room()
 {
     return $this->belongsTo(\App\Models\Room::class, 'room_id');
+}
+
+public function payments()
+{
+    return $this->hasMany(IPDPayment::class, 'ipd_id', 'id');
 }
 }

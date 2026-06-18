@@ -326,4 +326,23 @@ class OrganizationController extends Controller
             'message' => 'Organization permanently deleted successfully'
         ]);
     }
+    public function apiRestore($id)
+{
+    $org = Organization::onlyTrashed()->find($id);
+
+    if (!$org) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Organization not found in trash'
+        ], 404);
+    }
+
+    $org->restore();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Organization restored successfully',
+        'data' => $org
+    ]);
+}
 }

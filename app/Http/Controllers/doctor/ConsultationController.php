@@ -11,7 +11,11 @@ use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Roles;
 use App\Models\SampleCollection;
+use App\Models\ScanRequest;
+use App\Models\ScanType;
 use App\Models\Staff;
+use App\Models\Notification;
+use App\Models\MedicationReviewReminder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -39,7 +43,9 @@ class ConsultationController extends Controller
 
         $labTests = LabTest::where('status', 1)->get();
 
-        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests'));
+        $scanTypes = ScanType::where('status', 1)->get();
+
+        return view('doctor.opd.consultation', compact('patient', 'medicines', 'appointment', 'doctors', 'labTests', 'scanTypes'));
     }
 
     /* =========================
@@ -95,15 +101,82 @@ class ConsultationController extends Controller
             'consultation_date' => now(),
         ]);
         foreach ($request->medicine as $index => $medicineId) {
-            $consultation->medicines()->attach($medicineId, [
-                'id' => (string) Str::uuid(),
-                'dosage' => $request->dosage[$index],
-                'frequency' => $request->frequency[$index],
-                'duration' => $request->duration[$index],
-                'instructions' => $request->instructions[$index],
-            ]);
 
-        }
+    $pivotId = (string) Str::uuid();
+
+    $consultation->medicines()->attach($medicineId, [
+
+        'id' => $pivotId,
+
+        'dosage' => $request->dosage[$index],
+
+        'frequency' => $request->frequency[$index],
+
+        'duration' => $request->duration[$index],
+
+        'instructions' => $request->instructions[$index],
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE MEDICATION REVIEW REMINDER
+    |--------------------------------------------------------------------------
+    */
+
+    MedicationReviewReminder::create([
+
+        'id' => (string) Str::uuid(),
+
+        'consultation_medicine_id' => $pivotId,
+
+        'patient_id' => $request->patient_id,
+
+        'doctor_id' => $appointment->doctor_id,
+
+        'review_date' => now()->addDays(
+            (int) $request->duration[$index]
+        ),
+
+        'status' => 'Pending',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
+    Notification::create([
+
+        'id' => (string) Str::uuid(),
+
+        'user_id' => Staff::where(
+            'id',
+            $appointment->doctor_id
+        )->value('user_id'),
+
+        'patient_id' => $request->patient_id,
+
+        'type' => 'Medication Review',
+
+        'title' => 'Medication Review Reminder',
+
+       'message' =>
+    'Patient '
+    . $consultation->patient->first_name . ' '
+    . $consultation->patient->last_name
+    . ' requires medication review after '
+    . $request->duration[$index]
+    . ' days.',
+
+        'priority' => 'Medium',
+
+        'reference_id' => $pivotId,
+
+        'is_read' => false,
+    ]);
+
+}
 
         // Lab Requests
         if (! empty($request->tests)) {
@@ -138,6 +211,34 @@ class ConsultationController extends Controller
 
         }
 
+        // Radiology Requests
+        if (! empty($request->radiology_tests)) {
+
+            foreach ($request->radiology_tests as $scanTypeId) {
+
+                $scanType = ScanType::find($scanTypeId);
+
+                if ($scanType) {
+
+                    ScanRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $request->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'scan_type_id' => $scanTypeId,
+                        'doctor_id' => $appointment->doctor_id,
+                        'reason' => $request->diagnosis ?? 'Medical consultation',
+                        'priority' => is_array($request->priority)
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
+                        'status' => 'pending',
+                    ]);
+
+                }
+
+            }
+
+        }
+
         return redirect()->route('doctor.view-consultations')->with('success', 'Consultation saved successfully');
 
     }
@@ -147,13 +248,15 @@ class ConsultationController extends Controller
     // =========================
     public function edit($id)
     {
-        $consultation = Consultation::with(['medicines', 'labRequests'])->findOrFail($id);
+        $consultation = Consultation::with(['medicines', 'labRequests', 'scanRequests'])->findOrFail($id);
 
         $patient = Patient::find($consultation->patient_id);
 
         $medicines = Medicine::all();
 
         $labTests = LabTest::all();
+
+        $scanTypes = ScanType::where('status', 1)->get();
 
         $doctorRole = Roles::where('name', 'doctor')->first();
 
@@ -165,7 +268,7 @@ class ConsultationController extends Controller
 
         return view(
             'doctor.opd.edit-consultation',
-            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests', 'priority')
+            compact('consultation', 'patient', 'medicines', 'doctors', 'labTests', 'scanTypes', 'priority')
         );
     }
 
@@ -249,6 +352,36 @@ class ConsultationController extends Controller
 
         }
 
+        // Update Radiology Requests
+        ScanRequest::where('consultation_id', $consultation->id)->delete();
+
+        if (! empty($request->radiology_tests)) {
+
+            foreach ($request->radiology_tests as $scanTypeId) {
+
+                $scanType = ScanType::find($scanTypeId);
+
+                if ($scanType) {
+
+                    ScanRequest::create([
+                        'id' => Str::uuid(),
+                        'patient_id' => $consultation->patient_id,
+                        'consultation_id' => $consultation->id,
+                        'scan_type_id' => $scanTypeId,
+                        'doctor_id' => $consultation->doctor_id,
+                        'reason' => $request->diagnosis ?? 'Medical consultation',
+                        'priority' => is_array($request->priority)
+                            ? $request->priority[0]
+                            : ($request->priority ?? 'routine'),
+                        'status' => 'pending',
+                    ]);
+
+                }
+
+            }
+
+        }
+
         return redirect()
             ->route('doctor.view-consultations')
             ->with('success', 'Consultation updated successfully');
@@ -259,8 +392,12 @@ class ConsultationController extends Controller
     ==========================*/
     public function summary($id)
     {
-        $consultation = Consultation::with(['patient', 'medicines', 'labRequests'])
-            ->findOrFail($id);
+        $consultation = Consultation::with([
+            'patient',
+            'medicines',
+            'labRequests',
+            'scanRequests.scanType',
+        ])->findOrFail($id);
 
         return view('doctor.opd.consultation-summary', compact('consultation'));
     }

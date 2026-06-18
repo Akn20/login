@@ -123,21 +123,39 @@
                 </table>
                 <!-- Lab Requests -->
                 <div class="mt-4">
-                    <h5><strong>Recommended Tests</strong></h5>
+    <h5><strong>Recommended Tests</strong></h5>
 
-                    @if($consultation->labRequests->count() > 0)
-                        <ul>
-                            @foreach($consultation->labRequests as $lab)
-                                <li>
-                                    {{ $lab->test_name }} 
-                                    
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p>No tests recommended</p>
-                    @endif
-                </div>
+    @if($consultation->labRequests->count() > 0 || $consultation->scanRequests->count() > 0)
+
+        {{-- Lab Requests --}}
+        @if($consultation->labRequests->count() > 0)
+            <h6 class="mt-2"><strong>Lab Tests</strong></h6>
+            <ul>
+                @foreach($consultation->labRequests as $lab)
+                    <li>
+                        {{ $lab->test_name }}
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+
+
+       {{-- Scan Requests --}}
+@if($consultation->scanRequests->count() > 0)
+    <h6 class="mt-3"><strong>Scans</strong></h6>
+    <ul>
+        @foreach($consultation->scanRequests as $scan)
+            <li>
+                {{ $scan->scanType->name ?? $scan->body_part ?? $scan->reason ?? 'Radiology request' }}
+            </li>
+        @endforeach
+    </ul>
+@endif
+
+    @else
+        <p>No tests recommended</p>
+    @endif
+</div>
 
 
             </div>
