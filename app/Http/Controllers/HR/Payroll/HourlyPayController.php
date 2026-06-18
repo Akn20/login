@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HR\Payroll;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HourlyPay;
+use Illuminate\Support\Str;
 use App\Models\Shift; // ✅ ADDED
 
 class HourlyPayController extends Controller
