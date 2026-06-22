@@ -2085,7 +2085,7 @@ Route::prefix('payroll-deductions')->group(function () {
         Route::delete('/critical-alerts/{id}/force', [AlertController::class, 'apiForceDelete']);
     });
 
-    // Doctor Radiology Module
+    // Doctor Radiology Module  
     Route::prefix('doctor')->group(function () {
 
         Route::get('/radiology', [DoctorRadiologyController::class, 'apiIndex']);
@@ -4002,7 +4002,7 @@ Route::prefix('digital-payments')->group(function () {
 
     Route::delete('/{id}/force-delete', [DigitalPaymentController::class, 'apiForceDelete']);
 
-});
+}); 
 
 Route::prefix('financial-discrepancy')->group(function () {
 
@@ -4044,7 +4044,7 @@ Route::prefix('financial-reconciliation')->group(function () {
 
     Route::put('/{id}/restore', [FinancialReconciliationController::class, 'apiRestore']);
 
-    Route::delete('/{id}/force-delete', [FinancialReconciliationController::class, 'apiForceDelete']);
+    Route::delete('/{id}/force-delete', [FinancialReconciliationController::class, 'apiForceDelete']);      
 
 });
 
